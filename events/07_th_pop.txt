@@ -1,0 +1,644 @@
+namespace = th_pop
+#开局人口系统说明
+country_event = {
+	id = th_pop.0
+	title = th_pop.0.name
+	desc = th_pop.0.desc
+	picture = GFX_evt_th_alice
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+	}
+	option = {
+		name = th_pop.0.a
+		hidden_effect = {
+			country_event = {
+				id = th_pop.1
+			}
+			country_event = {
+				id = th_pop.2
+			}
+			country_event = {
+				id = th_arc.3
+				days = 1080
+			}
+			#country_event = { id = th_pop.3 days = 8280 }
+			country_event = {
+				id = th_pop.100
+				days = 1080
+			}
+			#AI幻想乡强化
+		}
+	}
+}
+
+#初始所有星球添加建筑修正灵力职业产出
+country_event = {
+	id = th_pop.1
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		every_owned_planet = {
+			add_building = building_mls_1
+		}
+	}
+}
+
+#开局人口调整
+country_event = {
+	id = th_pop.2
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+	}
+	immediate = {
+		#计数器
+		set_variable = {
+			which = kill_touhou_pop_count
+			value = 0
+		}
+		set_variable = {
+			which = create_touhou_pop_count
+			value = 0
+		}
+		every_owned_pop = {
+			limit = {
+				species = {
+					has_trait = trait_touhou
+				}
+			}
+			owner = {
+				change_variable = {
+					which = kill_touhou_pop_count
+					value = 1
+				}
+			}
+		}
+		#控制人口为12,AI为30
+		if = {
+			limit = {
+				owner = {
+					has_origin = origin_th_hm_default
+					has_country_flag = th_hm_default_origin
+				}
+			}
+			if = {
+				limit = {
+					is_ai = yes
+					NOT = {
+						has_global_flag = spth_AI_NOT_plus
+					}
+				}
+				set_variable = {
+					which = create_touhou_pop_count
+					value = 40
+				}
+			}
+			else = {
+				set_variable = {
+					which = create_touhou_pop_count
+					value = 30
+				}
+			}
+			subtract_variable = {
+				which = create_touhou_pop_count
+				value = kill_touhou_pop_count
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = create_touhou_pop_count
+						value >= 0
+					}
+				}
+				set_variable = {
+					which = kill_touhou_pop_count
+					value = 0
+				}
+				while = {
+					count = create_touhou_pop_count
+					capital_scope = {
+						create_pop = {
+							species = owner.species
+						}
+					}
+				}
+			}
+			else = {
+				if = {
+					limit = {
+						is_ai = yes
+						NOT = {
+							has_global_flag = spth_AI_NOT_plus
+						}
+					}
+					subtract_variable = {
+						which = kill_touhou_pop_count
+						value = 40
+					}
+				}
+				else = {
+					subtract_variable = {
+						which = kill_touhou_pop_count
+						value = 30
+					}
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				owner = {
+					has_origin = origin_gensokyo_city
+				}
+			}
+			if = {
+				limit = {
+					is_ai = yes
+					NOT = {
+						has_global_flag = spth_AI_NOT_plus
+					}
+				}
+				set_variable = {
+					which = create_touhou_pop_count
+					value = 20
+				}
+				subtract_variable = {
+					which = create_touhou_pop_count
+					value = kill_touhou_pop_count
+				}
+				if = {
+					limit = {
+						check_variable = {
+							which = create_touhou_pop_count
+							value >= 0
+						}
+					}
+					set_variable = {
+						which = kill_touhou_pop_count
+						value = 0
+					}
+					while = {
+						count = create_touhou_pop_count
+						capital_scope = {
+							create_pop = {
+								species = owner.species
+							}
+						}
+					}
+				}
+				else = {
+					subtract_variable = {
+						which = kill_touhou_pop_count
+						value = 20
+					}
+				}
+			}
+			else = {
+				subtract_variable = {
+					which = kill_touhou_pop_count
+					value = 8
+				}
+			}
+		}
+		else = {
+			if = {
+				limit = {
+					is_ai = yes
+					NOT = {
+						has_global_flag = spth_AI_NOT_plus
+					}
+				}
+				set_variable = {
+					which = create_touhou_pop_count
+					value = 30
+				}
+				subtract_variable = {
+					which = create_touhou_pop_count
+					value = kill_touhou_pop_count
+				}
+				if = {
+					limit = {
+						check_variable = {
+							which = create_touhou_pop_count
+							value >= 0
+						}
+					}
+					set_variable = {
+						which = kill_touhou_pop_count
+						value = 0
+					}
+					while = {
+						count = create_touhou_pop_count
+						capital_scope = {
+							create_pop = {
+								species = owner.species
+							}
+						}
+					}
+				}
+				else = {
+					subtract_variable = {
+						which = kill_touhou_pop_count
+						value = 30
+					}
+				}
+			}
+			else = {
+				subtract_variable = {
+					which = kill_touhou_pop_count
+					value = 12
+				}
+			}
+		}
+		#清除人口
+		while = {
+			count = kill_touhou_pop_count
+			random_owned_pop = {
+				limit = {
+					species = {
+						has_trait = trait_touhou
+					}
+				}
+				kill_pop = yes
+			}
+		}
+	}
+}
+
+country_event = {
+	id = th_pop.3
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		has_ascension_perk = ap_toho2
+	}
+	immediate = {
+		if = {
+			limit = {
+				check_variable = {
+					which = th_pop_need_years
+					value <= 0
+				}
+			}
+			random_list = {
+				45 = {
+					country_event = {
+						id = th_pop.4
+					}
+				}
+				45 = {
+					country_event = {
+						id = th_pop.5
+					}
+				}
+				10 = {
+					country_event = {
+						id = th_pop.6
+					}
+				}
+			}
+			if = {
+				limit = {
+					has_ascension_perk = ap_toho4
+				}
+				set_variable = {
+					which = th_pop_need_years
+					value = 5
+				}
+			}
+			else_if = {
+				limit = {
+					has_ascension_perk = ap_toho3
+				}
+				set_variable = {
+					which = th_pop_need_years
+					value = 8
+				}
+			}
+			else_if = {
+				limit = {
+					has_ascension_perk = ap_toho2
+				}
+				set_variable = {
+					which = th_pop_need_years
+					value = 10
+				}
+			}
+			else = {
+				set_variable = {
+					which = th_pop_need_years
+					value = 12
+				}
+			}
+		}
+		else = {
+			subtract_variable = {
+				which = th_pop_need_years
+				value = 1
+			}
+		}
+	}
+}
+
+country_event = {
+	id = th_pop.4
+	title = th_pop.4.name
+	desc = th_pop.4.desc
+	picture = GFX_evt_th_alice
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		has_ascension_perk = ap_toho2
+	}
+	immediate = {
+		while = {
+			count = 6
+			random_owned_planet = {
+				create_pop = {
+					species = owner_species
+				}
+			}
+		}
+	}
+}
+
+country_event = {
+	id = th_pop.5
+	title = th_pop.5.name
+	desc = th_pop.5.desc
+	picture = GFX_evt_th_alice
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		has_ascension_perk = ap_toho2
+	}
+	immediate = {
+		every_owned_planet = {
+			create_pop = {
+				species = owner_species
+			}
+		}
+	}
+}
+
+country_event = {
+	id = th_pop.6
+	title = th_pop.6.name
+	desc = th_pop.6.desc
+	picture = GFX_evt_th_alice
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		has_ascension_perk = ap_toho2
+	}
+	immediate = {
+		random_owned_planet = {
+			create_pop = {
+				species = owner_species
+			}
+		}
+	}
+}
+
+country_event = {
+	id = th_pop.7
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		owner = {
+			has_authority = auth_gensokyo
+		}
+	}
+	immediate = {
+		every_owned_planet = {
+			if = {
+				limit = {
+					has_building = building_colony_shelter
+				}
+				remove_building = building_colony_shelter
+				add_building = building_capital
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_building = building_mls_1
+					}
+				}
+				add_building = building_mls_1
+				# create_pop = {
+				# 	species = owner_species
+				# }
+			}
+		}
+	}
+}
+
+##AI加强
+country_event = {
+	id = th_pop.100
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		owner = {
+			is_ai = yes
+			has_authority = auth_gensokyo
+		}
+	}
+	immediate = {
+		every_owned_planet = {
+			create_pop = {
+				species = owner_species
+			}
+		}
+		country_event = {
+			id = th_pop.100
+			days = 1440
+		}
+	}
+}
+
+##尸解仙
+country_event = {
+	id = th_pop.8
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		OR = {
+			AND = {
+				has_valid_civic = civic_gensokyo
+				has_technology = tech_gensokyo_building_1
+			}
+			AND = {
+				has_valid_civic = civic_scarlet_devil
+				has_technology = tech_hm_building_4
+			}
+		}
+	}
+	immediate = {
+		if = {
+			limit = {
+				has_valid_civic = civic_gensokyo
+				has_technology = tech_gensokyo_building_1
+			}
+			every_owned_planet = {
+				limit = {
+					has_building = building_slm_sjx
+				}
+				random_owned_pop = {
+					limit = {
+						NOR = {
+							has_trait = trait_touhou
+							has_trait = trait_machine_unit
+							has_trait = trait_hive_mind
+						}
+					}
+					change_species = owner_species
+					set_pop_flag = spth_normal_sjx
+				}
+				owner = {
+					change_variable = {
+						which = spth_sjx_num
+						value = 1
+					}
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				has_valid_civic = civic_scarlet_devil
+				has_technology = tech_hm_building_4
+			}
+			every_owned_planet = {
+				limit = {
+					num_buildings = {
+						type = building_hmgfb_4
+						value = 2
+					}
+				}
+				random_owned_pop = {
+					limit = {
+						NOT = {
+							has_trait = trait_vampire_1
+						}
+					}
+					change_species = owner_species
+				}
+			}
+		}
+	}
+}
+
+###仙人死亡
+country_event = {
+	id = th_pop.9
+	title = th_pop.9.name
+	desc = th_pop.9.desc
+	picture = GFX_evt_th_budu
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		check_variable = {
+			which = spth_sjx_num
+			value >= 3
+		}
+	}
+	immediate = {
+		every_owned_pop = {
+			limit = {
+				species = {
+					has_trait = trait_touhou
+				}
+				has_pop_flag = spth_normal_sjx
+			}
+			random_list = {
+				60 = {
+					kill_pop = yes
+					owner = {
+						subtract_variable = {
+							which = spth_sjx_num
+							value = 1
+						}
+					}
+				}
+				40 = {
+				}
+			}
+		}
+	}
+	option = {
+		name = th_pop.9
+		custom_tooltip = th_pop.9.tip
+		hidden_effect = {
+			set_country_flag = sjx_dead_start
+		}
+	}
+}
+
+###仙人死亡
+country_event = {
+	id = th_pop.10
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		check_variable = {
+			which = spth_sjx_num
+			value >= 3
+		}
+	}
+	immediate = {
+		if = {
+			limit = {
+				has_country_flag = sjx_dead_start
+			}
+			country_event = {
+				id = th_pop.11
+			}
+		}
+		else_if = {
+			limit = {
+				NOT = {
+					has_country_flag = sjx_dead_start
+				}
+			}
+			country_event = {
+				id = th_pop.9
+			}
+		}
+	}
+}
+
+###仙人死亡
+country_event = {
+	id = th_pop.11
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_country_flag = sjx_dead_start
+	}
+	immediate = {
+		every_owned_pop = {
+			limit = {
+				species = {
+					has_trait = trait_touhou
+				}
+				has_pop_flag = spth_normal_sjx
+			}
+			random_list = {
+				60 = {
+					kill_pop = yes
+					owner = {
+						subtract_variable = {
+							which = spth_sjx_num
+							value = 1
+						}
+					}
+				}
+				40 = {
+				}
+			}
+		}
+	}
+}

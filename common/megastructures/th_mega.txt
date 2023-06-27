@@ -1,0 +1,296 @@
+#####好吧这是第一个巨构######
+
+th_shrine_mega = {
+	portrait = GFX_太空神社
+	entity = "Toho_Tower_entity"
+	construction_entity = "Toho_Tower_entity"
+	place_entity_on_planet_plane = no
+	entity_offset = { x = -20 y = -20 }
+	show_galactic_map_icon = no
+	build_time = 1800   ###################
+	resources = {
+		category = megastructures
+		cost = {
+			alloys = 5000
+			sr_lingli = 25000
+			influence = 100
+		}
+
+		upkeep = {
+			energy = 5
+		}
+
+		produces = {
+			energy = 160
+			society_research = 30
+			sr_fuka = 30
+		}
+	}
+
+	country_modifier = { 
+		country_naval_cap_add = 50
+		country_resource_max_add = 8000
+	}
+	ship_modifier = {
+		ship_starting_experience_add = 100
+	}
+	station_modifier = {
+		starbase_shipyard_capacity_add = 4
+		starbase_shipyard_build_cost_mult = -0.05
+		starbase_shipyard_build_speed_mult = 0.20		
+	}
+
+	prerequisites = { "tech_mega_engineering"  }
+
+
+
+	potential = {
+		has_authority = auth_gensokyo
+		has_technology = tech_gensokyo_building_4
+	}
+
+	possible = {
+		exists = starbase
+		custom_tooltip = {
+			fail_text = "requires_inside_border"
+			is_inside_border = from
+		}
+		custom_tooltip = {
+			fail_text = "requires_surveyed_system"
+			NOT = {
+				any_system_planet = {
+					is_surveyed = {
+						who = prev.from
+						status = no
+					}
+				}
+			}
+		}
+		custom_tooltip = {
+			fail_text = "requires_no_black_hole"
+			NOT = { is_star_class = sc_black_hole }
+		}
+	}
+
+	placement_rules = {
+		planet_possible = {
+			custom_tooltip = {
+				fail_text = "must_build_around_star"
+				is_star = yes
+			}
+			custom_tooltip = {
+				fail_text = "requires_no_anomaly"
+				NOT = { has_anomaly = yes }
+			}
+		}
+	}
+
+	ai_weight = {
+		weight = 10
+
+		modifier = {
+			factor = 3
+			starbase = { NOT = { has_starbase_size >= starbase_starfortress } }
+		}
+
+		modifier = {
+			factor = 3
+			any_neighbor_system = {
+				exists = owner
+				NOT = {
+					owner = { is_same_value = from }
+				}
+			}
+		}
+	}
+
+	on_build_start = {}
+	on_build_cancel = {}
+	on_build_complete = {
+		set_star_flag = touhou_mega_built
+	}
+}
+
+th_shrine_mega_1 = {
+	portrait = GFX_太空神社
+	entity = "Toho_Tower_entity"
+	construction_entity = "Toho_Tower_entity"
+	place_entity_on_planet_plane = no
+	entity_offset = { x = -30 y = -30 }
+	build_time = 1000 ###############################################3
+
+	resources = {
+		category = megastructures
+		cost = {
+			sr_lingli = 100
+			energy = 10000
+		}
+		upkeep = {
+			energy = 200
+		}
+		produces = {
+			sr_lingli = 2000
+		}
+	}
+
+	prerequisites = {
+		tech_gateway_construction
+	}
+
+	upgrade_from = {
+		th_shrine_mega
+	}
+	bypass_type = th_jiejie_tunnel
+
+	on_build_complete = {
+		set_star_flag = jiejietunnel
+		while = {
+			count = 8
+			random_neighbor_system = {
+				limit = {
+					has_hyperlane_to = prev
+				}
+				remove_hyperlane = {
+					from = THIS
+					to = PREV
+				}
+			}
+		}
+	}
+}
+
+th_shrine_mega_1_close = {
+	portrait = GFX_太空神社
+	entity = "Toho_Tower_entity"
+	construction_entity = "Toho_Tower_entity"
+	place_entity_on_planet_plane = no
+	entity_offset = { x = -30 y = -30 }
+	build_time = 100 ######################################
+	show_galactic_map_icon = yes
+
+	resources = {
+		category = megastructures
+		cost = {
+			sr_lingli = 100
+		}
+		upkeep = {
+			energy = 200
+		}
+		produces = {
+			sr_lingli = 2000
+		}
+	}
+
+	upgrade_from = {
+		th_shrine_mega_1_open
+	}
+	bypass_type = th_jiejie_tunnel
+
+	on_build_complete = {
+		while = {
+			count = 2
+			random_neighbor_system = {
+				limit = {
+					has_hyperlane_to = prev
+				}
+				remove_hyperlane = {
+					from = THIS
+					to = PREV
+				}
+			}
+		}
+		spawn_megastructure = {
+			type = th_shrine_mega_1
+			owner = FROM
+		}
+		remove_megastructure = FromFrom
+	}
+}
+
+th_shrine_mega_1_open = {
+	portrait = GFX_太空神社
+	entity = "Toho_Tower_entity"
+	construction_entity = "Toho_Tower_entity"
+	place_entity_on_planet_plane = no
+	entity_offset = { x = -30 y = -30 }
+	build_time = 100 ################################
+	show_galactic_map_icon = no
+
+	resources = {
+		category = megastructures
+		cost = {
+			sr_lingli = 100
+		}
+		upkeep = {
+			energy = 200
+		}
+		produces = {
+			sr_lingli = 2000
+		}
+	}
+
+	upgrade_from = {
+		th_shrine_mega_1
+	}
+	bypass_type = th_jiejie_tunnel
+
+	on_build_complete = {
+		random_neighbor_system_euclidean = {
+			limit = {
+				NOR = {
+					has_hyperlane_to = PREV
+					has_star_flag = jiejietunnel
+				}
+			}
+			add_hyperlane = {
+				from = THIS
+				to = PREV
+			}
+		}
+	}
+}
+
+th_shrine_mega_2 = { ###贸易
+	portrait = GFX_太空神社
+	entity = "Toho_Tower_entity"
+	construction_entity = "Toho_Tower_entity"
+	place_entity_on_planet_plane = no
+	entity_offset = { x = -30 y = -30 }
+	build_time = 1000 #########################################
+	show_galactic_map_icon = yes
+
+	resources = {
+		category = megastructures
+		cost = {
+			sr_lingli = 10000
+		}
+		upkeep = {
+			sr_lingli = 10
+			energy = 50
+		}
+		produces = {
+			sr_fuka = 50
+			food = 1000
+			society_research = 160
+		}
+	}
+
+	country_modifier = { 
+		country_resource_max_add = 8000
+	}
+	ship_modifier = {
+		ship_starting_experience_add = 200
+		ship_speed_mult = 0.1
+		ship_evasion_add = 30
+	}
+	station_modifier = {
+		starbase_shipyard_capacity_add = 4
+		starbase_shipyard_build_cost_mult = -0.05
+		starbase_shipyard_build_speed_mult = 0.20
+		trade_value_add = 200		
+	}
+
+	upgrade_from = {
+		th_shrine_mega
+	}
+}

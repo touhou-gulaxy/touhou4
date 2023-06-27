@@ -1,0 +1,1278 @@
+namespace = spth_fight_little_devil
+country_event = {
+	id = spth_fight_little_devil.0
+	title = spth_fight_little_devil.0.name
+	desc = spth_fight_little_devil.0.desc
+	picture = GFX_evt_spth_fight_little_devil_start
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		has_civic = civic_fight_little_devil
+	}
+	option = {
+		name = spth_fight_little_devil.0.a
+		hidden_effect = {
+			create_leader = {
+				class = admiral
+				species = owner_species
+				name = "NAME_fight_little_devil_leader"
+				skill = 10
+				traits = {
+					trait = leader_trait_th_czrz
+					trait = leader_trait_th_fight_little_devil
+				}
+			}
+			last_created_leader = {
+				set_age = 20
+				set_gender = female
+				set_leader_flag = th_fight_little_devil
+				set_leader_flag = th_sp_leader
+			}
+			capital_scope = {
+				create_fleet = {
+					name = "NAME_fight_ld"
+					effect = {
+						set_owner = root
+						create_ship = {
+							name = "NAME_fight_little_devil"
+							design = "NAME_fight_little_devil_1"
+							effect = {
+								set_ship_flag = little_devil_ship
+							}
+						}
+						set_location = {
+							target = prev
+							distance = 80
+							angle = random
+						}
+						set_fleet_flag = fight_little_flag_ship
+						assign_leader = last_created_leader
+					}
+					settings = {
+						can_upgrade = no
+						can_disband = no
+						can_change_leader = no
+						can_change_composition = no
+						uses_naval_capacity = no
+						spawn_debris = yes
+					}
+				}
+			}
+			country_event = {
+				id = spth_fight_little_devil.10
+				days = 1
+			}
+		}
+	}
+}
+
+country_event = {
+	id = spth_fight_little_devil.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		FROMFROM = {
+			exists = leader
+			leader = {
+				leader_class = admiral
+				has_leader_flag = th_fight_little_devil
+			}
+		}
+		NOT = {
+			has_country_flag = spth_little_devil_in_story
+		}
+	}
+	immediate = {
+		spth_rpg_system_get_after_bat = yes
+		spth_rpg_system_get_p = yes
+	}
+}
+
+country_event = {
+	id = spth_fight_little_devil.2
+	title = spth_fight_little_devil.2.name
+	desc = spth_fight_little_devil.2.desc
+	picture = GFX_evt_spth_fight_little_devil_get
+	is_triggered_only = yes
+	option = {
+		name = "spth_fight_little_devil.2.a"
+		add_resource = {
+			sr_lingli = 2000
+		}
+	}
+}
+
+country_event = {
+	id = spth_fight_little_devil.98
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		FROMFROMFROM = {
+			exists = leader
+			leader = {
+				leader_class = admiral
+				has_leader_flag = th_fight_little_devil
+			}
+		}
+	}
+	immediate = {
+		FROM = {
+			random_owned_leader = {
+				limit = {
+					has_leader_flag = th_fight_little_devil
+				}
+				kill_leader = {
+					show_notification = yes
+				}
+			}
+		}
+	}
+}
+
+##杀小恶魔
+country_event = {
+	id = spth_fight_little_devil.99
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		from = {
+			has_leader_flag = th_fight_little_devil
+		}
+	}
+	immediate = {
+		every_owned_fleet = {
+			limit = {
+				has_fleet_flag = fight_little_flag_ship
+			}
+			delete_fleet = this
+		}
+		country_event = {
+			id = spth_fight_little_devil.100
+		}
+	}
+}
+
+#复活小恶魔
+country_event = {
+	id = spth_fight_little_devil.100
+	title = spth_fight_little_devil.100.name
+	desc = spth_fight_little_devil.100.desc
+	picture = GFX_evt_spth_fight_little_devil_fuhuo
+	show_sound = event_th_biu
+	is_triggered_only = yes
+	immediate = {
+		clone_leader = {
+			target = fromfrom
+			class = admiral
+			effect = {
+				set_leader_flag = th_fight_little_devil
+				set_leader_flag = th_sp_leader
+				save_event_target_as = resurrection_leader
+				exile_leader_as = exiled_to_fight_little_devil
+			}
+		}
+		create_fleet = {
+			name = "NAME_fight_ld"
+			effect = {
+				set_owner = root
+				create_ship = {
+					name = "NAME_fight_little_devil"
+					design = "NAME_fight_little_devil_1"
+					effect = {
+						set_ship_flag = little_devil_ship
+					}
+				}
+				set_location = {
+					target = root.capital_scope
+					distance = 80
+					angle = random
+				}
+				set_fleet_flag = fight_little_flag_ship
+				set_leader = exiled_to_fight_little_devil
+			}
+			settings = {
+				can_upgrade = no
+				can_disband = no
+				can_change_leader = no
+				can_change_composition = no
+				uses_naval_capacity = no
+				spawn_debris = no
+			}
+		}
+	}
+	option = {
+		name = "spth_fight_little_devil.100.a"
+		add_resource = {
+			sr_lingli = -1000
+		}
+		spth_change_modifier = yes
+	}
+}
+
+################################
+############不咕鸟系统
+################################
+#与不咕鸟的第一次见面
+country_event = {
+	id = spth_fight_little_devil.10
+	title = spth_fight_little_devil.10.name
+	desc = spth_fight_little_devil.10.desc
+	picture = GFX_evt_spth_fight_little_devil_gugu
+	is_triggered_only = yes
+	immediate = {
+		set_country_flag = spth_has_gugu_system
+	}
+	option = {
+		name = "spth_fight_little_devil.10.a"
+	}
+}
+
+#初次战斗判定
+ship_event = {
+	id = spth_fight_little_devil.11
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		exists = leader
+		leader = {
+			leader_class = admiral
+			has_leader_flag = th_fight_little_devil
+		}
+		owner = {
+			has_country_flag = spth_has_gugu_system
+			NOT = {
+				has_country_flag = spth_little_devil_first_bat
+				has_country_flag = spth_little_devil_bating
+			}
+		}
+	}
+	immediate = {
+		FROM = {
+			random_system_planet = {
+				limit = {
+					NOT = {
+						is_planet_class = pc_gas_giant
+					}
+				}
+				save_event_target_as = th_yeguai_fleet_planet
+			}
+		}
+		create_country = {
+			name = "NAME_spth_yeguai"
+			species = event_target:owner_species
+			type = faction
+			name_list = owner
+			effect = {
+				set_country_flag = spth_yeguai
+				establish_communications_no_message = owner
+				establish_contact = {
+					who = owner
+					location = owner.capital_scope
+				}
+				create_leader = {
+					class = admiral
+					species = owner_species
+					name = random
+					skill = 2
+					traits = {
+						trait = random_trait
+						trait = random_trait
+					}
+				}
+				create_fleet = {
+					name = "NAME_spth_yeguai_1"
+					effect = {
+						set_owner = prev
+						create_ship = {
+							name = "NAME_Unyielding_Faith"
+							design = "NAME_th_yeguai_1"
+						}
+						create_ship = {
+							name = "NAME_Holy_Avatar"
+							design = "NAME_th_yeguai_1"
+						}
+						create_ship = {
+							name = "NAME_Divine_Fury"
+							design = "NAME_th_yeguai_1"
+						}
+						set_location = {
+							target = event_target:th_yeguai_fleet_planet
+							distance = 80
+							angle = random
+						}
+						set_fleet_stance = aggressive
+						set_aggro_range_measure_from = return_point
+						set_aggro_range = 200
+						assign_leader = last_created_leader
+					}
+				}
+				while = {
+					count = 9
+					create_leader = {
+						class = admiral
+						species = owner_species
+						name = random
+						skill = 2
+						traits = {
+							trait = random_trait
+							trait = random_trait
+						}
+					}
+					create_fleet = {
+						name = "NAME_spth_yeguai_1"
+						effect = {
+							set_owner = prev
+							create_ship = {
+								name = "NAME_Unyielding_Faith"
+								design = "NAME_th_yeguai_1"
+							}
+							create_ship = {
+								name = "NAME_Holy_Avatar"
+								design = "NAME_th_yeguai_1"
+							}
+							create_ship = {
+								name = "NAME_Divine_Fury"
+								design = "NAME_th_yeguai_1"
+							}
+							set_location = {
+								target = event_target:th_yeguai_fleet_planet
+								distance = 80
+								angle = random
+							}
+							set_fleet_stance = aggressive
+							set_aggro_range_measure_from = return_point
+							set_aggro_range = 200
+							assign_leader = last_created_leader
+						}
+					}
+				}
+				save_event_target_as = th_yeguai
+				set_name = random
+				set_country_flag = th_yeguai_of@root
+			}
+		}
+		owner = {
+			country_event = {
+				id = spth_fight_little_devil.12
+			}
+		}
+	}
+}
+
+#第一波刷怪
+country_event = {
+	id = spth_fight_little_devil.12
+	title = spth_fight_little_devil.12.name
+	desc = spth_fight_little_devil.12.desc
+	picture = GFX_evt_spth_fight_little_devil_dixi
+	is_triggered_only = yes
+	immediate = {
+		set_country_flag = spth_little_devil_first_bat
+		set_country_flag = spth_little_devil_in_story
+	}
+	option = {
+		name = "spth_fight_little_devil.12.a"
+	}
+}
+
+#小恶魔第一次击破第一波敌人
+country_event = {
+	id = spth_fight_little_devil.13
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		FROMFROM = {
+			exists = leader
+			leader = {
+				leader_class = admiral
+				has_leader_flag = th_fight_little_devil
+			}
+		}
+		has_country_flag = spth_little_devil_first_bat
+		NOT = {
+			has_country_flag = spth_little_devil_bating
+		}
+	}
+	immediate = {
+		remove_country_flag = spth_little_devil_first_bat
+		country_event = {
+			id = spth_fight_little_devil.14
+		}
+	}
+}
+
+#不咕鸟上BUFF救场
+country_event = {
+	id = spth_fight_little_devil.14
+	title = spth_fight_little_devil.14.name
+	desc = spth_fight_little_devil.14.desc
+	picture = GFX_evt_spth_fight_little_devil_gugu_bh
+	is_triggered_only = yes
+	immediate = {
+		random_owned_leader = {
+			limit = {
+				has_leader_flag = th_fight_little_devil
+			}
+			add_trait = leader_trait_th_gugu_help
+		}
+		country_event = {
+			id = spth_fight_little_devil.15
+			days = 30
+		}
+	}
+	option = {
+		name = "spth_fight_little_devil.14.a"
+		custom_tooltip = "th_fight_little_devil_gugu_help"
+	}
+}
+
+##不咕鸟介绍自己
+country_event = {
+	id = spth_fight_little_devil.15
+	title = spth_fight_little_devil.15.name
+	desc = spth_fight_little_devil.15.desc
+	picture = GFX_evt_spth_fight_little_devil_gugu
+	is_triggered_only = yes
+	immediate = {
+		remove_country_flag = spth_little_devil_in_story
+		set_country_flag = spth_little_devil_bating
+		random_owned_leader = {
+			limit = {
+				has_leader_flag = th_fight_little_devil
+			}
+			remove_trait = leader_trait_th_gugu_help
+		}
+	}
+	option = {
+		name = "spth_fight_little_devil.15.a"
+		custom_tooltip = "th_fight_little_devil_gugu_help_remove"
+		hidden_effect = {
+			random_list = {
+				1 = {
+					set_variable = {
+						which = spth_fight_little_devil_yuguai
+						value = 3
+					}
+				}
+				1 = {
+					set_variable = {
+						which = spth_fight_little_devil_yuguai
+						value = 4
+					}
+				}
+				1 = {
+					set_variable = {
+						which = spth_fight_little_devil_yuguai
+						value = 5
+					}
+				}
+				1 = {
+					set_variable = {
+						which = spth_fight_little_devil_yuguai
+						value = 6
+					}
+				}
+				1 = {
+					set_variable = {
+						which = spth_fight_little_devil_yuguai
+						value = 7
+					}
+				}
+				1 = {
+					set_variable = {
+						which = spth_fight_little_devil_yuguai
+						value = 8
+					}
+				}
+				1 = {
+					set_variable = {
+						which = spth_fight_little_devil_yuguai
+						value = 9
+					}
+				}
+				1 = {
+					set_variable = {
+						which = spth_fight_little_devil_yuguai
+						value = 10
+					}
+				}
+			}
+			set_variable = {
+				which = spth_fight_little_devil_level
+				value = 0
+			}
+			set_variable = {
+				which = spth_fight_little_devil_exp
+				value = 0
+			}
+			set_variable = {
+				which = spth_fight_little_devil_need_exp
+				value = 10
+			}
+		}
+	}
+}
+
+#后续战斗判定
+ship_event = {
+	id = spth_fight_little_devil.16
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		exists = leader
+		leader = {
+			leader_class = admiral
+			has_leader_flag = th_fight_little_devil
+		}
+		FROM = {
+			NOT = {
+				exists = starbase
+			}
+		}
+		owner = {
+			has_country_flag = spth_has_gugu_system
+			has_country_flag = spth_little_devil_bating
+		}
+	}
+	immediate = {
+		###第一次进经验房
+		# if = {
+		# 	limit = { 
+		# 		FROM = {
+		# 			has_star_flag = spth_exp_room_system
+		# 		}
+		# 	}
+		# 	owner = {
+		# 		country_event = {
+		# 			id = spth_fight_little_devil.19
+		# 			days = 60
+		# 		}
+		# 	}
+		# }
+		###正常遇怪
+		owner = {
+			subtract_variable = {
+				which = spth_fight_little_devil_yuguai
+				value = 1
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = spth_fight_little_devil_yuguai
+						value <= 0
+					}
+				}
+				country_event = {
+					id = spth_fight_little_devil.17
+				}
+				FROM = {
+					random_system_planet = {
+						limit = {
+							NOT = {
+								is_planet_class = pc_gas_giant
+							}
+						}
+						save_event_target_as = th_yeguai_fleet_planet
+					}
+				}
+				spth_rpg_system_yeguai = yes
+				spth_rpg_system_reset_steps = yes
+			}
+		}
+	}
+}
+
+# country_event = {
+# 	id = spth_fight_little_devil.18
+# 	hide_window = yes
+# 	is_triggered_only = yes
+# 	trigger = {
+# 		OR = {
+# 			This = {
+# 				has_country_flag = spth_yeguai
+# 			}
+# 			FROM = {
+# 				has_country_flag = spth_yeguai
+# 			}
+# 		}
+# 	}
+# 	immediate = {
+# 		kill_yeguai_after_bat = yes
+# 	}
+# }
+country_event = {
+	id = spth_fight_little_devil.17
+	title = spth_fight_little_devil.17.name
+	desc = spth_fight_little_devil.17.desc
+	picture = GFX_evt_spth_fight_little_devil_dixi
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_country_flag = spth_dixi_no_tip
+		}
+	}
+	# immediate = {
+	# 	spth_rpg_system_reset_steps = yes
+	# }
+	option = {
+		name = "spth_fight_little_devil.17.a"
+		custom_tooltip = spth_dixi_no_tip
+		hidden_effect = {
+			set_country_flag = spth_dixi_no_tip
+		}
+	}
+}
+
+#创建经验房
+# country_event = {
+# 	id = spth_fight_little_devil.18
+# 	title = spth_fight_little_devil.18.name
+# 	desc = spth_fight_little_devil.18.desc
+# 	picture = GFX_evt_spth_fight_little_devil_dixi_2
+# 	is_triggered_only = yes
+# 	immediate = {
+# 		set_country_flag = spth_exp_room_from_country
+# 		set_global_flag = spth_exp_room_had
+# 		every_system = {
+# 			limit = {
+# 				distance = {
+# 					source = root.capital_scope
+# 					min_jumps = 0
+# 					max_jumps = 4
+# 					type = hyperlane
+# 					use_bypasses = no
+# 				}
+# 				NOR = {
+# 					has_natural_wormhole = yes
+# 					exists = space_owner
+# 					has_star_flag = spth_exp_room_system
+# 				}
+# 			}
+# 			set_timed_star_flag = {
+# 				flag = spth_can_spawn_system
+# 				days = 1
+# 			}
+# 		}
+# 		random_system = {
+# 			limit = {
+# 				has_star_flag = spth_can_spawn_system
+# 			}
+# 			spawn_system = {
+# 				min_distance = 10
+# 				max_distance = 30
+# 				hyperlane = yes
+# 				is_discovered = no
+# 				initializer = "spth_exp_room_system"
+# 			}
+# 			last_created_system = {
+# 				set_star_flag = spth_exp_room_system
+# 				save_global_event_target_as = spth_exp_room_system
+# 			}
+# 			remove_star_flag = spth_can_spawn_system
+# 		}
+# 	}
+# 	option = {
+# 		name = "spth_fight_little_devil.18.a"
+# 		# hidden_effect = {
+# 		# 	country_event = {
+# 		# 		id = spth_fight_little_devil.19
+# 		# 	}
+# 		# }
+# 	}
+# }
+
+#第一次进经验房剧情
+country_event = {
+	id = spth_fight_little_devil.19
+	title = spth_fight_little_devil.19.name
+	desc = spth_fight_little_devil.19.desc
+	picture = GFX_evt_spth_fight_little_devil_dixi_2
+	is_triggered_only = yes
+	trigger = {
+		has_country_flag = spth_exp_room_start
+	}
+	immediate = {
+		country_event = {
+			id = spth_fight_little_devil.20
+			days = 7
+		}
+	}
+	option = {
+		name = "spth_fight_little_devil.19.a"
+	}
+}
+
+##刷毛玉妖精反叛联盟
+country_event = {
+	id = spth_fight_little_devil.20
+	title = spth_fight_little_devil.20.name
+	desc = spth_fight_little_devil.20.desc
+	picture = GFX_evt_spth_fight_little_devil_dixi_2
+	is_triggered_only = yes
+	trigger = {
+		has_country_flag = spth_exp_room_start
+	}
+	immediate = {
+		create_spth_exp_room_country = yes
+		random_country = {
+			limit = {
+				has_country_flag = spth_exp_room_from_country
+			}
+			save_event_target_as = spth_exp_room_from_country
+		}
+		event_target:spth_exp_room_system = {
+			random_system_planet = {
+				limit = {
+					is_star = no
+					NOT = {
+						is_planet_class = pc_gas_giant
+					}
+				}
+				set_deposit = d_sr_lingli_1
+				event_target:spth_exp_room_from_country = {
+					while = {
+						count = 10
+						create_fleet = {
+							name = "NAME_exp_fleet"
+							effect = {
+								while = {
+									count = 10
+									create_ship = {
+										name = random
+										random_existing_design = corvette
+									}
+								}
+								set_owner = event_target:spth_exp_room_country
+								set_location = PREVPREV
+								set_fleet_stance = aggressive
+								set_aggro_range_measure_from = return_point
+								set_aggro_range = 150
+								auto_move_to_planet = {
+									target = event_target:spth_exp_room_from_country.capital_scope
+									clear_auto_move_on_arrival = yes
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = "spth_fight_little_devil.20.a"
+		hidden_effect = {
+			country_event = {
+				id = spth_fight_little_devil.20
+				days = 30
+			}
+		}
+	}
+}
+
+###升级
+country_event = {
+	id = spth_fight_little_devil.1000
+	title = spth_fight_little_devil.1000.name
+	desc = {
+		text = spth_fight_little_devil.1000.a.desc
+		trigger = {
+			NOT = {
+				has_country_flag = spth_fight_little_devil_fisrt_lvup
+			}
+		}
+	}
+	desc = {
+		text = spth_fight_little_devil.1000.b.desc
+		trigger = {
+			has_country_flag = spth_fight_little_devil_fisrt_lvup
+		}
+	}
+	picture = {
+		trigger = {
+			NOT = {
+				has_country_flag = spth_fight_little_devil_fisrt_lvup
+			}
+		}
+		picture = GFX_evt_spth_fight_little_devil_gugu
+	}
+	picture = {
+		trigger = {
+			has_country_flag = spth_fight_little_devil_fisrt_lvup
+		}
+		picture = GFX_evt_spth_fight_little_devil_lvup
+	}
+	is_triggered_only = yes
+	option = {
+		name = "spth_fight_little_devil.1000.a"
+		trigger = {
+			has_country_flag = spth_fight_little_devil_fisrt_lvup
+		}
+		#升级后开启事件
+		# hidden_effect = {
+		# 	if = {
+		# 		limit = { 
+		# 			check_variable = {
+		# 				which = spth_fight_little_devil_level
+		# 				value >= 3
+		# 			}
+		# 			NOT = {
+		# 				has_country_flag = spth_exp_room_start
+		# 				has_global_flag = spth_exp_room_end
+		# 			}
+		# 		}
+		# 		set_country_flag = spth_exp_room_start
+		# 		country_event = {
+		# 			id = spth_fight_little_devil.18
+		# 			days = 30
+		# 		}
+		# 	}
+		# }
+	}
+	option = {
+		name = "spth_fight_little_devil.1000.b"
+		trigger = {
+			NOT = {
+				has_country_flag = spth_fight_little_devil_fisrt_lvup
+			}
+		}
+		hidden_effect = {
+			set_country_flag = spth_change_point
+			country_event = {
+				id = spth_fight_little_devil.1001
+			}
+		}
+	}
+}
+
+country_event = {
+	id = spth_fight_little_devil.1001
+	title = spth_fight_little_devil.1001.name
+	desc = {
+		text = spth_fight_little_devil.1001.first.desc
+		trigger = {
+			NOT = {
+				has_country_flag = spth_fight_little_devil_fisrt_lvup
+			}
+		}
+	}
+	desc = {
+		text = spth_fight_little_devil.1001.had.desc
+		trigger = {
+			has_country_flag = spth_fight_little_devil_fisrt_lvup
+		}
+	}
+	is_triggered_only = yes
+	trigger = {
+		has_country_flag = spth_change_point
+	}
+	diplomatic_title = BLANK_STRING
+	diplomatic = yes
+	#force_open = yes
+	picture_event_data = {
+		room = gugu_up_room
+	}
+	###初次介绍
+	option = {
+		custom_gui = "enclave_curator_option"
+		trigger = {
+			NOT = {
+				has_country_flag = spth_fight_little_devil_fisrt_lvup
+			}
+		}
+		name = spth_fight_little_devil.1001.a
+		hidden_effect = {
+			set_country_flag = spth_fight_little_devil_fisrt_lvup
+			set_variable = {
+				which = spth_fire_points
+				value = 10
+			}
+			set_variable = {
+				which = spth_body_points
+				value = 10
+			}
+			set_variable = {
+				which = spth_speed_points
+				value = 10
+			}
+		}
+		is_dialog_only = yes
+		response_text = spth_fight_little_devil.1001.a.res
+	}
+	###升级
+	option = {
+		custom_gui = "enclave_curator_option"
+		trigger = {
+			has_country_flag = spth_fight_little_devil_fisrt_lvup
+			NOT = {
+				has_country_flag = spth_ship_changing
+			}
+		}
+		name = spth_fight_little_devil.1001.b
+		hidden_effect = {
+			country_event = {
+				id = spth_fight_little_devil.1002
+			}
+		}
+	}
+	###进化
+	option = {
+		custom_gui = "enclave_curator_option"
+		trigger = {
+			has_country_flag = spth_fight_little_devil_fisrt_lvup
+			NOT = {
+				has_country_flag = spth_ship_changing
+			}
+		}
+		name = spth_fight_little_devil.1001.c
+		hidden_effect = {
+			country_event = {
+				id = spth_fight_little_devil.1003
+			}
+		}
+	}
+	###退出
+	option = {
+		custom_gui = "enclave_curator_option"
+		name = spth_fight_little_devil.1001.z
+		remove_country_flag = spth_change_point
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = {
+						has_country_flag = spth_fight_little_devil_fisrt_lvup
+					}
+				}
+				set_country_flag = spth_fight_little_devil_fisrt_lvup
+				set_variable = {
+					which = spth_fire_points
+					value = 10
+				}
+				set_variable = {
+					which = spth_body_points
+					value = 10
+				}
+				set_variable = {
+					which = spth_speed_points
+					value = 10
+				}
+			}
+		}
+	}
+}
+
+###加点
+country_event = {
+	id = spth_fight_little_devil.1002
+	title = "spth_fight_little_devil.1001.name"
+	desc = {
+		text = spth_fight_little_devil.1002.desc
+	}
+	diplomatic_title = BLANK_STRING
+	diplomatic = yes
+	#force_open = yes
+	picture_event_data = {
+		room = gugu_up_room
+	}
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		has_country_flag = spth_change_point
+	}
+	###升级火力
+	option = {
+		custom_gui = "enclave_curator_option"
+		allow = {
+			custom_tooltip = {
+				fail_text = zero_point_to_up
+				check_variable = {
+					which = spth_fight_little_devil_point
+					value > 0
+				}
+			}
+		}
+		name = spth_fight_little_devil.1002.a
+		hidden_effect = {
+			subtract_variable = {
+				which = spth_fight_little_devil_point
+				value = 1
+			}
+			country_event = {
+				id = spth_fight_little_devil.1010
+			}
+			country_event = {
+				id = spth_fight_little_devil.1002
+			}
+		}
+	}
+	###升级体质
+	option = {
+		custom_gui = "enclave_curator_option"
+		allow = {
+			custom_tooltip = {
+				fail_text = zero_point_to_up
+				check_variable = {
+					which = spth_fight_little_devil_point
+					value > 0
+				}
+			}
+		}
+		name = spth_fight_little_devil.1002.b
+		hidden_effect = {
+			subtract_variable = {
+				which = spth_fight_little_devil_point
+				value = 1
+			}
+			country_event = {
+				id = spth_fight_little_devil.1011
+			}
+			country_event = {
+				id = spth_fight_little_devil.1002
+			}
+		}
+	}
+	###升级速度
+	option = {
+		custom_gui = "enclave_curator_option"
+		allow = {
+			custom_tooltip = {
+				fail_text = zero_point_to_up
+				check_variable = {
+					which = spth_fight_little_devil_point
+					value > 0
+				}
+			}
+		}
+		name = spth_fight_little_devil.1002.c
+		hidden_effect = {
+			subtract_variable = {
+				which = spth_fight_little_devil_point
+				value = 1
+			}
+			country_event = {
+				id = spth_fight_little_devil.1012
+			}
+			country_event = {
+				id = spth_fight_little_devil.1002
+			}
+		}
+	}
+	###退出
+	option = {
+		custom_gui = "enclave_curator_option"
+		name = spth_fight_little_devil.1002.z
+		hidden_effect = {
+			country_event = {
+				id = spth_fight_little_devil.1001
+			}
+		}
+	}
+	option = {
+		custom_gui = "enclave_curator_option"
+		name = spth_fight_little_devil.1002.zz
+		remove_country_flag = spth_change_point
+	}
+}
+
+country_event = {
+	id = spth_fight_little_devil.1003
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		spth_fight_little_devil_change = yes
+	}
+}
+
+country_event = {
+	id = spth_fight_little_devil.1004
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		random_owned_leader = {
+			limit = {
+				has_leader_flag = th_fight_little_devil
+			}
+			save_event_target_as = fight_little_devil
+		}
+		random_owned_fleet = {
+			limit = {
+				has_fleet_flag = fight_little_flag_ship
+			}
+			assign_leader = event_target:fight_little_devil
+		}
+		spth_change_modifier = yes
+		remove_country_flag = spth_ship_changing
+		# country_event = {
+		# 	id = spth_fight_little_devil.1005
+		# 	days = 2
+		# }
+	}
+}
+
+# country_event = {
+# 	id = spth_fight_little_devil.1005
+# 	hide_window = yes
+# 	is_triggered_only = yes
+# 	immediate = {
+# 		spth_change_modifier = yes
+# 	}
+# }
+country_event = {
+	id = spth_fight_little_devil.1010
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		random_owned_fleet = {
+			limit = {
+				has_fleet_flag = fight_little_flag_ship
+			}
+			random_owned_ship = {
+				limit = {
+					has_ship_flag = little_devil_ship
+					NOT = {
+						has_ship_flag = little_devil_ship_has_change
+					}
+				}
+				add_modifier = {
+					modifier = spth_fire_up
+				}
+			}
+		}
+		change_variable = {
+			which = spth_fire_points
+			value = 1
+		}
+	}
+}
+
+country_event = {
+	id = spth_fight_little_devil.1011
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		random_owned_fleet = {
+			limit = {
+				has_fleet_flag = fight_little_flag_ship
+			}
+			random_owned_ship = {
+				limit = {
+					has_ship_flag = little_devil_ship
+					NOT = {
+						has_ship_flag = little_devil_ship_has_change
+					}
+				}
+				add_modifier = {
+					modifier = spth_body_up
+				}
+			}
+		}
+		change_variable = {
+			which = spth_body_points
+			value = 1
+		}
+	}
+}
+
+country_event = {
+	id = spth_fight_little_devil.1012
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		random_owned_fleet = {
+			limit = {
+				has_fleet_flag = fight_little_flag_ship
+			}
+			random_owned_ship = {
+				limit = {
+					has_ship_flag = little_devil_ship
+					NOT = {
+						has_ship_flag = little_devil_ship_has_change
+					}
+				}
+				add_modifier = {
+					modifier = spth_speed_up
+				}
+			}
+		}
+		change_variable = {
+			which = spth_speed_points
+			value = 1
+		}
+	}
+}
+
+###测试，加20经验
+country_event = {
+	id = spth_fight_little_devil.789
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		change_variable = {
+			which = spth_fight_little_devil_exp
+			value = 20
+		}
+		if = {
+			limit = {
+				check_variable = {
+					which = spth_fight_little_devil_exp
+					value >= spth_fight_little_devil_need_exp
+				}
+			}
+			change_variable = {
+				which = spth_fight_little_devil_level
+				value = 1
+			}
+			change_variable = {
+				which = spth_fight_little_devil_point
+				value = 5
+			}
+			subtract_variable = {
+				which = spth_fight_little_devil_exp
+				value = spth_fight_little_devil_need_exp
+			}
+			country_event = {
+				id = spth_fight_little_devil.1000
+			}
+			spth_rpg_system_need_exp_change = yes
+		}
+	}
+}
+
+###测试，加50经验
+country_event = {
+	id = spth_fight_little_devil.790
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		change_variable = {
+			which = spth_fight_little_devil_exp
+			value = 50
+		}
+		if = {
+			limit = {
+				check_variable = {
+					which = spth_fight_little_devil_exp
+					value >= spth_fight_little_devil_need_exp
+				}
+			}
+			change_variable = {
+				which = spth_fight_little_devil_level
+				value = 1
+			}
+			change_variable = {
+				which = spth_fight_little_devil_point
+				value = 5
+			}
+			subtract_variable = {
+				which = spth_fight_little_devil_exp
+				value = spth_fight_little_devil_need_exp
+			}
+			country_event = {
+				id = spth_fight_little_devil.1000
+			}
+			spth_rpg_system_need_exp_change = yes
+		}
+	}
+}

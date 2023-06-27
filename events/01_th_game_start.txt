@@ -1,0 +1,300 @@
+namespace = gensokyo_start
+###开局科技
+country_event = {
+	id = gensokyo_start.0
+	hide_window = yes
+	is_triggered_only = yes
+	
+	trigger = {
+		has_authority = auth_gensokyo
+	}
+
+	immediate = {
+		give_technology = { tech = "tech_th_weapon_mofashu" message = no }
+		if = {
+			limit = {
+				has_civic = civic_scarlet_devil
+			}
+			give_technology = { tech = "tech_worker_0" message = no }
+			give_technology = { tech = "tech_specialist_0" message = no }
+		}
+		else_if = {
+			limit = {
+				has_civic = civic_gensokyo
+			}
+			give_technology = { tech = "tech_worker_0" message = no }
+		}
+	}
+}
+#幻想城区划
+country_event = {
+	id = gensokyo_start.1
+	hide_window = yes
+	is_triggered_only = yes
+	
+	trigger = {
+		has_authority = auth_gensokyo
+		has_country_flag = origin_gensokyo_city_flag
+	}
+
+	immediate = {
+		random_owned_planet = {
+			limit = {
+				is_planet_class = pc_gensokyo_city
+			}
+			remove_all_districts = yes
+			clear_blockers = yes
+			clear_deposits = yes
+			add_deposit = d_hakurajinjia
+			add_deposit = d_mosen
+			add_deposit = d_yokai_mountain
+			add_deposit = d_renli
+			add_deposit = d_zhulin
+			add_deposit = d_th_underway
+			add_district = district_gensokyo_renli
+			add_district = district_gensokyo_jinja
+			save_event_target_as = new_pc_gensokyo_city
+			if = {
+				limit = {
+					owner = {
+						is_ai = yes
+						NOT = {
+							has_global_flag = spth_AI_NOT_plus
+						}
+					}
+				}
+				remove_building = building_bureaucratic_1
+				remove_building = building_research_lab_1
+				remove_building = building_foundry_1
+				remove_building = building_factory_1
+				add_district = district_gensokyo_jinja
+				add_district = district_gensokyo_tushu
+			}
+		}
+		event_target:new_pc_gensokyo_city = {
+			create_ambient_object = {
+				type = "th_gensokyo_mofazhen_object"
+				entity_offset_height = { min = -35 max = -40 }
+				location = this
+			}
+			last_created_ambient_object = {
+				set_location = {
+					target = event_target:new_pc_gensokyo_city
+				}
+			}
+		}
+		capital_scope = {
+			add_modifier = {
+				modifier = spth_gsk_start_grow
+				years = 15
+			}
+		}
+	}
+}
+###起源开局
+country_event = {
+	id = gensokyo_start.2
+	hide_window = yes
+	is_triggered_only = yes
+	
+	trigger = {
+		has_authority = auth_gensokyo
+	}
+
+	immediate = {
+		if = {
+			limit = { has_origin = origin_th_hm_default}
+			every_owned_planet = {
+				add_building = building_hmgfb_1
+				if = {
+					limit = {
+						owner = {
+							is_ai = yes
+							NOT = {
+								has_global_flag = spth_AI_NOT_plus
+							}
+						}
+					}
+					remove_building = building_bureaucratic_1
+					add_building = building_hmgfb_2
+					set_planet_flag = hm_num_2
+				}
+			}
+			set_country_flag = th_hm_default_origin
+		}
+		if = {
+			limit = { has_origin = origin_gensokyo_resource}
+			
+			give_technology = { tech = "tech_gensokyo_building_1" message = no }
+			give_technology = { tech = "tech_gensokyo_building_2" message = no }
+			give_technology = { tech = "tech_gensokyo_building_3" message = no }
+			give_technology = { tech = "tech_gensokyo_building_4" message = no }
+			give_technology = { tech = "tech_th_lingli_storage" message = no }
+			add_resource = {
+				sr_lingli = 100000
+				sr_fuka = 100000
+				alloys = 10000
+				consumer_goods = 10000
+				energy = 5000
+				minerals = 5000
+				food = 5000
+			}
+			capital_scope = {
+				if = {
+					limit = {
+						owner = {
+							is_ai = yes
+							NOT = {
+								has_global_flag = spth_AI_NOT_plus
+							}
+						}
+					}
+					remove_building = building_bureaucratic_1
+					remove_building = building_research_lab_1
+					remove_building = building_foundry_1
+					add_building = building_hmg_1
+					add_building = building_slm_1
+					add_building = building_bl_1
+					add_building = building_suwa_1
+				}
+				add_modifier = {
+					modifier = spth_gsk_start_grow
+					years = 10
+				}
+			}
+		}
+		if = {
+			limit = { has_origin = origin_th_hm_trad}
+			add_tradition = tr_supremacy_adopt
+			add_tradition = tr_supremacy_fleet_logistical_corps
+			add_tradition = tr_supremacy_master_shipwrights
+			add_tradition = tr_supremacy_war_games
+			add_tradition = tr_supremacy_overwhelming_force
+			add_tradition = tr_supremacy_great_game
+
+			add_tradition = tr_expansion_adopt
+			add_tradition = tr_expansion_colonization_fever
+			add_tradition = tr_expansion_a_new_life
+			add_tradition = tr_expansion_courier_network
+			add_tradition = tr_expansion_reach_for_the_stars
+			add_tradition = tr_expansion_galactic_ambition
+			
+			capital_scope = {
+				add_modifier = {
+					modifier = spth_hm_start_grow
+					years = 25
+				}
+				if = {
+					limit = { 
+						owner = {
+							is_ai = yes
+							NOT = {
+								has_global_flag = spth_AI_NOT_plus
+							}
+						}
+					}
+					remove_building = building_bureaucratic_1
+					add_building = building_hmgfb_2
+					add_building = building_hmgfb_1
+					set_planet_flag = hm_num_2
+				}
+			}
+		}
+	}
+}
+###AI增强开关
+country_event = {
+	id = gensokyo_start.3
+	title = gensokyo_start.3.name
+	desc = gensokyo_start.3.desc
+	picture = GFX_evt_th_alice
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+	}
+	option = {
+		name = th_pop.0.end
+		trigger = {
+			NOT = {
+				has_global_flag = spth_AI_NOT_plus
+			}
+			is_ai = no
+		}
+		hidden_effect = {
+			country_event = {
+				id = gensokyo_start.3
+			}
+			set_global_flag = spth_AI_NOT_plus
+		}
+	}
+	option = {
+		name = th_pop.0.on
+		trigger = {
+			has_global_flag = spth_AI_NOT_plus
+			is_ai = no
+		}
+		hidden_effect = {
+			country_event = {
+				id = gensokyo_start.3
+			}
+			remove_global_flag = spth_AI_NOT_plus
+		}
+	}
+	# option = {
+	# 	name = th_crisis_AI.on
+	# 	trigger = {
+	# 		has_global_flag = spth_AI_NOT_crisis
+	# 		is_ai = no
+	# 	}
+	# 	hidden_effect = {
+	# 		country_event = {
+	# 			id = spth_crisis_AI.0
+	# 		}
+	# 		remove_global_flag = spth_AI_NOT_plus
+	# 	}
+	# }
+	option = {
+		name = th_pop.0.a
+
+	}
+}
+country_event = {
+	id = gensokyo_start.4
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = yes
+		has_authority = auth_gensokyo
+	}
+	fire_only_once = yes
+	immediate = {
+		random_country = {
+			limit = {
+				is_ai = no
+			}
+			country_event = {
+				id = gensokyo_start.3
+			}
+		}
+	}
+}
+# country_event = {
+# 	id = gensokyo_start.5
+# 	hide_window = yes
+# 	is_triggered_only = yes
+# 	trigger = {
+# 		is_ai = yes
+# 		has_authority = auth_gensokyo
+# 	}
+# 	fire_only_once = yes
+# 	immediate = {
+# 		random_country = {
+# 			limit = {
+# 				is_ai = no
+# 			}
+# 			country_event = {
+# 				id = gensokyo_start.3
+# 			}
+# 		}
+# 	}
+# }

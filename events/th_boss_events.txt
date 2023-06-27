@@ -1,0 +1,322 @@
+namespace = th_boss
+#难度
+# country_event = {
+# 	id = th_boss.1
+# 	title = th_boss.1.name
+# 	desc = th_boss.1.desc
+# 	picture = GFX_evt_th_boss_touhou
+# 	is_triggered_only = yes
+# 	fire_only_once = yes
+# 	force_open = yes
+# 	trigger = {
+# 		has_authority = auth_gensokyo
+# 		NOR = {
+# 			has_global_flag = th_boss_easy
+# 			has_global_flag = th_boss_normal
+# 			has_global_flag = th_boss_hard
+# 			has_global_flag = th_boss_lunatic
+# 		}
+# 		is_ai = no
+# 	}
+# 	after = {
+# 		hidden_effect = {
+# 			country_event = {
+# 				id = th_boss.2
+# 				days = 3
+# 			}
+# 		}
+# 	}
+# 	option = {
+# 		name = th_boss.1.a
+# 		custom_tooltip = th_boss.1.a.tooltip
+# 		hidden_effect = {
+# 			set_global_flag = th_boss_easy
+# 		}
+# 	}
+# 	option = {
+# 		name = th_boss.1.b
+# 		custom_tooltip = th_boss.1.b.tooltip
+# 		hidden_effect = {
+# 			set_global_flag = th_boss_normal
+# 		}
+# 	}
+# 	option = {
+# 		name = th_boss.1.c
+# 		custom_tooltip = th_boss.1.c.tooltip
+# 		hidden_effect = {
+# 			set_global_flag = th_boss_hard
+# 		}
+# 	}
+# 	option = {
+# 		name = th_boss.1.d
+# 		custom_tooltip = th_boss.1.d.tooltip
+# 		hidden_effect = {
+# 			set_global_flag = th_boss_lunatic
+# 		}
+# 	}
+# }
+
+# country_event = {
+# 	id = th_boss.2
+# 	hide_window = yes
+# 	fire_only_once = yes
+# 	immediate = {
+# 		if = {
+# 			limit = {
+# 				has_global_flag = th_boss_lunatic
+# 			}
+# 			remove_global_flag = th_boss_easy
+# 			remove_global_flag = th_boss_normal
+# 			remove_global_flag = th_boss_hard
+# 		}
+# 		else_if = {
+# 			limit = {
+# 				has_global_flag = th_boss_hard
+# 			}
+# 			remove_global_flag = th_boss_easy
+# 			remove_global_flag = th_boss_normal
+# 		}
+# 		else_if = {
+# 			limit = {
+# 				has_global_flag = th_boss_normal
+# 			}
+# 			remove_global_flag = th_boss_easy
+# 		}
+# 	}
+# }
+
+#露米娅舰队
+country_event = {
+	id = th_boss.10
+	title = "th_boss.10.name"
+	desc = "th_boss.10.desc"
+	picture = GFX_evt_th_wwj
+	show_sound = event_ship_thrusters
+	location = event_target:cultist_ship
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+	}
+	immediate = {
+		set_country_flag = boss_event_1
+		save_event_target_as = owner_country
+		capital_scope = {
+			solar_system = {
+				random_system_planet = {
+					limit = {
+						is_capital = no
+						is_asteroid = no
+						is_star = no
+						is_moon = no
+						NOT = {
+							is_planet_class = pc_gas_giant
+						}
+					}
+					save_event_target_as = hijacked_fleet_planet
+				}
+			}
+		}
+		owner_species = {
+			save_event_target_as = owner_species
+		}
+		create_country = {
+			name = "NAME_lumiya"
+			species = event_target:owner_species
+			type = faction
+			name_list = ROOT
+			auto_delete = no
+			effect = {
+				establish_communications_no_message = root
+				establish_contact = {
+					who = root
+					location = root.capital_scope
+				}
+				create_leader = {
+					class = admiral
+					species = owner_species
+					name = "NAME_lumiya"
+					skill = 10
+					traits = {
+						trait = leader_trait_lumiya
+						trait = random_trait
+					}
+				}
+				create_fleet = {
+					name = "NAME_lumiya"
+					effect = {
+						set_owner = prev
+						create_ship = {
+							name = "NAME_lumiya"
+							design = "NAME_th_boss_lumiya"
+							graphical_culture = npf_01
+							effect = {
+								set_ship_flag = th_boss_ship1
+								set_disable_at_health = 0.05
+								save_event_target_as = th_boss_ship1
+							}
+						}
+						set_location = event_target:hijacked_fleet_planet
+						#save_event_target_as = 
+						set_fleet_stance = aggressive
+						set_aggro_range_measure_from = return_point
+						set_aggro_range = 50
+						assign_leader = last_created_leader
+						queue_actions = {
+							repeat = {
+								wait = {
+									duration = 100
+								}
+							}
+						}
+					}
+				}
+				add_ship_design = last_created_design
+				save_event_target_as = boss_event_1
+				set_name = random
+				set_country_flag = lumiya_boss_of@root
+			}
+		}
+	}
+	option = {
+		name = "th_boss.10.a"
+	}
+}
+
+country_event = {
+	id = th_boss.100
+	title = "th_boss.100.name"
+	desc = {
+		text = th_boss.100.desc
+	}
+	picture = GFX_evt_th_wwj
+	show_sound = event_radio_chatter
+	location = capital_scope
+	is_triggered_only = yes
+	option = {
+		name = th_boss.100.a
+		capital_scope = {
+			enable_special_project = {
+				name = "HM_BOSS_1_PROJECT"
+				location = this
+				owner = root
+			}
+		}
+	}
+}
+
+ship_event = {
+	id = th_boss.101
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_ship_flag = th_boss_ship1
+		owner = {
+			has_country_flag = lumiya_boss_of@from.owner
+		}
+	}
+	immediate = {
+		FROM = {
+			owner = {
+				country_event = {
+					id = th_boss.102
+				}
+			}
+		}
+		This = {
+			delete_ship = this
+		}
+	}
+}
+
+#Ship Disabled
+country_event = {
+	id = th_boss.102
+	title = "th_boss.102.name"
+	desc = "th_boss.102.desc"
+	picture = GFX_evt_th_wwj
+	show_sound = event_space_battle
+	location = FROM
+	trackable = yes
+	is_triggered_only = yes
+	option = {
+		name = "th_boss.102.a"
+		capital_scope = {
+			enable_special_project = {
+				name = "TH_BOSS_SHIP1"
+				location = this
+				owner = root
+			}
+		}
+	}
+}
+
+country_event = {
+	id = th_boss.1020
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		give_technology = {
+			tech = "tech_th_flagship_1"
+		}
+	}
+}
+
+# Ship Disabled By Someone Else (HIDDEN)
+ship_event = {
+	id = th_boss.103
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_ship_flag = th_boss_ship1
+		owner = {
+			NOT = {
+				has_country_flag = lumiya_boss_of@from.owner
+			}
+		}
+	}
+	immediate = {
+		random_playable_country = {
+			limit = {
+				root = {
+					owner = {
+						has_country_flag = lumiya_boss_of@prevprev
+					}
+					#
+				}
+			}
+			country_event = {
+				id = th_boss.104
+			}
+		}
+		This = {
+			delete_ship = this
+		}
+	}
+}
+
+#Ship Disabled By Someone Else
+country_event = {
+	id = th_boss.104
+	title = "th_boss.104.name"
+	desc = "th_boss.104.desc"
+	picture = GFX_evt_th_wwj
+	show_sound = event_space_battle
+	location = FROM
+	trackable = yes
+	is_triggered_only = yes
+	immediate = {
+		FROM = {
+			save_event_target_as = disabled_th_boss_ship1
+		}
+	}
+	option = {
+		name = "th_boss.102.a"
+		capital_scope = {
+			enable_special_project = {
+				name = "TH_BOSS_SHIP1"
+				location = this
+				owner = root
+			}
+		}
+	}
+}
