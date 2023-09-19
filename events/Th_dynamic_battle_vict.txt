@@ -1,0 +1,72 @@
+namespace = Th_dynamic_battle_vict
+@last_the_world = 30
+
+#############
+# The world #
+#############
+# 触发事件
+# FromFrom = our fleet
+# FromFromFrom = enemy fleet
+country_event = {
+    id = Th_dynamic_battle_vict.100
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            any_owned_ship = {
+                OR = {
+                    has_component = th_ship_part_yueshiji
+                    has_component = th_ship_part_yueshiji_story
+                    has_component = th_ship_part_yueshiji_story_2
+                }
+            }
+        }
+    }
+
+    immediate = {
+        fromfrom = {
+            fleet_event = { id = Th_dynamic_battle_vict.102 }
+        }
+        fromfromfrom = {
+            every_owned_ship = {
+                limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
+                set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world }
+                ship_event = { id = Th_dynamic_battle_vict.101 }
+            }
+        }
+    }
+}
+
+# 舰船动修
+ship_event = {
+    id = Th_dynamic_battle_vict.101
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_ship_flag = TH_sakuya_the_world_dynamic_vict
+    }
+    immediate = {
+        sakuya_the_world_dynamic = yes
+    }
+}
+
+fleet_event = {
+    id = Th_dynamic_battle_vict.102
+    title = Th_dynamic_battle_vict.102
+    desc = Th_dynamic_battle_vict.102_desc
+    picture = GFX_evt_spth_wp_up_knife
+    is_triggered_only = yes
+    trigger = {
+        # make sure only init at once.
+        NOT = {
+            owner = {
+                has_country_flag = triggered_the_world_dynamic
+            }
+        }
+    }
+    immediate = {
+        owner = {
+            set_country_flag = triggered_the_world_dynamic
+        }
+    }
+}
