@@ -3,27 +3,28 @@ TH_capture_defender_army = {
     set_variable = { which = TH_capture_enemies_count value = TH_planet_defender_count }
     multiply_variable = { which = TH_capture_enemies_count value = $mul$ }
     floor_variable = TH_capture_enemies_count
-    change_variable = { which = TH_capture_enemies_count value = 1 }
 
     create_fleet = {
         name = NAME_TH_captured_armies
         effect = {
             set_owner = $OWNER$
             while = {
-                count = 2
+                limit = {
+                    check_variable = { which = TH_capture_enemies_count value <= 0 }
+                }
                 create_army_transport = {
                     ship_name = NAME_TH_captured_army
                     army_name = NAME_TH_captured_army
                     army_type = $TYPE$
                     species = owner_species
                 }
+                subtract_variable = { which = TH_capture_enemies_count value = 1 }
             }
             set_location = {
                 target = This
                 distance = 45
                 angle = random
             }
-            log = "create amry succ"
         }
     }
 
