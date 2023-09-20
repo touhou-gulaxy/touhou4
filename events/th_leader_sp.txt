@@ -1,0 +1,141 @@
+namespace = th_leader_sp
+@skill_producer_t1 = 10
+@skill_producer_t2 = 20
+@skill_producer_t3 = 40
+
+# 拥戴 俘获陆军 attacker
+# 开片了
+planet_event = {
+    id = th_leader_sp.900
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        any_ground_combat_attacker = {
+            exists = leader
+            leader = {
+                OR = {
+                    has_trait = leader_trait_th_skill_support_2
+                    has_trait = leader_trait_th_skill_support_3
+                }
+            }
+        }
+    }
+
+    immediate = {
+        set_variable = { which = TH_planet_defender_count value = 0 }
+        every_ground_combat_defender = {
+            prev = {
+                change_variable = { which = TH_planet_defender_count value = 1 }
+            }
+        }
+    }
+}
+
+# 防御方寄了
+# FromFrom = planet
+country_event = {
+    id = th_leader_sp.901
+    picture = GFX_evt_th_card_leader
+    title = th_leader_sp.901
+    desc = th_leader_sp.901_desc
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            planet = {
+
+            }
+            any_ground_combat_attacker = {
+                exists = leader
+                leader = {
+                    OR = {
+                        has_trait = leader_trait_th_skill_support_2
+                        has_trait = leader_trait_th_skill_support_3
+                    }
+                }
+            }
+        }
+    }
+
+    immediate = {
+        fromfrom = {
+            random_ground_combat_attacker = {
+                limit = {
+                    exists = leader
+                    leader = {
+                        OR = {
+                            has_trait = leader_trait_th_skill_support_2
+                            has_trait = leader_trait_th_skill_support_3
+                        }
+                    }
+                }
+
+                if = {
+                    limit = { leader = { has_trait = leader_trait_th_skill_support_2 } }
+                    set_variable = { which = TH_capture_mul value = 0.2 }
+                }
+                else = {
+                    set_variable = { which = TH_capture_mul value = 0.4 }
+                }
+            }
+            TH_capture_defender_army = { mul = TH_capture_mul OWNER = root TYPE = danmaku_army }
+            clear_variable = TH_planet_defender_count
+            clear_variable = TH_capture_mul
+        }
+    }
+}
+
+# 敌后大生产 月度刷新
+country_event = {
+    id = th_leader_sp.1000
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        any_owned_leader = {
+            leader_class = general
+            OR = {
+                has_trait = leader_trait_th_skill_producer
+                has_trait = leader_trait_th_skill_producer_2
+                has_trait = leader_trait_th_skill_producer_3
+            }
+        }
+    }
+    immediate = {
+        every_owned_fleet = {
+            limit = {
+                any_owned_ship = {
+                    is_ship_class = shipclass_transport
+                }
+                exists = leader
+                leader = {
+                    leader_class = general
+                    OR = {
+                        has_trait = leader_trait_th_skill_producer
+                        has_trait = leader_trait_th_skill_producer_2
+                        has_trait = leader_trait_th_skill_producer_3
+                    }
+                }
+            }
+
+            set_variable = { which = TH_leader_army_count value = trigger:num_ships }
+            leader = {
+                set_variable = { which = TH_leader_produce_factor value = prev.TH_leader_army_count }
+                if = {
+                    limit = { has_trait = leader_trait_th_skill_producer }
+                    multiply_variable = { which = TH_leader_produce_factor value = @skill_producer_t1 }
+                }
+                else_if = {
+                    limit = { has_trait = leader_trait_th_skill_producer_2 }
+                    multiply_variable = { which = TH_leader_produce_factor value = @skill_producer_t2 }
+                }
+                else = {
+                    multiply_variable = { which = TH_leader_produce_factor value = @skill_producer_t3 }
+                }
+            }
+            root = {
+                add_resource = { consumer_goods = 1 multiplier = prev.leader.TH_leader_produce_factor }
+                add_resource = { food = 1 multiplier = prev.leader.TH_leader_produce_factor }
+            }
+            clear_variable = TH_leader_army_count
+        }
+    }
+}
