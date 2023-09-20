@@ -26,7 +26,7 @@ planet_event = {
     immediate = {
         set_variable = { which = TH_planet_defender_count value = 0 }
         every_ground_combat_defender = {
-            prev = {
+            root = {
                 change_variable = { which = TH_planet_defender_count value = 1 }
             }
         }
@@ -73,11 +73,24 @@ country_event = {
 
                 if = {
                     limit = { leader = { has_trait = leader_trait_th_skill_support_2 } }
-                    TH_capture_defender_army = { mul = @skill_support_t1 OWNER = root TYPE = danmaku_army }
+                    fromfrom = {
+                        set_planet_flag = TH_skill_support_t1
+                    }
+                } else = {
+                    fromfrom = {
+                        set_planet_flag = TH_skill_support_t2
+                    }
                 }
-                else = {
-                    TH_capture_defender_army = { mul = @skill_support_t2 OWNER = root TYPE = danmaku_army }
+            }
+            if = {
+                limit = {
+                    fromfrom = { has_planet_flag = TH_skill_support_t1 }
                 }
+                TH_capture_defender_army = { mul = @skill_support_t1 OWNER = root TYPE = danmaku_army TARGET = fromfrom }
+                remove_planet_flag = TH_skill_support_t1
+            } else = {
+                TH_capture_defender_army = { mul = @skill_support_t2 OWNER = root TYPE = danmaku_army TARGET = fromfrom }
+                remove_planet_flag = TH_skill_support_t2
             }
             clear_variable = TH_planet_defender_count
             clear_variable = TH_capture_mul
