@@ -18,7 +18,7 @@ namespace = toho
 #		FROMFROM = {
 #			exists = leader
 #			leader = {
-#				leader_class = admiral
+#				leader_class = commander
 #				num_traits < 3
 #				NOR = { 
 #					has_trait = leader_trait_remi 
@@ -53,7 +53,7 @@ namespace = toho
 #		FROMFROM = {
 #			exists = leader
 #			leader = {
-#				leader_class = admiral
+#				leader_class = commander
 #				num_traits < 3
 #				NOR = { 
 #					has_trait = leader_trait_satori 
@@ -613,7 +613,7 @@ country_event = { # 领袖生成时随机添加领袖种族特质
 	immediate = {
 		from = {
 			if = {
-				limit = { NOT = { has_leader_flag = th_sp_leader } }
+				limit = { NOT = { has_leader_flag = spth_sp_leader } }
 				set_leader_flag = own_th_leader_trait
 				random_list = {
 					20 = {
@@ -650,7 +650,7 @@ leader_event = { # 删除特殊领袖在上一个事件中获得的特质
 	is_triggered_only = yes
 
 	trigger = {
-		has_leader_flag = th_sp_leader
+		has_leader_flag = spth_sp_leader
 	}
 	immediate = {
 		remove_trait = leader_trait_th_witch
@@ -872,216 +872,26 @@ country_event = {
 	}
 }
 
-###解决AI车万政体无法外交的BUG
-# country_event = {
-# 	id = toho.53
-# 	title = "action.10.name"
-# 	desc = "action.15.desc"
-# 	picture = GFX_evt_star_chart
-# 	location = FROMFROMFROM
-# 	trackable = yes
-# 	is_triggered_only = yes
-# 	trigger = {
-# 		is_country_type = default
-# 		exists = capital_scope
-# 		NOT = { has_country_flag = day_0 }
-# 		from = { NOT = { has_country_flag = day_0 } }
-# 		FROM = {
-# 			OR = {
-# 				is_country_type = default
-# 				#is_country_type = nomad
-# 				has_authority = auth_gensokyo
-# 			}
-# 		}
-# 		NOT = { has_country_flag = has_communications@from }
-# 	}
-# 	immediate = {
-# 		capital_scope = { save_event_target_as = pc_home }
-# 		from = {
-# 			enable_special_project = {
-# 				name = "ESTABLISH_COMMUNICATIONS"
-# 				location = event_target:pc_home
-# 				owner = ROOT
-# 			}
-# 		}
-# 	}
-# 	option = {
-# 		name = "action.10.a"
-# 		tooltip = {
-# 			enable_special_project = {
-# 				name = "ESTABLISH_COMMUNICATIONS"
-# 				location = event_target:pc_home
-# 				owner = ROOT
-# 			}
-# 		}
-# 	}
-# }
 #设置领袖
 country_event = {
 	id = toho.50
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		create_species = {
-			name = "东方project"
-			plural = "东方project"
-			class = THSC
-			portrait = touhou2
-			traits = {
-				trait = trait_touhou
-				#trait = trait_zunart
-			}
-		}
-		#十六(总督)
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "十六夜咲夜"
-			traits = {
-				trait = leader_trait_gov_sakuya
-				trait = leader_trait_architectural_interest
-				trait = leader_trait_intellectual
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 16
-			set_gender = female
-			set_leader_flag = th_sakuya
-			set_leader_flag = th_sp_leader
-		}
-		#帕秋莉(研究员)
-		create_leader = {
-			class = scientist
-			species = last_created_species
-			name = "帕秋莉·诺蕾姬"
-			traits = {
-				trait = leader_trait_muq
-				trait = leader_trait_spark_of_genius
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_muq
-			set_leader_flag = th_sp_leader
-		}
-		#小恶魔(研究员)
+        spth_effect_init_container_country_effect = yes
+		spth_effect_init_meirin_effect = yes
+		spth_effect_init_patchouli_effect = yes
+		spth_effect_init_sakuya_effect = yes
+        spth_effect_init_flandre_effect = yes
 		if = {
 			limit = {
 				NOT = {
 					has_civic = civic_fight_little_devil
 				}
 			}
-			create_leader = {
-				class = scientist
-				species = last_created_species
-				name = "小恶魔"
-				traits = {
-					trait = leader_trait_xiaoemo
-				}
-				skill = 5
-			}
-			last_created_leader = {
-				set_age = 20
-				set_gender = female
-				set_leader_flag = th_xiaoemo
-				set_leader_flag = th_sp_leader
-			}
+            spth_effect_init_koakuma_effect = yes
 		}
-		every_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			kill_leader = {
-				type = ruler
-				show_notification = no
-			}
-		}
-		#大小姐
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "蕾米莉亚·斯卡雷特"
-			traits = {
-				trait = leader_trait_dxj
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 500
-			set_gender = female
-			set_leader_flag = th_dxj
-			set_leader_flag = th_sp_leader
-		}
-		assign_leader = last_created_leader
-		random_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			remove_trait = leader_trait_adaptable
-			remove_trait = leader_trait_stubborn
-			remove_trait = leader_trait_resilient
-			remove_trait = leader_trait_substance_abuser
-			remove_trait = leader_trait_eager
-			remove_trait = trait_ruler_corvette_focus
-			remove_trait = trait_ruler_destroyer_focus
-			remove_trait = trait_ruler_fortifier
-			remove_trait = trait_ruler_battleship_focus
-			remove_trait = trait_ruler_recruiter
-			remove_trait = trait_ruler_military_pioneer
-			remove_trait = trait_ruler_warlike
-			remove_trait = trait_ruler_world_shaper
-			remove_trait = trait_ruler_home_in_the_sky
-			remove_trait = trait_ruler_industrialist
-			remove_trait = trait_ruler_champion_of_the_people
-			remove_trait = trait_ruler_expansionist
-			remove_trait = trait_ruler_fertility_preacher
-			remove_trait = trait_ruler_investor
-			remove_trait = trait_ruler_space_miner
-			remove_trait = trait_ruler_explorer
-			remove_trait = trait_ruler_eye_for_talent
-			add_trait = leader_trait_dxj
-			add_trait = leader_trait_ruler_chosen
-		}
-		#二小姐（上将）
-		create_leader = {
-			class = admiral
-			species = last_created_species
-			name = "芙兰朵露·斯卡雷特"
-			traits = {
-				trait = leader_trait_exj
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 495
-			set_gender = female
-			set_leader_flag = th_exj
-			set_leader_flag = th_sp_leader
-		}
-		#红美铃
-		create_leader = {
-			class = general
-			species = last_created_species
-			name = "红美铃"
-			traits = {
-				trait = leader_trait_meirin
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_meirin
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_hongmo_get
-		set_variable = {
-			which = num_th_sp_leader
-			value = 6
-		}
+        spth_effect_init_remilia_effect = yes
 	}
 }
 
@@ -1090,154 +900,13 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		create_species = {
-			name = "东方project"
-			plural = "东方project"
-			class = THSC
-			portrait = touhou2
-			traits = {
-				trait = trait_touhou
-				#trait = trait_zunart
-			}
-		}
-		#橙(研究员)（草，橙打成chen懒得改了）
-		create_leader = {
-			class = scientist
-			species = last_created_species
-			name = "NAME_chen"
-			traits = {
-				trait = leader_trait_chen
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 12
-			set_gender = female
-			set_leader_flag = th_chen
-			set_leader_flag = th_sp_leader
-		}
-		###蕾蒂
-		create_leader = {
-			class = general
-			species = last_created_species
-			name = "NAME_letty"
-			traits = {
-				trait = leader_trait_letty
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_is_female = no
-			set_leader_flag = th_letty
-			set_leader_flag = th_sp_leader
-		}
-		#妖梦(上将)
-		create_leader = {
-			class = admiral
-			species = last_created_species
-			name = "魂魄妖梦"
-			traits = {
-				trait = leader_trait_youmu
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_youmu
-			set_leader_flag = th_sp_leader
-		}
-		#八云紫(上将)
-		create_leader = {
-			class = admiral
-			species = last_created_species
-			name = "NAME_byz"
-			traits = {
-				trait = leader_trait_byz
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = ?
-			set_gender = female
-			set_leader_flag = th_byz
-			set_leader_flag = th_sp_leader
-		}
-		#幽幽子
-		every_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			kill_leader = {
-				type = ruler
-				show_notification = no
-			}
-		}
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "西行寺幽幽子"
-			traits = {
-				trait = leader_trait_architectural_interest
-				trait = leader_trait_intellectual
-				trait = leader_trait_uuz
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 1000
-			set_gender = female
-			set_leader_flag = th_uuz
-			set_leader_flag = th_sp_leader
-		}
-		assign_leader = last_created_leader
-		random_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			remove_all_traits = yes
-			add_trait = leader_trait_uuz
-			add_trait = leader_trait_uuz1
-			add_trait = trait_ruler_charismatic
-		}
-		#妖忌（总督）
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "魂魄妖忌"
-			traits = {
-				trait = leader_trait_hpyj
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 1020
-			set_is_female = no
-			set_leader_flag = th_hpyj
-			set_leader_flag = th_sp_leader
-		}
-		#八云蓝（总督）
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "NAME_lan"
-			traits = {
-				trait = leader_trait_lan
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_lan
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_baiyu_get
-		set_variable = {
-			which = num_th_sp_leader
-			value = 6
-		}
+        spth_effect_init_yuyuko_effect = yes
+        spth_effect_init_letty_effect = yes
+        spth_effect_init_youmu_effect = yes
+        spth_effect_init_youki_effect = yes
+        spth_effect_init_chen_effect = yes
+        spth_effect_init_ran_effect = yes
+        spth_effect_init_yukari_effect = yes
 	}
 }
 
@@ -1246,181 +915,13 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		create_species = {
-			name = "东方project"
-			plural = "东方project"
-			class = THSC
-			portrait = touhou2
-			traits = {
-				trait = trait_touhou
-				#trait = trait_zunart
-			}
-		}
-		#射命丸文(总督)
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "NAME_smww"
-			traits = {
-				trait = leader_trait_smww
-				trait = leader_trait_tgjz
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_smww
-			set_leader_flag = th_sp_leader
-		}
-		#姬海棠果(总督)
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "NAME_jhtg"
-			traits = {
-				trait = leader_trait_jhtg
-				trait = leader_trait_tgjz
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_jhtg
-			set_leader_flag = th_sp_leader
-		}
-		#早苗
-		every_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			kill_leader = {
-				type = ruler
-				show_notification = no
-			}
-		}
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "NAME_zaomiao"
-			traits = {
-				trait = trait_ruler_charismatic
-				trait = leader_trait_ruler_chosen
-				trait = leader_trait_zaomiao
-				trait = leader_trait_xrs
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 18
-			set_gender = female
-			set_leader_flag = th_zaomiao
-			set_leader_flag = th_sp_leader
-		}
-		assign_leader = last_created_leader
-		random_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			remove_trait = leader_trait_adaptable
-			remove_trait = leader_trait_stubborn
-			remove_trait = leader_trait_resilient
-			remove_trait = leader_trait_substance_abuser
-			remove_trait = leader_trait_eager
-			remove_trait = trait_ruler_corvette_focus
-			remove_trait = trait_ruler_destroyer_focus
-			remove_trait = trait_ruler_fortifier
-			remove_trait = trait_ruler_battleship_focus
-			remove_trait = trait_ruler_recruiter
-			remove_trait = trait_ruler_military_pioneer
-			remove_trait = trait_ruler_warlike
-			remove_trait = trait_ruler_world_shaper
-			remove_trait = trait_ruler_home_in_the_sky
-			remove_trait = trait_ruler_industrialist
-			remove_trait = trait_ruler_champion_of_the_people
-			remove_trait = trait_ruler_expansionist
-			remove_trait = trait_ruler_fertility_preacher
-			remove_trait = trait_ruler_investor
-			remove_trait = trait_ruler_space_miner
-			remove_trait = trait_ruler_explorer
-			remove_trait = trait_ruler_eye_for_talent
-			add_trait = leader_trait_zaomiao
-			add_trait = leader_trait_xrs
-			add_trait = trait_ruler_charismatic
-			add_trait = leader_trait_ruler_chosen
-		}
-		#八坂神奈子（上将）
-		create_leader = {
-			class = admiral
-			species = last_created_species
-			name = "NAME_snz"
-			traits = {
-				trait = leader_trait_snz
-				trait = leader_trait_junshen
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 9999
-			set_is_female = no
-			set_leader_flag = th_snz
-			set_leader_flag = th_sp_leader
-		}
-		#泄矢诹访子（上将）
-		create_leader = {
-			class = admiral
-			species = last_created_species
-			name = "NAME_zfz"
-			traits = {
-				trait = leader_trait_zfz
-				trait = leader_trait_junshen
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 9999
-			set_is_female = no
-			set_leader_flag = th_zfz
-			set_leader_flag = th_sp_leader
-		}
-		#河城荷取(研究员)
-		create_leader = {
-			class = scientist
-			species = last_created_species
-			name = "NAME_hchq"
-			traits = {
-				trait = leader_trait_hchq
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_hchq
-			set_leader_flag = th_sp_leader
-		}
-		#犬走椛
-		create_leader = {
-			class = general
-			species = last_created_species
-			name = "NAME_qzh"
-			traits = {
-				trait = leader_trait_qzh
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_qzh
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_shoushi_get
-		set_variable = {
-			which = num_th_sp_leader
-			value = 6
-		}
+        spth_effect_init_sanae_effect = yes
+        spth_effect_init_nitori_effect = yes
+        spth_effect_init_momiji_effect = yes
+        spth_effect_init_aya_effect = yes
+        spth_effect_init_hatate_effect = yes
+        spth_effect_init_kanako_effect = yes
+        spth_effect_init_suwako_effect = yes
 	}
 }
 
@@ -1429,157 +930,12 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		create_species = {
-			name = "东方project"
-			plural = "东方project"
-			class = THSC
-			portrait = touhou2
-			traits = {
-				trait = trait_touhou
-				#trait = trait_zunart
-			}
-		}
-		#水桥帕露西(总督)
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "NAME_paru"
-			traits = {
-				trait = leader_trait_paru
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_paru
-			set_leader_flag = th_sp_leader
-		}
-		#燐(研究员)
-		create_leader = {
-			class = scientist
-			species = last_created_species
-			name = "NAME_lin"
-			traits = {
-				trait = leader_trait_lin
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_lin
-			set_leader_flag = th_sp_leader
-		}
-		every_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			kill_leader = {
-				type = ruler
-				show_notification = no
-			}
-		}
-		#觉
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "NAME_jue"
-			traits = {
-				trait = leader_trait_jue
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_jue
-			set_leader_flag = th_sp_leader
-		}
-		assign_leader = last_created_leader
-		random_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			remove_trait = leader_trait_adaptable
-			remove_trait = leader_trait_stubborn
-			remove_trait = leader_trait_resilient
-			remove_trait = leader_trait_substance_abuser
-			remove_trait = leader_trait_eager
-			remove_trait = trait_ruler_corvette_focus
-			remove_trait = trait_ruler_destroyer_focus
-			remove_trait = trait_ruler_fortifier
-			remove_trait = trait_ruler_battleship_focus
-			remove_trait = trait_ruler_recruiter
-			remove_trait = trait_ruler_military_pioneer
-			remove_trait = trait_ruler_warlike
-			remove_trait = trait_ruler_world_shaper
-			remove_trait = trait_ruler_home_in_the_sky
-			remove_trait = trait_ruler_industrialist
-			remove_trait = trait_ruler_champion_of_the_people
-			remove_trait = trait_ruler_expansionist
-			remove_trait = trait_ruler_fertility_preacher
-			remove_trait = trait_ruler_investor
-			remove_trait = trait_ruler_space_miner
-			remove_trait = trait_ruler_explorer
-			remove_trait = trait_ruler_eye_for_talent
-			add_trait = leader_trait_jue
-			add_trait = leader_trait_dld
-			add_trait = trait_ruler_eye_for_talent
-		}
-		#灵乌路空（上将）
-		create_leader = {
-			class = admiral
-			species = last_created_species
-			name = "NAME_liu"
-			traits = {
-				trait = leader_trait_liu
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_liu
-			set_leader_flag = th_sp_leader
-		}
-		#古明地恋（上将）
-		create_leader = {
-			class = admiral
-			species = last_created_species
-			name = "NAME_lian"
-			traits = {
-				trait = leader_trait_lian
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_lian
-			set_leader_flag = th_sp_leader
-		}
-		#星熊勇仪
-		create_leader = {
-			class = general
-			species = last_created_species
-			name = "NAME_yongyi"
-			traits = {
-				trait = leader_trait_yongyi
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_yongyi
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_dld_get
-		set_variable = {
-			which = num_th_sp_leader
-			value = 5
-		}
+        spth_effect_init_satori_effect = yes
+        spth_effect_init_yuugi_effect = yes
+        spth_effect_init_parsee_effect = yes
+        spth_effect_init_rin_effect = yes
+        spth_effect_init_utsuho_effect = yes
+        spth_effect_init_koishi_effect = yes
 	}
 }
 
@@ -1588,158 +944,11 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		create_species = {
-			name = "东方project"
-			plural = "东方project"
-			class = THSC
-			portrait = touhou2
-			traits = {
-				trait = trait_touhou
-				#trait = trait_zunart
-			}
-		}
-		#慧音(总督)
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "NAME_huiyin"
-			traits = {
-				trait = leader_trait_huiyin
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_huiyin
-			set_leader_flag = th_sp_leader
-		}
-		#阿求(研究员)
-		create_leader = {
-			class = scientist
-			species = last_created_species
-			name = "NAME_aqiu"
-			traits = {
-				trait = leader_trait_aqiu
-				trait = leader_trait_scientist_chosen
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_aqiu
-			set_leader_flag = th_sp_leader
-		}
-		every_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			kill_leader = {
-				type = ruler
-				show_notification = no
-			}
-		}
-		#灵梦
-		create_leader = {
-			class = governor
-			species = last_created_species
-			name = "NAME_reimu"
-			traits = {
-				trait = leader_trait_reimu
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_reimu
-			set_leader_flag = th_sp_leader
-		}
-		assign_leader = last_created_leader
-		random_owned_leader = {
-			limit = {
-				is_ruler = yes
-			}
-			remove_trait = leader_trait_adaptable
-			remove_trait = leader_trait_stubborn
-			remove_trait = leader_trait_resilient
-			remove_trait = leader_trait_substance_abuser
-			remove_trait = leader_trait_eager
-			remove_trait = trait_ruler_corvette_focus
-			remove_trait = trait_ruler_destroyer_focus
-			remove_trait = trait_ruler_fortifier
-			remove_trait = trait_ruler_battleship_focus
-			remove_trait = trait_ruler_recruiter
-			remove_trait = trait_ruler_military_pioneer
-			remove_trait = trait_ruler_warlike
-			remove_trait = trait_ruler_world_shaper
-			remove_trait = trait_ruler_home_in_the_sky
-			remove_trait = trait_ruler_industrialist
-			remove_trait = trait_ruler_champion_of_the_people
-			remove_trait = trait_ruler_expansionist
-			remove_trait = trait_ruler_fertility_preacher
-			remove_trait = trait_ruler_investor
-			remove_trait = trait_ruler_space_miner
-			remove_trait = trait_ruler_explorer
-			remove_trait = trait_ruler_eye_for_talent
-			add_trait = leader_trait_reimu
-			add_trait = leader_trait_boli
-			add_trait = leader_trait_ruler_chosen
-		}
-		#魔理沙（上将）
-		create_leader = {
-			class = admiral
-			species = last_created_species
-			name = "NAME_marisa"
-			traits = {
-				trait = leader_trait_marisa
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_marisa
-			set_leader_flag = th_sp_leader
-		}
-		#华扇（上将）
-		create_leader = {
-			class = admiral
-			species = last_created_species
-			name = "NAME_huashan"
-			traits = {
-				trait = leader_trait_huashan
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_huashan
-			set_leader_flag = th_sp_leader
-		}
-		#萃香
-		create_leader = {
-			class = general
-			species = last_created_species
-			name = "NAME_cuixiang"
-			traits = {
-				trait = leader_trait_cuixiang
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_cuixiang
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_boli_get
-		set_variable = {
-			which = num_th_sp_leader
-			value = 5
-		}
+        spth_effect_init_reimu_effect = yes
+        spth_effect_init_akyuu_effect = yes
+        spth_effect_init_keine_effect = yes
+        spth_effect_init_marisa_effect = yes
+        spth_effect_init_kasen_effect = yes
 	}
 }
 
@@ -1805,7 +1014,7 @@ country_event = {
 	trigger = {
 		has_authority = auth_gensokyo
 		from = {
-			has_leader_flag = th_sp_leader
+			has_leader_flag = spth_sp_leader
 		}
 	}
 	immediate = {
@@ -1967,7 +1176,7 @@ country_event = {
 			class = scientist
 			effect = {
 				set_leader_flag = th_muq
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_muq
 			}
@@ -2013,7 +1222,7 @@ country_event = {
 			class = admiral
 			effect = {
 				set_leader_flag = th_exj
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_exj
 			}
@@ -2059,7 +1268,7 @@ country_event = {
 			class = general
 			effect = {
 				set_leader_flag = th_meirin
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_meirin
 			}
@@ -2105,7 +1314,7 @@ country_event = {
 			class = scientist
 			effect = {
 				set_leader_flag = th_xiaoemo
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_xiaoemo
 			}
@@ -2151,7 +1360,7 @@ country_event = {
 			class = admiral
 			effect = {
 				set_leader_flag = th_youmu
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_youmu
 			}
@@ -2197,7 +1406,7 @@ country_event = {
 			class = scientist
 			effect = {
 				set_leader_flag = th_chen
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_chen
 			}
@@ -2243,7 +1452,7 @@ country_event = {
 			class = admiral
 			effect = {
 				set_leader_flag = th_byz
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_byz
 			}
@@ -2289,7 +1498,7 @@ country_event = {
 			class = general
 			effect = {
 				set_leader_flag = th_letty
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_letty
 			}
@@ -2335,7 +1544,7 @@ country_event = {
 			class = admiral
 			effect = {
 				set_leader_flag = th_snz
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_snz
 			}
@@ -2381,7 +1590,7 @@ country_event = {
 			class = admiral
 			effect = {
 				set_leader_flag = th_zfz
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_zfz
 			}
@@ -2427,7 +1636,7 @@ country_event = {
 			class = general
 			effect = {
 				set_leader_flag = th_qzh
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_qzh
 			}
@@ -2473,7 +1682,7 @@ country_event = {
 			class = scientist
 			effect = {
 				set_leader_flag = th_hchq
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_hchq
 			}
@@ -2519,7 +1728,7 @@ country_event = {
 			class = admiral
 			effect = {
 				set_leader_flag = th_lian
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_lian
 			}
@@ -2565,7 +1774,7 @@ country_event = {
 			class = admiral
 			effect = {
 				set_leader_flag = th_liu
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_liu
 			}
@@ -2611,7 +1820,7 @@ country_event = {
 			class = scientist
 			effect = {
 				set_leader_flag = th_lin
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_lin
 			}
@@ -2657,7 +1866,7 @@ country_event = {
 			class = general
 			effect = {
 				set_leader_flag = th_yongyi
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_yongyi
 			}
@@ -2703,7 +1912,7 @@ country_event = {
 			class = admiral
 			effect = {
 				set_leader_flag = th_marisa
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_marisa
 			}
@@ -2749,7 +1958,7 @@ country_event = {
 			class = scientist
 			effect = {
 				set_leader_flag = th_aqiu
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_aqiu
 			}
@@ -2795,7 +2004,7 @@ country_event = {
 			class = general
 			effect = {
 				set_leader_flag = th_cuixiang
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_cuixiang
 			}
@@ -2841,7 +2050,7 @@ country_event = {
 			class = admiral
 			effect = {
 				set_leader_flag = th_huashan
-				set_leader_flag = th_sp_leader
+				set_leader_flag = spth_sp_leader
 				save_event_target_as = resurrection_leader
 				exile_leader_as = exiled_to_huashan
 			}
