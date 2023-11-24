@@ -1,40 +1,34 @@
-#首都行星殖民
-spth_creatcolony_extra = {
-	spth_planetpreference = yes
-	spth_planetstartdeposit = yes
-	create_colony = {
-		owner = last_created_country
-		species = owner_species
-	}
-	#(此处应该生成人口)
-	generate_start_buildings_and_districts = yes
-}
-#适配宜居
-spth_planetpreference = {
-	event_target:spth_prefer_planet = {
-		switch = {
-			trigger = is_planet_class
-
-			pc_desert = { prev = { change_pc = pc_desert } }
-			pc_tropical = { prev = { change_pc = pc_tropical } }
-			pc_continental = { prev = { change_pc = pc_continental } }
-			pc_ocean = { prev = { change_pc = pc_ocean } }
-			pc_arctic = { prev = { change_pc = pc_arctic } }
-			pc_tundra = { prev = { change_pc = pc_tundra } }
-			pc_arid = { prev = { change_pc = pc_arid } }
-			pc_alpine = { prev = { change_pc = pc_alpine } }
-			pc_savannah = { prev = { change_pc = pc_savannah } }
-			pc_nuked = { prev = { change_pc = pc_nuked } }
-			pc_gaia = { prev = { change_pc = pc_gaia } }
-			pc_ringworld_habitable = { prev = { change_pc = pc_gaia } }
-			pc_habitat = { prev = { change_pc = pc_gaia } }
-			pc_relic = { prev = { change_pc = pc_relic } }
-			pc_city = { prev = { change_pc = pc_city } }
-			pc_hive = { prev = { change_pc = pc_hive } }
-			pc_machine = { prev = { change_pc = pc_machine } }
-			
-			default = { spth_planetpreference_compatible = yes }
-		}
-	}
-	reroll_deposits = yes
+spth_effect_init_container_country_effect = {
+    if = {
+        limit = { NOT = { exists = event_target:spth_container_country } }
+        create_country = {
+            name = NAME_spth_leader_country
+            type = spth_country_type_container
+            flag = {
+				colors = {
+					"black"
+					"black"
+					"null"
+					"null"
+				}
+            }
+			effect = {
+				save_global_event_target_as = spth_container_country
+			}
+        }
+    }
+    event_target:spth_container_country = {
+        if = {
+            limit = { NOT = { exists = event_target:spth_container_species } }
+            create_species = {
+	    		name = "NAME_Unknown"
+	    		class = HUM
+	    		portrait = random
+	    		namelist = random
+	    		traits = {  }
+	    		allow_negative_traits = no
+	    		effect = { save_global_event_target_as = spth_container_species }
+	    	}
+        }
+    }
 }

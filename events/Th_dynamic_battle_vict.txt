@@ -1,0 +1,252 @@
+namespace = Th_dynamic_battle_vict
+@last_the_world_t1 = 5
+@last_the_world_t2 = 10
+@last_the_world_t3 = 30
+@last_satori_eye = 15
+@last_koishi_eye = 15
+
+#############
+# The world #
+#############
+# 触发事件
+# FromFrom = our fleet
+# FromFromFrom = enemy fleet
+country_event = {
+    id = Th_dynamic_battle_vict.100
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            any_owned_ship = {
+                OR = {
+                    has_component = th_ship_part_yueshiji
+                    has_component = th_ship_part_yueshiji_story
+                    has_component = th_ship_part_yueshiji_story_2
+                }
+            }
+        }
+    }
+
+    immediate = {
+        fromfrom = {
+            fleet_event = { id = Th_dynamic_battle_vict.102 }
+            if = {
+                limit = {
+                    any_owned_ship = {
+                        has_component = th_ship_part_yueshiji_story_2
+                    }
+                }
+                fromfromfrom = {
+                    every_owned_ship = {
+                        limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
+                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t3 }
+                        ship_event = { id = Th_dynamic_battle_vict.103 }
+                    }
+                }
+            }
+            else_if = {
+                limit = {
+                    any_owned_ship = {
+                        has_component = th_ship_part_yueshiji_story
+                    }
+                }
+                fromfromfrom = {
+                    every_owned_ship = {
+                        limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
+                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t2 }
+                        ship_event = { id = Th_dynamic_battle_vict.102 }
+                    }
+                }
+            }
+            else = {
+                fromfromfrom = {
+                    every_owned_ship = {
+                        limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
+                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t1 }
+                        ship_event = { id = Th_dynamic_battle_vict.101 }
+                    }
+                }
+            }
+        }
+    }
+}
+
+# 舰船动修
+ship_event = {
+    id = Th_dynamic_battle_vict.101
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_ship_flag = TH_sakuya_the_world_dynamic_vict
+    }
+    immediate = {
+        sakuya_the_world_dynamic = { DAYS = @last_the_world_t1 }
+    }
+}
+
+# 舰船动修
+ship_event = {
+    id = Th_dynamic_battle_vict.102
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_ship_flag = TH_sakuya_the_world_dynamic_vict
+    }
+    immediate = {
+        sakuya_the_world_dynamic = { DAYS = @last_the_world_t2 }
+    }
+}
+
+# 舰船动修
+ship_event = {
+    id = Th_dynamic_battle_vict.103
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_ship_flag = TH_sakuya_the_world_dynamic_vict
+    }
+    immediate = {
+        sakuya_the_world_dynamic = { DAYS = @last_the_world_t3 }
+    }
+}
+
+fleet_event = {
+    id = Th_dynamic_battle_vict.102
+    title = Th_dynamic_battle_vict.102
+    desc = Th_dynamic_battle_vict.102_desc
+    picture = GFX_evt_spth_wp_up_knife
+    is_triggered_only = yes
+    trigger = {
+        # make sure only init at once.
+        NOT = {
+            owner = {
+                has_country_flag = triggered_the_world_dynamic
+            }
+        }
+    }
+    immediate = {
+        owner = {
+            set_country_flag = triggered_the_world_dynamic
+        }
+    }
+}
+
+################
+# Satori's Eye #
+################
+# Trigger event
+# FromFrom = our fleet
+# FromFromFrom = enemy fleet
+country_event = {
+    id = Th_dynamic_battle_vict.200
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            any_owned_ship = {
+                has_component = th_ship_part_satori
+            }
+        }
+    }
+
+    immediate = {
+        fromfrom = {
+            every_owned_ship = {
+                limit = { NOT = { has_ship_flag = TH_satori_dynamic_boost } }
+                set_timed_ship_flag = { flag = TH_satori_dynamic_boost days = @last_satori_eye }
+                ship_event = { id = Th_dynamic_battle_vict.202 }
+            }
+        }
+        fromfromfrom = {
+            every_owned_ship = {
+                limit = { NOT = { has_ship_flag = TH_satori_dynamic_vict } }
+                set_timed_ship_flag = { flag = TH_satori_dynamic_vict days = @last_satori_eye }
+                ship_event = { id = Th_dynamic_battle_vict.201 }
+            }
+        }
+    }
+}
+
+ship_event = {
+    id = Th_dynamic_battle_vict.201
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_ship_flag = TH_satori_dynamic_vict
+    }
+    immediate = {
+        satori_dynamic_battle = yes
+    }
+}
+
+ship_event = {
+    id = Th_dynamic_battle_vict.202
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_ship_flag = TH_satori_dynamic_boost
+    }
+    immediate = {
+        satori_dynamic_boost = yes
+    }
+}
+
+################
+# Koishi's Eye #
+################
+# Trigger event
+# FromFrom = our fleet
+# FromFromFrom = enemy fleet
+country_event = {
+    id = Th_dynamic_battle_vict.514
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            any_owned_ship = {
+                has_component = th_ship_part_koishi
+            }
+        }
+    }
+
+    immediate = {
+        fromfrom = {
+            every_owned_ship = {
+                limit = { NOT = { has_ship_flag = TH_koishi_dynamic_boost } }
+                set_timed_ship_flag = { flag = TH_koishi_dynamic_boost days = @last_koishi_eye }
+                ship_event = { id = Th_dynamic_battle_vict.516 }
+            }
+        }
+        fromfromfrom = {
+            every_owned_ship = {
+                limit = { NOT = { has_ship_flag = TH_koishi_dynamic_vict } }
+                set_timed_ship_flag = { flag = TH_koishi_dynamic_vict days = @last_koishi_eye }
+                ship_event = { id = Th_dynamic_battle_vict.515 }
+            }
+        }
+    }
+}
+
+ship_event = {
+    id = Th_dynamic_battle_vict.515
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_ship_flag = TH_koishi_dynamic_vict
+    }
+    immediate = {
+        koishi_dynamic_battle = yes
+    }
+}
+
+ship_event = {
+    id = Th_dynamic_battle_vict.516
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_ship_flag = TH_koishi_dynamic_boost
+    }
+    immediate = {
+        koishi_dynamic_boost = yes
+    }
+}

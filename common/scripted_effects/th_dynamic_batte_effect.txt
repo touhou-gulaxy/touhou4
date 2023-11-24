@@ -1,0 +1,185 @@
+TH_clear_ship_modifier = {
+    optimize_memory
+    export_modifier_to_variable = { modifier = $modifier$ variable = th_$modifier$_calc_value }
+    [[minus] subtract_variable = { which = th_$modifier$_calc_value value = $minus$ } ]
+    [[add] change_variable = { which = th_$modifier$_calc_value value = $add$ } ]
+    [[mul] multiply_variable = { which = th_$modifier$_calc_value value = $mul$ } ]
+    [[div] divide_variable = { which = th_$modifier$_calc_value value = $div$ } ]
+    add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = th_$modifier$_calc_value days = $last$ }
+    clear_variable = th_$modifier$_calc_value
+}
+
+TH_add_modifier = {
+    optimize_memory
+    export_modifier_to_variable = { modifier = $modifier$ variable = th_$modifier$_calc_value }
+    add_modifier = { modifier = TH_dynamic_reset_$modifier$ multiplier = $value$ days = $last$ }
+    clear_variable = th_$modifier$_calc_value
+}
+
+sakuya_the_world_dynamic = {
+    optimize_memory
+    set_update_modifiers_batch = begin
+    if = {
+        limit = {
+            is_in_combat = yes
+        }
+
+        # 一次修正
+        TH_clear_ship_modifier = { modifier = ship_accuracy_mult last = $DAYS$ }
+        TH_clear_ship_modifier = { modifier = ship_speed_mult last = $DAYS$ }
+        TH_clear_ship_modifier = { modifier = ship_fire_rate_mult last = $DAYS$ }
+
+        # 二次修正
+        add_modifier = { modifier = TH_dynamic_reset_ship_accuracy_mult multiplier = -1 days = $DAYS$ }
+        add_modifier = { modifier = TH_dynamic_reset_ship_speed_mult multiplier = -1 days = $DAYS$ }
+        add_modifier = { modifier = TH_dynamic_reset_ship_fire_rate_mult multiplier = -1 days = $DAYS$ }
+        #TH_add_modifier = { modifier = ship_accuracy_mult last = 1 value = -10 }
+        #TH_add_modifier = { modifier = ship_speed_mult last = 1 value = -10 }
+        #TH_add_modifier = { modifier = ship_fire_rate_mult last = 1 value = -10 }
+
+        set_ship_flag = Th_sakuya_the_world_dynamic_debug
+        # ship_event = { id = Th_dynamic_battle_vict.101 days = 1 }
+    }
+    else = {
+        TH_clear_all_dynamic_modifier = yes
+        # remove_ship_flag = TH_sakuya_the_world_dynamic_vict
+        remove_ship_flag = Th_sakuya_the_world_dynamic_debug
+    }
+    set_update_modifiers_batch = end
+}
+
+satori_dynamic_battle = {
+    optimize_memory
+    set_update_modifiers_batch = begin
+    if = {
+        limit = { is_in_combat = yes }
+
+        # 一次修正
+        TH_clear_ship_modifier = { modifier = ship_evasion_mult last = 15 }
+
+        # 二次修正
+        add_modifier = { modifier = TH_dynamic_reset_ship_evasion_mult multiplier = -1 days = 15 }
+    }
+    else = {
+        TH_clear_all_dynamic_modifier = yes
+    }
+    set_update_modifiers_batch = end
+}
+
+satori_dynamic_boost = {
+    optimize_memory
+    set_update_modifiers_batch = begin
+    if = {
+        limit = { is_in_combat = yes }
+
+        # 一次修正
+        TH_clear_ship_modifier = { modifier = ship_accuracy_add last = 15 }
+        TH_clear_ship_modifier = { modifier = ship_accuracy_mult last = 15 }
+
+        # 二次修正
+        add_modifier = { modifier = TH_dynamic_reset_ship_accuracy_add multiplier = 10 days = 15 }
+        add_modifier = { modifier = TH_dynamic_reset_ship_accuracy_mult multiplier = 10 days = 15 }
+    }
+    else = {
+        TH_clear_all_dynamic_modifier = yes
+    }
+    set_update_modifiers_batch = end
+}
+
+koishi_dynamic_battle = {
+    optimize_memory
+    set_update_modifiers_batch = begin
+    if = {
+        limit = { is_in_combat = yes }
+
+        # 一次修正
+        TH_clear_ship_modifier = { modifier = ship_accuracy_mult last = 15 }
+        TH_clear_ship_modifier = { modifier = ship_tracking_mult last = 15 }
+
+        # 二次修正
+        add_modifier = { modifier = TH_dynamic_reset_ship_tracking_mult multiplier = -1 days = 15 }
+    }
+    else = {
+        TH_clear_all_dynamic_modifier = yes
+    }
+    set_update_modifiers_batch = end
+}
+
+koishi_dynamic_boost = {
+    optimize_memory
+    set_update_modifiers_batch = begin
+    if = {
+        limit = { is_in_combat = yes }
+
+        # 一次修正
+        TH_clear_ship_modifier = { modifier = ship_evasion_mult last = 1 }
+
+        # 二次修正
+        add_modifier = { modifier = TH_dynamic_reset_ship_accuracy_mult multiplier = 10 days = 15 }
+    }
+    else = {
+        TH_clear_all_dynamic_modifier = yes
+    }
+    set_update_modifiers_batch = end
+}
+
+TH_clear_all_dynamic_modifier = {
+    optimize_memory
+    # 一次修正使用
+    remove_modifier = TH_dynamic_remove_ship_fire_rate_mult
+    remove_modifier = TH_dynamic_remove_ship_speed_mult
+    remove_modifier = TH_dynamic_remove_ship_shield_penetration_mult
+    remove_modifier = TH_dynamic_remove_ship_armor_penetration_mult
+    remove_modifier = TH_dynamic_remove_ship_armor_damage_mult
+    remove_modifier = TH_dynamic_remove_ship_shield_damage_mult
+    remove_modifier = TH_dynamic_remove_ship_hull_damage_mult
+    remove_modifier = TH_dynamic_remove_ship_tracking_mult
+    remove_modifier = TH_dynamic_remove_ship_accuracy_mult
+    remove_modifier = TH_dynamic_remove_ship_weapon_damage
+    remove_modifier = TH_dynamic_remove_ship_hull_regen_add_perc
+    remove_modifier = TH_dynamic_remove_ship_armor_regen_add_perc
+    remove_modifier = TH_dynamic_remove_ship_shield_regen_add_perc
+    remove_modifier = TH_dynamic_remove_ship_hull_mult
+    remove_modifier = TH_dynamic_remove_ship_armor_mult
+    remove_modifier = TH_dynamic_remove_ship_shield_mult
+    remove_modifier = TH_dynamic_remove_ship_shield_reduction
+    remove_modifier = TH_dynamic_remove_ship_armor_reduction
+    remove_modifier = TH_dynamic_remove_ship_weapon_range_mult
+    remove_modifier = TH_dynamic_remove_ship_tracking_add
+    remove_modifier = TH_dynamic_remove_ship_accuracy_add
+    remove_modifier = TH_dynamic_remove_ship_armor_add
+    remove_modifier = TH_dynamic_remove_ship_shield_add
+    remove_modifier = TH_dynamic_remove_ship_armor_hardening_add
+    remove_modifier = TH_dynamic_remove_ship_shield_hardening_add
+    remove_modifier = TH_dynamic_remove_ship_evasion_mult
+    remove_modifier = TH_dynamic_remove_ship_evasion_add
+
+    # 二次修正使用
+    remove_modifier = TH_dynamic_reset_ship_speed_mult
+    remove_modifier = TH_dynamic_reset_ship_shield_penetration_mult
+    remove_modifier = TH_dynamic_reset_ship_armor_penetration_mult
+    remove_modifier = TH_dynamic_reset_ship_armor_damage_mult
+    remove_modifier = TH_dynamic_reset_ship_shield_damage_mult
+    remove_modifier = TH_dynamic_reset_ship_hull_damage_mult
+    remove_modifier = TH_dynamic_reset_ship_tracking_mult
+    remove_modifier = TH_dynamic_reset_ship_accuracy_mult
+    remove_modifier = TH_dynamic_reset_ship_weapon_damage
+    remove_modifier = TH_dynamic_reset_ship_weapon_range_mult
+    remove_modifier = TH_dynamic_reset_ship_fire_rate_mult
+    remove_modifier = TH_dynamic_reset_ship_hull_regen_add_perc
+    remove_modifier = TH_dynamic_reset_ship_armor_regen_add_perc
+    remove_modifier = TH_dynamic_reset_ship_shield_regen_add_perc
+    remove_modifier = TH_dynamic_reset_ship_hull_mult
+    remove_modifier = TH_dynamic_reset_ship_armor_mult
+    remove_modifier = TH_dynamic_reset_ship_shield_mult
+    remove_modifier = TH_dynamic_reset_ship_shield_reduction
+    remove_modifier = TH_dynamic_reset_ship_armor_reduction
+    remove_modifier = TH_dynamic_reset_ship_tracking_add
+    remove_modifier = TH_dynamic_reset_ship_accuracy_add
+    remove_modifier = TH_dynamic_reset_ship_armor_add
+    remove_modifier = TH_dynamic_reset_ship_shield_add
+    remove_modifier = TH_dynamic_reset_ship_armor_hardening_add
+    remove_modifier = TH_dynamic_reset_ship_shield_hardening_add
+    remove_modifier = TH_dynamic_reset_ship_evasion_mult
+    remove_modifier = TH_dynamic_reset_ship_evasion_add
+}

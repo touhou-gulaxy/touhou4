@@ -1,40 +1,6 @@
+# 博物志遗珍抽卡相关事件，必须保证任何选项链最终以 th_card.9 作为末尾事件以避免锁不被正常释放。
 namespace = th_card
-# #免费抽卡次数
-# country_event = {
-# 	id = th_card.10
-# 	hide_window = yes
-# 	is_triggered_only = yes
-# 	trigger = {
-# 		check_variable = {
-# 			which = th_card_free_num
-# 			value = 0
-# 		}
-# 	}
-# 	immediate = {
-# 		country_event = {
-# 			id = th_card.11
-# 			days = 240
-# 		}
-# 	}
-# }
-# country_event = {
-# 	id = th_card.11
-# 	hide_window = yes
-# 	is_triggered_only = yes
-# 	trigger = {
-# 		check_variable = {
-# 			which = th_card_free_num
-# 			value = 0
-# 		}
-# 	}
-# 	immediate = {
-# 		change_variable = {
-# 			which = th_card_free_num
-# 			value = 1
-# 		}
-# 	}
-# }
-#######买
+####### 启动博物志，选择是否进入选卡池页面
 country_event = {
 	id = th_card.0
 	title = th_card.0.name
@@ -43,109 +9,26 @@ country_event = {
 	is_triggered_only = yes
 	trigger = {
 		NOT = {
-			has_country_flag = th_leader_card_end
+			has_country_flag = th_card_event_lock
 		}
 	}
-	#初始化
 	immediate = {
-		# if = {
-		# 	limit = { NOT = { has_country_flag = th_card_has_estab_com } }
-		# 	random_list = {
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_leader_baodi
-		# 				value = 4
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_leader_baodi
-		# 				value = 5
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_leader_baodi
-		# 				value = 6
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_leader_baodi
-		# 				value = 7
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_leader_baodi
-		# 				value = 8
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_leader_baodi
-		# 				value = 9
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_leader_baodi
-		# 				value = 10
-		# 			}
-		# 		}
-		# 	}
-		# 	random_list = {
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_tech_baodi
-		# 				value = 10
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_tech_baodi
-		# 				value = 11
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_tech_baodi
-		# 				value = 12
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_tech_baodi
-		# 				value = 13
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_tech_baodi
-		# 				value = 14
-		# 			}
-		# 		}
-		# 		1 = {
-		# 			set_variable = {
-		# 				which = th_card_tech_baodi
-		# 				value = 15
-		# 			}
-		# 		}
-		# 	}
-		# 	set_variable = {
-		# 		which = th_card_free_num
-		# 		value = 1
-		# 	}
-		# 	set_country_flag = th_card_has_estab_com
-		# }
-	}
+        set_country_flag = th_card_event_lock
+    }
 	#选择
-	option = {
+	option = { # 进入
 		name = "th_card.0.a"
 		trigger = {
-			NOT = {
-				has_country_flag = th_leader_card_end
-			}
+            OR = {
+                check_variable = {
+                    which = spth_card_current_tech
+                    value < @spth_card_max_tech
+                }
+                check_variable = {
+                    which = spth_card_current_leader
+                    value < @spth_card_max_leader
+                }
+            }
 		}
 		hidden_effect = {
 			country_event = {
@@ -153,18 +36,53 @@ country_event = {
 			}
 		}
 	}
-	option = {
+    option = { # 全抽没了，暂时没东西给了
+        name = th_card.0.y
+		trigger = {
+            AND = {
+                check_variable = {
+                    which = spth_card_current_tech
+                    value >= @spth_card_max_tech
+                }
+                check_variable = {
+                    which = spth_card_current_leader
+                    value >= @spth_card_max_leader
+                }
+            }
+		}
+        add_resource = {
+			influence = 10
+        }
+        hidden_effect = {
+			country_event = {
+				id = th_card.9
+			} 
+        }
+    }
+	option = { # 退出
 		name = "th_card.0.z"
-		# hidden_effect = {
-		# 	country_event = {
-		# 		id = th_card.9
-		# 	}
-		# }
+		trigger = {
+            OR = {
+                check_variable = {
+                    which = spth_card_current_tech
+                    value < @spth_card_max_tech
+                }
+                check_variable = {
+                    which = spth_card_current_leader
+                    value < @spth_card_max_leader
+                }
+            }
+		}
+        hidden_effect = {
+			country_event = {
+				id = th_card.9
+			}
+        }
 	}
 }
 
 ##############
-#选择卡池
+# 选择卡池
 ##############
 country_event = {
 	id = th_card.1
@@ -172,46 +90,46 @@ country_event = {
 	desc = th_card.1.desc
 	picture = GFX_evt_th_card
 	is_triggered_only = yes
-	option = {
+	option = { # 领袖池
 		name = "th_card.1.a"
 		trigger = {
-			NOT = {
-				has_country_flag = th_all_leader_get
-			}
+            check_variable = {
+                which = spth_card_current_leader
+                value < @spth_card_max_leader
+            }
 		}
 		hidden_effect = {
 			country_event = {
 				id = th_card.2
 			}
-			set_country_flag = th_card_leader_geting
 		}
 	}
-	option = {
+	option = { # 科技池
 		name = "th_card.1.b"
 		trigger = {
-			NOT = {
-				has_country_flag = th_all_tech_get
-			}
+            check_variable = {
+                which = spth_card_current_tech
+                value < @spth_card_max_tech
+            }
 		}
 		hidden_effect = {
 			country_event = {
 				id = th_card.3
 			}
-			set_country_flag = th_card_tech_geting
 		}
 	}
-	option = {
+	option = { # 退出
 		name = "th_card.0.z"
-		hidden_effect = {
+        hidden_effect = {
 			country_event = {
 				id = th_card.9
-			}
-		}
+			} 
+        }
 	}
 }
 
 ##############
-#选择次数
+# 抽领袖
 ##############
 country_event = {
 	id = th_card.2
@@ -219,16 +137,8 @@ country_event = {
 	desc = th_card.2.desc
 	picture = GFX_evt_th_card
 	is_triggered_only = yes
-	trigger = {
-		NOT = {
-			has_country_flag = card_already_has_window
-		}
-	}
-	immediate = {
-		set_country_flag = card_already_has_window
-	}
 	option = {
-		name = "th_card.2.b"
+		name = "th_card.2.a"
 		trigger = {
 			NOT = {
 				has_country_flag = th_all_leader_get
@@ -244,70 +154,33 @@ country_event = {
 			sr_lingli = -3000
 		}
 		hidden_effect = {
-			remove_country_flag = card_already_has_window
 			country_event = {
-				id = th_card.800
+				id = th_card.800 # 隐藏的随机获取将领事件
 			}
 			country_event = {
-				id = th_card.9
+				id = th_card.9 # 结束
 			}
 		}
 	}
-	# option = {
-	# 	name = "th_card.2.c"
-	# 	allow = {
-	# 		resource_stockpile_compare = { resource = sr_lingli value >= 30000 }
-	# 	}
-	# 	add_resource = {
-	# 		sr_lingli = -30000
-	# 	}
-	# 	hidden_effect = {
-	# 		remove_country_flag = card_already_has_window
-	# 		set_timed_country_flag = {
-	# 			flag = card_shilian
-	# 			days = 10
-	# 		}
-	# 		country_event = { id = th_card.800 }
-	# 		country_event = { id = th_card.9 }
-	# 	}
-	# }
 	option = {
 		name = "th_card.2.z"
 		hidden_effect = {
-			if = {
-				limit = {
-					has_country_flag = th_card_leader_geting
-				}
-				remove_country_flag = th_card_leader_geting
-			}
-			if = {
-				limit = {
-					has_country_flag = th_card_tech_geting
-				}
-				remove_country_flag = th_card_tech_geting
-			}
 			country_event = {
-				id = th_card.9
+				id = th_card.9 # 结束
 			}
-			remove_country_flag = card_already_has_window
 		}
 	}
 }
 
+##############
+# 抽科技
+##############
 country_event = {
 	id = th_card.3
 	title = th_card.3.name
 	desc = th_card.3.desc
 	picture = GFX_evt_th_card
 	is_triggered_only = yes
-	trigger = {
-		NOT = {
-			has_country_flag = card_already_has_window
-		}
-	}
-	immediate = {
-		set_country_flag = card_already_has_window
-	}
 	option = {
 		name = "th_card.3.a"
 		trigger = {
@@ -326,9 +199,8 @@ country_event = {
 			sr_lingli = -5000
 		}
 		hidden_effect = {
-			remove_country_flag = card_already_has_window
 			country_event = {
-				id = th_card.10030
+				id = th_card.1003
 			}
 			country_event = {
 				id = th_card.9
@@ -352,133 +224,27 @@ country_event = {
 			sr_lingli = -10000
 		}
 		hidden_effect = {
-			remove_country_flag = card_already_has_window
 			country_event = {
-				id = th_card.100
+				id = th_card.100 # 隐藏的随机获取科技事件
 			}
 			country_event = {
 				id = th_card.9
 			}
 		}
 	}
-	# option = {
-	# 	name = "th_card.3.c"
-	# 	allow = {
-	# 		resource_stockpile_compare = { resource = sr_lingli value >= 50000 }
-	# 	}
-	# 	add_resource = {
-	# 		sr_lingli = -50000
-	# 	}
-	# 	hidden_effect = {
-	# 		remove_country_flag = card_already_has_window
-	# 		set_timed_country_flag = {
-	# 			flag = card_shilian
-	# 			days = 10
-	# 		}
-	# 		country_event = { id = th_card.100 }
-	# 		country_event = { id = th_card.9 }
-	# 	}
-	# }
 	option = {
 		name = "th_card.3.z"
 		hidden_effect = {
-			if = {
-				limit = {
-					has_country_flag = th_card_leader_geting
-				}
-				remove_country_flag = th_card_leader_geting
-			}
-			if = {
-				limit = {
-					has_country_flag = th_card_tech_geting
-				}
-				remove_country_flag = th_card_tech_geting
-			}
 			country_event = {
 				id = th_card.9
 			}
-			remove_country_flag = card_already_has_window
 		}
 	}
 }
 
-##############
-#抽卡
-##############
-#判断是否抽完
-country_event = {
-	id = th_card.900
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		#判断池子
-		if = {
-			limit = {
-				has_country_flag = th_card_leader_geting
-			}
-			country_event = {
-				id = th_card.21
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_card_tech_geting
-			}
-			country_event = {
-				id = th_card.31
-			}
-		}
-		#抽完了返回
-		# else = {
-		# 	country_event = {
-		# 		id = th_card.2
-		# 	}
-		# }
-	}
-}
 
-#十连抽
-country_event = {
-	id = th_card.901
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		#判断池子
-		if = {
-			limit = {
-				check_variable = {
-					which = th_card_tech_baodi
-					value > 0
-				}
-				has_country_flag = th_card_leader_geting
-			}
-			country_event = {
-				id = th_card.22
-			}
-		}
-		else_if = {
-			limit = {
-				check_variable = {
-					which = th_card_tech_baodi
-					value > 0
-				}
-				has_country_flag = th_card_tech_geting
-			}
-			country_event = {
-				id = th_card.32
-			}
-		}
-		#抽完了返回
-		# else = {
-		# 	country_event = {
-		# 		id = th_card.2
-		# 	}
-		# }
-	}
-}
-
-#结束
-country_event = {
+# 结束
+country_event = { # 整个事件链全都需要在这里结束，这个事件结束后会释放事件锁 
 	id = th_card.9
 	title = th_card.9.name
 	desc = th_card.9.desc
@@ -487,686 +253,21 @@ country_event = {
 	option = {
 		name = th_card.9.a
 	}
-}
-
-country_event = {
-	id = th_card.29
-	title = th_card.29.name
-	desc = th_card.29.desc
-	picture = GFX_evt_th_card_leader
-	is_triggered_only = yes
-	option = {
-		name = th_card.29.a
-		hidden_effect = {
-			country_event = {
-				id = th_card.2
-			}
-		}
-	}
-}
-
-#单抽(领袖)
-country_event = {
-	id = th_card.21
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		if = {
-			limit = {
-				has_country_flag = card_shilian
-			}
-			while = {
-				count = 10
-				country_event = {
-					id = th_card.800
-				}
-			}
-			remove_country_flag = card_shilian
-		}
-		else = {
-			country_event = {
-				id = th_card.800
-			}
-		}
-	}
-}
-
-#十连抽(领袖)
-country_event = {
-	id = th_card.22
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		subtract_variable = {
-			which = th_card_leader_baodi
-			value = 10
-		}
-		if = {
-			limit = {
-				check_variable = {
-					which = th_card_leader_baodi
-					value <= 0
-				}
-			}
-			random_list = {
-				1 = {
-					change_variable = {
-						which = th_card_leader_baodi
-						value = 10
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_leader_baodi
-						value = 11
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_leader_baodi
-						value = 12
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_leader_baodi
-						value = 13
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_leader_baodi
-						value = 14
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_leader_baodi
-						value = 15
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_leader_baodi
-						value = 16
-					}
-				}
-			}
-			set_country_flag = th_card_leader_baodi
-		}
-		country_event = {
-			id = th_card.23
-		}
-		subtract_variable = {
-			which = th_card_tech_baodi
-			value = 10
-		}
-	}
-}
-
-#十连抽(领袖)人工处理后直接触发减少循环与判定
-country_event = {
-	id = th_card.23
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_card_leader_baodi
-			}
-			random_list = {
-				39 = {
-					country_event = {
-						id = th_card.800
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-				39 = {
-					while = {
-						count = 2
-						country_event = {
-							id = th_card.800
-						}
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-				17 = {
-					while = {
-						count = 3
-						country_event = {
-							id = th_card.800
-						}
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-				5 = {
-					while = {
-						count = 4
-						country_event = {
-							id = th_card.800
-						}
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-			}
-		}
-		else = {
-			random_list = {
-				35 = {
-					country_event = {
-						id = th_card.2
-					}
-				}
-				39 = {
-					country_event = {
-						id = th_card.800
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-				19 = {
-					while = {
-						count = 2
-						country_event = {
-							id = th_card.800
-						}
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-				6 = {
-					while = {
-						count = 3
-						country_event = {
-							id = th_card.800
-						}
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-				1 = {
-					while = {
-						count = 4
-						country_event = {
-							id = th_card.800
-						}
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-			}
-		}
-		subtract_variable = {
-			which = th_card_tech_baodi
-			value = 10
-		}
-	}
-}
-
-#单抽(科技)
-country_event = {
-	id = th_card.31
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		subtract_variable = {
-			which = th_card_tech_baodi
-			value = 1
-		}
-		if = {
-			limit = {
-				check_variable = {
-					which = th_card_tech_baodi
-					value = 0
-				}
-			}
-			random_list = {
-				1 = {
-					set_variable = {
-						which = th_card_tech_baodi
-						value = 20
-					}
-				}
-				1 = {
-					set_variable = {
-						which = th_card_tech_baodi
-						value = 21
-					}
-				}
-				1 = {
-					set_variable = {
-						which = th_card_tech_baodi
-						value = 22
-					}
-				}
-				1 = {
-					set_variable = {
-						which = th_card_tech_baodi
-						value = 23
-					}
-				}
-				1 = {
-					set_variable = {
-						which = th_card_tech_baodi
-						value = 24
-					}
-				}
-				1 = {
-					set_variable = {
-						which = th_card_tech_baodi
-						value = 25
-					}
-				}
-			}
-			set_country_flag = th_card_tech_baodi
-		}
-		if = {
-			limit = {
-				check_variable = {
-					which = th_card_tech_baodi
-					value = 1
-				}
-				has_country_flag = th_card_tech_baodi
-			}
-			country_event = {
-				id = th_card.100
-			}
-		}
-		else = {
-			random_list = {
-				800 = {
-					country_event = {
-						id = th_card.900
-					}
-				}
-				10 = {
-					country_event = {
-						id = th_card.100
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-			}
-		}
-		subtract_variable = {
-			which = th_card_tech_baodi
-			value = 1
-		}
-	}
-}
-
-#十连抽(科技)
-country_event = {
-	id = th_card.32
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		subtract_variable = {
-			which = th_card_tech_baodi
-			value = 10
-		}
-		if = {
-			limit = {
-				check_variable = {
-					which = th_card_tech_baodi
-					value <= 0
-				}
-			}
-			random_list = {
-				1 = {
-					change_variable = {
-						which = th_card_tech_baodi
-						value = 10
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_tech_baodi
-						value = 11
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_tech_baodi
-						value = 12
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_tech_baodi
-						value = 13
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_tech_baodi
-						value = 14
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_tech_baodi
-						value = 15
-					}
-				}
-				1 = {
-					change_variable = {
-						which = th_card_tech_baodi
-						value = 16
-					}
-				}
-			}
-			set_country_flag = th_card_tech_baodi
-		}
-		country_event = {
-			id = th_card.33
-		}
-		subtract_variable = {
-			which = th_card_tech_baodi
-			value = 10
-		}
-	}
-}
-
-#十连抽(科技)人工计算后直接触发减少循环与判定
-country_event = {
-	id = th_card.33
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_card_tech_baodi
-			}
-			random_list = {
-				91 = {
-					country_event = {
-						id = th_card.100
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-				8 = {
-					while = {
-						count = 2
-						country_event = {
-							id = th_card.100
-						}
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-				1 = {
-					while = {
-						count = 3
-						country_event = {
-							id = th_card.100
-						}
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-			}
-		}
-		else = {
-			random_list = {
-				90 = {
-					country_event = {
-						id = th_card.2
-					}
-				}
-				9 = {
-					country_event = {
-						id = th_card.100
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-				1 = {
-					while = {
-						count = 2
-						country_event = {
-							id = th_card.100
-						}
-					}
-					country_event = {
-						id = th_card.29
-					}
-				}
-			}
-		}
-		subtract_variable = {
-			which = th_card_tech_baodi
-			value = 10
-		}
-	}
-}
-
-country_event = {
-	id = th_card.910
-	title = th_card.910.name
-	desc = th_card.910.desc
-	picture = GFX_evt_th_card_awj
-	is_triggered_only = yes
-	option = {
-		name = "th_card.910.a"
-		hidden_effect = {
-			country_event = {
-				id = th_card.900
-			}
-		}
-	}
-}
-
-##############
-#抽卡奖励
-##############
-#安慰奖
-# country_event = {
-# 	id = th_card.910
-# 	title = th_card.910.name
-# 	desc = th_card.910.desc
-# 	picture = GFX_evt_th_card_awj
-# 	is_triggered_only = yes
-# 	option = {
-# 		name = "th_card.910.a"
-# 		add_resource = {
-# 			energy = 500
-# 		}
-# 		hidden_effect = {
-# 			country_event = {
-# 				id = th_card.900
-# 			}
-# 		}
-# 	}
-# }
-country_event = {
-	id = th_card.911
-	title = th_card.910.name
-	desc = th_card.910.desc
-	picture = GFX_evt_th_card_awj
-	is_triggered_only = yes
-	option = {
-		name = "th_card.910.a"
-		add_resource = {
-			minerals = 500
-		}
-		hidden_effect = {
-			country_event = {
-				id = th_card.900
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.912
-	title = th_card.910.name
-	desc = th_card.910.desc
-	picture = GFX_evt_th_card_awj
-	is_triggered_only = yes
-	option = {
-		name = "th_card.910.a"
-		add_resource = {
-			food = 500
-		}
-		hidden_effect = {
-			country_event = {
-				id = th_card.900
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.913
-	title = th_card.910.name
-	desc = th_card.910.desc
-	picture = GFX_evt_th_card_awj
-	is_triggered_only = yes
-	option = {
-		name = "th_card.910.a"
-		add_resource = {
-			alloys = 500
-		}
-		hidden_effect = {
-			country_event = {
-				id = th_card.900
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.914
-	title = th_card.910.name
-	desc = th_card.910.desc
-	picture = GFX_evt_th_card_awj
-	is_triggered_only = yes
-	option = {
-		name = "th_card.910.a"
-		add_resource = {
-			consumer_goods = 500
-		}
-		hidden_effect = {
-			country_event = {
-				id = th_card.900
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.915
-	title = th_card.910.name
-	desc = th_card.910.desc
-	picture = GFX_evt_th_card_awj
-	is_triggered_only = yes
-	option = {
-		name = "th_card.910.a"
-		add_resource = {
-			exotic_gases = 500
-		}
-		hidden_effect = {
-			country_event = {
-				id = th_card.900
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.916
-	title = th_card.910.name
-	desc = th_card.910.desc
-	picture = GFX_evt_th_card_awj
-	is_triggered_only = yes
-	option = {
-		name = "th_card.910.a"
-		add_resource = {
-			volatile_motes = 500
-		}
-		hidden_effect = {
-			country_event = {
-				id = th_card.900
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.917
-	title = th_card.910.name
-	desc = th_card.910.desc
-	picture = GFX_evt_th_card_awj
-	is_triggered_only = yes
-	option = {
-		name = "th_card.910.a"
-		add_resource = {
-			rare_crystals = 500
-		}
-		hidden_effect = {
-			country_event = {
-				id = th_card.900
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.81010
-	title = th_card.81010.name
-	desc = th_card.81010.desc
-	picture = GFX_evt_th_card_leader
-	is_triggered_only = yes
-	option = {
-		name = "th_card.81010.a"
-		add_resource = {
-			sr_lingli = 200
-		}
-	}
+    after = {
+        remove_country_flag = th_card_event_lock
+    }
 }
 
 #######################################
-###中奖(领袖
+### 抽一个领袖
 #######################################
 country_event = {
 	id = th_card.800
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = card_shilian
-			}
-			while = {
-				count = 10
-			}
-			country_event = {
-				id = th_card.801
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.801
-			}
+		country_event = {
+			id = th_card.801
 		}
 	}
 }
@@ -1178,123 +279,246 @@ country_event = {
 	immediate = {
 		random_list = {
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_meirin_get
+                }
 				country_event = {
 					id = th_card.8001
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_koakuma_get
+                }
 				country_event = {
 					id = th_card.8002
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_patchouli_get
+                }
 				country_event = {
 					id = th_card.8003
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_sakuya_get
+                }
 				country_event = {
 					id = th_card.8004
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_flandre_get
+                }
 				country_event = {
 					id = th_card.8005
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_letty_get
+                }
 				country_event = {
 					id = th_card.8006
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_youmu_get
+                }
 				country_event = {
 					id = th_card.8007
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_youki_get
+                }
 				country_event = {
 					id = th_card.8008
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_chen_get
+                }
 				country_event = {
 					id = th_card.8009
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_ran_get
+                }
 				country_event = {
 					id = th_card.8010
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_yukari_get
+                }
 				country_event = {
 					id = th_card.8011
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_nitori_get
+                }
 				country_event = {
 					id = th_card.8012
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_momiji_get
+                }
 				country_event = {
 					id = th_card.8013
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_aya_get
+                }
 				country_event = {
 					id = th_card.8014
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_hatate_get
+                }
 				country_event = {
 					id = th_card.8015
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_kanako_get
+                }
 				country_event = {
 					id = th_card.8016
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_suwako_get
+                }
 				country_event = {
 					id = th_card.8017
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_yuugi_get
+                }
 				country_event = {
 					id = th_card.8018
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_parsee_get
+                }
 				country_event = {
 					id = th_card.8019
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_rin_get
+                }
 				country_event = {
 					id = th_card.8020
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_utsuho_get
+                }
 				country_event = {
 					id = th_card.8021
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_koishi_get
+                }
 				country_event = {
 					id = th_card.8022
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_akyuu_get
+                }
 				country_event = {
 					id = th_card.8023
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_keine_get
+                }
 				country_event = {
 					id = th_card.8024
+				}
+			}
+			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_marisa_get
+                }
+				country_event = {
+					id = th_card.8025
+				}
+			}
+			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_kasen_get
+                }
+				country_event = {
+					id = th_card.8026
+				}
+			}
+			1 = {
+                modifier = {
+                    factor = 0
+        			has_country_flag = th_suika_get
+                }
+				country_event = {
+					id = th_card.8027
 				}
 			}
 		}
@@ -1307,92 +531,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		####已经抽中过就顺延，减少性能消耗
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_hongmo_get
-			}
-			country_event = {
-				id = th_card.8006
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_meirin_get
-			}
-			country_event = {
-				id = th_card.8002
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80010
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80010
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = general
-			species = owner_species
-			name = "红美铃"
-			traits = {
-				trait = leader_trait_meirin
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_meirin
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_meirin_get
-		if = {
-			limit = {
-				has_country_flag = th_exj_get
-				has_country_flag = th_sakuya_get
-				has_country_flag = th_muq_get
-				has_country_flag = th_xiaoemo_get
-				has_country_flag = th_meirin_get
-			}
-			remove_country_flag = th_exj_get
-			remove_country_flag = th_sakuya_get
-			remove_country_flag = th_muq_get
-			remove_country_flag = th_xiaoemo_get
-			remove_country_flag = th_meirin_get
-			set_country_flag = th_hongmo_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_meirin_effect = yes
 	}
 }
 
@@ -1402,91 +541,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_hongmo_get
-			}
-			country_event = {
-				id = th_card.8006
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_xiaoemo_get
-			}
-			country_event = {
-				id = th_card.8003
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80020
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80020
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = scientist
-			species = owner_species
-			name = "小恶魔"
-			traits = {
-				trait = leader_trait_xiaoemo
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_xiaoemo
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_xiaoemo_get
-		if = {
-			limit = {
-				has_country_flag = th_exj_get
-				has_country_flag = th_sakuya_get
-				has_country_flag = th_muq_get
-				has_country_flag = th_xiaoemo_get
-				has_country_flag = th_meirin_get
-			}
-			remove_country_flag = th_exj_get
-			remove_country_flag = th_sakuya_get
-			remove_country_flag = th_muq_get
-			remove_country_flag = th_xiaoemo_get
-			remove_country_flag = th_meirin_get
-			set_country_flag = th_hongmo_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+        spth_effect_init_koakuma_effect = yes
 	}
 }
 
@@ -1496,93 +551,10 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_hongmo_get
-			}
-			country_event = {
-				id = th_card.8006
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_muq_get
-			}
-			country_event = {
-				id = th_card.8004
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80030
-			}
-		}
+        spth_effect_init_patchouli_effect = yes
 	}
 }
 
-country_event = {
-	id = th_card.80030
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = scientist
-			species = owner_species
-			name = "帕秋莉·诺蕾姬"
-			traits = {
-				trait = leader_trait_muq
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_muq
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_muq_get
-		if = {
-			limit = {
-				has_country_flag = th_exj_get
-				has_country_flag = th_sakuya_get
-				has_country_flag = th_muq_get
-				has_country_flag = th_xiaoemo_get
-				has_country_flag = th_meirin_get
-			}
-			remove_country_flag = th_exj_get
-			remove_country_flag = th_sakuya_get
-			remove_country_flag = th_muq_get
-			remove_country_flag = th_xiaoemo_get
-			remove_country_flag = th_meirin_get
-			set_country_flag = th_hongmo_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
-	}
-}
 
 #十六夜
 country_event = {
@@ -1590,91 +562,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_hongmo_get
-			}
-			country_event = {
-				id = th_card.8006
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_sakuya_get
-			}
-			country_event = {
-				id = th_card.8005
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80040
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80040
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = governor
-			species = owner_species
-			name = "十六夜咲夜"
-			traits = {
-				trait = leader_trait_gov_sakuya
-				trait = leader_trait_architectural_interest
-				trait = leader_trait_intellectual
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 16
-			set_gender = female
-			set_leader_flag = th_sakuya
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_sakuya_get
-		if = {
-			limit = {
-				has_country_flag = th_exj_get
-				has_country_flag = th_sakuya_get
-				has_country_flag = th_muq_get
-				has_country_flag = th_xiaoemo_get
-				has_country_flag = th_meirin_get
-			}
-			remove_country_flag = th_exj_get
-			remove_country_flag = th_sakuya_get
-			remove_country_flag = th_muq_get
-			remove_country_flag = th_xiaoemo_get
-			remove_country_flag = th_meirin_get
-			set_country_flag = th_hongmo_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+        spth_effect_init_sakuya_effect = yes
 	}
 }
 
@@ -1684,91 +572,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_hongmo_get
-			}
-			country_event = {
-				id = th_card.8006
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_exj_get
-			}
-			country_event = {
-				id = th_card.8006
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80050
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80050
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = admiral
-			species = owner_species
-			name = "芙兰朵露·斯卡雷特"
-			traits = {
-				trait = leader_trait_exj
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 495
-			set_gender = female
-			set_leader_flag = th_exj
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_exj_get
-		if = {
-			limit = {
-				has_country_flag = th_exj_get
-				has_country_flag = th_sakuya_get
-				has_country_flag = th_muq_get
-				has_country_flag = th_xiaoemo_get
-				has_country_flag = th_meirin_get
-			}
-			remove_country_flag = th_exj_get
-			remove_country_flag = th_sakuya_get
-			remove_country_flag = th_muq_get
-			remove_country_flag = th_xiaoemo_get
-			remove_country_flag = th_meirin_get
-			set_country_flag = th_hongmo_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+        spth_effect_init_flandre_effect = yes
 	}
 }
 
@@ -1781,93 +585,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_baiyu_get
-			}
-			country_event = {
-				id = th_card.8013
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_letty_get
-			}
-			country_event = {
-				id = th_card.8007
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80060
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80060
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = general
-			species = owner_species
-			name = "NAME_letty"
-			traits = {
-				trait = leader_trait_letty
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_letty
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_letty_get
-		if = {
-			limit = {
-				has_country_flag = th_byz_get
-				has_country_flag = th_lan_get
-				has_country_flag = th_chen_get
-				has_country_flag = th_hpyj_get
-				has_country_flag = th_youmu_get
-				has_country_flag = th_letty_get
-			}
-			remove_country_flag = th_byz_get
-			remove_country_flag = th_lan_get
-			remove_country_flag = th_chen_get
-			remove_country_flag = th_hpyj_get
-			remove_country_flag = th_youmu_get
-			remove_country_flag = th_letty_get
-			set_country_flag = th_baiyu_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_letty_effect = yes
 	}
 }
 
@@ -1877,93 +595,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_baiyu_get
-			}
-			country_event = {
-				id = th_card.8013
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_youmu_get
-			}
-			country_event = {
-				id = th_card.8008
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80070
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80070
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = admiral
-			species = owner_species
-			name = "魂魄妖梦"
-			traits = {
-				trait = leader_trait_youmu
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_youmu
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_youmu_get
-		if = {
-			limit = {
-				has_country_flag = th_byz_get
-				has_country_flag = th_lan_get
-				has_country_flag = th_chen_get
-				has_country_flag = th_hpyj_get
-				has_country_flag = th_youmu_get
-				has_country_flag = th_letty_get
-			}
-			remove_country_flag = th_byz_get
-			remove_country_flag = th_lan_get
-			remove_country_flag = th_chen_get
-			remove_country_flag = th_hpyj_get
-			remove_country_flag = th_youmu_get
-			remove_country_flag = th_letty_get
-			set_country_flag = th_baiyu_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_youmu_effect = yes
 	}
 }
 
@@ -1973,93 +605,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_baiyu_get
-			}
-			country_event = {
-				id = th_card.8013
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_hpyj_get
-			}
-			country_event = {
-				id = th_card.8009
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80080
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80080
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = governor
-			species = owner_species
-			name = "魂魄妖忌"
-			traits = {
-				trait = leader_trait_hpyj
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 1020
-			set_gender = female
-			set_leader_flag = th_hpyj
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_hpyj_get
-		if = {
-			limit = {
-				has_country_flag = th_byz_get
-				has_country_flag = th_lan_get
-				has_country_flag = th_chen_get
-				has_country_flag = th_hpyj_get
-				has_country_flag = th_youmu_get
-				has_country_flag = th_letty_get
-			}
-			remove_country_flag = th_byz_get
-			remove_country_flag = th_lan_get
-			remove_country_flag = th_chen_get
-			remove_country_flag = th_hpyj_get
-			remove_country_flag = th_youmu_get
-			remove_country_flag = th_letty_get
-			set_country_flag = th_baiyu_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_youki_effect = yes
 	}
 }
 
@@ -2072,285 +618,27 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_baiyu_get
-			}
-			country_event = {
-				id = th_card.8013
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_chen_get
-			}
-			country_event = {
-				id = th_card.8010
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80090
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80090
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = scientist
-			species = owner_species
-			name = "NAME_chen"
-			traits = {
-				trait = leader_trait_chen
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 12
-			set_gender = female
-			set_leader_flag = th_chen
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_chen_get
-		if = {
-			limit = {
-				has_country_flag = th_byz_get
-				has_country_flag = th_lan_get
-				has_country_flag = th_chen_get
-				has_country_flag = th_hpyj_get
-				has_country_flag = th_youmu_get
-				has_country_flag = th_letty_get
-			}
-			remove_country_flag = th_byz_get
-			remove_country_flag = th_lan_get
-			remove_country_flag = th_chen_get
-			remove_country_flag = th_hpyj_get
-			remove_country_flag = th_youmu_get
-			remove_country_flag = th_letty_get
-			set_country_flag = th_baiyu_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_chen_effect = yes
 	}
 }
 
 #蓝
 country_event = {
-	id = th_card.8011
+	id = th_card.8010
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_baiyu_get
-			}
-			country_event = {
-				id = th_card.8013
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_lan_get
-			}
-			country_event = {
-				id = th_card.8012
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80110
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80110
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = governor
-			species = owner_species
-			name = "NAME_lan"
-			traits = {
-				trait = leader_trait_lan
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_lan
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_lan_get
-		if = {
-			limit = {
-				has_country_flag = th_byz_get
-				has_country_flag = th_lan_get
-				has_country_flag = th_chen_get
-				has_country_flag = th_hpyj_get
-				has_country_flag = th_youmu_get
-				has_country_flag = th_letty_get
-			}
-			remove_country_flag = th_byz_get
-			remove_country_flag = th_lan_get
-			remove_country_flag = th_chen_get
-			remove_country_flag = th_hpyj_get
-			remove_country_flag = th_youmu_get
-			remove_country_flag = th_letty_get
-			set_country_flag = th_baiyu_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_ran_effect = yes
 	}
 }
 
 #紫
 country_event = {
-	id = th_card.8012
+	id = th_card.8011
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_baiyu_get
-			}
-			country_event = {
-				id = th_card.8013
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_byz_get
-			}
-			country_event = {
-				id = th_card.8013
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80120
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80120
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = admiral
-			species = owner_species
-			name = "NAME_byz"
-			traits = {
-				trait = leader_trait_byz
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 17
-			set_gender = female
-			set_leader_flag = th_byz
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_byz_get
-		if = {
-			limit = {
-				has_country_flag = th_byz_get
-				has_country_flag = th_lan_get
-				has_country_flag = th_chen_get
-				has_country_flag = th_hpyj_get
-				has_country_flag = th_youmu_get
-				has_country_flag = th_letty_get
-			}
-			remove_country_flag = th_byz_get
-			remove_country_flag = th_lan_get
-			remove_country_flag = th_chen_get
-			remove_country_flag = th_hpyj_get
-			remove_country_flag = th_youmu_get
-			remove_country_flag = th_letty_get
-			set_country_flag = th_baiyu_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_yukari_effect = yes
 	}
 }
 
@@ -2359,385 +647,41 @@ country_event = {
 ##############
 #河城荷取
 country_event = {
-	id = th_card.8013
+	id = th_card.8012
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_shoushi_get
-			}
-			country_event = {
-				id = th_card.8018
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_hchq_get
-			}
-			country_event = {
-				id = th_card.8014
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80130
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80130
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = scientist
-			species = owner_species
-			name = "NAME_hchq"
-			traits = {
-				trait = leader_trait_hchq
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_hchq
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_hchq_get
-		if = {
-			limit = {
-				has_country_flag = th_zfz_get
-				has_country_flag = th_snz_get
-				has_country_flag = th_smww_get
-				has_country_flag = th_jhtg_get
-				has_country_flag = th_hchq_get
-				has_country_flag = th_qzh_get
-			}
-			remove_country_flag = th_zfz_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			remove_country_flag = th_qzh_get
-			set_country_flag = th_shoushi_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_nitori_effect = yes
 	}
 }
 
 #犬走椛
 country_event = {
-	id = th_card.8014
+	id = th_card.8013
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_shoushi_get
-			}
-			country_event = {
-				id = th_card.8018
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_qzh_get
-			}
-			country_event = {
-				id = th_card.8015
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80140
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80140
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = general
-			species = owner_species
-			name = "NAME_qzh"
-			traits = {
-				trait = leader_trait_qzh
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_qzh
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_qzh_get
-		if = {
-			limit = {
-				has_country_flag = th_zfz_get
-				has_country_flag = th_snz_get
-				has_country_flag = th_smww_get
-				has_country_flag = th_jhtg_get
-				has_country_flag = th_hchq_get
-				has_country_flag = th_qzh_get
-			}
-			remove_country_flag = th_zfz_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			remove_country_flag = th_qzh_get
-			set_country_flag = th_shoushi_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_momiji_effect = yes
 	}
 }
 
 #射命丸文
 country_event = {
-	id = th_card.8015
+	id = th_card.8014
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_shoushi_get
-			}
-			country_event = {
-				id = th_card.8018
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_smww_get
-			}
-			country_event = {
-				id = th_card.8016
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80150
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80150
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = governor
-			species = owner_species
-			name = "NAME_smww"
-			traits = {
-				trait = leader_trait_smww
-				trait = leader_trait_tgjz
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_smww
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_smww_get
-		if = {
-			limit = {
-				has_country_flag = th_zfz_get
-				has_country_flag = th_snz_get
-				has_country_flag = th_smww_get
-				has_country_flag = th_jhtg_get
-				has_country_flag = th_hchq_get
-				has_country_flag = th_qzh_get
-			}
-			remove_country_flag = th_zfz_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			remove_country_flag = th_qzh_get
-			set_country_flag = th_shoushi_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_aya_effect = yes
 	}
 }
 
 #姬海棠果
 country_event = {
-	id = th_card.8010
+	id = th_card.8015
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_shoushi_get
-			}
-			country_event = {
-				id = th_card.8018
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_jhtg_get
-			}
-			country_event = {
-				id = th_card.8011
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80100
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80100
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = governor
-			species = owner_species
-			name = "NAME_jhtg"
-			traits = {
-				trait = leader_trait_jhtg
-				trait = leader_trait_tgjz
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_jhtg
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_jhtg_get
-		if = {
-			limit = {
-				has_country_flag = th_zfz_get
-				has_country_flag = th_snz_get
-				has_country_flag = th_smww_get
-				has_country_flag = th_jhtg_get
-				has_country_flag = th_hchq_get
-				has_country_flag = th_qzh_get
-			}
-			remove_country_flag = th_zfz_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			remove_country_flag = th_qzh_get
-			set_country_flag = th_shoushi_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_hatate_effect = yes
 	}
 }
 
@@ -2750,95 +694,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_shoushi_get
-			}
-			country_event = {
-				id = th_card.8018
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_snz_get
-			}
-			country_event = {
-				id = th_card.8017
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80160
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80160
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = admiral
-			species = owner_species
-			name = "NAME_snz"
-			traits = {
-				trait = leader_trait_snz
-				trait = leader_trait_junshen
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_snz
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_snz_get
-		if = {
-			limit = {
-				AND = {
-					has_country_flag = th_zfz_get
-					has_country_flag = th_snz_get
-					has_country_flag = th_smww_get
-					has_country_flag = th_jhtg_get
-					has_country_flag = th_hchq_get
-					has_country_flag = th_qzh_get
-				}
-			}
-			remove_country_flag = th_zfz_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			remove_country_flag = th_qzh_get
-			set_country_flag = th_shoushi_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_kanako_effect = yes
 	}
 }
 
@@ -2848,93 +704,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_shoushi_get
-			}
-			country_event = {
-				id = th_card.8018
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_zfz_get
-			}
-			country_event = {
-				id = th_card.8018
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80170
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80170
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = admiral
-			species = owner_species
-			name = "NAME_zfz"
-			traits = {
-				trait = leader_trait_zfz
-				trait = leader_trait_junshen
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_zfz
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_zfz_get
-		if = {
-			limit = {
-				has_country_flag = th_zfz_get
-				has_country_flag = th_snz_get
-				has_country_flag = th_smww_get
-				has_country_flag = th_jhtg_get
-				has_country_flag = th_hchq_get
-				has_country_flag = th_qzh_get
-			}
-			remove_country_flag = th_zfz_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			remove_country_flag = th_qzh_get
-			set_country_flag = th_dld_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_suwako_effect = yes
 	}
 }
 
@@ -2947,91 +717,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_dld_get
-			}
-			country_event = {
-				id = th_card.8023
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_yongyi_get
-			}
-			country_event = {
-				id = th_card.8019
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80180
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80180
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = general
-			species = owner_species
-			name = "NAME_yongyi"
-			traits = {
-				trait = leader_trait_yongyi
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_yongyi
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_yongyi_get
-		if = {
-			limit = {
-				has_country_flag = th_lian_get
-				has_country_flag = th_liu_get
-				has_country_flag = th_lin_get
-				has_country_flag = th_paru_get
-				has_country_flag = th_yongyi_get
-			}
-			remove_country_flag = th_lian_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			set_country_flag = th_dld_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_yuugi_effect = yes
 	}
 }
 
@@ -3041,91 +727,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_dld_get
-			}
-			country_event = {
-				id = th_card.8023
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_paru_get
-			}
-			country_event = {
-				id = th_card.8020
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80190
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80190
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = governor
-			species = owner_species
-			name = "NAME_paru"
-			traits = {
-				trait = leader_trait_paru
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_paru
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_paru_get
-		if = {
-			limit = {
-				has_country_flag = th_lian_get
-				has_country_flag = th_liu_get
-				has_country_flag = th_lin_get
-				has_country_flag = th_paru_get
-				has_country_flag = th_yongyi_get
-			}
-			remove_country_flag = th_lian_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			set_country_flag = th_dld_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_parsee_effect = yes
 	}
 }
 
@@ -3135,91 +737,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_dld_get
-			}
-			country_event = {
-				id = th_card.8023
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_lin_get
-			}
-			country_event = {
-				id = th_card.8021
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80200
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80200
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = scientist
-			species = owner_species
-			name = "NAME_lin"
-			traits = {
-				trait = leader_trait_lin
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_lin
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_lin_get
-		if = {
-			limit = {
-				has_country_flag = th_lian_get
-				has_country_flag = th_liu_get
-				has_country_flag = th_lin_get
-				has_country_flag = th_paru_get
-				has_country_flag = th_yongyi_get
-			}
-			remove_country_flag = th_lian_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			set_country_flag = th_dld_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_rin_effect = yes
 	}
 }
 
@@ -3229,91 +747,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_dld_get
-			}
-			country_event = {
-				id = th_card.8023
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_liu_get
-			}
-			country_event = {
-				id = th_card.8022
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80210
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80210
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = admiral
-			species = owner_species
-			name = "NAME_liu"
-			traits = {
-				trait = leader_trait_liu
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_liu
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_liu_get
-		if = {
-			limit = {
-				has_country_flag = th_lian_get
-				has_country_flag = th_liu_get
-				has_country_flag = th_lin_get
-				has_country_flag = th_paru_get
-				has_country_flag = th_yongyi_get
-			}
-			remove_country_flag = th_lian_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			set_country_flag = th_dld_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_utsuho_effect = yes
 	}
 }
 
@@ -3323,91 +757,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_dld_get
-			}
-			country_event = {
-				id = th_card.8023
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_lian_get
-			}
-			country_event = {
-				id = th_card.8023
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80220
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80220
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = admiral
-			species = owner_species
-			name = "NAME_lian"
-			traits = {
-				trait = leader_trait_lian
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_lian
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_lian_get
-		if = {
-			limit = {
-				has_country_flag = th_lian_get
-				has_country_flag = th_liu_get
-				has_country_flag = th_lin_get
-				has_country_flag = th_paru_get
-				has_country_flag = th_yongyi_get
-			}
-			remove_country_flag = th_lian_get
-			remove_country_flag = th_liu_get
-			remove_country_flag = th_lin_get
-			remove_country_flag = th_paru_get
-			remove_country_flag = th_yongyi_get
-			set_country_flag = th_dld_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_koishi_effect = yes
 	}
 }
 
@@ -3420,91 +770,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_boli_get
-			}
-			country_event = {
-				id = th_card.8001
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_aqiu_get
-			}
-			country_event = {
-				id = th_card.8024
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80230
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80230
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = scientist
-			species = owner_species
-			name = "NAME_aqiu"
-			traits = {
-				trait = leader_trait_aqiu
-				trait = leader_trait_chosen
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_aqiu
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_aqiu_get
-		if = {
-			limit = {
-				has_country_flag = th_huiyin_get
-				has_country_flag = th_aqiu_get
-				has_country_flag = th_huashan_get
-				has_country_flag = th_marisa_get
-				has_country_flag = th_cuixiang_get
-			}
-			remove_country_flag = th_huiyin_get
-			remove_country_flag = th_aqiu_get
-			remove_country_flag = th_huashan_get
-			remove_country_flag = th_marisa_get
-			remove_country_flag = th_cuixiang_get
-			set_country_flag = th_boli_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_akyuu_effect = yes
 	}
 }
 
@@ -3514,91 +780,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_boli_get
-			}
-			country_event = {
-				id = th_card.8001
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_huiyin_get
-			}
-			country_event = {
-				id = th_card.8025
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80240
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80240
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = governor
-			species = owner_species
-			name = "NAME_huiyin"
-			traits = {
-				trait = leader_trait_huiyin
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_huiyin
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_huiyin_get
-		if = {
-			limit = {
-				has_country_flag = th_huiyin_get
-				has_country_flag = th_aqiu_get
-				has_country_flag = th_huashan_get
-				has_country_flag = th_marisa_get
-				has_country_flag = th_cuixiang_get
-			}
-			remove_country_flag = th_huiyin_get
-			remove_country_flag = th_aqiu_get
-			remove_country_flag = th_huashan_get
-			remove_country_flag = th_marisa_get
-			remove_country_flag = th_cuixiang_get
-			set_country_flag = th_boli_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_keine_effect = yes
 	}
 }
 
@@ -3608,91 +790,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_boli_get
-			}
-			country_event = {
-				id = th_card.8001
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_marisa_get
-			}
-			country_event = {
-				id = th_card.8026
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80250
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80250
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = admiral
-			species = owner_species
-			name = "NAME_marisa"
-			traits = {
-				trait = leader_trait_marisa
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_marisa
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_marisa_get
-		if = {
-			limit = {
-				has_country_flag = th_huiyin_get
-				has_country_flag = th_aqiu_get
-				has_country_flag = th_huashan_get
-				has_country_flag = th_marisa_get
-				has_country_flag = th_cuixiang_get
-			}
-			remove_country_flag = th_huiyin_get
-			remove_country_flag = th_aqiu_get
-			remove_country_flag = th_huashan_get
-			remove_country_flag = th_marisa_get
-			remove_country_flag = th_cuixiang_get
-			set_country_flag = th_boli_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_marisa_effect = yes
 	}
 }
 
@@ -3702,91 +800,7 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_boli_get
-			}
-			country_event = {
-				id = th_card.8001
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_huashan_get
-			}
-			country_event = {
-				id = th_card.8027
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80260
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80260
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = admiral
-			species = owner_species
-			name = "NAME_huashan"
-			traits = {
-				trait = leader_trait_huashan
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_huashan
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_huashan_get
-		if = {
-			limit = {
-				has_country_flag = th_huiyin_get
-				has_country_flag = th_aqiu_get
-				has_country_flag = th_huashan_get
-				has_country_flag = th_marisa_get
-				has_country_flag = th_cuixiang_get
-			}
-			remove_country_flag = th_huiyin_get
-			remove_country_flag = th_aqiu_get
-			remove_country_flag = th_huashan_get
-			remove_country_flag = th_marisa_get
-			remove_country_flag = th_cuixiang_get
-			set_country_flag = th_boli_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_kasen_effect = yes
 	}
 }
 
@@ -3796,117 +810,20 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_leader_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_boli_get
-			}
-			country_event = {
-				id = th_card.8001
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_cuixiang_get
-			}
-			country_event = {
-				id = th_card.8001
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.80270
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.80270
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		create_leader = {
-			class = general
-			species = owner_species
-			name = "NAME_cuixiang"
-			traits = {
-				trait = leader_trait_cuixiang
-				trait = random_trait
-				trait = random_trait
-			}
-			skill = 5
-		}
-		last_created_leader = {
-			set_age = 20
-			set_gender = female
-			set_leader_flag = th_cuixiang
-			set_leader_flag = th_sp_leader
-		}
-		set_country_flag = th_cuixiang_get
-		if = {
-			limit = {
-				has_country_flag = th_huiyin_get
-				has_country_flag = th_aqiu_get
-				has_country_flag = th_huashan_get
-				has_country_flag = th_marisa_get
-				has_country_flag = th_cuixiang_get
-			}
-			remove_country_flag = th_huiyin_get
-			remove_country_flag = th_aqiu_get
-			remove_country_flag = th_huashan_get
-			remove_country_flag = th_marisa_get
-			remove_country_flag = th_cuixiang_get
-			set_country_flag = th_boli_get
-		}
-		if = {
-			limit = {
-				has_country_flag = th_boli_get
-				has_country_flag = th_dld_get
-				has_country_flag = th_shoushi_get
-				has_country_flag = th_baiyu_get
-				has_country_flag = th_hongmo_get
-			}
-			remove_country_flag = th_boli_get
-			remove_country_flag = th_dld_get
-			remove_country_flag = th_shoushi_get
-			remove_country_flag = th_baiyu_get
-			remove_country_flag = th_hongmo_get
-			set_country_flag = th_all_leader_get
-		}
+		spth_effect_init_suika_effect = yes
 	}
 }
 
 #######################################
-###中奖(科技
+### 抽一个科技
 #######################################
 country_event = {
 	id = th_card.100
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = card_shilian
-			}
-			while = {
-				count = 5
-			}
-			country_event = {
-				id = th_card.101
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.101
-			}
+		country_event = {
+			id = th_card.101
 		}
 	}
 }
@@ -3918,26 +835,46 @@ country_event = {
 	immediate = {
 		random_list = {
 			10 = {
+                modifier = {
+                    factor = 0
+        			has_technology = tech_th_engine_xijian
+                }
 				country_event = {
 					id = th_card.1001
 				}
 			}
 			10 = {
+                modifier = {
+                    factor = 0
+        			has_technology = tech_th_ship_part_taiyang
+                }
 				country_event = {
 					id = th_card.1002
 				}
 			}
 			10 = {
+                modifier = {
+                    factor = 0
+        			has_technology = tech_th_weapon_gungnir
+                }
 				country_event = {
 					id = th_card.1003
 				}
 			}
 			1 = {
+                modifier = {
+                    factor = 0
+        			has_technology = tech_th_weapon_yuzhu
+                }
 				country_event = {
 					id = th_card.1004
 				}
 			}
 			10 = {
+                modifier = {
+                    factor = 0
+        			has_technology = tech_spth_moon_computer
+                }
 				country_event = {
 					id = th_card.1005
 				}
@@ -3951,56 +888,13 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_tech_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_xijian_get
-			}
-			country_event = {
-				id = th_card.1002
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.10010
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.10010
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
 		give_technology = {
 			tech = "tech_th_engine_xijian"
 		}
-		set_country_flag = th_xijian_get
-		if = {
-			limit = {
-				AND = {
-					has_country_flag = th_xijian_get
-					has_country_flag = th_taiyang_get
-					has_country_flag = th_gungnir_get
-					has_country_flag = th_yuzhu_get
-					has_country_flag = th_moon_com_get
-				}
-			}
-			remove_country_flag = th_xijian_get
-			remove_country_flag = th_taiyang_get
-			remove_country_flag = th_gungnir_get
-			remove_country_flag = th_yuzhu_get
-			remove_country_flag = th_moon_com_get
-			set_country_flag = th_all_tech_get
-		}
+        change_variable = {
+            which = spth_card_current_tech
+            value = 1
+        }
 	}
 }
 
@@ -4009,56 +903,13 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_tech_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_taiyang_get
-			}
-			country_event = {
-				id = th_card.1003
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.10020
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.10020
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
 		give_technology = {
-			tech = "tech_th_ship_part_taiyang"
+			tech = "tech_th_engine_xijian"
 		}
-		set_country_flag = th_taiyang_get
-		if = {
-			limit = {
-				AND = {
-					has_country_flag = th_xijian_get
-					has_country_flag = th_taiyang_get
-					has_country_flag = th_gungnir_get
-					has_country_flag = th_yuzhu_get
-					has_country_flag = th_moon_com_get
-				}
-			}
-			remove_country_flag = th_xijian_get
-			remove_country_flag = th_taiyang_get
-			remove_country_flag = th_gungnir_get
-			remove_country_flag = th_yuzhu_get
-			remove_country_flag = th_moon_com_get
-			set_country_flag = th_all_tech_get
-		}
+        change_variable = {
+            which = spth_card_current_tech
+            value = 1
+        }
 	}
 }
 
@@ -4067,56 +918,13 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_tech_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_gungnir_get
-			}
-			country_event = {
-				id = th_card.1004
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.10030
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.10030
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
 		give_technology = {
 			tech = "tech_th_weapon_gungnir"
 		}
-		set_country_flag = th_gungnir_get
-		if = {
-			limit = {
-				AND = {
-					has_country_flag = th_xijian_get
-					has_country_flag = th_taiyang_get
-					has_country_flag = th_gungnir_get
-					has_country_flag = th_yuzhu_get
-					has_country_flag = th_moon_com_get
-				}
-			}
-			remove_country_flag = th_xijian_get
-			remove_country_flag = th_taiyang_get
-			remove_country_flag = th_gungnir_get
-			remove_country_flag = th_yuzhu_get
-			remove_country_flag = th_moon_com_get
-			set_country_flag = th_all_tech_get
-		}
+        change_variable = {
+            which = spth_card_current_tech
+            value = 1
+        }
 	}
 }
 
@@ -4125,54 +933,13 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_tech_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_yuzhu_get
-			}
-			country_event = {
-				id = th_card.1005
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.10040
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.10040
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
 		give_technology = {
 			tech = "tech_th_weapon_yuzhu"
 		}
-		set_country_flag = th_yuzhu_get
-		if = {
-			limit = {
-				has_country_flag = th_xijian_get
-				has_country_flag = th_taiyang_get
-				has_country_flag = th_gungnir_get
-				has_country_flag = th_yuzhu_get
-				has_country_flag = th_moon_com_get
-			}
-			remove_country_flag = th_xijian_get
-			remove_country_flag = th_taiyang_get
-			remove_country_flag = th_gungnir_get
-			remove_country_flag = th_yuzhu_get
-			remove_country_flag = th_moon_com_get
-			set_country_flag = th_all_tech_get
-		}
+        change_variable = {
+            which = spth_card_current_tech
+            value = 1
+        }
 	}
 }
 
@@ -4181,53 +948,12 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		if = {
-			limit = {
-				has_country_flag = th_all_tech_get
-			}
-			country_event = {
-				id = th_card.81010
-			}
-		}
-		else_if = {
-			limit = {
-				has_country_flag = th_moon_com_get
-			}
-			country_event = {
-				id = th_card.1001
-			}
-		}
-		else = {
-			country_event = {
-				id = th_card.10050
-			}
-		}
-	}
-}
-
-country_event = {
-	id = th_card.10050
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
 		give_technology = {
 			tech = "tech_spth_moon_computer"
 		}
-		set_country_flag = th_moon_com_get
-		if = {
-			limit = {
-				has_country_flag = th_xijian_get
-				has_country_flag = th_taiyang_get
-				has_country_flag = th_gungnir_get
-				has_country_flag = th_yuzhu_get
-				has_country_flag = th_moon_com_get
-			}
-			remove_country_flag = th_xijian_get
-			remove_country_flag = th_taiyang_get
-			remove_country_flag = th_gungnir_get
-			remove_country_flag = th_yuzhu_get
-			remove_country_flag = th_moon_com_get
-			set_country_flag = th_all_tech_get
-		}
+        change_variable = {
+            which = spth_card_current_tech
+            value = 1
+        }
 	}
 }
