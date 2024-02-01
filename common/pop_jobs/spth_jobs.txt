@@ -1,3 +1,4 @@
+# 巫女-统治者
 miko = {
 	category = ruler
 	condition_string = RULER_JOB_TRIGGER
@@ -18,19 +19,36 @@ miko = {
 		category = planet_politicians
 		produces = {
 			unity = 6
-			physics_research = 2
-			engineering_research = 2
-			society_research = 2
-			sr_lingli = 2
+			physics_research = 4
+			engineering_research = 4
+			society_research = 4
+			sr_lingli = 1
 		}
 		upkeep = {
 			consumer_goods = 2
 		}
 	}
 	
-	planet_modifier = {
-		planet_amenities_add = 3
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_amenities_add = 3
+		}
 		mult = value:scripted_modifier_mult|MODIFIER|pop_job_amenities_mult|
+	}
+	
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = {
+				is_ai = no
+				is_regular_empire = yes
+                has_authority = auth_gensokyo
+			}
+		}
+		modifier = {
+			planet_barrier_capacity_add = 1
+		}
 	}
 	
 	
@@ -66,12 +84,73 @@ miko = {
 	}
 }
 
-genso_artisan_construction = {
+# 幻想铸造工
+genso_foundry = {
 	category = specialist
 	condition_string = SPECIALIST_JOB_TRIGGER
-	building_icon = building_bl
+	building_icon = building_foundry_1
+	clothes_texture_index = 3
+	#icon = genso_foundry
+	icon = foundry
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	resources = {
+		category = planet_metallurgists
+		produces = {
+			alloys = 6
+		}
+		upkeep = {
+			minerals = 6
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_metallurgists_alloys_produces_add = 1
+			planet_metallurgists_alloys_produces_mult = 0.08
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	
+	weight = {
+		weight = @specialist_job_weight # Fairly important job
+		mult = value:job_weights_modifier|JOB|foundry|RESOURCE|alloys|
+		modifier = {
+			factor = 2
+			is_enslaved = yes
+			can_take_servant_job = no
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_foundry
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想工匠
+genso_artisan = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_factory_1
 	clothes_texture_index = 1
-	icon = genso_artisan_construction
+	#icon = genso_artisan
+	icon = artisan
 	
 	possible_pre_triggers = {
 		has_owner = yes
@@ -94,44 +173,685 @@ genso_artisan_construction = {
 		}
 	}
 	
-	planet_modifier = {
-		planet_building_build_speed_mult = 0.20
-		planet_decision_enact_speed_mult = 0.20
-	}
-	planet_modifier = {
-		planet_amenities_add = 3
-		mult = value:scripted_modifier_mult|MODIFIER|pop_job_amenities_mult|
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_artisans_consumer_goods_produces_add = 1
+			planet_artisans_consumer_goods_produces_mult = 0.08
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
 	}
 	
 	
 	weight = {
-		weight = @ruler_job_weight
-		mult = value:job_weights_modifier|JOB|politician|RESOURCE|unity|
-		mult = value:scripted_modifier_job_weight_mult|MODIFIER|pop_job_amenities_mult|
+		weight = @specialist_job_weight
+		mult = value:job_weights_multiple_resources_modifier|JOB|artificer|RESOURCE1|consumer_goods|WEIGHT1|0.8|RESOURCE2|engineering_research|WEIGHT2|0.2|
+		mult = value:scripted_modifier_job_weight_mult|MODIFIER|pop_job_trade_mult|
 		modifier = {
-			factor = 0.1
+			factor = 2
+			is_enslaved = yes
+			can_take_servant_job = no
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_artisan
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想物理研究人员-魔法使研究员-专家
+genso_researcher_physics = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_research_lab_1
+	clothes_texture_index = 3
+	icon = researcher
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	resources = {
+		category = planet_researchers
+		produces = {
+			physics_research = 8
+			engineering_research = 4
+			society_research = 4
+		}
+		upkeep = {
+			consumer_goods = 2
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_researchers_physics_research_produces_add = 2
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	
+	weight = {
+		weight = @specialist_job_weight
+		mult = value:job_weights_research_modifier|JOB|researcher|
+		modifier = {
+			factor = 0.2
 			has_citizenship_rights = no
 			NOT = { has_trait = trait_mechanical }
 		}
 		modifier = {
-			factor = 5
-			has_job = miko
+			factor = 2
+			has_living_standard = { type = living_standard_academic_privilege }
 		}
 		modifier = {
-			factor = 1.2
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_researcher_physics
+		}
+		modifier = {
+			factor = 2
 			has_trait = trait_touhou
 		}
-		# crisis purge
+	}
+}
+
+# 幻想社会学研究人员-人里教员-专家
+genso_researcher_society = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_research_lab_1
+	clothes_texture_index = 3
+	icon = researcher
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	resources = {
+		category = planet_researchers
+		produces = {
+			physics_research = 4
+			engineering_research = 4
+			society_research = 8
+		}
+		upkeep = {
+			consumer_goods = 2
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_researchers_society_research_produces_add = 2
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	
+	weight = {
+		weight = @specialist_job_weight
+		mult = value:job_weights_research_modifier|JOB|researcher|
+		modifier = {
+			factor = 0.2
+			has_citizenship_rights = no
+			NOT = { has_trait = trait_mechanical }
+		}
+		modifier = {
+			factor = 2
+			has_living_standard = { type = living_standard_academic_privilege }
+		}
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_researcher_society
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想工程学研究人员-河童研究员-专家
+genso_researcher_engineering = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_research_lab_1
+	clothes_texture_index = 3
+	icon = researcher
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	resources = {
+		category = planet_researchers
+		produces = {
+			physics_research = 4
+			engineering_research = 8
+			society_research = 4
+		}
+		upkeep = {
+			consumer_goods = 2
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_researchers_engineering_research_produces_add = 2
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	
+	weight = {
+		weight = @specialist_job_weight
+		mult = value:job_weights_research_modifier|JOB|researcher|
+		modifier = {
+			factor = 0.2
+			has_citizenship_rights = no
+			NOT = { has_trait = trait_mechanical }
+		}
+		modifier = {
+			factor = 2
+			has_living_standard = { type = living_standard_academic_privilege }
+		}
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_researcher_engineering
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想建筑工-风穴建筑工-专家
+genso_construction_worker = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_factory_1
+	clothes_texture_index = 3
+	icon = artificer
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	resources = {
+		category = planet_researchers
+		produces = {
+			physics_research = 4
+			engineering_research = 4
+		}
+		upkeep = {
+			consumer_goods = 0.5
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_building_build_speed_mult = 0.40
+			planet_decision_enact_speed_mult = 0.40
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	
+	weight = {
+		weight = @specialist_job_weight
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_construction_worker
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想矿工-虹龙洞矿工-专家
+genso_miner = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_mineral_purification_plant
+	clothes_texture_index = 2
+	icon = miner
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	resources = {
+		category = planet_miners
+		produces = {
+			minerals = 8
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_miners_minerals_produces_add = 1
+			planet_miners_minerals_produces_mult = 0.08
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	
+	weight = {
+		weight = @specialist_job_weight
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_miner
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想技工-核融合操作员-专家
+genso_technician = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_energy_grid
+	clothes_texture_index = 2
+	icon = technician
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	resources = {
+		category = planet_technician
+		produces = {
+			energy = 12
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_technician_energy_produces_add = 1
+			planet_technician_energy_produces_mult = 0.08
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	
+	weight = {
+		weight = @specialist_job_weight
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_technician
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想农夫-农业妖精-专家
+genso_farmer = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_food_processing_facility
+	clothes_texture_index = 2
+	icon = farmer
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	resources = {
+		category = planet_farmers
+		produces = {
+			food = 12
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_farmers_food_produces_add = 1
+			planet_farmers_food_produces_mult = 0.08
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	
+	weight = {
+		weight = @specialist_job_weight
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_farmer
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想执法者-妖怪山警卫队-专家
+genso_enforcer = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_precinct_house
+	clothes_texture_index = 5
+	icon = enforcer
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	pop_modifier = {
+		pop_defense_armies_add = 3
+	}
+	
+	resources = {
+		category = planet_researchers
+		produces = {
+			society_research = 6
+		}
+	}
+
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			planet_crime_add = -40
+			planet_stability_add = 8
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	weight = {
+		weight = @specialist_job_weight
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_enforcer
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
 		modifier = {
 			factor = 0.01
-			exists = planet
-			exists = planet.controller
-			planet.controller = {
-				OR = {
-					is_country_type = swarm
-					is_country_type = ai_empire
-				}
-			}
+			planet = { planet_crime <= 15}
+			NOT = { has_job = enforcer }
+		}
+		modifier = {
+			factor = 10
+			planet = { planet_stability <= 40}
+			NOT = { has_job = enforcer }
+		}
+	}
+}
+
+# 幻想士兵-人里自警队-专家
+genso_soldier = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_stronghold
+	clothes_texture_index = 4
+	icon = soldier
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+
+	country_modifier = {
+		country_naval_cap_add = 20
+	}
+	
+	pop_modifier = {
+		pop_defense_armies_add = 6
+	}
+	
+	resources = {
+		category = planet_researchers
+		produces = {
+			society_research = 6
+		}
+	}
+	
+	# TODO: 写一个根据士兵岗位数量生成陆军
+	
+	# TODO：写一个根据士兵岗位数量增加指挥上限
+	
+	weight = {
+		weight = @specialist_job_weight
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_soldier
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想医疗工作者-永远亭药师-专家
+genso_healthcare = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_clinic
+	clothes_texture_index = 3
+	icon = healthcare
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		has_trait = trait_touhou
+	}
+	
+	resources = {
+		category = planet_researchers
+		produces = {
+			society_research = 6
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			pop_growth_speed = 0.1
+			planet_pop_assembly_organic_mult = 0.1
+			pop_environment_tolerance = 0.3
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	weight = {
+		weight = @specialist_job_weight
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_healthcare
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
+		}
+	}
+}
+
+# 幻想演艺人员-女仆长-专家
+genso_entertainer = {
+	category = specialist
+	condition_string = SPECIALIST_JOB_TRIGGER
+	building_icon = building_holo_theatres
+	clothes_texture_index = 3
+	icon = entertainer
+	
+	possible_pre_triggers = {
+		has_owner = yes
+		is_being_purged = no
+		is_being_assimilated = no
+		is_sapient = yes
+	}
+	possible_precalc = can_fill_specialist_job
+	possible = {
+		entertainer_job_check_trigger = yes
+		has_trait = trait_touhou
+	}
+
+	resources = {
+		category = planet_entertainers
+		produces = {
+			unity = 8
+			society_research = 6
+		}
+		upkeep = {
+			consumer_goods = 1
+		}
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		planet_amenities_add = 20
+		mult = value:scripted_modifier_mult|MODIFIER|pop_job_amenities_mult|
+	}
+	
+	triggered_planet_modifier = {
+		potential = { always = yes }
+		modifier = {
+			pop_amenities_usage_mult = -0.15
+		}
+		mult = planet.value:planet_genso_job_buff_modifier
+	}
+	
+	weight = {
+		weight = @specialist_job_weight
+		modifier = {
+			factor = 0.1
+			can_take_servant_job = yes
+		}
+		modifier = {
+			factor = 5
+			has_job = genso_entertainer
+		}
+		modifier = {
+			factor = 2
+			has_trait = trait_touhou
 		}
 	}
 }
