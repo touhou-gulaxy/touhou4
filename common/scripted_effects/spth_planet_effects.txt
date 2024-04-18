@@ -1,13 +1,37 @@
 # planet scope
 spth_effect_establish_barrier = {
+    optimize_memory
     if = {
         limit = {
             NOT = { has_deposit = d_hakurei_barrier }
         }
         add_deposit = d_hakurei_barrier
     }
-	add_modifier = {
-		modifier = spth_hakurei_barrier_info
-	}
-	SPTH_EFFECT_PLANET_UPDATE_DISPLAY_INFO = yes
+    add_modifier = {
+        modifier = spth_hakurei_barrier_info
+    }
+    SPTH_EFFECT_PLANET_UPDATE_DISPLAY_INFO = yes
+}
+
+spth_effect_count_th_deposits = {
+    optimize_memory
+    export_trigger_value_to_variable = {
+        trigger = count_deposit
+        parameters = {
+            limit = { is_deposit_type = $deposit$ }
+        }
+        variable = spth_count_deposit_$deposit$
+    }
+}
+
+spth_effect_restore_th_deposits = {
+    optimize_memory
+    if = {
+        limit = { is_variable_set = spth_count_deposit_$deposit$ }
+        while = {
+            count = spth_count_deposit_$deposit$
+            add_deposit = $deposit$
+        }
+        clear_variable = spth_count_deposit_$deposit$
+    }
 }
