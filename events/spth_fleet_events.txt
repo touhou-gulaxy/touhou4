@@ -1,14 +1,124 @@
 namespace = spth_fleet
 
+# kamikakushi - stole pops
+# This = Planet
+# From = Bombarder country
 planet_event = {
-    id = spth_fleet.1
+    id = spth_fleet.100
     hide_window = yes
     is_triggered_only = yes
     trigger = {
         has_orbital_bombardment = yes
         has_orbital_bombardment_stance = spth_kamikakushi
+        planet_devastation >= 90
     }
     immediate = {
+        set_update_modifiers_batch = begin
+        from = {
+            if = {
+                limit = { has_ascension_perk = ap_become_the_crisis }
+                complete_crisis_objective = crisobj_destroy_worlds
+            }
+        }
+        if = {
+            limit = {
+                is_planet_class = pc_ai
+                NOT = { has_planet_flag = machine_lair }
+            }
+            set_planet_flag = destroyed_by_colossus
+            set_planet_flag = planet_cracked
+            planet_event = { id = crisis.2040 }
+        }
+        # stole pops
+        if = {
+            limit = { is_colony = yes }
+            export_trigger_value_to_variable = {
+                trigger = num_pops
+                variable = spth_kamikakushi_colony_pops_counter
+            }
+            multiply_variable = { which = spth_kamikakushi_colony_pops_counter value = 0.5 }
+            ceiling_variable = spth_kamikakushi_colony_pops_counter
+            from = {
+                random_owned_planet = {
+                    limit = { is_colony = yes }
+                    while = {
+                        count = spth_kamikakushi_colony_pops_counter
+                        create_pop = { species = owner_main_species }
+                    }
+                }
+                capital_scope = {
+                    while = {
+                        count = spth_kamikakushi_colony_pops_counter
+                        create_pop = { species = owner_main_species }
+                    }
+                }
+            }
+            clear_variable = spth_kamikakushi_colony_pops_counter
+            destroy_colony = yes
+        }
+        # Contingency Final Machine World
+        if = {
+            limit = {
+                is_planet_class = pc_ai
+                has_planet_flag = machine_lair
+            }
+            set_planet_flag = destroyed_by_colossus
+            set_planet_flag = planet_cracked
+            from.owner = { save_event_target_as = final_machine_world_destroyer }
+            stop_crisis_sound = yes
+            planet_event = { id = crisis.2046 }
+        }
+        # Swarm Situation Log counter
+        if = {
+            limit = {
+                exists = owner
+                owner = { is_country_type = swarm }
+            }
+            every_country = {
+                limit = { has_event_chain = "prethoryn_scourge_chain" }
+                add_event_chain_counter = {
+                    event_chain = "prethoryn_scourge_chain"
+                    counter = "infested_worlds"
+                    amount = -1
+                }
+                add_event_chain_counter = {
+                    event_chain = "prethoryn_scourge_chain"
+                    counter = "infested_worlds_cleansed"
+                    amount = 1
+                }
+            }
+        }
 
+        if = {
+            limit = { is_planet_class = pc_habitat }
+            spawn_habitat_cracker_effect = yes
+            # remove_planet = yes
+        }
+        else_if = {
+            limit = { is_ringworld = yes }
+            spawn_ringworld_cracker_effect = yes
+            # change_pc = pc_ringworld_habitable_damaged
+        } else = {
+            from = {
+                create_message = {
+                    type = spth_kamikakushi_clear_planet
+                    localization = spth_kamikakushi_clear_planet_desc
+                    days = 30
+                    target = root
+                    variable = {
+                        type = name
+                        localization = PLANET
+                        scope = root
+                    }
+                    variable = {
+                        type = name
+                        localization = COUNTRY_NAME
+                        scope = this
+                    }
+                }
+            }
+        }
+        every_owned_pop = { kill_pop = yes }
+        set_update_modifiers_batch = end
     }
 }
