@@ -1,4 +1,4 @@
-version="3.11.beta8"
+version="3.12.beta9"
 tags={
 	"Gameplay"
 	"Galaxy Generation"
