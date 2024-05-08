@@ -2,6 +2,163 @@ namespace = spth_fleet
 
 # 轨道轰炸： 100~200
 
+# A ship has been built
+# Root = Ship
+# From = Planet
+ship_event = {
+    id = spth_fleet.1
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_ship_size = spth_ur_didact_flagship
+    }
+    immediate = {
+        set_ship_flag = has_ag_flagship
+    }
+}
+
+#THIS/ROOT=planet##FROM=fleet
+planet_event = {
+    id = spth_fleet.2
+    is_triggered_only = yes
+    hide_window = yes
+
+    immediate = {
+        save_event_target_as = spth_composer_target
+        from.owner = {
+            set_variable = {
+                which = spth_composer_composed_temp
+                value = root.trigger:num_pops
+            }
+            if = {
+                limit = { NOT = { is_variable_set = spth_composer_composed_pops } }
+                set_variable = {
+                    which = spth_composer_composed_pops
+                    value = 0
+                }
+            }
+            change_variable = {
+                which = spth_composer_composed_pops
+                value = spth_composer_composed_temp
+            }
+            clear_variable = spth_composer_composed_temp
+        }
+        hidden_effect = {
+            if = {
+                limit = {
+                    exists = owner
+                }
+                owner = {
+                    if = {
+                        limit = {
+                            #isn't the case when the crisis bombards planets, for instance
+                            is_at_war_with = from.fleet.owner
+                        }
+                        add_static_war_exhaustion = {
+                            attacker = from.fleet.owner
+                            location = root
+                            value_for_planet_destruction = 1.0
+                        }
+                    }
+                }
+            }
+            if = {
+                limit = {
+                    has_observation_outpost = yes
+                }
+                observation_outpost_owner = {
+                    country_event = { id = planet_destruction.1000 days = 1 }
+                }
+            }
+            if = {
+                limit = { is_capital = yes }
+                from.owner = { set_country_flag = exterminatus }
+            }
+            if = {
+                limit = {
+                    exists = owner
+                    owner = {
+                        NOT = { is_same_value = from.owner }
+                        OR = {
+                            is_country_type = default
+                            is_country_type = fallen_empire
+                            is_country_type = awakened_fallen_empire
+                        }
+                    }
+                }
+                # Generate threat
+                if = {
+                    limit = {
+                        is_colony = yes
+                    }
+                    add_threat = { who = from.owner amount = 3 }
+                    # modifier for allies + those upset by genocide
+                    every_country = {
+                        limit = {
+                            NOR = {
+                                is_same_value = from.owner
+                                is_same_value = root.owner
+                                AND = {
+                                    has_federation = yes
+                                    is_in_federation_with = from.owner
+                                }
+                            }
+                            OR = {
+                                has_communications = from.owner
+                                has_communications = root.owner
+                            }
+                            OR = {
+                                AND = {
+                                    has_federation = yes
+                                    is_in_federation_with = root.owner
+                                }
+                                has_ai_personality = awakened_fallen_empire_xenophile
+                                AND = {
+                                    is_country_type = default
+                                    OR = {
+                                        is_egalitarian = yes
+                                        is_xenophile = yes
+                                    }
+                                }
+                            }
+                        }
+                        if = {
+                            limit = { root = { is_colony = no } }
+                            add_opinion_modifier = {
+                                modifier = opinion_cracked_an_uninhabited_world
+                                who = from.owner
+                            }
+                        }
+                        else = {
+                            add_opinion_modifier = {
+                                modifier = opinion_cracked_a_world
+                                who = from.owner
+                            }
+                        }
+                    }
+                }
+                else = {
+                    add_threat = { who = from.owner amount = 1 }
+                }
+                # modifiers for victim
+                owner = {
+                    if = {
+                        limit = { NOT = { has_ethic = ethic_gestalt_consciousness } }
+                        add_modifier = {
+                            modifier = colossus_victim
+                            days = 10800 # 30 years
+                        }
+                    }
+                }
+            }
+        }
+        every_owned_pop = {
+            kill_pop = yes
+        }
+        destroy_colony = yes
+    }
+}
+
 # kamikakushi - stole pops
 # This = Planet
 # From = Bombarder country
