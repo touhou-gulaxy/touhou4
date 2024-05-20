@@ -1,5 +1,551 @@
 namespace = spth_leader_gal
 
+# 古明地恋 - 特殊领袖
+# 可换装立绘
+# 聊天
+# 战斗效果 - 消耗领袖灵力
+#  恋恋灵力上限514, 灵力可以自然恢复(40/月)
+#  可以消耗max(25k, 10k+12.5%灵力库存)与max(15k, 5k+7.5%符卡库存)充能20%灵力, 充能冷却45天
+#  灵力不足时无法触发效果
+#  被动效果: 常驻+6隐身 恋恋所在舰队常驻+10隐身
+#  战斗效果1:
+#   舰队获得交战后前4天压制命中追踪的能力，后续每8天触发一次，持续2天
+#   己方舰队提升闪避能力
+#   维护费15灵力
+#  战斗效果2:
+#   交战时每2天有10%+max(10%+恋恋灵力/514)几率击杀对方舰队司令
+#   提升己方护盾装甲效率
+#   维护费10灵力
+#  战斗效果3:
+#   每10天随机选择10%/15%/20%/25%舰船扣除15%～90%血量并且根据当前灵力数值限制部分修正，持续3天
+#   以上修正生效时额外随机使己方获得少量/中等/大量加成
+#   维护费20灵力
+#  战斗效果4:
+#   恋恋所在舰队进入战斗后随机复制20～50%的敌方舰船作为场外支援，战斗结束后解散。
+#   其他舰队获得进入战斗时火力支援
+#   维护费10灵力
+#  战斗效果5：
+#   舰队获得转化增幅循环修正的能力，百分比为5%+max(5%, 恋恋灵力/2056)
+#   维护费15灵力
+#  战斗效果6：
+#   舰队获得进一步干扰敌人的能力，保证不低于50%的双穿并且大量提升己方舰船抗攻击能力。
+#   己方舰船被击毁时有几率发动反击
+#   维护费20灵力
+#
+# Koishi - first contact
+country_event = {
+    id = spth_leader_gal.20
+    title = NAME_spth_gal_koishi
+    desc = spth_leader_gal.20.desc
+    is_triggered_only = yes
+    diplomatic = yes
+
+    custom_gui = spth_gal_koishi_dialogue_window_no_option
+
+    immediate = {
+        set_variable = { which = spth_gal_dialogue_bg value = 2 }
+        set_variable = { which = spth_gal_dialogue_koishi_portrait value = 1 }
+    }
+
+    option = {
+        custom_gui = spth_gal_dialogue_click_any_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = { country_event = { id = spth_leader_gal.21 } }
+    }
+    option = {
+        custom_gui = spth_gal_hiding_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = { country_event = { id = spth_leader_gal.22 } }
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = spth_leader_gal.21
+    title = NAME_spth_gal_koishi
+    desc = spth_leader_gal.21.desc
+    is_triggered_only = yes
+    diplomatic = yes
+
+    custom_gui = spth_gal_koishi_dialogue_window_no_option
+
+    immediate = {
+        set_variable = { which = spth_gal_dialogue_bg value = 3 }
+        set_variable = { which = spth_gal_dialogue_koishi_portrait value = 1 }
+    }
+
+    option = {
+        custom_gui = spth_gal_dialogue_click_any_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = { country_event = { id = spth_leader_gal.22 } }
+    }
+    option = {
+        custom_gui = spth_gal_hiding_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = { country_event = { id = spth_leader_gal.22 } }
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = spth_leader_gal.22
+    title = NAME_spth_gal_koishi
+    desc = spth_leader_gal.22.desc
+    is_triggered_only = yes
+    diplomatic = yes
+
+    custom_gui = spth_gal_koishi_dialogue_window_no_option
+
+    immediate = {
+        set_variable = { which = spth_gal_dialogue_bg value = 3 }
+        set_variable = { which = spth_gal_dialogue_koishi_portrait value = 2 }
+    }
+
+    option = {
+        custom_gui = spth_gal_dialogue_click_any_button
+        name = BUTTON_TEXT_NULL
+        #hidden_effect = { country_event = { id = spth_leader_gal.22 } }
+    }
+    option = {
+        custom_gui = spth_gal_hiding_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = { country_event = { id = spth_leader_gal.22 } }
+        default_hide_option = yes
+    }
+}
+# koishi - custom diplomacy
+# This = target country (player)
+# From = source country
+country_event = {
+    id = spth_leader_gal.23
+    diplomatic = yes
+    title = NAME_spth_gal_koishi
+    is_triggered_only = yes
+    trigger = {
+        from = {
+            is_country_type = spth_gal_koishi
+        }
+        exists = event_target:spth_gal_country_koishi
+        has_communications = event_target:spth_gal_country_koishi
+    }
+
+    custom_gui = spth_gal_koishi_dialogue_window
+    custom_gui_option = spth_gal_koishi_dialogue_button
+
+    desc = {
+        text = spth_leader_gal.23.desc
+        trigger = {
+            always = yes
+        }
+    }
+    immediate = {
+        set_variable = { which = spth_gal_koishi_change_port_page value = 1 }
+        set_variable = { which = spth_gal_dialogue_bg value = 4 }
+        if = {
+            limit = { NOT = { is_variable_set = spth_koishi_lingli_var } }
+            set_variable = { which = spth_koishi_lingli_var value = 514 }
+        }
+        if = {
+            limit = { NOT = { is_variable_set = spth_gal_dialogue_koishi_portrait } }
+            set_variable = { which = spth_gal_dialogue_koishi_portrait value = 1 }
+        }
+    }
+    option = {
+        name = spth_leader_gal.23.a
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.25
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.23.b
+        hidden_effect = {
+            set_variable = { which = spth_gal_koishi_change_port_page value = 1 }
+            country_event = {
+                id = spth_leader_gal.24
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.23.c
+    }
+    option = {
+        name = spth_leader_gal.23.d
+    }
+    option = {
+        custom_gui = spth_gal_hiding_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.23
+                scopes = { from = from }
+            }
+        }
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = spth_leader_gal.24
+    diplomatic = yes
+    title = NAME_spth_gal_koishi
+    desc = spth_leader_gal.24.desc
+    is_triggered_only = yes
+
+    custom_gui = spth_gal_koishi_dialogue_window
+    custom_gui_option = spth_gal_koishi_dialogue_button
+    option = {
+        name = spth_leader_gal.24.a
+        trigger = {
+            check_variable = { which = spth_gal_koishi_change_port_page value = 1 }
+        }
+        custom_tooltip = spth_leader_gal.24.a.tooltip
+        hidden_effect = {
+            set_variable = { which = spth_gal_dialogue_koishi_portrait value = 1 }
+            country_event = {
+                id = spth_leader_gal.24
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.24.b
+        trigger = {
+            check_variable = { which = spth_gal_koishi_change_port_page value = 1 }
+        }
+        custom_tooltip = spth_leader_gal.24.b.tooltip
+        hidden_effect = {
+            set_variable = { which = spth_gal_dialogue_koishi_portrait value = 2 }
+            country_event = {
+                id = spth_leader_gal.24
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = TEXT_NEXTPAGE
+        trigger = {
+            check_variable = { which = spth_gal_koishi_change_port_page value = 1 }
+        }
+        hidden_effect = {
+            set_variable = { which = spth_gal_koishi_change_port_page value = 2 }
+            country_event = {
+                id = spth_leader_gal.24
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = TEXT_PREVPAGE
+        trigger = {
+            check_variable = { which = spth_gal_koishi_change_port_page value = 2 }
+        }
+        hidden_effect = {
+            set_variable = { which = spth_gal_koishi_change_port_page value = 1 }
+            country_event = {
+                id = spth_leader_gal.24
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.24.c
+        trigger = {
+            check_variable = { which = spth_gal_koishi_change_port_page value = 2 }
+        }
+        custom_tooltip = spth_leader_gal.24.c.tooltip
+        hidden_effect = {
+            set_variable = { which = spth_gal_dialogue_koishi_portrait value = 3 }
+            country_event = {
+                id = spth_leader_gal.24
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.24.d
+        trigger = {
+            check_variable = { which = spth_gal_koishi_change_port_page value = 2 }
+        }
+        custom_tooltip = spth_leader_gal.24.d.tooltip
+        hidden_effect = {
+            set_variable = { which = spth_gal_dialogue_koishi_portrait value = 4 }
+            country_event = {
+                id = spth_leader_gal.24
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.24.return
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.23
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        custom_gui = spth_gal_hiding_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.23
+                scopes = { from = from }
+            }
+        }
+        default_hide_option = yes
+    }
+}
+# koishi - help menu
+country_event = {
+    id = spth_leader_gal.25
+    diplomatic = yes
+    title = NAME_spth_gal_koishi
+    desc = spth_leader_gal.25.desc
+    is_triggered_only = yes
+
+    custom_gui = spth_gal_koishi_dialogue_window
+    custom_gui_option = spth_gal_koishi_dialogue_button
+
+    option = {
+        name = spth_leader_gal.25.a
+        custom_tooltip = spth_leader_gal.25.a.tooltip
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.26
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.25.b
+    }
+    option = {
+        name = spth_leader_gal.25.c
+        custom_tooltip = spth_leader_gal.25.c.tooltip
+        hidden_effect = {
+            set_variable = { which = spth_gal_koishi_fleet_support_page value = 1 }
+            country_event = {
+                id = spth_leader_gal.28
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.25.d
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.23
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        custom_gui = spth_gal_hiding_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.23
+                scopes = { from = from }
+            }
+        }
+        default_hide_option = yes
+    }
+}
+# koishi - leader functions
+country_event = {
+    id = spth_leader_gal.26
+    diplomatic = yes
+    title = NAME_spth_gal_koishi
+    desc = spth_leader_gal.26.desc
+    is_triggered_only = yes
+
+    custom_gui = spth_gal_koishi_dialogue_window
+    custom_gui_option = spth_gal_koishi_dialogue_button
+
+    option = {
+        name = spth_leader_gal.26.a
+        custom_tooltip = spth_leader_gal.26.a.tooltip
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.26
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        # 消耗max(25k, 10k+12.5%灵力库存)与max(15k, 5k+7.5%符卡库存)充能20%灵力
+        name = spth_leader_gal.26.b
+        custom_tooltip = spth_leader_gal.26.b.tooltip
+        allow = {
+            hidden_trigger = {
+                fail_text = spth_leader_gal.26.full
+                check_variable = { which = spth_koishi_lingli_var value < 514 }
+            }
+            hidden_trigger = {
+                fail_text = spth_leader_gal.26.lack
+                has_country_resource = {
+                    type = sr_lingli
+                    amount >= 30000
+                }
+                has_country_resource = {
+                    type = sr_fuka
+                    amount >= 20000
+                }
+            }
+            hidden_trigger = {
+                fail_text = spth_leader_gal.26.cooldown
+                has_country_flag = spth_koishi_charge_cooldown
+            }
+        }
+        hidden_effect = {
+            set_timed_country_flag = { flag = spth_koishi_charge_cooldown days = 45 }
+            change_variable = { which = spth_koishi_lingli_var value = 103 }
+            if = {
+                limit = { check_variable = { which = spth_koishi_lingli_var value > 514 } }
+                set_variable = { which = spth_koishi_lingli_var value = 514 }
+            }
+        }
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.26
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.26.c
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.26
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.26.d
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.23
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        custom_gui = spth_gal_hiding_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.23
+                scopes = { from = from }
+            }
+        }
+        default_hide_option = yes
+    }
+}
+# TODO: koishi 27
+
+# koishi - fleet support
+country_event = {
+    id = spth_leader_gal.28
+    diplomatic = yes
+    title = NAME_spth_gal_koishi
+    desc = spth_leader_gal.28.desc
+    is_triggered_only = yes
+
+    custom_gui = spth_gal_koishi_dialogue_window
+    custom_gui_option = spth_gal_koishi_dialogue_button
+
+    option = {
+        name = spth_leader_gal.28.a
+        custom_tooltip = spth_leader_gal.28.a.tooltip
+        trigger = {
+            check_variable = { which = spth_gal_koishi_fleet_support_page value = 1 }
+        }
+    }
+    option = {
+        name = spth_leader_gal.28.b
+        custom_tooltip = spth_leader_gal.28.b.tooltip
+        trigger = {
+            check_variable = { which = spth_gal_koishi_fleet_support_page value = 1 }
+        }
+    }
+    option = {
+        name = spth_leader_gal.28.c
+        custom_tooltip = spth_leader_gal.28.c.tooltip
+        trigger = {
+            check_variable = { which = spth_gal_koishi_fleet_support_page value = 1 }
+        }
+    }
+    option = {
+        name = TEXT_NEXTPAGE
+        trigger = {
+            check_variable = { which = spth_gal_koishi_fleet_support_page value = 1 }
+        }
+        hidden_effect = {
+            set_variable = { which = spth_gal_koishi_fleet_support_page value = 2 }
+            country_event = {
+                id = spth_leader_gal.28
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = TEXT_PREVPAGE
+        trigger = {
+            check_variable = { which = spth_gal_koishi_fleet_support_page value = 2 }
+        }
+        hidden_effect = {
+            set_variable = { which = spth_gal_koishi_fleet_support_page value = 1 }
+            country_event = {
+                id = spth_leader_gal.28
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        name = spth_leader_gal.28.d
+        custom_tooltip = spth_leader_gal.28.d.tooltip
+        trigger = {
+            check_variable = { which = spth_gal_koishi_fleet_support_page value = 2 }
+        }
+    }
+    option = {
+        name = spth_leader_gal.28.e
+        custom_tooltip = spth_leader_gal.28.e.tooltip
+        trigger = {
+            check_variable = { which = spth_gal_koishi_fleet_support_page value = 2 }
+        }
+    }
+    option = {
+        name = spth_leader_gal.28.f
+        custom_tooltip = spth_leader_gal.28.f.tooltip
+        trigger = {
+            check_variable = { which = spth_gal_koishi_fleet_support_page value = 2 }
+        }
+    }
+    option = {
+        name = spth_leader_gal.28.exit
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.23
+                scopes = { from = from }
+            }
+        }
+    }
+    option = {
+        custom_gui = spth_gal_hiding_button
+        name = BUTTON_TEXT_NULL
+        hidden_effect = {
+            country_event = {
+                id = spth_leader_gal.23
+                scopes = { from = from }
+            }
+        }
+        default_hide_option = yes
+    }
+}
 # Yuyuko - first contact
 # 无选项gal界面示例
 # hiding button为点击skip按钮后跳过效果的选项
