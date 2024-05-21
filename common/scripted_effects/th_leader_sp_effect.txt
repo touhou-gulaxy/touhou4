@@ -61,6 +61,33 @@ spth_calc_koishi_lingli_upkeep = {
 # This = our fleet
 # From = enemy fleet
 # FromFrom = our country
+koishi_gal_combat_effect = {
+    optimize_memory
+    if = {
+        limit = { owner = { has_country_flag = enable_koishi_fleet_support_1 } }
+        koishi_gal_combat_effect_1 = yes
+    }
+    if = {
+        limit = { owner = { has_country_flag = enable_koishi_fleet_support_2 } }
+        koishi_gal_combat_effect_2 = yes
+    }
+    if = {
+        limit = { owner = { has_country_flag = enable_koishi_fleet_support_3 } }
+        koishi_gal_combat_effect_3 = yes
+    }
+    if = {
+        limit = { owner = { has_country_flag = enable_koishi_fleet_support_4 } }
+        koishi_gal_combat_effect_4 = yes
+    }
+    if = {
+        limit = { owner = { has_country_flag = enable_koishi_fleet_support_5 } }
+        koishi_gal_combat_effect_5 = yes
+    }
+    if = {
+        limit = { owner = { has_country_flag = enable_koishi_fleet_support_6 } }
+        koishi_gal_combat_effect_6 = yes
+    }
+}
 koishi_gal_combat_effect_1 = {
     optimize_memory
     every_owned_ship = {
@@ -141,7 +168,7 @@ koishi_gal_combat_effect_2 = {
             if = {
                 limit = { exists = leader }
                 set_variable = { which = koishi_assassin_leader_chance value = 10 }
-                set_variable = { which = koishi_lingli_perc value = fromfrom.spth_koishi_lingli_var }
+                set_variable = { which = koishi_lingli_perc value = owner.spth_koishi_lingli_var }
                 divide_variable = { which = koishi_lingli_perc value = 514 }
                 if = {
                     limit = { check_variable = { which = koishi_lingli_perc value > 10 } }
@@ -169,8 +196,80 @@ koishi_gal_combat_effect_2 = {
 koishi_gal_combat_effect_3 = {
     optimize_memory
     from = {
-
+        set_variable = { which = koishi_critical_factor value = 0 }
+        set_variable = { which = koishi_critical_temp value = 0 }
+        export_trigger_value_to_variable = {
+            trigger = count_owned_ship
+            parameters = { limit = { is_ship_class = shipclass_military } }
+            variable = koishi_critical_factor
+        }
+        multiply_variable = { which = koishi_critical_factor value = 10 }
+        export_trigger_value_to_variable = {
+            trigger = count_owned_ship
+            parameters = { limit = { is_koishi_critical_factor_low = yes } }
+            variable = koishi_critical_temp
+        }
+        multiply_variable = { which = koishi_critical_temp value = 15 }
+        change_variable = { which = koishi_critical_factor value = koishi_critical_temp }
+        export_trigger_value_to_variable = {
+            trigger = count_owned_ship
+            parameters = { limit = { is_koishi_critical_factor_mid = yes } }
+            variable = koishi_critical_temp
+        }
+        multiply_variable = { which = koishi_critical_temp value = 25 }
+        change_variable = { which = koishi_critical_factor value = koishi_critical_temp }
+        export_trigger_value_to_variable = {
+            trigger = count_owned_ship
+            parameters = { limit = { is_koishi_critical_factor_high = yes } }
+            variable = koishi_critical_temp
+        }
+        multiply_variable = { which = koishi_critical_temp value = 35 }
+        change_variable = { which = koishi_critical_factor value = koishi_critical_temp }
+        export_trigger_value_to_variable = {
+            trigger = count_owned_ship
+            parameters = { limit = { is_ship_class = shipclass_military } }
+            variable = koishi_critical_temp
+        }
+        divide_variable = { which = koishi_critical_factor value = koishi_critical_temp }
+        floor_variable = koishi_critical_factor
+        multiply_variable = { which = koishi_critical_factor value = 0.01 }
+        root = {
+            set_variable = { which = koishi_critical_factor value = root.from.koishi_critical_factor }
+        }
+        clear_variable = koishi_critical_temp
+        clear_variable = koishi_critical_factor
     }
+    reroll_random = yes
+    set_variable = { which = koishi_critical_scale value = spth_koishi_lingli_var }
+    divide_variable = { which = koishi_critical_scale value = 1028 }
+    change_variable = { which = koishi_critical_scale value = 1.40 }
+    random = {
+        chance = koishi_critical_factor
+        every_owned_ship = {
+            set_variable = { which = koishi_critical_scale_ship value = 0 }
+            export_modifier_to_variable = {
+                modifier = ship_weapon_damage
+                variable = koishi_critical_scale_ship
+            }
+            if = {
+                limit = { check_variable = { which = koishi_critical_scale_ship value <= 0 } }
+                multiply_variable = { which = koishi_critical_scale_ship value = -1 }
+                change_variable = { which = koishi_critical_scale_ship value = 0.5 }
+            }
+            multiply_variable = {
+                which = koishi_critical_scale_ship
+                value = fleet.koishi_critical_scale
+            }
+            add_modifier = {
+                modifier = TH_dynamic_reset_ship_weapon_damage
+                multiplier = koishi_critical_scale_ship
+                days = 1
+            }
+            clear_variable = koishi_critical_scale_ship
+        }
+    }
+    clear_variable = koishi_critical_factor
+    clear_variable = koishi_critical_scale
 }
 koishi_gal_combat_effect_4 = {
     optimize_memory
@@ -180,7 +279,17 @@ koishi_gal_combat_effect_4 = {
             NOT = { has_fleet_flag = koishi_duplicate_cooldown }
         }
         set_timed_fleet_flag = { flag = koishi_duplicate_cooldown days = 75 }
-        # duplicate ship or create danmuku support
+        # duplicate ship and create danmuku support
+        solar_system = {
+            create_ambient_object = {
+                type = "star_explosion"
+                play_animation_once = yes
+                location = this.star
+            }
+            last_created_ambient_object = {
+                set_location = { target = this.star distance = 0 angle = random }
+            }
+        }
         if = {
             limit = {
                 exists = leader
@@ -190,7 +299,7 @@ koishi_gal_combat_effect_4 = {
                 set_variable = { which = koishi_ship_count value = 0 }
                 export_trigger_value_to_variable = {
                     trigger = count_owned_ship
-                    parameters = { limit = { is_ship_class = shipclass_military } }
+                    parameters = { limit = { is_ship_class = shipclass_military is_koishi_original_ships = yes } }
                     variable = koishi_ship_count
                 }
                 random_list = {
@@ -221,8 +330,21 @@ koishi_gal_combat_effect_4 = {
                                 }
                             }
                         }
+                        koishi_reduce_hp_percent = { percent = 14 }
+                        reroll_random = yes
                     }
                 }
+            }
+        } else = {
+            from = {
+                random_list = {
+                    1 = { every_owned_ship = { koishi_reduce_hp_percent = { percent = 5 } } }
+                    1 = { every_owned_ship = { koishi_reduce_hp_percent = { percent = 10 } } }
+                    1 = { every_owned_ship = { koishi_reduce_hp_percent = { percent = 15 } } }
+                    1 = { every_owned_ship = { koishi_reduce_hp_percent = { percent = 20 } } }
+                    1 = { every_owned_ship = { koishi_reduce_hp_percent = { percent = 25 } } }
+                }
+                reroll_random = yes
             }
         }
     }
@@ -233,9 +355,9 @@ koishi_gal_combat_effect_5 = {
         limit = { NOT = { has_fleet_flag = koishi_combat_5_finished } }
         set_fleet_flag = koishi_combat_5_finished
         every_owned_ship = {
-            set_variable = { which = koishi_repeatable_rate value = 0.10 }
-            set_variable = { which = koishi_repeatable_temp value = fromfrom.spth_koishi_lingli_var }
-            divide_variable = { which = koishi_repeatable_temp value = 1028 }
+            set_variable = { which = koishi_repeatable_rate value = 0.05 }
+            set_variable = { which = koishi_repeatable_temp value = owner.spth_koishi_lingli_var }
+            divide_variable = { which = koishi_repeatable_temp value = 2056 }
             if = {
                 limit = { check_variable = { which = koishi_repeatable_temp value > 0.05 } }
                 change_variable = { which = koishi_repeatable_rate value = koishi_repeatable_temp }
@@ -299,7 +421,116 @@ koishi_gal_combat_effect_5 = {
 }
 koishi_gal_combat_effect_6 = {
     optimize_memory
-    from = {
-
+    if = {
+        limit = { NOT = { has_fleet_flag = koishi_combat_6_cooldown } }
+        # 保证船体提升至少floor(5140000*(100%+(恋恋灵力/1028)))
+        set_variable = { which = koishi_ship_hull_var value = owner.spth_koishi_lingli_var }
+        divide_variable = { which = koishi_ship_hull_var value = 1028 }
+        multiply_variable = { which = koishi_ship_hull_var value = 5140000 }
+        every_owned_ship = {
+            set_variable = { which = koishi_ship_hull_mult value = 0 }
+            export_modifier_to_variable = { modifier = ship_hull_mult variable = koishi_ship_hull_mult }
+            multiply_variable = { which = koishi_ship_hull_var value = koishi_ship_hull_mult }
+            floor_variable = koishi_ship_hull_var
+            set_update_modifiers_batch = begin
+            remove_modifier = koishi_improve_ship_hull
+            add_modifier = { modifier = koishi_improve_ship_hull multiplier = koishi_ship_hull_var }
+            set_update_modifiers_batch = end
+            clear_variable = koishi_ship_hull_mult
+            clear_variable = koishi_ship_hull_var
+            repair_ship = yes
+        }
+        set_timed_fleet_flag = { flag = koishi_combat_6_cooldown days = 2 }
     }
+    every_owned_ship = {
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_shield_penetration_mult"
+            relation = "<"
+            limit_value = 0.50
+            value = 0.50
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_armor_penetration_mult"
+            relation = "<"
+            limit_value = 0.50
+            value = 0.50
+        }
+    }
+    from = {
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_shield_penetration_mult"
+            relation = ">"
+            limit_value = -1
+            value = -1
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_armor_penetration_mult"
+            relation = ">"
+            limit_value = -1
+            value = -1
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_shield_hardening_add"
+            relation = ">"
+            limit_value = -1
+            value = -1
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_armor_hardening_add"
+            relation = ">"
+            limit_value = -1
+            value = -1
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_shield_penetration_mult"
+            relation = ">"
+            limit_value = -1
+            value = -1
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_weapon_range_mult"
+            relation = ">"
+            limit_value = 0.25
+            value = 0.25
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_weapon_damage"
+            relation = ">"
+            limit_value = 0.25
+            value = 0.25
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_fire_rate_mult"
+            relation = ">"
+            limit_value = 0.25
+            value = 0.25
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_hull_regen_add_perc"
+            relation = ">"
+            limit_value = 0.25
+            value = 0.25
+        }
+    }
+}
+
+koishi_reduce_hp_percent = {
+    optimize_memory
+    set_variable = { which = koishi_hitpoint value = 0 }
+    export_trigger_value_to_variable = { trigger = has_hp variable = koishi_hitpoint }
+    multiply_variable = { which = koishi_hitpoint value = $percent$ }
+    multiply_variable = { which = koishi_hitpoint value = 0.01 }
+    floor_variable = koishi_hitpoint
+    reduce_hp = koishi_hitpoint
+    clear_variable = koishi_hitpoint
+}
+
+koishi_reduce_hp_rest = {
+    optimize_memory
+    set_variable = { which = koishi_hitpoint value = 0 }
+    export_trigger_value_to_variable = { trigger = has_hp variable = koishi_hitpoint }
+    change_variable = { which = koishi_hitpoint value = $rest$ }
+    floor_variable = koishi_hitpoint
+    reduce_hp = koishi_hitpoint
+    clear_variable = koishi_hitpoint
 }
