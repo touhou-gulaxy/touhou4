@@ -35,6 +35,22 @@ TH_dynamic_modifier_conditional = {
         TH_add_modifier = { modifier = $modifier$ value = $value$ }
     }
 }
+TH_timed_check_modifier = {
+    optimize_memory
+    export_modifier_to_variable = {
+        modifier = $modifier$
+        variable = spth_check_value_$modifier$
+    }
+    if = {
+        limit = {
+            check_variable = { which = spth_check_value_$modifier$ value $relation$ $check_value$ }
+        }
+        set_timed_ship_flag = { flag = spth_check_value_$modifier$_checkpoint days = 1 }
+        add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = spth_check_value_$modifier$ days = $days$ }
+        add_modifier = { modifier = TH_dynamic_reset_$modifier$ multiplier = $value$ days = $days$ }
+    }
+    clear_variable = spth_check_value_$modifier$
+}
 
 sakuya_the_world_dynamic = {
     optimize_memory
@@ -385,4 +401,9 @@ TH_clear_all_dynamic_modifier = {
     remove_modifier = TH_dynamic_reset_ship_shield_hardening_add
     remove_modifier = TH_dynamic_reset_ship_evasion_mult
     remove_modifier = TH_dynamic_reset_ship_evasion_add
+
+    remove_modifier = koishi_improve_energy_damage
+    remove_modifier = koishi_improve_kinetic_damage
+    remove_modifier = koishi_improve_explosive_damage
+    remove_modifier = koishi_improve_special_damage
 }

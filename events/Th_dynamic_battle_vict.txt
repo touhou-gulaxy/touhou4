@@ -146,6 +146,7 @@ fleet_event = {
                     clear_variable = yukari_kamikakushi_ship_counter
                 }
             }
+            reroll_random = yes
 
             fleet_event = { id = Th_dynamic_battle_vict.6 days = 17 }
         } else = {
@@ -216,6 +217,85 @@ ship_event = {
     }
     immediate = {
         TH_clear_all_dynamic_modifier = yes
+    }
+}
+
+# This = our fleet
+# From = enemy fleet
+# FromFrom = our country
+fleet_event = {
+    id = Th_dynamic_battle_vict.11
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = { check_variable = { which = spth_koishi_lingli_var value > 0 } }
+    }
+    immediate = {
+        if = {
+            limit = {
+                is_in_combat = yes
+                fromfrom = { check_variable = { which = spth_koishi_lingli_var value > 0 } }
+            }
+            every_owned_ship = {
+                change_variable = { which = koishi_combat_days value = 1 }
+            }
+            from = {
+                every_owned_ship = {
+                    change_variable = { which = koishi_combat_days value = 1 }
+                }
+            }
+            if = {
+                limit = { owner = { has_country_flag = enable_koishi_fleet_support_1 } }
+                koishi_gal_combat_effect_1 = yes
+            }
+            if = {
+                limit = { owner = { has_country_flag = enable_koishi_fleet_support_2 } }
+                koishi_gal_combat_effect_2 = yes
+            }
+            if = {
+                limit = { owner = { has_country_flag = enable_koishi_fleet_support_3 } }
+                koishi_gal_combat_effect_3 = yes
+            }
+            if = {
+                limit = { owner = { has_country_flag = enable_koishi_fleet_support_4 } }
+                koishi_gal_combat_effect_4 = yes
+            }
+            if = {
+                limit = { owner = { has_country_flag = enable_koishi_fleet_support_5 } }
+                koishi_gal_combat_effect_5 = yes
+            }
+            if = {
+                limit = { owner = { has_country_flag = enable_koishi_fleet_support_6 } }
+                koishi_gal_combat_effect_6 = yes
+            }
+            fleet_event = {
+                id = Th_dynamic_battle_vict.11
+                days = 1
+                scopes = { from = from }
+            }
+        } else = {
+            remove_fleet_flag = koishi_duplicate_cooldown
+            remove_fleet_flag = koishi_combat_5_finished
+            every_owned_ship = {
+                limit = { has_ship_flag = is_koishi_duplicated_ship }
+                delete_ship = this
+            }
+            every_owned_ship = {
+                clear_variable = koishi_combat_days
+                clear_variable = koishi_repeatable_var
+                clear_variable = koishi_repeatable_rate
+                TH_clear_all_dynamic_modifier = yes
+            }
+            from = {
+                clear_variable = koishi_ship_count
+                remove_fleet_flag = koishi_combat_2_cooldown
+                every_owned_ship = {
+                    clear_variable = koishi_combat_days
+                    remove_ship_flag = koishi_combat_1_cooldown
+                    TH_clear_all_dynamic_modifier = yes
+                }
+            }
+        }
     }
 }
 
@@ -433,6 +513,43 @@ country_event = {
     immediate = {
         fromfromfrom = {
             fleet_event = { id = Th_dynamic_battle_vict.6 }
+        }
+    }
+}
+
+################
+# Koishi Skill #
+################
+# 触发事件
+# This = us
+# From = enemy
+# FromFrom = our fleet
+# FromFromFrom = enemy fleet
+country_event = {
+    id = Th_dynamic_battle_vict.1003
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = event_target:spth_gal_country_koishi
+        has_communications = event_target:spth_gal_country_koishi
+        OR = {
+            has_country_flag = enable_koishi_fleet_support_1
+            has_country_flag = enable_koishi_fleet_support_2
+            has_country_flag = enable_koishi_fleet_support_3
+            has_country_flag = enable_koishi_fleet_support_4
+            has_country_flag = enable_koishi_fleet_support_5
+            has_country_flag = enable_koishi_fleet_support_6
+        }
+    }
+    immediate = {
+        fromfrom = {
+            fleet_event = {
+                id = Th_dynamic_battle_vict.11
+                scopes = {
+                    from = fromfromfrom
+                    fromfrom = root
+                }
+            }
         }
     }
 }
