@@ -3,7 +3,7 @@ namespace = spth_leader_gal
 # 古明地恋 - 特殊领袖
 # 可换装立绘
 # 聊天
-# 战斗效果 - 消耗领袖灵力
+# 战斗效果 - 消耗领袖灵力, 四段飞升+100年后可使用
 #  恋恋灵力上限514, 灵力可以自然恢复(40/月) 已完成
 #  可以消耗max(25k, 10k+12.5%灵力库存)与max(15k, 5k+7.5%符卡库存)充能20%灵力, 充能冷却45天 已完成
 #  灵力不足时无法触发效果 已完成
@@ -14,23 +14,21 @@ namespace = spth_leader_gal
 #   维护费15灵力
 #  战斗效果2:已完成
 #   交战时每2天有10%+max(10%+恋恋灵力/514)几率击杀对方舰队司令
-#   提升己方护盾装甲效率
-#   维护费10灵力
-#  战斗效果3:
-#   每12天对敌方舰队造成一定伤害
-#   Reflex Radar
-#   有取决于敌方舰船种类的暴击几率与取决于点数的暴伤
+#   维护费5灵力
+#  战斗效果3:已完成
+#   提升己方舰船抗攻击能力，提升护盾装甲效率。
 #   维护费20
 #  战斗效果4:已完成
-#   恋恋所在舰队进入战斗后随机复制20～50%的敌方舰船作为场外支援，战斗结束后解散。
-#   维护费10灵力
+#   恋恋所在舰队进入战斗后每45天可以对敌人部分舰船造成大量伤害
+#   其余舰队造成少量伤害
+#   维护费5灵力
 #  战斗效果5：已完成
-#   舰队获得转化增幅循环修正的能力，百分比为5%+max(5%, 恋恋灵力/2056)
-#   维护费15灵力
-#  战斗效果6：已完成
-#   舰队获得进一步干扰敌人的能力，保证不低于50%的双穿并且大量提升己方舰船抗攻击能力。
-#   己方舰船被击毁时有几率发动反击
+#   恋恋所在舰队获得转化增幅循环修正的能力，百分比为5%+max(5%, 恋恋灵力/2056)
 #   维护费20灵力
+#  战斗效果6：已完成
+#   全体舰队保证不低于50%的双穿
+#   恋恋所在舰队舰船被击毁时会发动反击
+#   维护费15灵力
 #
 # Koishi - first contact
 country_event = {
@@ -324,6 +322,21 @@ country_event = {
     option = {
         name = spth_leader_gal.25.c
         custom_tooltip = spth_leader_gal.25.c.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = spth_leader_gal.25.c.fail
+                OR = {
+                    AND = {
+                        OR = {
+                            has_ascension_perk = ap_toho4
+                            has_ascension_perk = ap_hm4
+                        }
+                        years_passed >= 100
+                    }
+                    has_country_flag = koishi_debug_enable_combat_support
+                }
+            }
+        }
         hidden_effect = {
             set_variable = { which = spth_gal_koishi_fleet_support_page value = 1 }
             country_event = {
