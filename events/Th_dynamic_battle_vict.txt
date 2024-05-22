@@ -231,11 +231,36 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-            every_owned_ship = { change_variable = { which = koishi_combat_days value = 1 } }
-            from = { every_owned_ship = { change_variable = { which = koishi_combat_days value = 1 } } }
+            every_owned_ship = {
+                if = {
+                    limit = { NOT = { has_ship_flag = koishi_combat_days_cooldown } }
+                    change_variable = { which = koishi_combat_days value = 1 }
+                }
+                set_timed_ship_flag = { flag = koishi_combat_days_cooldown days = 1 }
+            }
+            # from = { every_owned_ship = { change_variable = { which = koishi_combat_days value = 1 } } }
             if = {
                 limit = { fromfrom = { check_variable = { which = spth_koishi_lingli_var value > 0 } } }
+                remove_fleet_flag = koishi_lack_lingli
                 koishi_gal_combat_effect = yes
+            } else = {
+                if = {
+                    limit = { NOT = { has_fleet_flag = koishi_lack_lingli } }
+                    remove_fleet_flag = koishi_lack_lingli
+                    remove_fleet_flag = koishi_combat_defence_cooldown
+                    remove_fleet_flag = koishi_support_cooldown
+                    remove_fleet_flag = koishi_combat_upgrade_finished
+                    remove_modifier = koishi_improve_ship_hull
+                    clear_variable = koishi_ship_hull_var
+                    every_owned_ship = {
+                        clear_variable = koishi_combat_days
+                        clear_variable = koishi_repeatable_var
+                        clear_variable = koishi_repeatable_rate
+                        clear_variable = koishi_ship_hull_var
+                        TH_clear_all_dynamic_modifier = yes
+                    }
+                    set_fleet_flag = koishi_lack_lingli
+                }
             }
             fleet_event = {
                 id = Th_dynamic_battle_vict.11
@@ -246,6 +271,7 @@ fleet_event = {
                 }
             }
         } else = {
+            remove_fleet_flag = koishi_lack_lingli
             remove_fleet_flag = koishi_combat_defence_cooldown
             remove_fleet_flag = koishi_support_cooldown
             remove_fleet_flag = koishi_combat_upgrade_finished
@@ -255,7 +281,7 @@ fleet_event = {
                 clear_variable = koishi_combat_days
                 clear_variable = koishi_repeatable_var
                 clear_variable = koishi_repeatable_rate
-                clear_variable = koishi_ship_hull_mult
+                clear_variable = koishi_ship_hull_var
                 TH_clear_all_dynamic_modifier = yes
             }
         }
@@ -578,6 +604,7 @@ country_event = {
     trigger = {
         exists = event_target:spth_gal_country_koishi
         has_communications = event_target:spth_gal_country_koishi
+        has_authority = auth_gensokyo
         OR = {
             has_country_flag = enable_koishi_fleet_support_1
             has_country_flag = enable_koishi_fleet_support_2
@@ -589,6 +616,12 @@ country_event = {
     }
     immediate = {
         fromfrom = {
+            every_owned_ship = {
+                if = {
+                    limit = { NOT = { is_variable_set = koishi_combat_days } }
+                    set_variable = { which = koishi_combat_days value = 0 }
+                }
+            }
             fleet_event = {
                 id = Th_dynamic_battle_vict.11
                 scopes = {

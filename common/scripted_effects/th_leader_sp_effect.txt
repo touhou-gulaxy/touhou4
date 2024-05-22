@@ -200,22 +200,18 @@ koishi_gal_combat_effect_3 = {
     optimize_memory
     if = {
         limit = { NOT = { has_fleet_flag = koishi_combat_defence_cooldown } }
-        # 保证船体提升至少floor(5140000*(100%+(恋恋灵力/1028)))
+        # 保证船体提升至少floor(5140000*(55%+(恋恋灵力/1028)))
         set_variable = { which = koishi_ship_hull_var value = owner.spth_koishi_lingli_var }
         divide_variable = { which = koishi_ship_hull_var value = 1028 }
+        change_variable = { which = koishi_ship_hull_var value = 0.55 }
         multiply_variable = { which = koishi_ship_hull_var value = 5140000 }
         every_owned_ship = {
-            set_variable = { which = koishi_ship_hull_mult value = 0 }
             set_variable = { which = koishi_ship_hull_var value = fleet.koishi_ship_hull_var }
-            export_modifier_to_variable = { modifier = ship_hull_mult variable = koishi_ship_hull_mult }
-            multiply_variable = { which = koishi_ship_hull_var value = koishi_ship_hull_mult }
             floor_variable = koishi_ship_hull_var
             set_update_modifiers_batch = begin
             remove_modifier = koishi_improve_ship_hull
             add_modifier = { modifier = koishi_improve_ship_hull multiplier = koishi_ship_hull_var }
             set_update_modifiers_batch = end
-            clear_variable = koishi_ship_hull_mult
-            clear_variable = koishi_ship_hull_var
             repair_ship = yes
         }
         set_timed_fleet_flag = { flag = koishi_combat_defence_cooldown days = 3 }
