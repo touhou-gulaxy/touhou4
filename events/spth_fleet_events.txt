@@ -190,7 +190,10 @@ planet_event = {
         }
         # stole pops
         if = {
-            limit = { is_colony = yes }
+            limit = {
+                is_colony = yes
+                num_pops >= 1
+            }
             export_trigger_value_to_variable = {
                 trigger = num_pops
                 variable = spth_kamikakushi_colony_pops_counter
@@ -277,7 +280,66 @@ planet_event = {
                 }
             }
         }
+        add_deposit = d_food_3
+        random_list = {
+            1 = { while = { count = 8 add_deposit = d_sr_lingli_1 } }
+            1 = { while = { count = 12 add_deposit = d_sr_lingli_1 } }
+            1 = { while = { count = 16 add_deposit = d_sr_lingli_1 } }
+        }
         every_owned_pop = { kill_pop = yes }
         set_update_modifiers_batch = end
+        if = {
+            limit = {
+                NOR = {
+                    is_planet_class = pc_ai
+                    is_ringworld = yes
+                    is_planet_class = pc_habitat
+                }
+                OR = {
+                    is_artificial = no
+                    is_planet_class = pc_gensokyo_city
+                    is_planet_class = pc_gensokyo_planet
+                }
+            }
+            add_deposit = d_city_ruins
+            add_deposit = d_city_ruins
+            add_deposit = d_dangerous_wildlife_blocker
+            add_deposit = d_dangerous_wildlife_blocker
+            add_deposit = d_dangerous_wildlife_blocker
+            change_pc = pc_kamikakushi_planet
+            from = {
+                country_event = {
+                    id = spth_fleet.101
+                    scopes = {
+                        from = root
+                    }
+                }
+            }
+        }
+    }
+}
+
+# 神隐轰炸选择事件
+# This = country
+# From = planet
+country_event = {
+    id = spth_fleet.101
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = kamikakushi_planet_select_prevent }
+        from = { is_planet_class = pc_kamikakushi_planet }
+    }
+    title = spth_fleet.101
+    desc = spth_fleet.101.desc
+    picture = GFX_evt_kamikakushi
+    option = {
+        name = spth_fleet.101.a
+        default_hide_option = yes
+    }
+    option = {
+        name = spth_fleet.101.b
+        hidden_effect = {
+            set_country_flag = kamikakushi_planet_select_prevent
+        }
     }
 }
