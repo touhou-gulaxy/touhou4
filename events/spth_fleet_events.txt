@@ -198,22 +198,74 @@ planet_event = {
                 trigger = num_pops
                 variable = spth_kamikakushi_colony_pops_counter
             }
+            multiply_variable = { which = spth_kamikakushi_colony_pops_counter value = 0.25 }
             multiply_variable = { which = spth_kamikakushi_colony_pops_counter value = 0.5 }
             ceiling_variable = spth_kamikakushi_colony_pops_counter
             from = {
-                random_owned_planet = {
+                # 如果首都人口小于200：转化一半给首都，剩余全部平均转化给非首都
+                # 如果首都人口大于200：全部平均转化
+                # 平均计算算法(参考并行计算线程任务分配):
+                #   每个星球基础转化=floor(转化人口/殖民地数量)
+                #   溢出额外转化=floor((转化总数-floor(转化人口/殖民地数量)*殖民地数量)/殖民地数量)
+                # 变量表
+                # root.spth_kamikakushi_colony_pops_counter 转化人口计数器
+                # spth_kamikakushi_colony_pops_avg 平均转换人口
+                # kamikakushi_colony_counter 殖民地数量
+                # spth_kamikakushi_colony_pops_temp 计算中间变量
+                set_variable = { which = kamikakushi_colony_counter value = 0 }
+                every_owned_planet = {
                     limit = { is_colony = yes }
-                    while = {
-                        count = root.spth_kamikakushi_colony_pops_counter
+                    change_variable = { which = kamikakushi_colony_counter value = 1 }
+                }
+                # 星球平均转化人口=floor(转化人口/殖民地数量)
+                set_variable = {
+                    which = spth_kamikakushi_colony_pops_avg
+                    value = root.spth_kamikakushi_colony_pops_counter
+                }
+                divide_variable = { which = spth_kamikakushi_colony_pops_avg value = kamikakushi_colony_counter }
+                floor_variable = spth_kamikakushi_colony_pops_avg
+                # 计算溢出额外转化人口=floor((转化总数-floor(转化人口/殖民地数量)*殖民地数量)/殖民地数量)
+                set_variable = { which = spth_kamikakushi_colony_pops_temp value = spth_kamikakushi_colony_pops_avg }
+                multiply_variable = { which = spth_kamikakushi_colony_pops_temp value = kamikakushi_colony_counter }
+                multiply_variable = { which = spth_kamikakushi_colony_pops_temp value = -1 }
+                change_variable = { which = spth_kamikakushi_colony_pops_temp value = root.spth_kamikakushi_colony_pops_counter }
+                floor_variable = spth_kamikakushi_colony_pops_temp
+                # 转化人口
+                every_owned_planet = {
+                    limit = { is_colony = yes is_capital = no }
+                    while = { count = spth_kamikakushi_colony_pops_avg create_pop = { species = owner_main_species } }
+                }
+                while = {
+                    count = spth_kamikakushi_colony_pops_temp
+                    random_owned_planet = {
+                        limit = { is_colony = yes is_capital = no }
                         create_pop = { species = owner_main_species }
                     }
                 }
-                capital_scope = {
+                if = {
+                    limit = { capital_scope = { num_pops <= 200 } }
+                    capital_scope = {
+                        while = {
+                            count = root.spth_kamikakushi_colony_pops_counter
+                            create_pop = { species = owner_main_species }
+                        }
+                    }
+                } else = {
+                    every_owned_planet = {
+                        limit = { is_colony = yes }
+                        while = { count = spth_kamikakushi_colony_pops_avg create_pop = { species = owner_main_species } }
+                    }
                     while = {
-                        count = root.spth_kamikakushi_colony_pops_counter
-                        create_pop = { species = owner_main_species }
+                        count = spth_kamikakushi_colony_pops_temp
+                        random_owned_planet = {
+                            limit = { is_colony = yes is_capital = no }
+                            create_pop = { species = owner_main_species }
+                        }
                     }
                 }
+                clear_variable = spth_kamikakushi_colony_pops_avg
+                clear_variable = spth_kamikakushi_colony_pops_temp
+                clear_variable = kamikakushi_colony_counter
             }
             clear_variable = spth_kamikakushi_colony_pops_counter
             destroy_colony = yes
