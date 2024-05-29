@@ -837,31 +837,32 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		every_owned_pop = {
+		every_owned_planet = {
 			limit = {
-				species = {
-					NOT = {
-						has_trait = trait_touhou
-					}
+				is_colony = yes
+				any_owned_pop = {
+					NOT = { has_trait = trait_touhou }
 				}
 			}
-			random_list = {
-				10 = {
+			set_variable = { which = touhou_convert_counter value = 0 }
+			every_owned_pop = {
+				limit = { NOT = { has_trait = trait_touhou } }
+				random_list = {
+					1 = { change_variable = { which = touhou_convert_counter value = 1 } }
+					9 = {  }
 				}
-				90 = {
-					kill_pop = yes
-				}
+				reroll_random = yes
 			}
+			if = {
+				limit = { check_variable = { which = touhou_convert_counter value < 1 } }
+				set_variable = { which = touhou_convert_counter value = 1 }
+			}
+			while = { count = touhou_convert_counter create_pop = { species = root.owner_main_species } }
+			clear_variable = touhou_convert_counter
 		}
 		every_owned_pop = {
-			limit = {
-				species = {
-					NOT = {
-						has_trait = trait_touhou
-					}
-				}
-			}
-			change_species = owner_species
+			limit = { NOT = { has_trait = trait_touhou } }
+			kill_pop = yes
 		}
 		hidden_effect = {
 			country_event = {
@@ -1329,47 +1330,27 @@ planet_event = {
 
 	immediate = {
 		save_event_target_as = kamikakushi_planet
-		every_owned_pop = {
-			set_pop_flag = kamikakushi_pop
+		set_variable = { which = kamikakushi_pop_num value = 0 }
+		export_trigger_value_to_variable = {
+			trigger = num_pops
+			variable = kamikakushi_pop_num
 		}
 		from.owner = {
 			set_variable = {
 				which = kamikakushi_num
-				value = 0
+				value = root.kamikakushi_pop_num
 			}
-		}
-		while = {
-			limit = {
-				any_owned_pop = {
-					has_pop_flag = kamikakushi_pop
-				}
-			}
-			random_owned_pop = {
-				limit = {
-					has_pop_flag = kamikakushi_pop
-				}
-				kill_pop = yes
-			}
-		    from.owner = {
-				change_variable = {
-					which = kamikakushi_num
-					value = 1
-				}
-			}
-		}
-		from.owner = {
 			divide_variable = {
 				which = kamikakushi_num
 				value = 5
 			}
-		}
-		from.owner = {
 			set_variable = {
 				which = kamikakushi_num_1
 				value = kamikakushi_num
 			}
 		}
-
+		clear_variable = kamikakushi_pop_num
+		every_owned_pop = { kill_pop = yes }
 
 		hidden_effect = {
 			if = {
@@ -1537,22 +1518,9 @@ country_event = {
 			country_event = {
 				id = toho.9003
 			}
-			while = {
-				count = kamikakushi_num_1
-				# random_owned_planet = {
-				# 	create_pop = {
-				# 		species = owner_species
-				# 	}
-				# }
-				capital_scope = {
-					create_pop = {
-						species = owner_species
-					}
-					add_modifier = {
-						modifier = th_people_emmigration
-						days = 300
-					}
-				}
+			capital_scope = {
+				while = { count = kamikakushi_num create_pop = { species = owner_species } }
+				add_modifier = { modifier = th_people_emmigration days = 300 }
 			}
 		}
 	}
@@ -1579,22 +1547,9 @@ country_event = {
 			country_event = {
 				id = toho.9003
 			}
-			while = {
-				count = kamikakushi_num_1
-				# random_owned_planet = {
-				# 	create_pop = {
-				# 		species = owner_species
-				# 	}
-				# }
-				capital_scope = {
-					create_pop = {
-						species = owner_species
-					}
-					add_modifier = {
-						modifier = th_people_emmigration
-						days = 300
-					}
-				}
+			capital_scope = {
+				while = { count = kamikakushi_num_1 create_pop = { species = owner_species } }
+				add_modifier = { modifier = th_people_emmigration days = 300 }
 			}
 		}
 	}
@@ -1608,19 +1563,19 @@ country_event = {
 	immediate = {
 		clear_variable = kamikakushi_num
 		clear_variable = kamikakushi_num_1
-		save_global_event_target_as = kamikakushi_planet
-		country_event = {
-			id = toho.9004
-		}
+		#save_global_event_target_as = kamikakushi_planet
+		#country_event = {
+		#	id = toho.9004
+		#}
 	}
 }
 
-country_event = {
-	id = toho.9004
-	is_triggered_only = yes
-	hide_window = yes
-
-	immediate = {
-		clear_global_event_target = kamikakushi_planet
-	}
-}
+#country_event = {
+#	id = toho.9004
+#	is_triggered_only = yes
+#	hide_window = yes
+#
+#	immediate = {
+#		clear_global_event_target = kamikakushi_planet
+#	}
+#}
