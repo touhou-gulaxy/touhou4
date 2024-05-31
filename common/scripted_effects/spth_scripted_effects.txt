@@ -45,12 +45,60 @@ SPTH_EFFECT_PLANET_UPDATE_DISPLAY_INFO = {
 	print_scope_effect = yes
 }
 
+spth_debug_trigger_lunar_capital_ruin = {
+	optimize_memory
+	if = {
+		limit = { is_scope_type = country }
+		country_event = {
+			id = toho.3000
+			scopes = {
+				from = event_target:spth_story_sol_system_earth
+				fromfrom = event_target:spth_story_sol_system_lunar_capital
+			}
+		}
+	}
+}
+
 spth_special_project_research_moon_barrier = {
 	optimize_memory
 	root.owner = {
 		if = {
 			limit = { check_variable = { which = spth_research_moon_barrier_var value >= 160 } }
-			# TODO: finish project
+			switch = {
+				trigger = has_country_flag
+				spth_break_moon_barrier = {
+					event_target:spth_story_sol_system_lunar_capital = {
+						set_planet_entity = {
+							entity = city_planet_01_entity
+							graphical_culture = owner
+						}
+						create_ambient_object = {
+							type = "spth_hakurei_city_object"
+							entity_offset_height = { min = -35 max = -40 }
+							location = this
+						}
+						last_created_ambient_object = {
+							set_location = { target = prev }
+						}
+						add_modifier = { modifier = spth_lunar_break_barrier }
+						add_modifier = { modifier = paradise_made }
+					}
+				}
+				spth_repair_moon_barrier = {
+					event_target:spth_story_sol_system_lunar_capital = {
+						create_ambient_object = {
+							type = "th_gensokyo_mofazhen_object"
+							entity_offset_height = { min = -35 max = -40 }
+							location = this
+						}
+						last_created_ambient_object = {
+							set_location = { target = prev }
+						}
+						add_modifier = { modifier = spth_lunar_repair_barrier }
+						add_modifier = { modifier = paradise_planet }
+					}
+				}
+			}
 			clear_variable = spth_research_moon_barrier_var
 		} else = {
 			enable_special_project = {
