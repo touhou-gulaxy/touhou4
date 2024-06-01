@@ -64,43 +64,57 @@ spth_special_project_research_moon_barrier = {
 	root.owner = {
 		if = {
 			limit = { check_variable = { which = spth_research_moon_barrier_var value >= 160 } }
-			switch = {
-				trigger = has_country_flag
-				spth_break_moon_barrier = {
-					event_target:spth_story_sol_system_lunar_capital = {
-						set_planet_entity = {
-							entity = city_planet_01_entity
-							graphical_culture = owner
-						}
-						create_ambient_object = {
-							type = "spth_hakurei_city_object"
-							entity_offset_height = { min = -35 max = -40 }
-							location = this
-						}
-						last_created_ambient_object = {
-							set_location = { target = prev }
-						}
-						add_modifier = { modifier = spth_lunar_break_barrier }
-						add_modifier = { modifier = paradise_made }
-					}
+			create_message = {
+				type = spth_finish_special_project
+				localization = spth_message_finish_special_project_desc
+				variable = {
+					type = name
+					localization = SPTH_LEADER_NAME
+					scope = root.leader
 				}
-				spth_repair_moon_barrier = {
-					event_target:spth_story_sol_system_lunar_capital = {
-						create_ambient_object = {
-							type = "th_gensokyo_mofazhen_object"
-							entity_offset_height = { min = -35 max = -40 }
-							location = this
-						}
-						last_created_ambient_object = {
-							set_location = { target = prev }
-						}
-						add_modifier = { modifier = spth_lunar_repair_barrier }
-						add_modifier = { modifier = paradise_planet }
-					}
+				variable = {
+					type = key
+					value = spth_research_moon_barrier
+					localization = SPTH_PROJECT_NAME
 				}
+				target = root.leader
+				recipient = this
+				days = 16
 			}
+			country_event = { id = toho.3001 }
 			clear_variable = spth_research_moon_barrier_var
 		} else = {
+			set_variable = { which = spth_research_moon_barrier_max value = 160 }
+			create_message = {
+				type = spth_finish_progress_special_project
+				localization = spth_message_finish_progress_special_project_desc
+				variable = {
+					type = name
+					localization = SPTH_LEADER_NAME
+					scope = root.leader
+				}
+				variable = {
+					type = key
+					value = spth_research_moon_barrier
+					localization = SPTH_PROJECT_NAME
+				}
+				variable = {
+					type = variable
+					varname = spth_research_moon_barrier_var
+					localization = SPTH_PROGRESS
+					scope = this
+				}
+				variable = {
+					type = variable
+					varname = spth_research_moon_barrier_max
+					localization = SPTH_TOTAL_PROGRESS
+					scope = this
+				}
+				target = root.leader
+				recipient = this
+				days = 16
+			}
+			clear_variable = spth_research_moon_barrier_max
 			enable_special_project = {
 				name = spth_research_moon_barrier
 				location = event_target:spth_story_sol_system_lunar_capital
