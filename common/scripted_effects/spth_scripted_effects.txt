@@ -59,6 +59,9 @@ spth_debug_trigger_lunar_capital_ruin = {
 	}
 }
 
+# special project completed effects
+# This - ship conducted the project
+# From - Project creation location
 spth_special_project_research_moon_barrier = {
 	optimize_memory
 	root.owner = {
@@ -79,7 +82,7 @@ spth_special_project_research_moon_barrier = {
 				}
 				target = root.leader
 				recipient = this
-				days = 16
+				days = 32
 			}
 			country_event = { id = toho.3001 }
 			clear_variable = spth_research_moon_barrier_var
@@ -112,7 +115,7 @@ spth_special_project_research_moon_barrier = {
 				}
 				target = root.leader
 				recipient = this
-				days = 16
+				days = 32
 			}
 			clear_variable = spth_research_moon_barrier_max
 			enable_special_project = {
@@ -125,6 +128,68 @@ spth_special_project_research_moon_barrier = {
 					special_project = spth_research_moon_barrier
 					target = event_target:spth_story_sol_system_lunar_capital
 				}
+			}
+		}
+	}
+}
+spth_special_project_torifune_shield = {
+	optimize_memory
+	root.owner = {
+		# 60%几率失败，但最后一个方案必定成功
+		change_variable = { which = spth_disable_habitat_shield_retry value = 1 }
+		random_list = {
+			60 = {
+				modifier = {
+					mult = 0
+					check_variable = {
+						which = spth_disable_habitat_shield_retry
+						value >= spth_disable_habitat_shield_count
+					}
+				}
+				create_message = {
+					type = spth_finish_progress_special_project
+					localization = spth_message_finish_progress_special_project_desc_1
+					variable = {
+						type = name
+						localization = SPTH_SHIP_NAME
+						scope = root
+					}
+					variable = {
+						type = variable
+						varname = spth_disable_habitat_shield_retry
+						localization = SPTH_RETRY_TIMES
+						scope = this
+					}
+					variable = {
+						type = variable
+						varname = spth_disable_habitat_shield_count
+						localization = SPTH_TOTAL_COUNT
+						scope = this
+					}
+					target = this
+					recipient = this
+					days = 30
+				}
+				enable_special_project = {
+					name = spth_disable_habitat_shield_2
+					location = root.from
+					owner = root.owner
+				}
+			}
+			40 = {
+				create_message = {
+					type = spth_finish_special_project
+					localization = spth_message_finish_special_project_desc_1
+					variable = {
+						type = key
+						value = spth_disable_habitat_shield_2
+						localization = SPTH_PROJECT_NAME
+					}
+					target = root.from
+					recipient = this
+					days = 30
+				}
+				country_event = { id = toho.3007 }
 			}
 		}
 	}

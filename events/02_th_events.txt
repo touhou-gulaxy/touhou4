@@ -1596,6 +1596,9 @@ ship_event = {
 					spth_story_sol_system_lunar_capital = {
 						spth_special_project_research_moon_barrier = yes
 					}
+					spth_story_sol_system_torifune = {
+						spth_special_project_torifune_shield = yes
+					}
 				}
 			}
 			starbase = {
@@ -1613,8 +1616,6 @@ ship_event = {
 
 # lunar capital events
 # this = country
-# from = planet, earth
-# fromfrom = planet, moon
 country_event = {
 	id = toho.3000
 	title = toho.3000
@@ -1706,6 +1707,215 @@ country_event = {
 				}
 			}
 		}
+	}
+}
 
+country_event = {
+	id = toho.3003
+	title = toho.3003
+	desc = toho.3003.desc
+	picture = GFX_evt_astral_rift_tropical_habitat
+	is_triggered_only = yes
+	show_sound = event_wind_ruins
+	location = root
+	option = {
+		name = toho.3003.a
+		default_hide_option = yes
+		enable_special_project = {
+			name = spth_disable_habitat_shield_0
+			location = event_target:spth_story_sol_system_torifune
+		}
+	}
+}
+country_event = {
+	id = toho.3004
+	title = toho.3004
+	desc = toho.3004.desc
+	picture = GFX_evt_habitat
+	is_triggered_only = yes
+	show_sound = event_alien_signal
+	option = {
+		name = toho.3004.a
+		default_hide_option = yes
+		root.owner = {
+			enable_special_project = {
+				name = spth_disable_habitat_shield_1
+				location = this.capital_scope
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.3005
+	title = toho.3005
+	desc = toho.3005.desc
+	picture = GFX_evt_habitat
+	is_triggered_only = yes
+	option = {
+		name = toho.3005.a
+		default_hide_option = yes
+		enable_special_project = {
+			name = spth_disable_habitat_shield_0
+			location = event_target:spth_story_sol_system_torifune
+		}
+	}
+}
+country_event = {
+	id = toho.3006
+	title = toho.3006
+	desc = toho.3006.desc
+	picture = GFX_evt_torifune_in_sol
+	is_triggered_only = yes
+	option = {
+		name = toho.3006.a
+		default_hide_option = yes
+		hidden_effect = {
+			set_variable = { which = spth_disable_habitat_shield_retry value = 0 }
+		}
+		enable_special_project = {
+			name = spth_disable_habitat_shield_2
+			location = event_target:spth_story_sol_system_torifune
+		}
+	}
+}
+country_event = {
+	id = toho.3007
+	title = toho.3007
+	desc = toho.3007.desc
+	picture = GFX_evt_torifune_in_sol
+	is_triggered_only = yes
+	immediate = {
+		create_country = {
+			name = NAME_torifune_monster
+			type = spth_country_type_container
+			name_list = root
+			flag = root
+			species = root
+			effect = {
+				save_global_event_target_as = spth_torifune_monster
+				set_country_flag = spth_torifune_monster_flag
+				set_country_flag = protected_from_queen_storm
+			}
+		}
+		establish_communications_no_message = event_target:spth_torifune_monster
+		event_target:spth_story_sol_system_torifune = {
+			change_pc = pc_habitat
+			set_planet_size = 10
+			create_colony = { owner = event_target:spth_torifune_monster }
+			create_pop = { count = 1 species = event_target:spth_torifune_monster.owner_main_species }
+			while = {
+				count = 16
+				create_army = {
+					owner = event_target:spth_torifune_monster
+					type = fairy_army
+				}
+			}
+			set_planet_flag = controlled_by_torifune_monster
+		}
+	}
+	option = {
+		name = toho.3007.a
+	}
+}
+# This = country, lead attacker
+# From = country, planet owner
+# FromFrom = planet
+country_event = {
+	id = toho.3008
+	title = toho.3008
+	desc = toho.3008.desc
+	picture = GFX_evt_th_arc_mifeng
+	is_triggered_only = yes
+	trigger = {
+		from = {
+			has_country_flag = spth_torifune_monster_flag
+		}
+		fromfrom = {
+			has_planet_flag = spth_story_sol_system_torifune
+			has_planet_flag = controlled_by_torifune_monster
+		}
+	}
+	immediate = {
+		fromfrom = {
+			remove_planet_flag = controlled_by_torifune_monster
+			set_planet_flag = spth_clear_torifune_monster
+			every_owned_pop = { change_species = root.owner_main_species }
+			set_owner = root
+			reroll_deposits = yes
+			reroll_planet_modifiers = yes
+			add_deposit = d_spth_torifune_ruin
+			add_deposit = d_spth_torifune_ruin
+			add_deposit = d_spth_torifune_ruin
+			add_deposit = d_spth_torifune_ruin
+			add_deposit = d_spth_torifune_ruin_1
+		}
+		event_target:spth_torifune_monster = { destroy_country = yes }
+	}
+	option = {
+		name = toho.3008.a
+	}
+}
+country_event = {
+	id = toho.3009
+	title = toho.3009
+	desc = toho.3009.desc
+	picture = GFX_evt_relic_world_building
+	is_triggered_only = yes
+	option = {
+		name = toho.3009.a
+		default_hide_option = yes
+		locked_random_list = {
+			1 = { add_resource = { sr_lingli = 3200 } }
+			1 = { add_resource = { sr_lingli = 6400 } }
+			1 = { add_resource = { sr_lingli = 12800 } }
+			1 = { add_resource = { sr_fuka = 3200 } }
+			1 = { add_resource = { sr_fuka = 6400 } }
+			1 = { add_resource = { sr_fuka = 12800 } }
+			1 = { add_resource = { energy = 3200 } }
+			1 = { add_resource = { energy = 6400 } }
+			1 = { add_resource = { energy = 12800 } }
+			1 = { add_resource = { minerals = 3200 } }
+			1 = { add_resource = { minerals = 6400 } }
+			1 = { add_resource = { minerals = 12800 } }
+			1 = { add_resource = { food = 3200 } }
+			1 = { add_resource = { food = 6400 } }
+			1 = { add_resource = { food = 12800 } }
+			1 = { add_resource = { alloys = 3200 } }
+			1 = { add_resource = { alloys = 6400 } }
+			1 = { add_resource = { consumer_goods = 12800 } }
+		}
+	}
+}
+country_event = {
+	id = toho.3010
+	title = toho.3010
+	desc = toho.3010.desc
+	picture = GFX_evt_relic_world_building
+	is_triggered_only = yes
+	option = {
+		name = toho.3009.a
+		default_hide_option = yes
+		event_target:spth_story_sol_system_torifune = {
+			add_building = building_spth_torifune_shirne
+		}
+	}
+	option = {
+		name = toho.3010.b
+	}
+}
+country_event = {
+	id = toho.3011
+	title = toho.3011
+	desc = toho.3011.desc
+	picture = GFX_evt_habitat
+	is_triggered_only = yes
+	option = {
+		name = toho.3011.a
+		default_hide_option = yes
+		hidden_effect = {
+			event_target:spth_story_sol_system_torifune = {
+				set_planet_flag = can_unlock_torifune_arc
+			}
+		}
 	}
 }

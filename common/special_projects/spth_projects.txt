@@ -54,11 +54,11 @@ special_project = {
 }
 special_project = {
     icon = "gfx/interface/icons/situation_log/situation_log_society.dds"
-    # 记得换图
     picture = GFX_evt_astral_rift_tropical_habitat_2
     key = spth_disable_habitat_shield_0
+    desc = { text = spth_disable_habitat_shield_0_desc trigger = { always = yes } }
     cost = 0
-    days_to_research = 24
+    days_to_research = 30
     tech_department = society_technology
     requirements = {
         shipclass_science_ship = 2
@@ -68,41 +68,97 @@ special_project = {
     location = yes
     event_scope = ship_event
     on_success = {
-        root.owner = {
-            enable_special_project = {
-                name = spth_disable_habitat_shield_1
-                location = event_target:spth_story_sol_system_torifune
+        owner = {
+            create_message = {
+                type = spth_finish_special_project
+                localization = spth_message_finish_special_project_desc
+                variable = {
+                    type = name
+                    localization = SPTH_LEADER_NAME
+                    scope = root.leader
+                }
+                variable = {
+                    type = key
+                    value = spth_disable_habitat_shield_0
+                    localization = SPTH_PROJECT_NAME
+
+                }
+                days = 32
+                target = root.from
+                recipient = root.owner
             }
+            country_event = { id = toho.3004 }
         }
     }
 }
+# 概率失败，第一次研究失败几率80%，之后每次下降20%
+# 失败需要重新开始研究上一个项目
+# 成功后roll 3～5个方案并且开启下一个项目
 special_project = {
     icon = "gfx/interface/icons/situation_log/situation_log_physics.dds"
-    # 记得换图
     picture = GFX_evt_astral_rift_tropical_habitat_2
     key = spth_disable_habitat_shield_1
+    desc = { text = spth_disable_habitat_shield_1_desc trigger = { always = yes } }
     cost = 64000
     tech_department = physics_technology
     sound = yes
     location = yes
     event_scope = planet_event
     on_start = {
-
-    }
-    on_progress_50 = {
-
+        owner = {
+            if = {
+                limit = { NOT = { is_variable_set =  spth_disable_habitat_shield_analysis_count } }
+                set_variable = { which = spth_disable_habitat_shield_analysis_count value = 0 }
+            }
+        }
     }
     on_success = {
-
+        owner = {
+            change_variable = { which = spth_disable_habitat_shield_analysis_count value = 1 }
+            if = {
+                limit = { check_variable = { which = spth_disable_habitat_shield_analysis_count value >= 5 } }
+                clear_variable = spth_disable_habitat_shield_analysis_count
+                random_list = {
+                    1 = { set_variable = { which = spth_disable_habitat_shield_count value = 3 } }
+                    1 = { set_variable = { which = spth_disable_habitat_shield_count value = 4 } }
+                    1 = { set_variable = { which = spth_disable_habitat_shield_count value = 5 } }
+                }
+                country_event = { id = toho.3006 }
+            } else = {
+                set_variable = { which = spth_disable_habitat_shield_analysis_sub value = 20 }
+                multiply_variable = {
+                    which = spth_disable_habitat_shield_analysis_sub
+                    value = spth_disable_habitat_shield_analysis_count
+                }
+                random_list = {
+                    20 = {
+                        modifier = { add = spth_disable_habitat_shield_analysis_sub }
+                        clear_variable = spth_disable_habitat_shield_analysis_count
+                        random_list = {
+                            1 = { set_variable = { which = spth_disable_habitat_shield_count value = 3 } }
+                            1 = { set_variable = { which = spth_disable_habitat_shield_count value = 4 } }
+                            1 = { set_variable = { which = spth_disable_habitat_shield_count value = 5 } }
+                        }
+                        country_event = { id = toho.3006 }
+                    }
+                    80 = {
+                        modifier = { subtract = spth_disable_habitat_shield_analysis_sub }
+                        owner = { country_event = { id = toho.3005 } }
+                    }
+                }
+                reroll_random = yes
+                clear_variable = spth_disable_habitat_shield_analysis_sub
+            }
+        }
     }
 }
 special_project = {
     icon = "gfx/interface/icons/situation_log/situation_log_engineering.dds"
-    # 记得换图
-    picture = GFX_evt_astral_rift_tropical_habitat
+    picture = GFX_evt_torifune_in_sol
     key = spth_disable_habitat_shield_2
+    desc = { text = spth_disable_habitat_shield_2_desc trigger = { always = yes } }
     cost = 0
-    days_to_research = 32
+    days_to_research = 64
     tech_department = society_technology
     requirements = {
         shipclass_constructor = 1
@@ -111,6 +167,9 @@ special_project = {
     location = yes
     event_scope = ship_event
     on_success = {
-
+        fire_on_action = {
+            on_action = spth_on_special_project_completed
+            scopes = { from = event_target:spth_story_sol_system_torifune }
+        }
     }
 }
