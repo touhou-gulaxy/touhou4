@@ -18,22 +18,22 @@ TH_add_modifier = {
 
 TH_dynamic_modifier_conditional = {
     optimize_memory
+    export_modifier_to_variable = {
+        modifier = $modifier$
+        variable = spth_$modifier$_calc_value
+    }
     if = {
         limit = {
-            NOT = { has_ship_flag = TH_has_cond_$modifier$ }
+            NOT = { has_ship_flag = spth_$modifier$_checked }
         }
         if = {
-            limit = { check_modifier_value = { modifier = $modifier$ value $relation$ $limit_value$ } }
-            set_timed_ship_flag = { flag = TH_has_cond_$modifier$ days = 1 }
+            limit = { check_variable = { which = spth_$modifier$_calc_value value $relation$ $limit_value$ } }
+            set_timed_ship_flag = { flag = spth_$modifier$_checked days = 1 }
+            add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = spth_$modifier$_calc_value }
+            add_modifier = { modifier = TH_dynamic_reset_$modifier$ multiplier = $value$ }
         }
     }
-    if = {
-        limit = {
-            has_ship_flag = TH_has_cond_$modifier$
-        }
-        TH_clear_ship_modifier = { modifier = $modifier$ }
-        TH_add_modifier = { modifier = $modifier$ value = $value$ }
-    }
+    clear_variable = spth_$modifier$_calc_value
 }
 TH_timed_check_modifier = {
     optimize_memory
