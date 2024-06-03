@@ -1663,7 +1663,7 @@ country_event = {
 						graphical_culture = owner
 					}
 					create_ambient_object = {
-						type = "spth_hakurei_city_object"
+						type = "th_gensokyo_mofazhen_object"
 						entity_offset_height = { min = -35 max = -40 }
 						location = this
 					}
@@ -1710,12 +1710,24 @@ country_event = {
 	}
 }
 
+# 研究灵力结界护盾后触发
+# 奖励
+#  强化版护盾与装甲
+#  开始事件链：失落的历史
 country_event = {
 	id = toho.3003
 	title = toho.3003
 	desc = toho.3003.desc
 	picture = GFX_evt_astral_rift_tropical_habitat
 	is_triggered_only = yes
+	trigger = {
+		has_origin = origin_spth_story_gensokyo
+		NOT = { has_country_flag = triggered_torifune_habitat_story }
+		has_technology = tech_th_shield_jiejie2
+	}
+	immediate = {
+		set_country_flag = triggered_torifune_habitat_story
+	}
 	show_sound = event_wind_ruins
 	location = root
 	option = {
@@ -1916,6 +1928,62 @@ country_event = {
 			event_target:spth_story_sol_system_torifune = {
 				set_planet_flag = can_unlock_torifune_arc
 			}
+		}
+	}
+}
+country_event = {
+	id = toho.3012
+	title = toho.3012
+	desc = toho.3012.desc
+	picture = GFX_evt_mysterious_signal
+	is_triggered_only = yes
+	show_sound = event_wind_ruins
+	option = {
+		name = toho.3012.a
+		begin_event_chain = {
+			event_chain = spth_event_chain_past_legacy
+			target = root
+		}
+		add_research_option = tech_th_armor_spiritual_power_story
+		add_tech_progress = {
+			tech = tech_th_armor_spiritual_power_story
+			progress = 0.4
+		}
+		add_research_option = tech_th_shield_barrier_story
+		add_tech_progress = {
+			tech = tech_th_shield_barrier_story
+			progress = 0.4
+		}
+		hidden_effect = {
+			set_country_flag = spth_past_legacy_begin
+			set_country_flag = spth_past_legacy_barrier_shield
+			add_event_chain_counter = {
+				event_chain = spth_event_chain_past_legacy
+				counter = spth_past_legacy_ruins_find
+				amount = 2
+			}
+			create_point_of_interest = {
+				id = spth_past_legacy_poi.1
+				name = spth_past_legacy_poi.1
+				desc = spth_past_legacy_poi.1.desc
+				event_chain = spth_event_chain_past_legacy
+				location = event_target:spth_story_sol_system_lunar_capital
+			}
+			create_point_of_interest = {
+				id = spth_past_legacy_poi.2
+				name = spth_past_legacy_poi.2
+				desc = spth_past_legacy_poi.2.desc
+				event_chain = spth_event_chain_past_legacy
+				location = event_target:spth_story_sol_system_lunar_capital
+			}
+		}
+	}
+	option = {
+		name = toho.3012.b
+		add_research_option = tech_th_armor_spiritual_power_story
+		add_research_option = tech_th_shield_barrier_story
+		hidden_effect = {
+			set_country_flag = spth_past_legacy_interrupet
 		}
 	}
 }
