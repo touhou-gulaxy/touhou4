@@ -1654,6 +1654,21 @@ country_event = {
 	is_triggered_only = yes
 	immediate = {
 		set_country_flag = spth_moon_barrier_finished
+		if = {
+			limit = { has_event_chain = spth_event_chain_past_legacy }
+			add_event_chain_counter = {
+				event_chain = spth_event_chain_past_legacy
+				counter = spth_past_legacy_ruins_find
+				amount = 1
+			}
+			create_point_of_interest = {
+				id = spth_past_legacy_poi.1
+				name = spth_past_legacy_poi.1
+				desc = spth_past_legacy_poi.1.desc
+				event_chain = spth_event_chain_past_legacy
+				location = event_target:spth_story_sol_system_lunar_capital
+			}
+		}
 		switch = {
 			trigger = has_country_flag
 			spth_break_moon_barrier = {
@@ -1935,7 +1950,7 @@ country_event = {
 	id = toho.3012
 	title = toho.3012
 	desc = toho.3012.desc
-	picture = GFX_evt_mysterious_signal
+	picture = GFX_evt_torii_in_torifune
 	is_triggered_only = yes
 	show_sound = event_wind_ruins
 	option = {
@@ -1960,14 +1975,22 @@ country_event = {
 			add_event_chain_counter = {
 				event_chain = spth_event_chain_past_legacy
 				counter = spth_past_legacy_ruins_find
-				amount = 2
+				amount = 1
 			}
-			create_point_of_interest = {
-				id = spth_past_legacy_poi.1
-				name = spth_past_legacy_poi.1
-				desc = spth_past_legacy_poi.1.desc
-				event_chain = spth_event_chain_past_legacy
-				location = event_target:spth_story_sol_system_lunar_capital
+			if = {
+				limit = { has_country_flag = spth_moon_barrier_finished }
+				add_event_chain_counter = {
+					event_chain = spth_event_chain_past_legacy
+					counter = spth_past_legacy_ruins_find
+					amount = 1
+				}
+				create_point_of_interest = {
+					id = spth_past_legacy_poi.1
+					name = spth_past_legacy_poi.1
+					desc = spth_past_legacy_poi.1.desc
+					event_chain = spth_event_chain_past_legacy
+					location = event_target:spth_story_sol_system_lunar_capital
+				}
 			}
 			create_point_of_interest = {
 				id = spth_past_legacy_poi.2
@@ -1985,5 +2008,69 @@ country_event = {
 		hidden_effect = {
 			set_country_flag = spth_past_legacy_interrupet
 		}
+	}
+}
+planet_event = {
+	id = toho.3013
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		owner = { has_origin = origin_spth_story_gensokyo }
+		has_planet_flag = spth_story_ring_world_has_colony
+		NOT = { has_planet_flag = spth_story_ring_world_completed }
+	}
+	immediate = {
+		set_planet_flag = spth_story_ring_world_completed
+		set_variable = { which = th_deposits_num value = 6 }
+		if = {
+			limit = { has_building = building_colony_shelter }
+			remove_building = building_colony_shelter
+			add_building = building_capital
+		}
+		add_building = building_mls_1
+		add_building = building_spth_cloner
+		spth_effect_establish_barrier = yes
+		add_deposit = d_false_heaven_shield
+		add_deposit = d_sunshine_flower_field
+		add_deposit = d_renli
+		add_deposit = d_zhulin
+		add_deposit = d_mosen
+		add_deposit = d_yokai_mountain
+		add_deposit = d_wifi_tower
+		export_trigger_value_to_variable = {
+			trigger = free_district_slots
+			variable = spth_story_ring_free_district_slots
+		}
+		divide_variable = {
+			which = spth_story_ring_free_district_slots
+			value = 8
+		}
+		floor_variable = spth_story_ring_free_district_slots
+		switch = {
+			trigger = is_planet_class
+			pc_ringworld_th = {
+				if = {
+					limit = { check_variable = { which = spth_story_ring_free_district_slots value > 0 } }
+					add_district = district_gensokyo_jinja
+					add_district = district_gensokyo_renli
+					while = {
+						count = spth_story_ring_free_district_slots
+						add_district = district_gensokyo_tushu
+					}
+				}
+			}
+			pc_ringworld_tech = {
+				if = {
+					limit = { check_variable = { which = spth_story_ring_free_district_slots value > 0 } }
+					add_district = district_rw_city
+					add_district = district_rw_city
+					while = {
+						count = spth_story_ring_free_district_slots
+						add_district = district_rw_science
+					}
+				}
+			}
+		}
+		clear_variable = spth_story_ring_free_district_slots
 	}
 }
