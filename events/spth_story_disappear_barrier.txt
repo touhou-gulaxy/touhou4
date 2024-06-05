@@ -13,11 +13,41 @@ country_event = {
         has_origin = origin_spth_story_gensokyo
     }
     immediate = {
+        # destroy sol system
+        random_system = {
+            limit = { has_star_flag = sol_system }
+            every_system_planet = {
+                if = {
+                    limit = { is_colony = yes }
+                    destroy_colony = yes
+                    every_owned_pop = { kill_pop = yes }
+                    change_pc = pc_shrouded
+                    reroll_planet = yes
+                } else = {
+                    random_list = {
+                        1 = { change_pc = pc_shielded }
+                        1 = { change_pc = pc_nuked }
+                        1 = { change_pc = pc_black_hole }
+                        1 = { change_pc = pc_ai }
+                        1 = { change_pc = pc_shattered }
+                        1 = { change_pc = pc_shattered_2 }
+                    }
+                }
+                reroll_random = yes
+            }
+            star = {
+                change_pc = pc_rift_star
+            }
+        }
         # 幻想乡 - 添加部分幻想乡地块以及一些原版地块
         event_target:spth_story_sol_system_earth = {
             add_building = building_spth_cloner
             add_building = building_research_lab_1
             spth_effect_establish_barrier = yes
+            add_modifier = {
+                modifier = spth_story_worse_env
+                multiplier = trigger:num_pops
+            }
             add_deposit = d_false_heaven_shield
             add_deposit = d_sunshine_flower_field
             add_deposit = d_renli
@@ -44,6 +74,13 @@ country_event = {
     option = {
         name = disappear_barrier.2.a
         default_hide_option = yes
+        event_target:spth_story_sol_system_earth = {
+            enable_special_project = {
+                name = spth_repair_gensokyo_env
+                owner = prev
+                location = this
+            }
+        }
     }
 }
 country_event = {
@@ -54,5 +91,94 @@ country_event = {
     option = {
         name = disappear_barrier.3.a
         default_hide_option = yes
+    }
+}
+country_event = {
+    id = disappear_barrier.4
+    title = disappear_barrier.4
+    desc = disappear_barrier.4.desc
+    picture = GFX_evt_emergency_workers
+    show_sound = event_red_alert
+    is_triggered_only = yes
+    option = {
+        name = disappear_barrier.4.a
+        custom_tooltip = disappear_barrier.4.better_tooltip
+        event_target:spth_story_sol_system_earth = {
+            enable_special_project = {
+                name = spth_repair_gensokyo_env
+                owner = prev
+                location = this
+            }
+        }
+    }
+    option = {
+        name = disappear_barrier.4.b
+        custom_tooltip = disappear_barrier.4.worst_tooltip
+    }
+}
+country_event = {
+    id = disappear_barrier.5
+    title = disappear_barrier.5
+    desc = disappear_barrier.5.desc
+    picture = GFX_evt_hakurei_shrine_in_night
+    show_sound = event_celebration
+    is_triggered_only = yes
+    immediate = {
+        event_target:spth_story_sol_system_earth = {
+            remove_modifier = spth_story_worse_env
+        }
+    }
+    option = {
+        name = disappear_barrier.5.a
+        default_hide_option = yes
+    }
+    after = {
+        hidden_effect = {
+            country_event = { id = th_arc.3 days = 1080 random = 720 }
+        }
+        country_event = { id = disappear_barrier.6 days = 90 random = 90 }
+    }
+}
+country_event = {
+    id = disappear_barrier.6
+    title = disappear_barrier.6
+    desc = disappear_barrier.6.desc
+    picture = GFX_evt_engineering_research
+    show_sound = event_activating_unknown_technology
+    is_triggered_only = yes
+    option = {
+        name = disappear_barrier.6.a
+        default_hide_option = yes
+    }
+}
+planet_event = {
+    id = disappear_barrier.12
+    title = disappear_barrier.12
+    desc = disappear_barrier.12.desc
+    picture = GFX_evt_hifuu_in_city_ruin
+    is_triggered_only = yes
+    trigger = {
+        owner = { has_origin = origin_spth_story_gensokyo }
+        has_planet_flag = spth_story_sol_system_lunar_capital
+    }
+    immediate = {
+    }
+}
+country_event = {
+    id = disappear_barrier.13
+    title = disappear_barrier.13
+    desc = disappear_barrier.13.desc
+    picture = GFX_evt_torifune_in_sol
+    is_triggered_only = yes
+    trigger = {
+        has_origin = origin_spth_story_gensokyo
+        NOT = { has_country_flag = triggered_tech_th_shield_jiejie1_story }
+        has_technology = tech_th_shield_jiejie1
+    }
+    immediate = {
+        set_country_flag = triggered_tech_th_shield_jiejie1_story
+    }
+    option = {
+        name = disappear_barrier.13.a
     }
 }
