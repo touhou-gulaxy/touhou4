@@ -17,14 +17,66 @@ planet_genso_job_buff_modifier = {
 	min = 0
 	max = 1
 }
-# planet scope
-# 2 * ceil(sqrt(num_pops)*add/use)
+# 人口组装速度倍率
+# 1+0.05*空闲岗位/人口数
+planet_genso_cloner_modifier = {
+	base = 0
+	add = trigger:free_jobs
+	abs = yes
+	divide = trigger:num_pops
+	multiply = 0.05
+	add = 1
+	modifier = {
+		OR = {
+			free_jobs <= 3
+			free_housing <= 6
+		}
+		multiply = 0
+	}
+	multiply = value:planet_genso_job_buff_modifier
+	min = 0
+}
+# 士兵岗位统计
+planet_genso_soldier_counter = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = num_assigned_jobs
+		parameters = {
+			job = soldier
+		}
+		mode = add
+	}
+	complex_trigger_modifier = {
+		trigger = num_assigned_jobs
+		parameters = {
+			job = genso_enforcer
+		}
+		mode = add
+	}
+	multiply = value:planet_genso_job_buff_modifier
+	min = 0
+}
+
+# 研究中心加成
+# 2*ceil(sqrt(人口数)*(1+结界承载力使用/max(1, 结界承载力))*结界承载力人口buff)
+# 均为planet scope
+planet_genso_research_buff_capacity_add_factor = {
+	base = 0
+	add = modifier:planet_barrier_capacity_add
+	min = 1
+}
+planet_genso_research_buff_capacity_factor = {
+	base = 0
+	add = modifier:planet_barrier_capacity_use
+	divide = value:planet_genso_research_buff_capacity_add_factor
+	add = 1
+}
 planet_genso_research_buff_modifier = {
 	base = 1
 	multiply = trigger:num_pops
 	square_root = yes
-	multiply = modifier:planet_barrier_capacity_add
-	divide = modifier:planet_barrier_capacity_use
+	multiply = value:planet_genso_research_buff_capacity_factor
+	multiply = value:planet_genso_job_buff_modifier
 	ceiling = yes
 	multiply = 2
 	min = 1
