@@ -342,6 +342,133 @@ spth_debuff_yukari_kamikakushi_0_t2 = {
     }
 }
 
+# 检测舰队装甲与护盾效率
+spth_armor_shield_efficiency_system_check = {
+    optimize_memory
+    export_trigger_value_to_variable = {
+        trigger = count_owned_ship
+        variable = spth_shield_efficiency_count
+        parameters = { limit = { check_modifier_value = { modifier = ship_spth_shield_efficiency value > 0 } } }
+    }
+    export_trigger_value_to_variable = {
+        trigger = count_owned_ship
+        variable = spth_armor_efficiency_count
+        parameters = { limit = { check_modifier_value = { modifier = ship_spth_shield_efficiency value > 0 } } }
+    }
+    if = {
+        limit = { check_variable = { which = spth_shield_efficiency_count value > 0 } }
+        if = {
+            limit = { NOT = { has_fleet_flag = has_spth_shield_efficiency_buff } }
+            set_fleet_flag = has_spth_shield_efficiency_buff
+            from = { every_owned_ship = { set_ship_flag = has_spth_shield_efficiency_debuff } }
+        }
+    } else = {
+        remove_fleet_flag = has_spth_shield_efficiency_buff
+        from = { every_owned_ship = { remove_ship_flag = has_spth_shield_efficiency_debuff } }
+    }
+    if = {
+        limit = { check_variable = { which = spth_armor_efficiency_count value > 0 } }
+        if = {
+            limit = { NOT = { has_fleet_flag = has_spth_armor_efficiency_buff } }
+            set_fleet_flag = has_spth_armor_efficiency_buff
+            from = { every_owned_ship = { set_ship_flag = has_spth_armor_efficiency_debuff } }
+        }
+    } else = {
+        remove_fleet_flag = has_spth_armor_efficiency_buff
+        from = { every_owned_ship = { remove_ship_flag = has_spth_armor_efficiency_debuff } }
+    }
+}
+# 加成系统
+spth_armor_shield_efficiency_system_buff = {
+    optimize_memory
+    if = {
+        limit = { check_modifier_value = { modifier = ship_spth_shield_efficiency value > 0 } }
+        export_modifier_to_variable = {
+            modifier = ship_shield_hardening_add
+            variable = spth_shield_efficiency_var_hardening
+        }
+        subtract_variable = {
+            which = spth_shield_efficiency_var_hardening
+            value = value:ship_spth_shield_efficiency_value
+        }
+        if = {
+            limit = {
+                check_variable = { which = spth_shield_efficiency_var_hardening value < 0 }
+            }
+            add_modifier = { modifier = spth_shield_efficiency_hardening multiplier = spth_shield_efficiency_var_hardening }
+        }
+    }
+    if = {
+        limit = { check_modifier_value = { modifier = ship_spth_armor_efficiency value > 0 } }
+        export_modifier_to_variable = {
+            modifier = ship_armor_hardening_add
+            variable = spth_armor_efficiency_var_hardening
+        }
+        subtract_variable = {
+            which = spth_armor_efficiency_var_hardening
+            value = value:ship_spth_shield_efficiency_value
+        }
+        if = {
+            limit = {
+                check_variable = { which = spth_armor_efficiency_var_hardening value < 0 }
+            }
+            add_modifier = { modifier = spth_armor_efficiency_hardening multiplier = spth_armor_efficiency_var_hardening }
+        }
+    }
+}
+# 减益系统
+spth_armor_shield_efficiency_system_debuff = {
+    optimize_memory
+    if = {
+        limit = { has_ship_flag = has_spth_shield_efficiency_debuff }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_shield_penetration_mult"
+            relation = ">"
+            limit_value = 1
+            value = 1
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_shield_penetration_add"
+            relation = ">"
+            limit_value = 1
+            value = 1
+        }
+    }
+    if = {
+        limit = { has_ship_flag = has_spth_armor_efficiency_debuff }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_armor_penetration_mult"
+            relation = ">"
+            limit_value = 1
+            value = 1
+        }
+        TH_dynamic_modifier_conditional = {
+            modifier = "ship_armor_penetration_add"
+            relation = ">"
+            limit_value = 1
+            value = 1
+        }
+    }
+}
+# 系统结束运行
+spth_armor_shield_efficiency_system_end = {
+    optimize_memory
+    clear_variable = spth_shield_efficiency_var_hardening
+    clear_variable = spth_armor_efficiency_var_hardening
+    remove_ship_flag = has_spth_shield_efficiency_debuff
+    remove_ship_flag = has_spth_armor_efficiency_debuff
+    remove_modifier = spth_shield_efficiency_hardening
+    remove_modifier = spth_armor_efficiency_hardening
+    TH_clear_all_dynamic_modifier = yes
+}
+spth_armor_shield_efficiency_system_end_fleet = {
+    optimize_memory
+    clear_variable = spth_shield_efficiency_count
+    clear_variable = spth_armor_efficiency_count
+    remove_fleet_flag = has_spth_shield_efficiency_buff
+    remove_fleet_flag = has_spth_armor_efficiency_buff
+}
+
 TH_clear_all_dynamic_modifier = {
     optimize_memory
     # 一次修正使用

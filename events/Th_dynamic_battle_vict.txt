@@ -379,6 +379,57 @@ fleet_event = {
     }
 }
 
+# 护盾装甲效率 - 敌方
+ship_event = {
+    id = Th_dynamic_battle_vict.20
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            spth_armor_shield_efficiency_system_debuff = yes
+            ship_event = { id = Th_dynamic_battle_vict.20 days = 1 }
+        } else = {
+            spth_armor_shield_efficiency_system_end = yes
+        }
+    }
+}
+# 护盾装甲效率 - 我方
+ship_event = {
+    id = Th_dynamic_battle_vict.21
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            spth_armor_shield_efficiency_system_buff = yes
+            ship_event = { id = Th_dynamic_battle_vict.21 days = 1 }
+        } else = {
+            spth_armor_shield_efficiency_system_end = yes
+        }
+    }
+}
+# 护盾装甲效率 - 舰队检测
+# from = enemy fleet
+fleet_event = {
+    id = Th_dynamic_battle_vict.22
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            spth_armor_shield_efficiency_system_check = yes
+            fleet_event = {
+                id = Th_dynamic_battle_vict.22
+                days = 1
+                scopes = { from = from }
+            }
+        } else = {
+            spth_armor_shield_efficiency_system_end_fleet = yes
+        }
+    }
+}
+
 # Sakuya Sign Event
 fleet_event = {
     id = Th_dynamic_battle_vict.102
@@ -639,6 +690,46 @@ country_event = {
             }
         }
         fromfromfrom = { fleet_event = { id = Th_dynamic_battle_vict.13 } }
+    }
+}
+
+#################
+# 护盾装甲效率机制 #
+#################
+# 触发事件
+# This = us
+# From = enemy
+# FromFrom = our fleet
+# FromFromFrom = enemy fleet
+country_event = {
+    id = Th_dynamic_battle_vict.1004
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            any_owned_ship = {
+                OR = {
+                    check_modifier_value = { modifier = ship_spth_shield_efficiency value > 0 }
+                    check_modifier_value = { modifier = ship_spth_armor_efficiency value > 0 }
+                }
+            }
+        }
+    }
+    immediate = {
+        # 硬化提升=护盾/装甲效率*100%
+        fromfrom = {
+            set_variable = { which = spth_shield_efficiency_count value = 0 }
+            set_variable = { which = spth_armor_efficiency_count value = 0 }
+            fleet_event = { id = Th_dynamic_battle_vict.22 scopes = { from = root.fromfromfrom } }
+            every_owned_ship = {
+                set_variable = { which = spth_shield_efficiency_var_hardening value = 0 }
+                set_variable = { which = spth_armor_efficiency_var_hardening value = 0 }
+                ship_event = { id = Th_dynamic_battle_vict.21 }
+            }
+        }
+        fromfromfrom = {
+            every_owned_ship = { ship_event = { id = Th_dynamic_battle_vict.20 } }
+        }
     }
 }
 
