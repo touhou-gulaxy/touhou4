@@ -232,6 +232,7 @@ country_event = {
 				id = gensokyo_start.3
 			}
 			set_global_flag = spth_AI_NOT_plus
+			set_global_flag = spth_allow_non_disappear_barrier_story
 		}
 	}
 	option = {
@@ -245,6 +246,7 @@ country_event = {
 				id = gensokyo_start.3
 			}
 			remove_global_flag = spth_AI_NOT_plus
+			remove_global_flag = spth_allow_non_disappear_barrier_story
 		}
 	}
 	# option = {
@@ -262,7 +264,18 @@ country_event = {
 	# }
 	option = {
 		name = th_pop.0.a
-
+		# hidden_effect = {
+		# 	if = {
+		# 		limit = {
+		# 			OR = {
+		# 				any_country = { has_origin = origin_spth_story_gensokyo }
+		# 				is_multiplayer = yes
+		# 			}
+		# 		}
+		# 		remove_global_flag = spth_allow_non_disappear_barrier_story
+		# 	}
+		# 	country_event = { id = gensokyo_start.6 }
+		# }
 	}
 }
 ### 用来检测触发gensokyo_start.3
@@ -295,4 +308,67 @@ event = {
     immediate = {
         spth_effect_init_container_country_effect = yes
     }
+}
+
+country_event = {
+	id = gensokyo_start.6
+	title = gensokyo_start.6.name
+	desc = gensokyo_start.6.desc
+	picture = GFX_evt_hakurei_shrine_in_night
+	auto_select = no
+	is_triggered_only = yes
+	trigger = {
+		NOT = { has_origin = origin_spth_story_gensokyo }
+		has_global_flag = spth_allow_non_disappear_barrier_story
+	}
+	option = {
+		name = gensokyo_start.6.a
+		country_event = { id = gensokyo_start.7 days = 30 random = 30 }
+	}
+	option = {
+		name = gensokyo_start.6.b
+		hidden_effect = {
+			remove_global_flag = spth_allow_non_disappear_barrier_story
+		}
+	}
+}
+# 非起源主事件链触发
+# 设定上为剧情玩家离开宇宙之后
+# 母星周围刷出除了地球都被护盾屏蔽的剧情太阳系
+# 殖民、挖完秘封坟，给玩家灵力产出建筑，告诉玩家需要进一步研究
+# 接触幻想乡AI后买科技/挖完坟15年+解锁超级护盾/幻想乡国家研究完灵力护盾后，
+# 准许研究灵力护盾特殊项目，解锁月之都和鸟船
+# 挖修改过的月都和鸟船坟，遗存记录显示和秘封有关，之后进入主事件链
+# 最终天灾需要修改，变为看守通往第四面墙之外秘密的计算机AI。
+country_event = {
+	id = gensokyo_start.7
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_global_flag = spth_allow_non_disappear_barrier_story
+	}
+	immediate = {
+		set_spawn_system_batch = begin
+		capital_star.solar_system = {
+			spawn_system = {
+				initializer = spth_story_sol_system_gensokyo
+				hyperlane = no
+				min_orientation_angle = 0
+				max_orientation_angle = 360
+				max_distance = 16
+				min_distance = 64
+			}
+			last_created_system = {
+				add_hyperlane = {
+					from = this
+					to = prev
+				}
+				set_star_flag = non_origin_spth_story_sol_system
+				event_target:spth_story_sol_system_lunar_capital = {
+					change_pc = pc_shielded
+				}
+			}
+		}
+		set_spawn_system_batch = end
+	}
 }

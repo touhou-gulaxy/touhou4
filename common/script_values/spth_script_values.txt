@@ -96,6 +96,16 @@ count_planet_add_miko = {
 	}
 }
 
+ship_spth_shield_efficiency_count = {
+	base = 0
+	add = modifier:ship_spth_shield_efficiency
+	min = 0
+}
+ship_spth_armor_efficiency_count = {
+	base = 0
+	add = modifier:ship_spth_armor_efficiency
+	min = 0
+}
 ship_spth_shield_efficiency_value = {
 	base = 0
 	add = modifier:ship_spth_shield_efficiency
@@ -112,4 +122,102 @@ ship_spth_force_shield_perc = {
 	add = modifier:ship_spth_force_shield_add
 	subtract = modifier:ship_spth_force_shield_reduce
 	max = 1
+}
+spth_months_passed = {
+	base = 0
+	add = trigger:days_passed
+	divide = 30
+	floor = yes
+}
+spth_current_month = {
+	base = 1
+	add = value:spth_months_passed
+	modulo = 12
+}
+spth_ship_death_sakura_point = {
+	base = 0
+	add = modifier:ship_spth_story_crisis_titan_energy_weapon_counter
+	square_root = yes
+	add = 1
+	multiply = 0.5
+}
+
+spth_story_crisis_titan_generic_damage = {
+	base = 0
+	add = modifier:weapon_type_lingli_weapon_damage_mult
+	add = modifier:weapon_type_white_fog_random_weapon_damage_mult
+	min = 0
+}
+spth_story_crisis_titan_generic_fire_rate = {
+	base = 0
+	add = modifier:weapon_type_lingli_weapon_fire_rate_mult
+	add = modifier:weapon_type_white_fog_random_weapon_fire_rate_mult
+	min = 0
+}
+
+spth_story_crisis_extra_energy_damage = {
+	base = 0
+	add = modifier:weapon_type_energy_weapon_damage_mult
+	multiply = 1.44
+	add = spth_story_crisis_extra_energy_var
+	add = value:spth_story_crisis_extra_energy_damage_ex
+	min = 0
+}
+spth_story_crisis_extra_energy_fire_rate_base = {
+	base = 0
+	add = modifier:weapon_type_kinetic_weapon_fire_rate_mult
+	multiply = 0.20
+	modifier = {
+		multiply = 0.8
+		check_variable_arithmetic = {
+			which = value:spth_months_passed
+			value <= 6
+		}
+	}
+	min = 0
+}
+spth_story_crisis_extra_energy_fire_rate = {
+	base = 0
+	add = value:spth_story_crisis_extra_energy_fire_rate_base
+	max = 7
+}
+spth_story_crisis_extra_energy_damage_ex = {
+	base = 0
+	add = value:spth_story_crisis_extra_energy_fire_rate_base
+	subtract = 7
+	min = 0
+}
+
+spth_story_crisis_extra_kinetic_damage = {
+	base = 0
+	add = modifier:weapon_type_kinetic_weapon_damage_mult
+	multiply = 1.44
+	add = spth_story_crisis_extra_kinetic_var
+	add = value:spth_story_crisis_extra_kinetic_damage_ex
+	min = 0
+}
+spth_story_crisis_extra_kinetic_fire_rate_base = {
+	base = 0
+	add = modifier:weapon_type_energy_weapon_fire_rate_mult
+	multiply = 0.20
+	modifier = {
+		multiply = 0.8
+		check_variable_arithmetic = {
+			which = value:spth_months_passed
+			value >= 7
+		}
+	}
+	min = 0
+}
+spth_story_crisis_extra_kinetic_fire_rate = {
+	base = 0
+	add = value:spth_story_crisis_extra_kinetic_fire_rate_base
+	max = 7
+}
+# max(0, 能量伤害*倍率-7)
+spth_story_crisis_extra_kinetic_damage_ex = {
+	base = 0
+	add = value:spth_story_crisis_extra_kinetic_fire_rate_base
+	subtract = 7
+	min = 0
 }

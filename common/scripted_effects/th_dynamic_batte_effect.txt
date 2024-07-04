@@ -18,10 +18,7 @@ TH_add_modifier = {
 
 TH_dynamic_modifier_conditional = {
     optimize_memory
-    export_modifier_to_variable = {
-        modifier = $modifier$
-        variable = spth_$modifier$_calc_value
-    }
+    set_variable = { which = spth_$modifier$_calc_value value = modifier:$modifier$ }
     if = {
         limit = {
             NOT = { has_ship_flag = spth_$modifier$_checked }
@@ -381,44 +378,31 @@ spth_armor_shield_efficiency_system_check = {
 # 加成系统
 spth_armor_shield_efficiency_system_buff = {
     optimize_memory
+    set_update_modifiers_batch = begin
     if = {
         limit = { check_modifier_value = { modifier = ship_spth_shield_efficiency value > 0 } }
-        export_modifier_to_variable = {
-            modifier = ship_shield_hardening_add
-            variable = spth_shield_efficiency_var_hardening
-        }
-        subtract_variable = {
-            which = spth_shield_efficiency_var_hardening
-            value = value:ship_spth_shield_efficiency_value
-        }
+        export_modifier_to_variable = { modifier = ship_shield_hardening_add variable = spth_shield_efficiency_var_hardening }
         if = {
-            limit = {
-                check_variable = { which = spth_shield_efficiency_var_hardening value < 0 }
-            }
+            limit = { check_variable = { which = spth_shield_efficiency_var_hardening value < modifier:ship_spth_shield_efficiency } }
             add_modifier = { modifier = spth_shield_efficiency_hardening multiplier = spth_shield_efficiency_var_hardening }
+            add_modifier = { modifier = spth_shield_efficiency_hardening_rst multiplier = modifier:ship_spth_shield_efficiency }
         }
     }
     if = {
         limit = { check_modifier_value = { modifier = ship_spth_armor_efficiency value > 0 } }
-        export_modifier_to_variable = {
-            modifier = ship_armor_hardening_add
-            variable = spth_armor_efficiency_var_hardening
-        }
-        subtract_variable = {
-            which = spth_armor_efficiency_var_hardening
-            value = value:ship_spth_shield_efficiency_value
-        }
+        export_modifier_to_variable = { modifier = ship_armor_hardening_add variable = spth_armor_efficiency_var_hardening }
         if = {
-            limit = {
-                check_variable = { which = spth_armor_efficiency_var_hardening value < 0 }
-            }
+            limit = { check_variable = { which = spth_armor_efficiency_var_hardening value < modifier:ship_spth_armor_efficiency } }
             add_modifier = { modifier = spth_armor_efficiency_hardening multiplier = spth_armor_efficiency_var_hardening }
+            add_modifier = { modifier = spth_armor_efficiency_hardening_rst multiplier = modifier:ship_spth_armor_efficiency }
         }
     }
+    set_update_modifiers_batch = end
 }
 # 减益系统
 spth_armor_shield_efficiency_system_debuff = {
     optimize_memory
+    # set_update_modifiers_batch = begin
     if = {
         limit = { has_ship_flag = has_spth_shield_efficiency_debuff }
         TH_dynamic_modifier_conditional = {
@@ -449,6 +433,7 @@ spth_armor_shield_efficiency_system_debuff = {
             value = 1
         }
     }
+    # set_update_modifiers_batch = end
 }
 # 系统结束运行
 spth_armor_shield_efficiency_system_end = {
@@ -459,6 +444,12 @@ spth_armor_shield_efficiency_system_end = {
     remove_ship_flag = has_spth_armor_efficiency_debuff
     remove_modifier = spth_shield_efficiency_hardening
     remove_modifier = spth_armor_efficiency_hardening
+    remove_modifier = spth_shield_efficiency_hardening_rst
+    remove_modifier = spth_armor_efficiency_hardening_rst
+    remove_modifier = spth_shield_efficiency_regen
+    remove_modifier = spth_armor_efficiency_regen
+    clear_variable = spth_shield_damage_debuff
+    clear_variable = spth_armor_damage_debuff
     TH_clear_all_dynamic_modifier = yes
 }
 spth_armor_shield_efficiency_system_end_fleet = {
@@ -467,7 +458,471 @@ spth_armor_shield_efficiency_system_end_fleet = {
     clear_variable = spth_armor_efficiency_count
     remove_fleet_flag = has_spth_shield_efficiency_buff
     remove_fleet_flag = has_spth_armor_efficiency_buff
+    clear_variable = spth_shield_damage_debuff
+    clear_variable = spth_armor_damage_debuff
 }
+# 舰队数据刷新
+# this = fleet
+# from = enemy fleet
+spth_story_crisis_weapon_system_fleet = {
+    optimize_memory
+    # 刷新季节
+    if = {
+        limit = { spth_is_specified_season = { winter = yes spring = yes } }
+        every_owned_ship = {
+            remove_ship_flag = spth_summer_or_autumn
+            set_ship_flag = spth_winter_or_spring
+        }
+    } else = {
+        every_owned_ship = {
+            remove_ship_flag = spth_winter_or_spring
+            set_ship_flag = spth_summer_or_autumn
+        }
+    }
+    # 舰船刷新
+    every_owned_ship = {
+        spth_story_crisis_weapon_system_dynamic_tag = yes
+        spth_story_crisis_weapon_system_self = yes
+    }
+}
+spth_story_crisis_weapon_system_clear_flags = {
+    optimize_memory
+    remove_ship_flag = spth_story_crwpn_combat_days_cd
+    remove_ship_flag = spth_winter_or_spring
+    remove_ship_flag = spth_summer_or_autumn
+    remove_ship_flag = spth_story_crisis_titan_kinetic_system
+    remove_ship_flag = spth_story_crisis_titan_energy_system
+    remove_ship_flag = spth_story_crisis_titan_generic_system
+    remove_ship_flag = spth_story_crisis_titan_generic_cooldown
+    remove_ship_flag = spth_story_crisis_extra_generic_system
+    remove_ship_flag = spth_deep_sea_mysteries_cooldown
+    remove_ship_flag = spth_story_crisis_extra_kinetic_system
+    remove_ship_flag = spth_story_crisis_extra_energy_system
+    remove_ship_flag = spth_story_crisis_g_system
+    remove_ship_flag = spth_story_crisis_g_cooldown
+    remove_ship_flag = spth_story_crisis_computer_protect
+    remove_ship_flag = spth_story_crisis_computer_protect_cd
+}
+spth_story_crisis_weapon_system_clear_mods = {
+    optimize_memory
+    remove_modifier = scarlet_harvest_upgrade
+    remove_modifier = scarlet_harvest_regen
+    remove_modifier = sakura_yyk_upgrade
+    remove_modifier = sakura_yyk_efficiency
+    remove_modifier = sakura_yyk_upkeep
+    remove_modifier = sakura_yyk_spring
+    remove_modifier = sakura_yyk_autumn
+    remove_modifier = white_fog_random_damage
+    remove_modifier = white_fog_random_fire_rate
+    remove_modifier = white_fog_cooldown
+    remove_modifier = white_fog_upgrade
+    remove_modifier = spth_deep_sea_mysteries_upgrade
+    remove_modifier = spth_deep_sea_mysteries_convert
+    remove_modifier = sakura_yyk_xl_damage
+    remove_modifier = sakura_yyk_xl_fire_rate
+    remove_modifier = scarlet_night_xl_damage
+    remove_modifier = scarlet_night_xl_fire_rate
+    remove_modifier = forbidden_tsiang_hsien_damage
+    remove_modifier = forbidden_tsiang_hsien_fire_rate
+    remove_modifier = spth_morse_masquerade_upgrade
+    remove_modifier = spth_morse_masquerade_upgrade_45
+    remove_modifier = spth_morse_masquerade_cooldown
+    remove_modifier = spth_story_crisis_computer_protect
+    remove_modifier = spth_story_crisis_computer_efficiency
+}
+spth_story_crisis_weapon_system_clear_vars = {
+    optimize_memory
+    clear_variable = white_fog_random_var
+    clear_variable = spth_story_crwpn_combat_days
+    clear_variable = spth_story_crisis_titan_kinetic_var
+    clear_variable = spth_story_crisis_titan_kinetic_repair_perc
+    clear_variable = spth_story_crisis_titan_energy_var
+    clear_variable = spth_weapon_sakura_point
+    clear_variable = spth_weapon_sakura_point_d_a
+    clear_variable = spth_weapon_sakura_upgrade_var
+    clear_variable = spth_weapon_sakura_upgrade_max
+    clear_variable = spth_story_crisis_titan_generic_var
+    clear_variable = spth_story_crisis_titan_generic_max
+    clear_variable = spth_story_crisis_titan_generic_temp
+    clear_variable = spth_story_crisis_titan_generic_factor
+    clear_variable = spth_story_crisis_titan_generic_chance
+    clear_variable = spth_story_crisis_extra_kinetic_var
+    clear_variable = spth_story_crisis_extra_energy_var
+    clear_variable = spth_story_crisis_g_fire_counter
+}
+spth_story_crisis_weapon_system_dynamic_tag = {
+    optimize_memory
+    # 取动能与能量中最大者进行加成
+    # 需要计算提取的动能/能量，选最大值给自身tag。
+    if = {
+        limit = {
+            OR = {
+                has_ship_flag = spth_story_crisis_extra_generic_system
+                has_ship_flag = spth_story_crisis_titan_generic_system
+            }
+        }
+        set_variable = {
+            which = white_fog_random_var
+            value = modifier:weapon_type_energy_weapon_damage_mult
+        }
+        if = {
+            limit = {
+                check_variable = {
+                    which = white_fog_random_var
+                    value < modifier:weapon_type_kinetic_weapon_damage_mult
+                }
+            }
+            export_modifier_to_variable = {
+                variable = white_fog_random_var
+                modifier = weapon_type_kinetic_weapon_damage_mult
+            }
+        }
+        remove_modifier = white_fog_random_damage
+        add_modifier = {
+            modifier = white_fog_random_damage
+            multiplier = white_fog_random_var
+        }
+        set_variable = {
+            which = white_fog_random_var
+            value = modifier:weapon_type_energy_weapon_fire_rate_mult
+        }
+        if = {
+            limit = {
+                check_variable = {
+                    which = white_fog_random_var
+                    value < modifier:weapon_type_kinetic_weapon_fire_rate_mult
+                }
+            }
+            export_modifier_to_variable = {
+                variable = white_fog_random_var
+                modifier = weapon_type_kinetic_weapon_fire_rate_mult
+            }
+        }
+        # if = {
+        #     limit = { check_variable = { which = white_fog_random_var value > 2.56 } }
+        #     set_variable = { which = white_fog_random_var value = 2.56 }
+        # }
+        remove_modifier = white_fog_random_fire_rate
+        add_modifier = {
+            modifier = white_fog_random_fire_rate
+            multiplier = white_fog_random_var
+        }
+    }
+    if = {
+        limit = { has_ship_flag = spth_story_crisis_extra_energy_system }
+        remove_modifier = sakura_yyk_xl_damage
+        remove_modifier = sakura_yyk_xl_fire_rate
+        add_modifier = {
+            modifier = sakura_yyk_xl_damage
+            multiplier = value:spth_story_crisis_extra_energy_damage
+        }
+        add_modifier = {
+            modifier = sakura_yyk_xl_fire_rate
+            multiplier = value:spth_story_crisis_extra_energy_fire_rate
+        }
+    }
+    if = {
+        limit = { has_ship_flag = spth_story_crisis_extra_kinetic_system }
+        remove_modifier = scarlet_night_xl_damage
+        remove_modifier = scarlet_night_xl_fire_rate
+        add_modifier = {
+            modifier = scarlet_night_xl_damage
+            multiplier = value:spth_story_crisis_extra_kinetic_damage
+        }
+        add_modifier = {
+            modifier = scarlet_night_xl_fire_rate
+            multiplier = value:spth_story_crisis_extra_kinetic_fire_rate
+        }
+    }
+}
+spth_story_crisis_weapon_system_self = {
+    optimize_memory
+    # 战斗天数计数器
+    if = {
+        limit = { NOT = { has_ship_flag = spth_story_crwpn_combat_days_cd } }
+        set_timed_ship_flag = { flag = spth_story_crwpn_combat_days_cd days = 1 }
+        change_variable = { which = spth_story_crwpn_combat_days value = 1 }
+    }
+    # 红夜「湮灭」
+    if = {
+        limit = { has_ship_flag = spth_story_crisis_titan_kinetic_system }
+        random_list = {
+            32 = { repair_percentage = spth_story_crisis_titan_kinetic_repair_perc }
+            68 = {}
+        }
+    }
+    # 终焉「千桜华宴」
+    if = {
+        limit = { has_ship_flag = spth_story_crisis_titan_energy_system }
+        switch = {
+            trigger = has_ship_flag
+            spth_summer_or_autumn = {
+                if = {
+                    limit = { has_modifier = sakura_yyk_spring }
+                    remove_modifier = sakura_yyk_spring
+                }
+                if = {
+                    limit = { NOT = { has_modifier = sakura_yyk_autumn } }
+                    add_modifier = { modifier = sakura_yyk_autumn }
+                }
+            }
+            spth_winter_or_spring = {
+                if = {
+                    limit = { has_modifier = sakura_yyk_autumn }
+                    remove_modifier = sakura_yyk_autumn
+                }
+                if = {
+                    limit = { NOT = { has_modifier = sakura_yyk_spring } }
+                    add_modifier = { modifier = sakura_yyk_spring }
+                }
+            }
+        }
+        if = {
+            limit = {
+                check_variable = { which = spth_weapon_sakura_point value >= 24 }
+                NOT = { has_modifier = sakura_yyk_efficiency }
+            }
+            add_modifier = { modifier = sakura_yyk_efficiency }
+        }
+        if = {
+            limit = { check_variable = { which = spth_weapon_sakura_point value >= 32 } }
+            if = {
+                limit = { NOT = { has_modifier = sakura_yyk_upkeep } }
+                add_modifier = { modifier = sakura_yyk_upkeep }
+            }
+            random_list = {
+                30 = { repair_percentage = 0.10 }
+                30 = { repair_percentage = 0.16 }
+                20 = { repair_percentage = 0.24 }
+                20 = { repair_percentage = 0.32 }
+            }
+        }
+    }
+    # 乖离「无名迷雾」
+    # 每个武器提供*400%，不得超过*2000%，每天刷新一次。
+    # 导出tag伤害加成，*20为最大限制。
+    if = {
+        limit = { has_ship_flag = spth_story_crisis_titan_generic_system }
+        # 计算上限
+        export_modifier_to_variable = {
+            modifier = weapon_type_lingli_weapon_damage_mult
+            variable = spth_story_crisis_titan_generic_temp
+        }
+        export_modifier_to_variable = {
+            modifier = weapon_type_white_fog_random_weapon_damage_mult
+            variable = spth_story_crisis_titan_generic_max
+        }
+        change_variable = {
+            which = spth_story_crisis_titan_generic_max
+            value = spth_story_crisis_titan_generic_temp
+        }
+        set_variable = {
+            which = spth_story_crisis_titan_generic_factor
+            value = spth_story_crisis_titan_generic_max
+        }
+        multiply_variable = { which = spth_story_crisis_titan_generic_max value = 36 }
+        random = {
+            chance = spth_story_crisis_titan_generic_chance
+            if = {
+                limit = { NOT = { has_ship_flag = spth_story_crisis_titan_generic_cooldown } }
+                set_timed_ship_flag = { flag = spth_story_crisis_titan_generic_cooldown days = 5 }
+                multiply_variable = { which = spth_story_crisis_titan_generic_factor value = 8 }
+                multiply_variable = {
+                    which = spth_story_crisis_titan_generic_factor
+                    value = spth_story_crisis_titan_generic_var
+                }
+                if = {
+                    limit = {
+                        check_variable = {
+                            which = spth_story_crisis_titan_generic_factor
+                            value > spth_story_crisis_titan_generic_max
+                        }
+                    }
+                    set_variable = {
+                        which = spth_story_crisis_titan_generic_factor
+                        value = spth_story_crisis_titan_generic_max
+                    }
+                }
+                remove_modifier = white_fog_cooldown
+                add_modifier = {
+                    modifier = white_fog_upgrade
+                    multiplier = spth_story_crisis_titan_generic_factor
+                    days = 3
+                }
+                ship_event = { id = Th_dynamic_battle_vict.41 days = 3 }
+            }
+        }
+        reroll_random = yes
+    }
+    # 玲珑迷雾
+    if = {
+        limit = { has_ship_flag = spth_story_crisis_extra_generic_system }
+        if = {
+            limit = { NOT = { has_ship_flag = spth_deep_sea_mysteries_cooldown } }
+            set_timed_ship_flag = { flag = spth_deep_sea_mysteries_cooldown days = 10 }
+            set_variable = {
+                which = spth_deep_sea_mysteries_var
+                value = modifier:weapon_type_energy_weapon_fire_rate_mult
+            }
+            change_variable = {
+                which = spth_deep_sea_mysteries_var
+                value = modifier:weapon_type_kinetic_weapon_fire_rate_mult
+            }
+            if = {
+                limit = { check_variable = { which = spth_deep_sea_mysteries_var value < 0 } }
+                multiply_variable = { which = spth_deep_sea_mysteries_var value = -1 }
+            }
+            change_variable = { which = spth_deep_sea_mysteries_var value = 50 }
+            add_modifier = {
+                modifier = spth_deep_sea_mysteries_upgrade
+                multiplier = spth_deep_sea_mysteries_var
+                days = 4
+            }
+            clear_variable = spth_deep_sea_mysteries_var
+        }
+    }
+    # 禁弹「血族启示录」
+    if = {
+        limit = { has_ship_flag = spth_story_crisis_g_system }
+        if = {
+            limit = {
+                NOT = {
+                    has_modifier = spth_morse_masquerade_cooldown
+                    has_modifier = spth_morse_masquerade_upgrade
+                }
+            }
+            add_modifier = { modifier = spth_morse_masquerade_cooldown }
+        }
+        if = {
+            limit = { NOT = { has_ship_flag = spth_story_crisis_g_cooldown } }
+            remove_modifier = spth_morse_masquerade_cooldown
+            set_timed_ship_flag = { flag = spth_story_crisis_g_cooldown days = 8 }
+            change_variable = { which = spth_story_crisis_g_fire_counter value = 1 }
+            add_modifier = { modifier = spth_morse_masquerade_upgrade days = 2 }
+            if = {
+                limit = { check_variable = { which = spth_story_crisis_g_fire_counter value >= 5 } }
+                set_variable = { which = spth_story_crisis_g_fire_counter value = 0 }
+                add_modifier = { modifier = spth_morse_masquerade_upgrade_45 days = 2 }
+            }
+        }
+    }
+    # 保护系统
+    if = {
+        limit = {
+            has_ship_flag = spth_story_crisis_computer_protect
+            NOT = { has_ship_flag = spth_story_crisis_computer_protect_cd }
+        }
+        repair_ship = yes
+        set_timed_ship_flag = { flag = spth_story_crisis_computer_protect_cd days = 2 }
+    }
+}
+
+
+spth_bombardment_support_system_init = {
+    optimize_memory
+    if = {
+        limit = { can_enable_spth_bombardment_support = yes }
+        root = {
+            every_owned_fleet = {
+                limit = {
+                    distance = { source = prevprev type = hyperlane max_jumps <= 3 }
+                    any_owned_ship = { is_ship_size = spth_hv_bombardment_ship }
+                }
+                prevprev = {
+                    if = {
+                        limit = {
+                            prev = {
+                                distance = { source = prev type = hyperlane max_jumps <= 2 }
+                                any_owned_ship = { has_component = spth_hv_bombardment_dw }
+                            }
+                        }
+                        set_fleet_flag = spth_bombardment_support_dw
+                        set_fleet_flag = has_spth_bombardment_support
+                    }
+                    if = {
+                        limit = {
+                            prev = {
+                                distance = { source = prev type = hyperlane max_jumps <= 3 }
+                                any_owned_ship = { has_component = spth_hv_bombardment_fc }
+                            }
+                        }
+                        set_fleet_flag = spth_bombardment_support_fc
+                        set_fleet_flag = has_spth_bombardment_support
+                    }
+                    if = {
+                        limit = {
+                            prev = {
+                                distance = { source = prev type = hyperlane max_jumps <= 3 }
+                                any_owned_ship = { has_component = spth_hv_bombardment_sk }
+                            }
+                        }
+                        set_fleet_flag = spth_bombardment_support_sk
+                        set_fleet_flag = has_spth_bombardment_support
+                    }
+                    fleet_event = {
+                        id = Th_dynamic_battle_vict.46
+                        scopes = { from = prev }
+                    }
+                }
+            }
+        }
+    }
+}
+# 跨星系火力支援
+# this = combat fleet
+# from = support fleet
+spth_bombardment_support_system = {
+    optimize_memory
+    if = {
+        limit = {
+            exists = from
+            from = {
+                distance = { source = root type = hyperlane max_jumps <= 3 }
+                any_owned_ship = { is_ship_size = spth_hv_bombardment_ship }
+            }
+        }
+        from = {
+            if = {
+                limit = { is_cloaked = yes }
+                set_cloaking_active = no
+            }
+        }
+        spth_bombardment_support_system_type = { type = dw cooldown = 7 tag1 = energy tag2 = kinetic }
+        spth_bombardment_support_system_type = { type = fc cooldown = 5 tag1 = energy tag2 = lingli }
+        spth_bombardment_support_system_type = { type = sk cooldown = 6 tag1 = lingli tag2 = kinetic }
+    }
+}
+spth_bombardment_support_system_type = {
+    optimize_memory
+    if = {
+        limit = {
+            has_fleet_flag = spth_bombardment_support_$type$
+            NOT = { has_fleet_flag = spth_bombardment_support_$type$_cd }
+        }
+        set_timed_fleet_flag = { flag = spth_bombardment_support_$type$_cd days = $cooldown$ }
+        create_ship = {
+            design = spth_hv_bombardment_ship_effect_$type$
+            effect = {
+                set_name = "spth_hv_bombardment_ship_effect_name"
+                ship_event = { id = Th_dynamic_battle_vict.47 days = 1 }
+                add_modifier = { modifier = spth_hv_bombardment_effect_fire_rate mult = modifier:ship_fire_rate_mult }
+                [[tag1]
+                    add_modifier = {
+                        modifier = spth_hv_bombardment_effect_$tag1$_fire_rate
+                        mult = modifier:weapon_type_$tag1$_weapon_fire_rate_mult
+                    }
+                ]
+                [[tag2]
+                    add_modifier = {
+                        modifier = spth_hv_bombardment_effect_$tag2$_fire_rate
+                        mult = modifier:weapon_type_$tag2$_weapon_fire_rate_mult
+                    }
+                ]
+            }
+        }
+    }
+}
+
 
 TH_clear_all_dynamic_modifier = {
     optimize_memory

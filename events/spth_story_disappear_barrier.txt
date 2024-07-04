@@ -1,7 +1,9 @@
 namespace = disappear_barrier
 
 # 1~100: 开局事件
-# 1000~1200：巨构事件
+# 200~500: 各种杂项事件
+# 501~600：巨构事件
+# 1000+: 主事件链
 
 # 初始化
 country_event = {
@@ -196,4 +198,65 @@ country_event = {
     option = {
         name = disappear_barrier.14.a
     }
+}
+
+# 月度检测，模拟幻想乡的四季变化
+country_event = {
+    id = disappear_barrier.200
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        OR = {
+            has_global_flag = spth_allow_non_disappear_barrier_story
+            has_origin = origin_spth_story_gensokyo
+        }
+        OR = {
+            # 剧情线 地球四季变化
+            AND = {
+                exists = event_target:spth_story_sol_system_earth
+                event_target:spth_story_sol_system_earth = {
+                    exists = owner
+                    owner = { is_same_value = prevprev }
+                    is_colony = yes
+                }
+            }
+            # 地球化改造星球
+            AND = {
+                has_country_flag = enable_spth_earth_transform
+                any_owned_planet = { has_planet_flag = has_spth_earth_transform }
+            }
+        }
+    }
+    immediate = {
+        event_target:spth_story_sol_system_earth = {
+            planet_event = { id = disappear_barrier.201 }
+        }
+        every_owned_planet = {
+            limit = { has_planet_flag = has_spth_earth_transform }
+            planet_event = { id = disappear_barrier.201 }
+        }
+    }
+}
+planet_event = {
+    id = disappear_barrier.201
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = owner
+        owner = { has_authority = auth_gensokyo }
+    }
+    immediate = {
+        spth_planet_season_effect = { season = spring }
+        spth_planet_season_effect = { season = summer }
+        spth_planet_season_effect = { season = autumn }
+        spth_planet_season_effect = { season = winter }
+    }
+}
+
+# 主事件链
+country_event = {
+    id = disappear_barrier.1000
+    hide_window = yes
+    is_triggered_only = yes
+
 }

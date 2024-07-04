@@ -17,11 +17,13 @@ ship_event = {
     id = Th_dynamic_battle_vict.1
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        has_ship_flag = TH_sakuya_the_world_dynamic_vict
-    }
     immediate = {
-        sakuya_the_world_dynamic = { interval = @interval_the_world_first }
+        if = {
+            limit = { has_ship_flag = TH_sakuya_the_world_dynamic_vict }
+            sakuya_the_world_dynamic = { interval = @interval_the_world_first }
+        } else = {
+            TH_clear_all_dynamic_modifier = yes
+        }
     }
 }
 
@@ -30,11 +32,13 @@ ship_event = {
     id = Th_dynamic_battle_vict.2
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        has_ship_flag = TH_satori_dynamic_vict
-    }
     immediate = {
-        satori_dynamic_battle = { interval = @interval_satori_eye }
+        if = {
+            limit = { has_ship_flag = TH_satori_dynamic_vict }
+            satori_dynamic_battle = { interval = @interval_satori_eye }
+        } else = {
+            TH_clear_all_dynamic_modifier = yes
+        }
     }
 }
 
@@ -43,11 +47,13 @@ ship_event = {
     id = Th_dynamic_battle_vict.3
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        has_ship_flag = TH_satori_dynamic_boost
-    }
     immediate = {
-        satori_dynamic_boost = { interval = @interval_satori_eye }
+        if = {
+            limit = { has_ship_flag = TH_satori_dynamic_boost }
+            satori_dynamic_boost = { interval = @interval_satori_eye }
+        } else = {
+            TH_clear_all_dynamic_modifier = yes
+        }
     }
 }
 
@@ -56,11 +62,13 @@ ship_event = {
     id = Th_dynamic_battle_vict.4
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        has_ship_flag = TH_koishi_dynamic_vict
-    }
     immediate = {
-        koishi_dynamic_battle = { interval = @interval_koishi_eye }
+        if = {
+            limit = { has_ship_flag = TH_koishi_dynamic_vict }
+            koishi_dynamic_battle = { interval = @interval_koishi_eye }
+        } else = {
+            TH_clear_all_dynamic_modifier = yes
+        }
     }
 }
 
@@ -69,11 +77,13 @@ ship_event = {
     id = Th_dynamic_battle_vict.5
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        has_ship_flag = TH_koishi_dynamic_boost
-    }
     immediate = {
-        koishi_dynamic_boost = { interval = @interval_koishi_eye }
+        if = {
+            limit = { has_ship_flag = TH_koishi_dynamic_boost }
+            koishi_dynamic_boost = { interval = @interval_koishi_eye }
+        } else = {
+            TH_clear_all_dynamic_modifier = yes
+        }
     }
 }
 
@@ -239,17 +249,10 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-            every_owned_ship = {
-                if = {
-                    limit = { NOT = { has_ship_flag = koishi_combat_days_cooldown } }
-                    change_variable = { which = koishi_combat_days value = 1 }
-                }
-                set_timed_ship_flag = { flag = koishi_combat_days_cooldown days = 1 }
-            }
-            # from = { every_owned_ship = { change_variable = { which = koishi_combat_days value = 1 } } }
             if = {
                 limit = { fromfrom = { check_variable = { which = spth_koishi_lingli_var value > 0 } } }
                 remove_fleet_flag = koishi_lack_lingli
+                root.from = { remove_fleet_flag = disable_koishi_combat_debuff }
                 koishi_gal_combat_effect = yes
             } else = {
                 if = {
@@ -258,6 +261,7 @@ fleet_event = {
                     remove_fleet_flag = koishi_combat_defence_cooldown
                     remove_fleet_flag = koishi_support_cooldown
                     remove_fleet_flag = koishi_combat_upgrade_finished
+                    set_fleet_flag = koishi_lack_lingli
                     remove_modifier = koishi_improve_ship_hull
                     clear_variable = koishi_ship_hull_var
                     every_owned_ship = {
@@ -265,9 +269,11 @@ fleet_event = {
                         clear_variable = koishi_repeatable_var
                         clear_variable = koishi_repeatable_rate
                         clear_variable = koishi_ship_hull_var
+                        remove_ship_flag = koishi_combat_defence_cooldown
+                        set_ship_flag = koishi_lack_lingli_applied
                         TH_clear_all_dynamic_modifier = yes
                     }
-                    set_fleet_flag = koishi_lack_lingli
+                    root.from = { set_fleet_flag = disable_koishi_combat_debuff }
                 }
             }
             fleet_event = {
@@ -285,13 +291,6 @@ fleet_event = {
             remove_fleet_flag = koishi_combat_upgrade_finished
             remove_modifier = koishi_improve_ship_hull
             clear_variable = koishi_ship_hull_var
-            every_owned_ship = {
-                clear_variable = koishi_combat_days
-                clear_variable = koishi_repeatable_var
-                clear_variable = koishi_repeatable_rate
-                clear_variable = koishi_ship_hull_var
-                TH_clear_all_dynamic_modifier = yes
-            }
         }
     }
 }
@@ -379,6 +378,55 @@ fleet_event = {
     }
 }
 
+# 恋恋 - 己方增益
+ship_event = {
+    id = Th_dynamic_battle_vict.14
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            if = {
+                limit = { NOT = { has_ship_flag = koishi_combat_days_cooldown } }
+                change_variable = { which = koishi_combat_days value = 1 }
+            }
+            set_timed_ship_flag = { flag = koishi_combat_days_cooldown days = 1 }
+            if = {
+                limit = { NOT = { has_ship_flag = koishi_lack_lingli_applied } }
+                koishi_gal_combat_effect_self = yes
+            }
+            ship_event = { id = Th_dynamic_battle_vict.14 days = 1 }
+        } else = {
+            clear_variable = koishi_combat_days
+            clear_variable = koishi_repeatable_var
+            clear_variable = koishi_repeatable_rate
+            clear_variable = koishi_ship_hull_var
+            remove_ship_flag = koishi_combat_defence_cooldown
+            TH_clear_all_dynamic_modifier = yes
+        }
+    }
+}
+# 恋恋 - 敌方压制
+ship_event = {
+    id = Th_dynamic_battle_vict.15
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            if = {
+                limit = { NOT = { has_ship_flag = koishi_combat_days_cooldown } }
+                change_variable = { which = koishi_combat_days value = 1 }
+            }
+            set_timed_ship_flag = { flag = koishi_combat_days_cooldown days = 1 }
+            ship_event = { id = Th_dynamic_battle_vict.15 days = 1 }
+        } else = {
+
+            TH_clear_all_dynamic_modifier = yes
+        }
+    }
+}
+
 # 护盾装甲效率 - 敌方
 ship_event = {
     id = Th_dynamic_battle_vict.20
@@ -422,13 +470,289 @@ fleet_event = {
             fleet_event = {
                 id = Th_dynamic_battle_vict.22
                 days = 1
-                scopes = { from = from }
+                scopes = { from = root.from }
             }
         } else = {
             spth_armor_shield_efficiency_system_end_fleet = yes
         }
     }
 }
+
+# 已弃用
+ship_event = {
+    id = Th_dynamic_battle_vict.40
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            set_update_modifiers_batch = begin
+            spth_story_crisis_weapon_system_self = yes
+            set_update_modifiers_batch = end
+            ship_event = { id = Th_dynamic_battle_vict.40 days = 1 }
+        } else = {
+            set_update_modifiers_batch = begin
+            spth_story_crisis_weapon_system_clear_flags = yes
+            spth_story_crisis_weapon_system_clear_mods = yes
+            spth_story_crisis_weapon_system_clear_vars = yes
+            set_update_modifiers_batch = end
+        }
+    }
+}
+ship_event = {
+    id = Th_dynamic_battle_vict.41
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        remove_modifier = white_fog_upgrade
+        if = {
+            limit = {
+                has_ship_flag = spth_story_crisis_titan_generic_system
+                NOT = { has_ship_flag = spth_story_crisis_extra_generic_system }
+            }
+            add_modifier = {
+                modifier = white_fog_cooldown
+                days = 2
+                multiplier = value:spth_story_crisis_titan_generic_damage
+            }
+        }
+    }
+}
+# 敌方被载有特殊武器舰船击杀，或者己方被击杀积攒樱点
+# This = owner of ship 1 (combatant)
+# From = owner of ship 2 (destroyed)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = Th_dynamic_battle_vict.42
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        OR = {
+            fromfromfrom.fleet = { any_controlled_ship = { has_component = spth_story_crisis_titan_energy_weapon } }
+            fromfrom = { has_component = spth_story_crisis_titan_kinetic_weapon }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            if = {
+                limit = { has_component = spth_story_crisis_titan_kinetic_weapon }
+                set_variable = { which = spth_scarlet_harvest_repair value = spth_story_crisis_titan_kinetic_var }
+                multiply_variable = { which = spth_scarlet_harvest_repair value = 0.20 }
+                if = {
+                    limit = { check_variable = { which = spth_scarlet_harvest_repair value >= 1 } }
+                    repair_ship = yes
+                } else = { repair_percentage = spth_scarlet_harvest_repair }
+                clear_variable = spth_scarlet_harvest_repair
+                add_modifier = { modifier = scarlet_harvest_regen days = 2 }
+                add_modifier = { modifier = scarlet_harvest_upgrade days = 60 }
+            }
+        }
+        fromfromfrom = {
+            if = {
+                limit = { fleet = { any_controlled_ship = { has_component = spth_story_crisis_titan_energy_weapon } } }
+                fleet = {
+                    every_controlled_ship = {
+                        limit = { has_component = spth_story_crisis_titan_energy_weapon }
+                        # 樱点=(1+sqrt(武器数量))/2
+                        # spth_weapon_sakura_point_d 樱点差值 float
+                        # 后用于存储樱点差值小数位
+                        # spth_weapon_sakura_point_d_a 樱点差值 int
+                        # 上一次剩余小数位与获得的樱点加算，防止丢失数值。
+                        # d += sakura_point;
+                        # if (d > 1) {
+                        #     d_a = d;
+                        #     d_a = floor(d_a);
+                        #     d -= d_a;
+                        #     sakura_point_t += d_a;
+                        #     export;
+                        # }
+                        change_variable = {
+                            which = spth_weapon_sakura_point_d
+                            value = prevprev.value:spth_ship_death_sakura_point
+                        }
+                        # 根据樱点提供修正，若大于1则可以计算，反之则不操作，留作下一次计算。
+                        if = {
+                            limit = { check_variable = { which = spth_weapon_sakura_point_d value > 1 } }
+                            # 取整数值，并且相减得到差值小数位，留给下一次计算
+                            set_variable = {
+                                which = spth_weapon_sakura_point_d_a
+                                value = spth_weapon_sakura_point_d
+                            }
+                            floor_variable = spth_weapon_sakura_point_d_a
+                            subtract_variable = {
+                                which = spth_weapon_sakura_point_d
+                                value = spth_weapon_sakura_point_d_a
+                            }
+                            # 将取整后值加算给合计樱点
+                            change_variable = {
+                                which = spth_weapon_sakura_point
+                                value = spth_weapon_sakura_point_d_a
+                            }
+                            # 刷新上限并且给修正
+                            export_modifier_to_variable = {
+                                modifier = weapon_type_sakura_yyk_weapon_damage_mult
+                                variable = spth_weapon_sakura_upgrade_var
+                            }
+                            if = {
+                                limit = { check_variable = { which = spth_weapon_sakura_upgrade_var value > spth_weapon_sakura_upgrade_max } }
+                                multiply_variable = {
+                                    which = spth_weapon_sakura_point_d_a
+                                    value = spth_story_crisis_titan_energy_max
+                                }
+                            } else = {
+                                multiply_variable = {
+                                    which = spth_weapon_sakura_point_d_a
+                                    value = spth_story_crisis_titan_energy_var
+                                }
+                            }
+                            add_modifier = { modifier = sakura_yyk_upgrade multiplier = spth_weapon_sakura_point_d_a }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+fleet_event = {
+    id = Th_dynamic_battle_vict.43
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            set_update_modifiers_batch = begin
+            spth_story_crisis_weapon_system_fleet = yes
+            set_update_modifiers_batch = end
+            fleet_event = { id = Th_dynamic_battle_vict.43 days = 1 }
+        } else = {
+            if = {
+                limit = { exists = leader leader = { has_trait = spth_command_ship_revival_leader } }
+                leader = { remove_trait = spth_command_ship_revival_leader }
+            }
+            solar_system = {
+                every_ambient_object = {
+                    limit = { has_ambient_object_flag = spth_story_crisis_dreadnought_computer_effect }
+                    destroy_ambient_object = this
+                }
+            }
+            every_owned_ship = {
+                set_update_modifiers_batch = begin
+                spth_story_crisis_weapon_system_clear_flags = yes
+                spth_story_crisis_weapon_system_clear_mods = yes
+                spth_story_crisis_weapon_system_clear_vars = yes
+                set_update_modifiers_batch = end
+            }
+        }
+    }
+}
+# 领袖相关
+# This = Country
+# From = Leader
+country_event = {
+    id = Th_dynamic_battle_vict.44
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        from = {
+            exists = fleet
+            OR = {
+                fleet = {
+                    any_owned_ship = {
+                        has_component = spth_story_crisis_dreadnought_computer
+                        is_ship_size = spth_ur_didact_flagship
+                    }
+                }
+            }
+        }
+    }
+    immediate = {
+        if = {
+            limit = {
+                from.fleet = {
+                    any_owned_ship = {
+                        has_component = spth_story_crisis_dreadnought_computer
+                        is_ship_size = spth_ur_didact_flagship
+                    }
+                }
+            }
+            clone_leader = {
+                target = from
+                skip_background_generation = yes
+                effect = {
+                    if = {
+                        limit = { NOT = { has_trait = spth_command_ship_revival_leader } }
+                        add_trait = spth_command_ship_revival_leader
+                    }
+                    set_leader_flag = spth_command_ship_revival_leader
+                    save_event_target_as = spth_command_ship_revival_leader
+                }
+            }
+            from.fleet = {
+                set_leader = event_target:spth_command_ship_revival_leader
+                every_owned_ship = { add_modifier = { modifier = spth_story_crisis_computer_upgrade days = 180 } }
+            }
+        }
+    }
+}
+# 作战电脑 - 保护系统
+# 已弃用
+ship_event = {
+    id = Th_dynamic_battle_vict.45
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes fleet = { any_owned_ship = { has_component = spth_story_crisis_dreadnought_computer } } }
+            if = {
+                limit = { has_ship_flag = kuat_executor_checkpoint }
+                remove_modifier = spth_story_crisis_computer_protect
+                break = yes
+            } else = {
+                repair_ship = yes
+                ship_event = { id = Th_dynamic_battle_vict.45 days = 3 }
+            }
+        } else = {
+            remove_modifier = spth_story_crisis_computer_protect
+        }
+    }
+}
+# 远程轰炸舰支援系统
+# this = combat fleet
+# from = support fleet
+fleet_event = {
+    id = Th_dynamic_battle_vict.46
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            spth_bombardment_support_system = yes
+            fleet_event = {
+                id = Th_dynamic_battle_vict.46
+                scopes = { from = root.from }
+                days = 1
+            }
+        } else = {
+            remove_fleet_flag = has_spth_bombardment_support
+            remove_fleet_flag = spth_bombardment_support_dw
+            remove_fleet_flag = spth_bombardment_support_dw_cd
+            remove_fleet_flag = spth_bombardment_support_fc
+            remove_fleet_flag = spth_bombardment_support_fc_cd
+            remove_fleet_flag = spth_bombardment_support_sk
+            remove_fleet_flag = spth_bombardment_support_sk_cd
+        }
+    }
+}
+ship_event = {
+    id = Th_dynamic_battle_vict.47
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        destroy_ship = this
+    }
+}
+
 
 # Sakuya Sign Event
 fleet_event = {
@@ -680,6 +1004,7 @@ country_event = {
                     limit = { NOT = { is_variable_set = koishi_combat_days } }
                     set_variable = { which = koishi_combat_days value = 0 }
                 }
+                ship_event = { id = Th_dynamic_battle_vict.14 days = 1 }
             }
             fleet_event = {
                 id = Th_dynamic_battle_vict.11
@@ -689,7 +1014,16 @@ country_event = {
                 }
             }
         }
-        fromfromfrom = { fleet_event = { id = Th_dynamic_battle_vict.13 } }
+        fromfromfrom = {
+            fleet_event = { id = Th_dynamic_battle_vict.13 }
+            every_owned_ship = {
+                if = {
+                    limit = { NOT = { is_variable_set = koishi_combat_days } }
+                    set_variable = { which = koishi_combat_days value = 0 }
+                }
+                ship_event = { id = Th_dynamic_battle_vict.15 days = 1 }
+            }
+        }
     }
 }
 
@@ -711,6 +1045,7 @@ country_event = {
                 OR = {
                     check_modifier_value = { modifier = ship_spth_shield_efficiency value > 0 }
                     check_modifier_value = { modifier = ship_spth_armor_efficiency value > 0 }
+                    spth_has_shield_armor_efficiency_component = yes
                 }
             }
         }
@@ -724,12 +1059,334 @@ country_event = {
             every_owned_ship = {
                 set_variable = { which = spth_shield_efficiency_var_hardening value = 0 }
                 set_variable = { which = spth_armor_efficiency_var_hardening value = 0 }
+                add_modifier = { modifier = spth_shield_efficiency_regen multiplier = value:ship_spth_shield_efficiency_count }
+                add_modifier = { modifier = spth_armor_efficiency_regen multiplier = value:ship_spth_armor_efficiency_count }
                 ship_event = { id = Th_dynamic_battle_vict.21 }
+            }
+            set_variable = { which = spth_shield_damage_debuff value = 0 }
+            set_variable = { which = spth_armor_damage_debuff value = 0 }
+            every_owned_ship = {
+                prev = {
+                    change_variable = { which = spth_shield_damage_debuff value = prev.modifier:ship_spth_shield_efficiency }
+                    change_variable = { which = spth_armor_damage_debuff value = prev.modifier:ship_spth_armor_efficiency }
+                }
+            }
+            set_variable = { which = spth_ship_counter value = 0 }
+            export_trigger_value_to_variable = {
+                trigger = count_owned_ship
+                variable = spth_ship_counter
+            }
+            divide_variable = { which = spth_shield_damage_debuff value = spth_ship_counter }
+            divide_variable = { which = spth_armor_damage_debuff value = spth_ship_counter }
+            clear_variable = spth_ship_counter
+            if = {
+                limit = { check_variable = { which = spth_shield_damage_debuff value > 0.95 } }
+                set_variable = { which = spth_shield_damage_debuff value = 0.95 }
+            }
+            if = {
+                limit = { check_variable = { which = spth_armor_damage_debuff value > 0.95 } }
+                set_variable = { which = spth_armor_damage_debuff value = 0.95 }
             }
         }
         fromfromfrom = {
-            every_owned_ship = { ship_event = { id = Th_dynamic_battle_vict.20 } }
+            every_owned_ship = {
+                set_variable = {
+                    which = spth_shield_damage_debuff
+                    value = root.fromfrom.spth_shield_damage_debuff
+                }
+                set_variable = {
+                    which = spth_armor_damage_debuff
+                    value = root.fromfrom.spth_armor_damage_debuff
+                }
+                add_modifier = { modifier = spth_shield_efficiency_debuff multiplier = spth_shield_damage_debuff }
+                add_modifier = { modifier = spth_armor_efficiency_debuff multiplier = spth_armor_damage_debuff }
+                ship_event = { id = Th_dynamic_battle_vict.20 }
+            }
         }
+    }
+}
+
+##############
+# 天灾武器效果 #
+#############
+# 触发事件
+# This = us
+# From = enemy
+# FromFrom = our fleet
+# FromFromFrom = enemy fleet
+country_event = {
+    id = Th_dynamic_battle_vict.1010
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { fromfrom = { any_owned_ship = { spth_has_crisis_effect_weapon = yes } } }
+    immediate = {
+        set_update_modifiers_batch = begin
+        fromfrom = {
+            if = {
+                limit = {
+                    any_owned_ship = {
+                        OR = {
+                            has_component = spth_story_crisis_dreadnought_computer
+                            has_component = spth_story_crisis_flagship_computer
+                        }
+                    }
+                }
+
+                if = {
+                    limit = {
+                        any_owned_ship = {
+                            has_component = spth_story_crisis_dreadnought_computer
+                            NOT = { is_ship_size = spth_ur_didact_flagship }
+                        }
+                    }
+                    every_owned_ship = { add_modifier = { modifier = spth_story_crisis_computer_upgrade days = 120 } }
+                }
+                random_owned_ship = {
+                    limit = { has_component = spth_story_crisis_dreadnought_computer }
+                    create_ambient_object = {
+                        type = spth_moriya_city_object
+                        entity_offset_height = {
+                            min = -15
+                            max = -25
+                        }
+                        location = this
+                        use_3d_location = yes
+                    }
+                    last_created_ambient_object = {
+                        set_ambient_object_flag = spth_story_crisis_dreadnought_computer_effect
+                        set_location = prev
+                    }
+                }
+                # 保护系统
+                if = {
+                    # 弱保软，不丢人.jpg
+                    limit = { owner = { has_country_flag = spth_cheat_rbr } }
+                    every_owned_ship = {
+                        if = {
+                            limit = { has_hp < 1920000 }
+                            add_modifier = { modifier = spth_story_crisis_computer_protect multiplier = 192 }
+                        }
+                        set_ship_flag = spth_story_crisis_computer_protect
+                    }
+                } else = {
+                    every_owned_ship = {
+                        if = {
+                            limit = { is_koishi_critical_factor_high = yes }
+                            add_modifier = { modifier = spth_story_crisis_computer_protect multiplier = 9.6 }
+                        } else = {
+                            add_modifier = { modifier = spth_story_crisis_computer_protect multiplier = 8 }
+                        }
+                        set_ship_flag = spth_story_crisis_computer_protect
+                    }
+                }
+            }
+            # 舰队 flag初始化
+            every_owned_ship = {
+                set_variable = { which = white_fog_random_var value = 0 }
+                set_variable = { which = spth_story_crwpn_combat_days value = 0 }
+                # g槽
+                if = {
+                    limit = {
+                        has_component = spth_story_crisis_g_weapon
+                        NOT = { has_ship_flag = spth_story_crisis_g_system }
+                    }
+                    set_ship_flag = spth_story_crisis_g_system
+                    set_variable = { which = spth_story_crisis_g_fire_counter value = 0 }
+                    add_modifier = { modifier = spth_morse_masquerade_cooldown }
+                }
+                # 湮灭
+                if = {
+                    limit = {
+                        has_component = spth_story_crisis_titan_kinetic_weapon
+                        NOT = { has_ship_flag = spth_story_crisis_titan_kinetic_system }
+                    }
+                    set_ship_flag = spth_story_crisis_titan_kinetic_system
+                    set_variable = {
+                        which = spth_story_crisis_titan_kinetic_var
+                        value = modifier:ship_spth_story_crisis_titan_kinetic_weapon_counter
+                    }
+                    set_variable = {
+                        which = spth_story_crisis_titan_kinetic_repair_perc
+                        value = spth_story_crisis_titan_kinetic_var
+                    }
+                    multiply_variable = { which = spth_story_crisis_titan_kinetic_repair_perc value = 0.20 }
+                    if = {
+                        limit = { check_variable = { which = spth_story_crisis_titan_kinetic_repair_perc value > 0.50 } }
+                        set_variable = { which = spth_story_crisis_titan_kinetic_repair_perc value = 0.50 }
+                    }
+                }
+                # 千樱华宴
+                if = {
+                    limit = {
+                        has_component = spth_story_crisis_titan_energy_weapon
+                        NOT = { has_ship_flag = spth_story_crisis_titan_energy_system }
+                    }
+                    set_ship_flag = spth_story_crisis_titan_energy_system
+                    set_variable = {
+                        which = spth_story_crisis_titan_energy_var
+                        value = modifier:ship_spth_story_crisis_titan_energy_weapon_counter
+                    }
+                    if = {
+                        limit = { NOT = { is_variable_set = spth_weapon_sakura_point } }
+                        set_variable = { which = spth_weapon_sakura_point value = 0 }
+                        set_variable = { which = spth_weapon_sakura_point_d_a value = 0 }
+                        set_variable = { which = spth_weapon_sakura_upgrade_max value = 0 }
+                        set_variable = { which = spth_weapon_sakura_upgrade_var value = 0 }
+                    }
+                    export_modifier_to_variable = {
+                        modifier = weapon_type_energy_weapon_damage_mult
+                        variable = spth_weapon_sakura_upgrade_max
+                    }
+                    multiply_variable = { which = spth_weapon_sakura_upgrade_max value = 0.5 }
+                    if = {
+                        limit = { check_variable = { which = spth_weapon_sakura_upgrade_max value > 72 } }
+                        set_variable = { which = spth_weapon_sakura_upgrade_max value = 72 }
+                    }
+                }
+                # 无名迷雾
+                if = {
+                    limit = {
+                        has_component = spth_story_crisis_titan_generic_weapon
+                        NOT = { has_ship_flag = spth_story_crisis_titan_generic_system }
+                    }
+                    set_ship_flag = spth_story_crisis_titan_generic_system
+                    set_variable = { which = spth_story_crisis_titan_generic_temp value = 0 }
+                    set_variable = { which = spth_story_crisis_titan_generic_chance value = 0 }
+                    set_variable = { which = spth_story_crisis_titan_generic_factor value = 0 }
+                    set_variable = {
+                        which = spth_story_crisis_titan_generic_var
+                        value = modifier:ship_spth_story_crisis_titan_generic_weapon_counter
+                    }
+                    set_variable = { which = spth_story_crisis_titan_generic_max value = 0 }
+                    # 几率为min(70%, 20%+15%*部件数量)
+                    set_variable = {
+                        which = spth_story_crisis_titan_generic_chance
+                        value = spth_story_crisis_titan_generic_var
+                    }
+                    multiply_variable = { which = spth_story_crisis_titan_generic_chance value = 15 }
+                    change_variable = { which = spth_story_crisis_titan_generic_chance value = 20 }
+                    if = {
+                        limit = {
+                            check_variable = { which = spth_story_crisis_titan_generic_chance value > 70 }
+                        }
+                        set_variable = { which = spth_story_crisis_titan_generic_chance value = 70 }
+                    }
+                }
+                # 红色不夜城
+                if = {
+                    limit = {
+                        has_component = spth_story_crisis_extra_kinetic_weapon
+                        NOT = { has_ship_flag = spth_story_crisis_extra_kinetic_system }
+                    }
+                    set_ship_flag = spth_story_crisis_extra_kinetic_system
+                    set_variable = {
+                        which = spth_story_crisis_extra_kinetic_var
+                        value = modifier:spth_story_crisis_large_kinetic_weapon_counter
+                    }
+                }
+                # 西行庭
+                if = {
+                    limit = {
+                        has_component = spth_story_crisis_extra_energy_weapon
+                        NOT = { has_ship_flag = spth_story_crisis_extra_energy_system }
+                    }
+                    set_ship_flag = spth_story_crisis_extra_energy_system
+                    set_variable = {
+                        which = spth_story_crisis_extra_energy_var
+                        value = modifier:spth_story_crisis_large_energy_weapon_counter
+                    }
+                }
+                # 玲珑谜团
+                if = {
+                    limit = { has_component = spth_story_crisis_extra_generic_weapon }
+                    set_ship_flag = spth_story_crisis_extra_generic_system
+                    if = {
+                        limit = { has_ship_flag = spth_story_crisis_titan_generic_system }
+                        set_variable = {
+                            which = spth_deep_sea_mysteries_var
+                            value = modifier:weapon_type_energy_weapon_fire_rate_mult
+                        }
+                        change_variable = {
+                            which = spth_deep_sea_mysteries_var
+                            value = modifier:weapon_type_kinetic_weapon_fire_rate_mult
+                        }
+                        if = {
+                            limit = { check_variable = { which = spth_deep_sea_mysteries_var value < 0 } }
+                            set_variable = { which = spth_deep_sea_mysteries_var value = 0 }
+                        }
+                        change_variable = {
+                            which = spth_deep_sea_mysteries_var
+                            value = spth_story_crisis_titan_generic_var
+                        }
+                        add_modifier = {
+                            modifier = spth_deep_sea_mysteries_convert
+                            multiplier = spth_deep_sea_mysteries_var
+                        }
+                        clear_variable = spth_deep_sea_mysteries_var
+                    }
+                }
+
+                if = {
+                    limit = { has_ship_flag = spth_story_crisis_computer_protect }
+                    add_modifier = { modifier = spth_story_crisis_computer_efficiency }
+                }
+                # 动态武器tag
+                spth_story_crisis_weapon_system_dynamic_tag = yes
+            }
+            fleet_event = { id = Th_dynamic_battle_vict.43 }
+        }
+        set_update_modifiers_batch = end
+    }
+}
+
+# 远程轰炸舰支援系统
+# This = us
+# From = enemy
+# FromFrom = our fleet
+# FromFromFrom = enemy fleet
+country_event = {
+    id = Th_dynamic_battle_vict.1020
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { fromfrom = { has_spth_bombardment_beacon = yes } }
+    immediate = {
+        fromfrom = { spth_bombardment_support_system_init = yes }
+        # 让受攻击方尝试攻击支援舰队
+        # if = {
+        #     limit = { fromfrom = { has_fleet_flag = has_spth_bombardment_support } }
+        #     fromfrom.owner = {
+        #         random_owned_fleet = {
+        #             limit = {
+        #                 distance = {
+        #                     source = root.fromfrom
+        #                     type = hyperlane
+        #                     max_jumps <= 3
+        #                 }
+        #                 any_owned_ship = {
+        #                     is_ship_size = spth_hv_bombardment_ship
+        #                 }
+        #             }
+        #             fromfromfrom = {
+        #                 if = {
+        #                     limit = { exists = owner }
+        #                     owner = {
+        #                         random_owned_fleet = {
+        #                             limit = { is_in_combat = no has_auto_move_target = no }
+        #                             if = {
+        #                                 limit = { has_cloaking_strength > 0 }
+        #                                 set_cloaking_active = yes
+        #                             }
+        #                             auto_move_to_planet = {
+        #                                 target = prevprevprev.system_star
+        #                                 clear_auto_move_on_arrival = yes
+        #                             }
+        #                         }
+        #                     }
+        #                 }
+        #             }
+        #         }
+        #     }
+        # }
     }
 }
 

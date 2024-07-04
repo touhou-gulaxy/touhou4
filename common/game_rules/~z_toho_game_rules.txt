@@ -1,0 +1,207 @@
+can_orbital_bombard = {
+    exists = FROM.OWNER
+    NOR = {
+        any_controlled_ship = {
+            is_ship_size = colossus
+        }
+        FROM = { has_planet_flag = enable_spth_plantary_shield }
+    }
+    OR = {
+        AND = {
+            ROOT.CONTROLLER = {
+                NOT = { has_communications = FROM.OWNER }
+            }
+            FROM.OWNER = {
+                NOT = { is_country_type = primitive }
+            }
+        }
+        AND = {
+            ROOT.CONTROLLER = {
+                NOR = {
+                    has_policy_flag = interference_not_allowed
+                    has_policy_flag = interference_subtle
+                }
+            }
+            FROM.OWNER = { is_country_type = primitive }
+        }
+        ROOT.CONTROLLER = { is_at_war_with = FROM.CONTROLLER }
+        FROM = { is_planet_class = pc_infested }
+        FROM.CONTROLLER = {
+            OR = {
+                is_country_type = swarm
+                is_country_type = ai_empire
+                is_country_type = cybrex_empire
+                AND = {
+                    is_country_type = awakened_marauders
+                    ROOT.CONTROLLER = { is_hostile = prev }
+                }
+            }
+        }
+        ROOT.CONTROLLER = {
+            OR = {
+                is_country_type = extradimensional
+                is_country_type = extradimensional_2
+                is_country_type = extradimensional_3
+                is_country_type = swarm
+                is_country_type = ai_empire
+                is_country_type = cybrex_empire
+                is_country_type = dormant_marauders
+                is_country_type = marauder_raiders
+                is_country_type = ruined_marauders
+                is_country_type = debt_collectors
+                is_country_type = gray_goo
+                is_country_type = vol
+                AND = {
+                    OR = {
+                        is_country_type = awakened_marauders
+                        is_country_type = formless
+                    }
+                    FROM.CONTROLLER = { is_hostile = prev }
+                }
+            }
+        }
+        AND = {
+            from.controller = {
+                is_country_type = faction
+                NOT = { is_same_value = ROOT.CONTROLLER }
+            }
+            from.owner = {
+                is_same_value = ROOT.CONTROLLER
+            }
+        }
+    }
+}
+# can_jump_drive = {
+#     custom_tooltip = {
+#         fail_text = spth_cannot_jump_from_system
+#         solar_system = {
+#             NOR = {
+#                 has_star_flag = spth_story_crisis_home
+#                 has_star_flag = spth_story_crisis_outpost
+#             }
+#         }
+#     }
+# }
+can_enter_system_by_jump = {
+    custom_tooltip = {
+        #		success_text = "debug: can jump"
+        fail_text = cannot_jump_to_system
+
+        # Sealed system
+        OR = {
+            NOT = { has_star_flag = sealed_system }
+            AND = {
+                root = { has_country_flag = entered_sealed_system }
+                has_star_flag = sealed_system
+            }
+        }
+
+        # L-Cluster
+        NOT = { has_star_flag = lcluster }
+
+        # Formless system
+        NOT = { has_star_flag = formless_system }
+
+        # Lunar capital and outer crisis
+        NOR = {
+            has_star_flag = spth_story_crisis_home
+            has_star_flag = spth_story_crisis_outpost
+        }
+    }
+}
+# Checks if a pop can be assembled
+# This = Species
+# Root = Planet
+can_species_be_assembled = {
+    is_sapient = yes
+    NOT = {
+        has_trait = trait_exd
+    }
+    NOT = {
+        AND = {
+            has_trait = trait_mechanical
+            root.owner = { is_individual_machine = yes }
+        }
+    }
+    NOT = {
+        AND = {
+            has_virtual_species_trait = yes
+            root.owner = {
+                is_fallen_empire = no
+                has_active_tradition = tr_virtuality_finish
+            }
+        }
+    }
+    OR = {
+        AND = {
+            is_robotic = yes
+            root = {
+                check_modifier_value = {
+                    modifier = planet_pop_assembly_add
+                    value > 0
+                }
+                owner = {
+                    NOT = { has_country_flag = synth_assembly_stopped }
+                }
+            }
+        }
+        AND = {
+            is_organic_species = yes
+            if = {
+                limit = {
+                    root.owner = { is_hive_empire = yes }
+                }
+                has_trait = trait_hive_mind
+            }
+            else_if = {
+                limit = { has_budding_trait = yes }
+                root = {
+                    any_owned_species = { is_exact_same_species = prevprev }
+                }
+            }
+            else_if = {
+                limit = { has_trait = trait_tiyanki }
+                root = {
+                    any_owned_species = { is_exact_same_species = prevprev }
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        has_trait = trait_clone_soldier_infertile
+                        has_trait = trait_clone_soldier_infertile_full_potential
+                    }
+                }
+                root = {
+                    # Event 'clones.3' should cover this, but extra safety check.
+                    has_building = building_clone_army_clone_vat
+                    NOT = {
+                        check_variable = {
+                            which = clone_pops_missing
+                            value = 0
+                        }
+                    }
+                }
+            }
+            else = {
+                root = {
+                    OR = {
+                        has_building = building_spth_cloner
+                        has_building = building_clone_vats
+                        has_modifier = tiyanki_trophy
+                        owner = { has_modifier = syamelles_curse }
+                        AND = {
+                            has_building = building_posthumous_employment_center
+                            owner = { has_civic = civic_permanent_employment }
+                        }
+                        has_planet_flag = can_organic_assemble_flag #for mod compatibility
+                    }
+                }
+            }
+        }
+    }
+    has_population_control = {
+        type = no
+        country = root.owner
+    }
+}

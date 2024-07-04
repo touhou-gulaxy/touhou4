@@ -870,7 +870,7 @@ utility_component_template = {
 utility_component_template = {
 	key = "COMBAT_COMPUTER_SPTH_BATTLE_CRUISER"
 	size = small
-	icon = "GFX_th_ship_part_moon_computer_carrier"
+	icon = "GFX_th_ship_part_moon_computer_artillery"
 	icon_frame = 1
 	power = -50
 	resources = {
@@ -880,7 +880,11 @@ utility_component_template = {
 		}
 	}
 	class_restriction = { shipclass_military shipclass_starbase }
-	size_restriction = { TH_battle_cruiser spth_ur_didact_flagship }
+	size_restriction = {
+		TH_battle_cruiser
+		spth_ur_didact_flagship
+		spth_hv_bombardment_ship
+	}
 	component_set = "combat_computers"
 	ship_behavior = "spth_battle_line_attack"
 	prerequisites = { "tech_th_battle_cruiser" }
@@ -918,7 +922,11 @@ utility_component_template = {
 
 	prerequisites = { "tech_th_battle_cruiser" }
 	component_set = "power_core"
-	size_restriction = { TH_battle_cruiser spth_ur_didact_flagship }
+	size_restriction = {
+		TH_battle_cruiser
+		spth_ur_didact_flagship
+		spth_hv_bombardment_ship
+	}
 
 	ai_weight = {
 		weight = 1000
@@ -952,7 +960,11 @@ utility_component_template = {
 
 	prerequisites = { "tech_th_battle_cruiser" }
 	component_set = "thruster_components"
-	size_restriction = { TH_battle_cruiser spth_ur_didact_flagship }
+	size_restriction = {
+		TH_battle_cruiser
+		spth_ur_didact_flagship
+		spth_hv_bombardment_ship
+	}
 
 	ai_weight = {
 		weight = 5
@@ -1220,6 +1232,7 @@ utility_component_template = {
 			sr_lingli = 1
 		}
 	}
+	custom_tooltip = spth_ship_part_outworld_protector_tooltip
 
 	modifier = {
 	}
@@ -1227,56 +1240,8 @@ utility_component_template = {
 	ship_modifier = {
 		ship_spth_shield_efficiency = 0.3
 		ship_spth_armor_efficiency = 0.3
-	}
-
-	friendly_aura = {
-		name = spth_ship_shrine_buff
-		system_wide = yes
-		apply_on = ships
-		stack_info = {
-			id = spth_ship_shrine_buff
-			priority = 1000
-		}
-		limit = {
-			has_component = spth_ship_part_outworld_protector
-		}
-		modifier = {
-			ship_shield_reduction = -1
-			ship_armor_reduction = -1
-		}
-		graphics = {
-			area_effect = {
-				entity = "circle_area_entity"
-				dynamic_scale = yes
-			}
-			ship_effect = {
-				entity = "ship_aura_positive_entity"
-				dynamic_scale = no
-			}
-		}
-	}
-	hostile_aura = {
-		name = spth_ship_shrine_debuff
-		system_wide = yes
-		apply_on = fleets
-		stack_info = {
-			id = spth_ship_shrine_debuff
-			priority = 1000
-		}
-		modifier = {
-			ship_shield_damage_mult = -0.25
-			ship_armor_damage_mult = -0.25
-		}
-		graphics = {
-			area_effect = {
-				entity = "circle_area_entity"
-				dynamic_scale = yes
-			}
-			ship_effect = {
-				entity = "ship_aura_negative_entity"
-				dynamic_scale = no
-			}
-		}
+		ship_shield_mult = 0.2
+		ship_armor_mult = 0.2
 	}
 
 	component_set = "spth_ship_part_outworld_protector"
@@ -1324,33 +1289,99 @@ utility_component_template = {
 	}
 }
 
-# utility_component_template = {
-# 	key = "spth_ship_part_flandre_power"
-# 	icon = "GFX_ship_part_enigmatic_encoder"
-# 	size = aux
-# 	icon_frame = 1
-# 	power = -100
-# 	resources = {
-# 		category = ship_components
-# 		cost = {
-# 			alloys = 100
-# 			sr_lingli = 50
-# 		}
-# 		upkeep = {
-# 			energy = 10
-# 			sr_lingli = 1
-# 		}
-# 	}
-#
-# 	ship_modifier = {
-# 	}
-#
-# 	component_set = "spth_ship_part_flandre_power"
-# 	ai_weight = {
-# 		weight = 990
-# 		modifier = {
-# 			factor = 0.0
-# 			has_monthly_income = { resource = sr_lingli value <= 0 }
-# 		}
-# 	}
-# }
+utility_component_template = {
+	key = "spth_hv_bombardment_beacon"
+	icon = GFX_ship_part_dimensional_machine_main_weapon
+	size = aux
+	icon_frame = 1
+	ship_limit = 1
+	power = 100
+	resources = {
+		category = ship_components
+		cost = {
+			alloys = 100
+		}
+	}
+
+	prerequisites = { tech_spth_hv_bombardment }
+	class_restriction = { shipclass_military }
+	component_set = "spth_hv_bombardment_beacon"
+	ai_weight = {
+		weight = 990
+	}
+}
+utility_component_template = {
+	key = "spth_hv_bombardment_dw"
+	icon = "GFX_th_weapon_bailou"
+	size = aux
+	icon_frame = 1
+	ship_limit = 1
+	power = 100
+	resources = {
+		category = ship_components
+		cost = {
+			alloys = 100
+		}
+	}
+
+	ship_modifier = {
+		custom_tooltip = spth_hv_bombardment_dw_effect
+	}
+
+	prerequisites = { tech_spth_hv_bombardment }
+	size_restriction = { spth_hv_bombardment_ship }
+	component_set = "spth_hv_bombardment_dw"
+	ai_weight = {
+		weight = 990
+	}
+}
+utility_component_template = {
+	key = "spth_hv_bombardment_fc"
+	icon = "GFX_th_weapon_bailou"
+	size = aux
+	icon_frame = 1
+	ship_limit = 1
+	power = 100
+	resources = {
+		category = ship_components
+		cost = {
+			alloys = 100
+		}
+	}
+
+	ship_modifier = {
+		custom_tooltip = spth_hv_bombardment_fc_effect
+	}
+
+	prerequisites = { tech_spth_hv_bombardment }
+	size_restriction = { spth_hv_bombardment_ship }
+	component_set = "spth_hv_bombardment_fc"
+	ai_weight = {
+		weight = 990
+	}
+}
+utility_component_template = {
+	key = "spth_hv_bombardment_sk"
+	icon = "GFX_th_weapon_bailou"
+	size = aux
+	icon_frame = 1
+	ship_limit = 1
+	power = 100
+	resources = {
+		category = ship_components
+		cost = {
+			alloys = 100
+		}
+	}
+
+	ship_modifier = {
+		custom_tooltip = spth_hv_bombardment_sk_effect
+	}
+
+	prerequisites = { tech_spth_hv_bombardment }
+	size_restriction = { spth_hv_bombardment_ship }
+	component_set = "spth_hv_bombardment_sk"
+	ai_weight = {
+		weight = 990
+	}
+}

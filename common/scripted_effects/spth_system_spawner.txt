@@ -1,0 +1,129 @@
+create_lunar_capital_fleet = {
+    optimize_memory
+    create_fleet = {
+        name = $NAME$
+        settings = {
+            can_change_composition = yes
+            uses_naval_capacity = no
+            spawn_debris = no
+            can_disband = $can_disband$
+            is_boss = $is_boss$
+        }
+        effect = {
+            set_owner = $OWNER$
+            [[bombardment] set_fleet_bombardment_stance = $bombardment$ ]
+            [[flag] set_fleet_flag = $flag$ ]
+            [[star_sector_flagship]
+                while = {
+                    count = $star_sector_flagship$
+                    create_ship = {
+                        name = random design = NAME_star_sector_flagship
+                        effect = {
+                            set_ship_flag = has_ag_flagship
+                            set_ship_flag = has_sg_sub_flagship
+                        }
+                    }
+                }
+            ]
+            set_location = $location$
+        }
+    }
+}
+
+spth_story_lunar_outpost_system = {
+    optimize_memory
+    set_spawn_system_batch = begin
+    no_scope = {
+        spawn_system = {
+            initializer = spth_story_lunar_capital_outpost
+            hyperlane = no
+            max_orientation_angle = 0
+            min_orientation_angle = 0
+            max_distance = 0
+            min_distance = 0
+        }
+        spawn_system = {
+            initializer = spth_story_lunar_minigalaxynary_rim_1
+            hyperlane = no
+            max_orientation_angle = 0
+            min_orientation_angle = 0
+            max_distance = 64
+            min_distance = 64
+        }
+        spawn_system = {
+            initializer = spth_story_lunar_minigalaxynary_rim_2
+            hyperlane = no
+            max_orientation_angle = 120
+            min_orientation_angle = 120
+            max_distance = 64
+            min_distance = 64
+        }
+        spawn_system = {
+            initializer = spth_story_lunar_minigalaxynary_rim_3
+            hyperlane = no
+            max_orientation_angle = 240
+            min_orientation_angle = 240
+            max_distance = 64
+            min_distance = 64
+        }
+        spawn_system = {
+            initializer = spth_story_lunar_outpost_portal
+            hyperlane = no
+            max_orientation_angle = -60
+            min_orientation_angle = -60
+            max_distance = 48
+            min_distance = 48
+        }
+        add_hyperlane = {
+            from = event_target:spth_story_lunar_outpost
+            to = event_target:spth_story_lunar_outpost_forever
+        }
+        add_hyperlane = {
+            from = event_target:spth_story_lunar_outpost_dream
+            to = event_target:spth_story_lunar_outpost_last
+        }
+        add_hyperlane = {
+            from = event_target:spth_story_lunar_outpost_forever
+            to = event_target:spth_story_lunar_outpost_last
+        }
+        add_hyperlane = {
+            from = event_target:spth_story_lunar_outpost_forever
+            to = event_target:spth_story_lunar_outpost_dream
+        }
+        add_hyperlane = {
+            from = event_target:spth_story_lunar_outpost_dream
+            to = event_target:spth_story_lunar_outpost_portal
+        }
+        add_hyperlane = {
+            from = event_target:spth_story_lunar_outpost_last
+            to = event_target:spth_story_lunar_outpost_portal
+        }
+        every_country = {
+            limit = { is_ai = no }
+            random_system_within_border = {
+                limit = { is_capital_system = no }
+                spawn_megastructure = {
+                    type = spth_lunar_outpost_portal
+                    random_pos = yes
+                }
+                set_star_flag = spth_lunar_portal_points
+            }
+            establish_communications_no_message = event_target:spth_story_lunar_outpost_country
+        }
+    }
+    set_spawn_system_batch = end
+}
+spth_story_lunar_outpost_home_fleets = {
+    optimize_memory
+    every_system_planet = {
+        limit = { has_planet_flag = spth_story_crisis_outpost_defence_fleet }
+        create_lunar_capital_fleet = {
+            NAME = NAME_spth_lunar_capital_home_fleet
+            can_disband = no
+            is_boss = yes
+            star_sector_flagship = 1
+            OWNER = event_target:spth_story_lunar_outpost_country
+            location = prev
+        }
+    }
+}

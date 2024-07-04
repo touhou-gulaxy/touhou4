@@ -17,11 +17,11 @@ is_koishi_critical_factor_mid = {
         is_ship_size = cruiser
         is_ship_size = crisis_destroyer
         is_ship_size = crisis_cruiser
-        is_ship_size = battleship
     }
 }
 is_koishi_critical_factor_high = {
     OR = {
+        is_ship_size = battleship
         is_ship_size = titan
         is_ship_size = large_ship_fallen_empire
         is_ship_size = massive_ship_fallen_empire
@@ -33,6 +33,8 @@ is_koishi_critical_factor_high = {
 is_koishi_critical_factor_extra = {
     OR = {
         is_ship_class = shipclass_starbase
+        is_ship_size = spth_ur_didact_flagship
+        is_ship_size = spth_cr_dreadnought
         is_ship_size = colossus
         is_ship_size = star_eater
         is_ship_size = juggernaut
@@ -57,5 +59,125 @@ is_koishi_original_ships = {
         is_ship_size = TH_battle_cruiser
         is_ship_size = cosmo_crisis_battlecruiser
         is_ship_size = cosmo_crisis_titan
+    }
+}
+# 预留给幻想乡季节相关事件
+# 如剧情线检测季节触发春雪异变
+spth_is_specified_season = {
+    optimize_memory
+    OR = {
+        [[winter] spth_is_winter = $winter$ ]
+        [[spring] spth_is_spring = $spring$ ]
+        [[summer] spth_is_summer = $summer$ ]
+        [[autumn] spth_is_autumn = $autumn$ ]
+    }
+}
+spth_is_winter = {
+    optimize_memory
+    OR = {
+        check_variable_arithmetic = {
+            which = value:spth_current_month
+            value > 11
+        }
+        check_variable_arithmetic = {
+            which = value:spth_current_month
+            value < 3
+        }
+    }
+}
+spth_is_spring = {
+    optimize_memory
+    check_variable_arithmetic = {
+        which = value:spth_current_month
+        value > 2
+    }
+    check_variable_arithmetic = {
+        which = value:spth_current_month
+        value < 6
+    }
+}
+spth_is_summer = {
+    optimize_memory
+    check_variable_arithmetic = {
+        which = value:spth_current_month
+        value > 5
+    }
+    check_variable_arithmetic = {
+        which = value:spth_current_month
+        value < 9
+    }
+}
+spth_is_autumn = {
+    optimize_memory
+    check_variable_arithmetic = {
+        which = value:spth_current_month
+        value > 8
+    }
+    check_variable_arithmetic = {
+        which = value:spth_current_month
+        value < 12
+    }
+}
+spth_has_crisis_effect_weapon = {
+    optimize_memory
+    OR = {
+        has_component = spth_story_crisis_titan_kinetic_weapon
+        has_component = spth_story_crisis_titan_energy_weapon
+        has_component = spth_story_crisis_titan_generic_weapon
+        has_component = spth_story_crisis_extra_kinetic_weapon
+        has_component = spth_story_crisis_extra_energy_weapon
+        has_component = spth_story_crisis_extra_generic_weapon
+        has_component = spth_story_crisis_g_weapon
+        has_component = spth_story_crisis_flagship_computer
+        has_component = spth_story_crisis_dreadnought_computer
+    }
+}
+spth_has_shield_armor_efficiency_component = {
+    optimize_memory
+    OR = {
+        has_component = spth_story_crisis_dreadnought_computer
+        has_component = spth_story_crisis_titan_energy_weapon
+    }
+}
+# 引导信标检测
+has_spth_bombardment_beacon = {
+    optimize_memory
+    NOT = { has_fleet_flag = has_spth_bombardment_support }
+    any_owned_ship = {
+        OR = {
+            has_component = spth_story_crisis_dreadnought_computer
+            has_component = spth_story_crisis_flagship_computer
+            has_component = spth_hv_bombardment_beacon
+            has_ship_flag = has_spth_bombardment_beacon
+        }
+    }
+}
+# 跨星系火力检测
+# 支援船最大射程为3
+# this = combat fleet
+can_enable_spth_bombardment_support = {
+    optimize_memory
+    owner = {
+        any_owned_fleet = {
+            distance = {
+                source = prevprev
+                type = hyperlane
+                max_jumps <= 3
+            }
+            any_owned_ship = {
+                is_ship_size = spth_hv_bombardment_ship
+            }
+        }
+    }
+}
+is_spth_bombardment_support_fleet = {
+    optimize_memory
+    distance = {
+        source = prevprev
+        type = hyperlane
+        max_jumps <= 3
+    }
+    any_owned_ship = {
+        is_ship_size = spth_hv_bombardment_ship
     }
 }

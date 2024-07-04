@@ -17,14 +17,22 @@ planet_genso_job_buff_modifier = {
 	min = 0
 	max = 1
 }
+spth_police_station_factor = {
+	base = 0
+	add = trigger:num_pops
+	multiply = value:planet_genso_job_buff_modifier
+	min = 0
+}
 # 人口组装速度倍率
-# 1+0.05*空闲岗位/人口数
+# 1+0.10*(岗位/sqrt(人口))
 planet_genso_cloner_modifier = {
 	base = 0
-	add = trigger:free_jobs
-	abs = yes
-	divide = trigger:num_pops
-	multiply = 0.05
+	modifier = {
+		free_jobs > 0
+		add = trigger:free_jobs
+	}
+	divide = value:planet_genso_cloner_divider
+	multiply = 0.10
 	add = 1
 	modifier = {
 		OR = {
@@ -35,6 +43,12 @@ planet_genso_cloner_modifier = {
 	}
 	multiply = value:planet_genso_job_buff_modifier
 	min = 0
+	max = 8
+}
+planet_genso_cloner_divider = {
+	base = 1
+	add = trigger:num_pops
+	square_root = yes
 }
 # 士兵岗位统计
 planet_genso_soldier_counter = {
@@ -58,7 +72,7 @@ planet_genso_soldier_counter = {
 }
 
 # 研究中心加成
-# 2*ceil(sqrt(人口数)*(1+结界承载力使用/max(1, 结界承载力))*结界承载力人口buff)
+# [2, 3.2]*ceil(sqrt(人口数)*(1+结界承载力使用/max(1, 结界承载力))*结界承载力人口buff)
 # 均为planet scope
 planet_genso_research_buff_capacity_add_factor = {
 	base = 0
@@ -71,13 +85,25 @@ planet_genso_research_buff_capacity_factor = {
 	divide = value:planet_genso_research_buff_capacity_add_factor
 	add = 1
 }
-planet_genso_research_buff_modifier = {
+planet_genso_research_buff_building_factor = {
 	base = 1
-	multiply = trigger:num_pops
+	complex_trigger_modifier = {
+		trigger = num_buildings
+		parameters = {
+			type = building_spth_research_base_1
+		}
+		mode = add
+	}
+	max = 5.76
+}
+planet_genso_research_buff_modifier = {
+	base = 0
+	add = trigger:num_pops
+	multiply = value:planet_genso_research_buff_building_factor
 	square_root = yes
 	multiply = value:planet_genso_research_buff_capacity_factor
 	multiply = value:planet_genso_job_buff_modifier
 	ceiling = yes
-	multiply = 2
+	multiply = 2.4
 	min = 1
 }
