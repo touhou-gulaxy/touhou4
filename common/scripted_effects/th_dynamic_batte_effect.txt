@@ -374,30 +374,38 @@ spth_armor_shield_efficiency_system_check = {
         remove_fleet_flag = has_spth_armor_efficiency_buff
         from = { every_owned_ship = { remove_ship_flag = has_spth_armor_efficiency_debuff } }
     }
+    set_update_modifiers_batch = begin
+    from = { every_owned_ship = { spth_armor_shield_efficiency_system_debuff = yes } }
+    every_owned_ship = { spth_armor_shield_efficiency_system_buff = yes }
+    set_update_modifiers_batch = end
 }
 # 加成系统
 spth_armor_shield_efficiency_system_buff = {
     optimize_memory
-    set_update_modifiers_batch = begin
+    # set_update_modifiers_batch = begin
+    add_modifier = { modifier = spth_shield_efficiency_regen multiplier = value:ship_spth_shield_efficiency_count }
+    add_modifier = { modifier = spth_armor_efficiency_regen multiplier = value:ship_spth_armor_efficiency_count }
     if = {
         limit = { check_modifier_value = { modifier = ship_spth_shield_efficiency value > 0 } }
+        set_variable = { which = spth_shield_efficiency_var_debug value = modifier:ship_spth_shield_efficiency }
         export_modifier_to_variable = { modifier = ship_shield_hardening_add variable = spth_shield_efficiency_var_hardening }
         if = {
-            limit = { check_variable = { which = spth_shield_efficiency_var_hardening value < modifier:ship_spth_shield_efficiency } }
+            limit = { check_variable = { which = spth_shield_efficiency_var_hardening value < spth_shield_efficiency_var_debug } }
             add_modifier = { modifier = spth_shield_efficiency_hardening multiplier = spth_shield_efficiency_var_hardening }
-            add_modifier = { modifier = spth_shield_efficiency_hardening_rst multiplier = modifier:ship_spth_shield_efficiency }
+            add_modifier = { modifier = spth_shield_efficiency_hardening_rst multiplier = spth_shield_efficiency_var_debug }
         }
     }
     if = {
         limit = { check_modifier_value = { modifier = ship_spth_armor_efficiency value > 0 } }
+        set_variable = { which = spth_armor_efficiency_var_debug value = modifier:ship_spth_armor_efficiency }
         export_modifier_to_variable = { modifier = ship_armor_hardening_add variable = spth_armor_efficiency_var_hardening }
         if = {
-            limit = { check_variable = { which = spth_armor_efficiency_var_hardening value < modifier:ship_spth_armor_efficiency } }
+            limit = { check_variable = { which = spth_armor_efficiency_var_hardening value < spth_armor_efficiency_var_debug } }
             add_modifier = { modifier = spth_armor_efficiency_hardening multiplier = spth_armor_efficiency_var_hardening }
-            add_modifier = { modifier = spth_armor_efficiency_hardening_rst multiplier = modifier:ship_spth_armor_efficiency }
+            add_modifier = { modifier = spth_armor_efficiency_hardening_rst multiplier = spth_armor_efficiency_var_debug }
         }
     }
-    set_update_modifiers_batch = end
+    # set_update_modifiers_batch = end
 }
 # 减益系统
 spth_armor_shield_efficiency_system_debuff = {
@@ -433,11 +441,17 @@ spth_armor_shield_efficiency_system_debuff = {
             value = 1
         }
     }
+    remove_modifier = spth_shield_efficiency_debuff
+    remove_modifier = spth_armor_efficiency_debuff
+    add_modifier = { modifier = spth_shield_efficiency_debuff multiplier = value:spth_shield_damage_debuff_value }
+    add_modifier = { modifier = spth_armor_efficiency_debuff multiplier = value:spth_armor_damage_debuff_value }
     # set_update_modifiers_batch = end
 }
 # 系统结束运行
 spth_armor_shield_efficiency_system_end = {
     optimize_memory
+    clear_variable = spth_shield_efficiency_var_debug
+    clear_variable = spth_armor_efficiency_var_debug
     clear_variable = spth_shield_efficiency_var_hardening
     clear_variable = spth_armor_efficiency_var_hardening
     remove_ship_flag = has_spth_shield_efficiency_debuff
@@ -838,6 +852,7 @@ spth_bombardment_support_system_init = {
                         }
                         set_fleet_flag = spth_bombardment_support_dw
                         set_fleet_flag = has_spth_bombardment_support
+                        set_timed_fleet_flag = { flag = spth_bombardment_support_dw_cd days = 4 }
                     }
                     if = {
                         limit = {
@@ -848,6 +863,7 @@ spth_bombardment_support_system_init = {
                         }
                         set_fleet_flag = spth_bombardment_support_fc
                         set_fleet_flag = has_spth_bombardment_support
+                        set_timed_fleet_flag = { flag = spth_bombardment_support_fc_cd days = 2 }
                     }
                     if = {
                         limit = {
@@ -858,6 +874,7 @@ spth_bombardment_support_system_init = {
                         }
                         set_fleet_flag = spth_bombardment_support_sk
                         set_fleet_flag = has_spth_bombardment_support
+                        set_timed_fleet_flag = { flag = spth_bombardment_support_sk_cd days = 2 }
                     }
                     fleet_event = {
                         id = Th_dynamic_battle_vict.46

@@ -211,15 +211,8 @@ country_event = {
             has_origin = origin_spth_story_gensokyo
         }
         OR = {
-            # 剧情线 地球四季变化
-            AND = {
-                exists = event_target:spth_story_sol_system_earth
-                event_target:spth_story_sol_system_earth = {
-                    exists = owner
-                    owner = { is_same_value = prevprev }
-                    is_colony = yes
-                }
-            }
+            # 剧情线&非剧情线 地球四季变化
+            exists = event_target:spth_story_sol_system_earth
             # 地球化改造星球
             AND = {
                 has_country_flag = enable_spth_earth_transform
@@ -228,8 +221,11 @@ country_event = {
         }
     }
     immediate = {
-        event_target:spth_story_sol_system_earth = {
-            planet_event = { id = disappear_barrier.201 }
+        if = {
+            limit = { exists = event_target:spth_story_sol_system_earth }
+            event_target:spth_story_sol_system_earth = {
+                planet_event = { id = disappear_barrier.201 }
+            }
         }
         every_owned_planet = {
             limit = { has_planet_flag = has_spth_earth_transform }
