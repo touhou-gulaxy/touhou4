@@ -455,10 +455,11 @@ planet_event = {
 # 战斗时每45天可复活10次 完成
 # 前30天内每天修复一次全舰队船体，且提升舰队舰船血量 完成
 # 30天后每三天修复一次全舰队船体，且提升舰队舰船血量 完成
-# 被击毁后对星系内敌方舰船造成致命伤害
-# 召唤小型舰船作为火力支援
-# 每4天召唤一轮弹幕攻击
+# 被击毁后对星系内敌方舰船造成致命伤害 完成
+# 召唤小型舰船作为火力支援 作为子系统
+# 每4天召唤一轮弹幕攻击 作为子系统
 # 保障己方的命中追踪 完成
+# 四季流转 完成
 #
 # This = owner of fleet 1
 # From = owner of fleet 2
@@ -477,41 +478,7 @@ country_event = {
             }
         }
     }
-    immediate = {
-        # initialize system
-        fromfrom = {
-            random_owned_ship = {
-                limit = {
-                    is_ship_size = TH_super_carrier
-                    has_ship_flag = is_spth_super_carrier
-                }
-                save_event_target_as = spth_super_carrier
-                set_disable_at_health = 0.01
-                set_ship_flag = spth_super_carrier_sys_triggered
-                set_variable = { which = spth_super_carrier_inv_counter value = 0 }
-                set_variable = { which = spth_super_carrier_inv_max value = 10 }
-                set_variable = { which = spth_super_carrier_combat_days value = 0 }
-                ship_event = { id = spth_fleet.1001 days = 1 }
-            }
-            every_owned_ship = {
-                limit = { has_hp < 4800000 }
-                set_variable = { which = spth_super_carrier_hull_standard value = trigger:has_hp }
-                change_variable = { which = spth_super_carrier_hull_standard value = modifier:ship_hull_add }
-                change_variable = { which = spth_super_carrier_hull_standard value = 1080000 }
-                if = {
-                    limit = {
-                        check_variable_arithmetic = {
-                            which = spth_super_carrier_hull_standard
-                            multiply = modifier:ship_hull_mult
-                            value < 10000000
-                        }
-                    }
-                    add_modifier = { modifier = spth_super_carrier_protect }
-                }
-            }
-            fleet_event = { id = spth_fleet.1005 }
-        }
-    }
+    immediate = { spth_super_carrier_init_system_self = yes }
 }
 
 ship_event = {
@@ -522,31 +489,9 @@ ship_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-            change_variable = { which = spth_super_carrier_combat_days value = 1 }
-            if = {
-                limit = { check_variable_arithmetic = { which = spth_super_carrier_combat_days modulo = 45 value = 0 } }
-                set_variable = { which = spth_super_carrier_inv_counter value = 0 }
-            }
-            if = {
-                limit = { check_variable = { which = spth_super_carrier_combat_days value <= 30 } }
-                fleet = { every_owned_ship = { repair_ship = yes } }
-            } else = {
-                if = {
-                    limit = { check_variable_arithmetic = { which = spth_super_carrier_combat_days modulo = 3 value = 0 } }
-                    fleet = { every_owned_ship = { repair_ship = yes } }
-                }
-            }
+            spth_super_carrier_main_system_self = yes
             ship_event = { id = spth_fleet.1001 days = 1 }
-        } else = {
-            if = {
-                limit = { is_disabled = yes }
-                set_disabled = no
-            }
-            set_disable_at_health = -1
-            clear_variable = spth_super_carrier_combat_days
-            clear_variable = spth_super_carrier_inv_max
-            remove_ship_flag = spth_super_carrier_sys_triggered
-        }
+        } else = { spth_super_carrier_finalize_system_self = yes }
     }
 }
 # This = Ship
@@ -555,17 +500,97 @@ ship_event = {
     id = spth_fleet.1002
     hide_window = yes
     is_triggered_only = yes
-    trigger = { has_ship_flag = spth_super_carrier_sys_triggered }
-    immediate = {
-        change_variable = { which = spth_super_carrier_inv_counter value = 1 }
-        if = {
-            limit = { check_variable = { which = spth_super_carrier_inv_counter value > 10 } }
-            set_disable_at_health = -1
-        } else = {
-            repair_ship = yes
-            set_disable_at_health = 0.01
+    trigger = {
+        OR = {
+            has_ship_flag = spth_super_carrier_sys_triggered
+            has_ship_flag = spth_super_carrier_destroyed_storm
         }
-        set_disabled = no
+    }
+    immediate = {
+        repair_ship = yes
+        if = {
+            limit = { has_ship_flag = spth_super_carrier_destroyed_storm }
+            repair_ship = yes set_disable_at_health = 0.01 set_disabled = no
+        } else = {
+            change_variable = { which = spth_super_carrier_inv_counter value = 1 }
+            owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
+            if = {
+                limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 10 } }
+                set_disable_at_health = -1
+            } else = {
+                set_disable_at_health = 0.01
+            }
+            set_disabled = no
+        }
+    }
+}
+# This = owner of ship 1 (combatant)
+# From = owner of ship 2 (destroyed)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = spth_fleet.1003
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { fromfromfrom = { is_ship_size = TH_super_carrier } }
+    immediate = {
+        from = {
+            remove_country_flag = spth_super_carrier_in_combat
+            clear_variable = spth_super_carrier_combat_days
+            clear_variable = spth_super_carrier_inv_max
+            set_variable = { which = spth_super_carrier_inv_counter value = 0 }
+        }
+        fromfromfrom = {
+            create_fleet = {
+                name = spth_super_carrier_destroyed_storm
+                settings = {
+                    can_upgrade = no
+                    spawn_debris = no
+                    can_change_leader = no
+                    uses_naval_capacity = no
+                    is_boss = yes
+                    is_ultra_boss = yes
+                    garrison = no
+                    can_change_composition = no
+                }
+                effect = {
+                    set_owner = root.from
+                    create_ship = {
+                        design = spth_super_carrier_destroyed_storm
+                        effect = {
+                            set_name = spth_super_carrier_destroyed_storm
+                            set_ship_flag = spth_super_carrier_destroyed_storm
+                            set_disable_at_health = 0.01
+                            ship_event = { id = Th_dynamic_battle_vict.47 days = 2 }
+                        }
+                    }
+                    create_ship = {
+                        design = spth_super_carrier_destroyed_storm_last
+                        effect = {
+                            set_ship_flag = spth_super_carrier_destroyed_storm
+                            set_name = spth_super_carrier_destroyed_storm_last
+                            set_disable_at_health = 0.01
+                        }
+                    }
+                    set_location = {
+                        target = prev
+                        distance = 0
+                        angle = random
+                    }
+                    fleet_event = { id = spth_fleet.1006 days = 4 }
+                }
+            }
+            solar_system = {
+                create_ambient_object = {
+                    type = "star_explosion"
+                    play_animation_once = yes
+                    location = prev
+                }
+                last_created_ambient_object = {
+                    set_location = { target = prev distance = 0 angle = random }
+                }
+            }
+        }
     }
 }
 
@@ -576,19 +601,23 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes any_owned_ship = { has_ship_flag = spth_super_carrier_sys_triggered } }
-            every_owned_ship = {
-                TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = "<" limit_value = 1 value = 1 }
-                TH_dynamic_modifier_conditional = { modifier = ship_accuracy_add relation = "<" limit_value = 10 value = 10 }
-                TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = "<" limit_value = 1 value = 1 }
-                TH_dynamic_modifier_conditional = { modifier = ship_tracking_add relation = "<" limit_value = 10 value = 10 }
-            }
+            set_update_modifiers_batch = begin
+            spth_super_carrier_main_system_self_fleet = yes
+            set_update_modifiers_batch = end
             fleet_event = { id = spth_fleet.1005 days = 1 }
-        } else = {
-            every_owned_ship = {
-                clear_variable = spth_super_carrier_hull_standard
-                remove_modifier = spth_super_carrier_protect
-                TH_clear_all_dynamic_modifier = yes
-            }
+        } else = { spth_super_carrier_finalize_system_self_fleet = yes }
+    }
+}
+# 解散效果实体舰队
+fleet_event = {
+    id = spth_fleet.1006
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        destroy_fleet = {
+            target = this
+            destroy_template = yes
+            kill_leader = no
         }
     }
 }

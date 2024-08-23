@@ -1,0 +1,184 @@
+spth_super_carrier_init_system_self = {
+    optimize_memory
+    # initialize system
+    fromfrom = {
+        random_owned_ship = {
+            limit = {
+                is_ship_size = TH_super_carrier
+                has_ship_flag = is_spth_super_carrier
+            }
+            save_event_target_as = spth_super_carrier
+            set_disable_at_health = 0.01
+            set_ship_flag = spth_super_carrier_sys_triggered
+            if = {
+                limit = { NOT = { is_variable_set = spth_super_carrier_inv_max } }
+                set_variable = { which = spth_super_carrier_inv_max value = 10 }
+            }
+            if = {
+                limit = { NOT = { is_variable_set = spth_super_carrier_combat_days } }
+                set_variable = { which = spth_super_carrier_combat_days value = 0 }
+            }
+            owner = {
+                set_country_flag = spth_super_carrier_in_combat
+                if = {
+                    limit = { NOT = { is_variable_set = spth_super_carrier_inv_max } }
+                    set_variable = { which = spth_super_carrier_inv_max value = 10 }
+                }
+                if = {
+                    limit = { NOT = { is_variable_set = spth_super_carrier_combat_days } }
+                    set_variable = { which = spth_super_carrier_combat_days value = 0 }
+                }
+                if = {
+                    limit = { NOT = { is_variable_set = spth_super_carrier_inv_counter } }
+                    set_variable = { which = spth_super_carrier_inv_counter value = 0 }
+                }
+            }
+            # set_variable = { which = spth_super_carrier_inv_counter value = 0 }
+            # set_variable = { which = spth_super_carrier_inv_max value = 10 }
+            ship_event = { id = spth_fleet.1001 days = 1 }
+        }
+        every_owned_ship = {
+            limit = { has_hp < 4800000 }
+            set_variable = { which = spth_super_carrier_hull_standard value = trigger:has_hp }
+            change_variable = { which = spth_super_carrier_hull_standard value = modifier:ship_hull_add }
+            change_variable = { which = spth_super_carrier_hull_standard value = 1080000 }
+            if = {
+                limit = {
+                    check_variable_arithmetic = {
+                        which = spth_super_carrier_hull_standard
+                        multiply = modifier:ship_hull_mult
+                        value < 10000000
+                    }
+                }
+                add_modifier = { modifier = spth_super_carrier_protect }
+            }
+        }
+        fleet_event = { id = spth_fleet.1005 }
+    }
+}
+spth_super_carrier_main_system_self = {
+    optimize_memory
+    change_variable = { which = spth_super_carrier_combat_days value = 1 }
+    owner = { change_variable = { which = spth_super_carrier_combat_days value = 1 } }
+    if = {
+        limit = { check_variable_arithmetic = { which = spth_super_carrier_combat_days modulo = 45 value = 0 } }
+        set_variable = { which = spth_super_carrier_inv_counter value = 0 }
+    }
+    if = {
+        limit = { check_variable = { which = spth_super_carrier_combat_days value <= 30 } }
+        fleet = { every_owned_ship = { repair_ship = yes } }
+    } else = {
+        if = {
+            limit = { check_variable_arithmetic = { which = spth_super_carrier_combat_days modulo = 3 value = 0 } }
+            fleet = { every_owned_ship = { repair_ship = yes } }
+        }
+    }
+    fleet = {
+        if = {
+            limit = { spth_is_spring = yes }
+            if = {
+                limit = { NOT = { has_modifier = spth_super_carrier_spring_modifier } }
+                add_modifier = { modifier = spth_super_carrier_spring_modifier }
+            }
+            every_owned_ship = {
+                if = {
+                    limit = { has_modifier = spth_super_carrier_autumn_extra_modifier }
+                    remove_modifier = spth_super_carrier_autumn_extra_modifier
+                }
+            }
+            if = { limit = { has_modifier = spth_super_carrier_summer_modifier } remove_modifier = spth_super_carrier_summer_modifier }
+            if = { limit = { has_modifier = spth_super_carrier_autumn_modifier } remove_modifier = spth_super_carrier_autumn_modifier }
+            if = { limit = { has_modifier = spth_super_carrier_winter_modifier } remove_modifier = spth_super_carrier_winter_modifier }
+        }
+        if = {
+            limit = { spth_is_summer = yes }
+            if = {
+                limit = { NOT = { has_modifier = spth_super_carrier_summer_modifier } }
+                add_modifier = { modifier = spth_super_carrier_summer_modifier }
+            }
+            every_owned_ship = {
+                if = {
+                    limit = { has_modifier = spth_super_carrier_autumn_extra_modifier }
+                    remove_modifier = spth_super_carrier_autumn_extra_modifier
+                }
+            }
+            if = { limit = { has_modifier = spth_super_carrier_spring_modifier } remove_modifier = spth_super_carrier_spring_modifier }
+            if = { limit = { has_modifier = spth_super_carrier_autumn_modifier } remove_modifier = spth_super_carrier_autumn_modifier }
+            if = { limit = { has_modifier = spth_super_carrier_winter_modifier } remove_modifier = spth_super_carrier_winter_modifier }
+        }
+        if = {
+            limit = { spth_is_autumn = yes }
+            if = {
+                limit = { NOT = { has_modifier = spth_super_carrier_autumn_modifier } }
+                add_modifier = { modifier = spth_super_carrier_autumn_modifier }
+            }
+            every_owned_ship = {
+                if = {
+                    limit = { has_modifier = spth_super_carrier_autumn_extra_modifier }
+                    remove_modifier = spth_super_carrier_autumn_extra_modifier
+                    set_variable = { which = spth_super_carrier_autumn_var value = 0 }
+                    export_modifier_to_variable = { modifier = weapon_type_energy_weapon_damage_mult variable = spth_super_carrier_autumn_var }
+                    multiply_variable = { which = spth_super_carrier_autumn_var value = 0.25 }
+                    add_modifier = { modifier = spth_super_carrier_autumn_extra_modifier multiplier = spth_super_carrier_autumn_var }
+                    clear_variable = spth_super_carrier_autumn_var
+                }
+            }
+            if = { limit = { has_modifier = spth_super_carrier_spring_modifier } remove_modifier = spth_super_carrier_spring_modifier }
+            if = { limit = { has_modifier = spth_super_carrier_summer_modifier } remove_modifier = spth_super_carrier_summer_modifier }
+            if = { limit = { has_modifier = spth_super_carrier_winter_modifier } remove_modifier = spth_super_carrier_winter_modifier }
+        }
+        if = {
+            limit = { spth_is_winter = yes }
+            if = {
+                limit = { NOT = { has_modifier = spth_super_carrier_winter_modifier } }
+                add_modifier = { modifier = spth_super_carrier_winter_modifier }
+            }
+            every_owned_ship = {
+                if = {
+                    limit = { has_modifier = spth_super_carrier_autumn_extra_modifier }
+                    remove_modifier = spth_super_carrier_autumn_extra_modifier
+                }
+            }
+            if = { limit = { has_modifier = spth_super_carrier_spring_modifier } remove_modifier = spth_super_carrier_spring_modifier }
+            if = { limit = { has_modifier = spth_super_carrier_summer_modifier } remove_modifier = spth_super_carrier_summer_modifier }
+            if = { limit = { has_modifier = spth_super_carrier_autumn_modifier } remove_modifier = spth_super_carrier_autumn_modifier }
+        }
+    }
+}
+spth_super_carrier_finalize_system_self = {
+    optimize_memory
+    # finalize
+    if = {
+        limit = { is_disabled = yes }
+        set_disabled = no
+    }
+    set_disable_at_health = -1
+    clear_variable = spth_super_carrier_combat_days
+    clear_variable = spth_super_carrier_inv_max
+    set_variable = { which = spth_super_carrier_inv_counter value = 0 }
+    remove_ship_flag = spth_super_carrier_sys_triggered
+    owner = {
+        remove_country_flag = spth_super_carrier_in_combat
+        clear_variable = spth_super_carrier_combat_days
+        clear_variable = spth_super_carrier_inv_max
+        set_variable = { which = spth_super_carrier_inv_counter value = 0 }
+    }
+}
+
+spth_super_carrier_main_system_self_fleet = {
+    optimize_memory
+    every_owned_ship = {
+        TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = "<" limit_value = 1 value = 1 }
+        TH_dynamic_modifier_conditional = { modifier = ship_accuracy_add relation = "<" limit_value = 10 value = 10 }
+        TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = "<" limit_value = 1 value = 1 }
+        TH_dynamic_modifier_conditional = { modifier = ship_tracking_add relation = "<" limit_value = 10 value = 10 }
+    }
+}
+spth_super_carrier_finalize_system_self_fleet = {
+    optimize_memory
+    every_owned_ship = {
+        clear_variable = spth_super_carrier_hull_standard
+        remove_modifier = spth_super_carrier_protect
+        TH_clear_all_dynamic_modifier = yes
+    }
+}
