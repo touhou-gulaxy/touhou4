@@ -1,13 +1,46 @@
 namespace = spth_colony
 
 # monthly update current barrier capacity as a planet variable
-planet_event = {
+country_event = {
 	id = spth_colony.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+	}
+	immediate = {
+		every_owned_planet = {
+			limit = { has_deposit = d_hakurei_barrier }
+			set_variable = {
+				which = planet_genso_job_buff_modifier
+				value = value:planet_genso_job_buff_modifier
+			}
+		}
+	}
+}
+
+# update current barrier capacity as a planet variable when the save is loaded
+event = {
+	id = spth_colony.2
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		every_country = {
+			limit = { has_authority = auth_gensokyo }
+			country_event = { id = spth_colony.1 }
+		}
+	}
+}
+
+# monthly update current barrier capacity as a planet variable
+planet_event = {
+	id = spth_colony.100
 	hide_window = yes
 	is_triggered_only = yes
 
 	trigger = {
 		exists = owner
+		owner = { has_authority = auth_gensokyo }
 		has_deposit = d_hakurei_barrier
 	}
 	
