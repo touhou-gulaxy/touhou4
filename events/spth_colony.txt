@@ -51,3 +51,36 @@ planet_event = {
 		}
 	}
 }
+
+
+country_event = {
+	id = spth_colony.3
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		has_country_flag = spth_pop_convert_enabled
+	}
+	immediate = {
+		every_owned_planet = {
+			limit = { has_modifier = spth_planet_pop_convert }
+			export_trigger_value_to_variable = {
+				trigger = num_assigned_jobs
+				parameters = {
+					job = spth_to_be_converted
+				}
+				variable = to_be_converted_amount
+			}
+			every_owned_pop = {
+				limit = {
+					has_job = spth_to_be_converted
+				}
+				kill_pop = yes
+			}
+			while = {
+				count = to_be_converted_amount
+				create_pop = { species = root.owner_main_species }
+			}
+		}
+	}
+}
