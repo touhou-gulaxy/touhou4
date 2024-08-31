@@ -1,0 +1,94 @@
+situation_spth_spirit_power_exploration = {
+	picture = GFX_evt_spth_gensokyo_city
+	category = positive
+	complete_icon_frame = GFX_situation_outcome_frame_green
+	complete_icon = GFX_situation_outcome_ascension
+	abort_trigger = { always = no }
+	on_start = { save_global_event_target_as = spth_spirit_power_exploration_target }
+	on_progress_complete = {
+		custom_tooltip = spth_spirit_power_exploration_complete_tooltip
+		hidden_effect = {
+			owner = {
+				country_event = { id = spth_ap.1020 }
+			}
+		}
+	}
+	stages = {
+		spth_spirit_power_exploration_stage_1 = {
+			icon = GFX_spth_null
+			icon_background = GPX_spth_situation_log_gensokyo
+			end = 20
+			custom_tooltip = spth_spirit_power_exploration_stage_1_effect_tooltip
+		}
+		spth_spirit_power_exploration_stage_2 = {
+			icon = GFX_spth_null
+			icon_background = GPX_spth_situation_log_gensokyo
+			end = 100
+			custom_tooltip = spth_spirit_power_exploration_stage_2_effect_tooltip
+			on_first_enter = { situation_event = { id = spth_ap.1010 } }
+		}
+	}
+	approach = {
+		name = "spth_spirit_power_exploration_approach_continue"
+		icon = GFX_situation_approach_research
+		icon_background = GFX_situation_approach_bg_green
+		default = yes
+		resources = {
+			category = situations
+			upkeep = {
+				sr_lingli = 1.00
+			}
+		}
+	}
+	approach = {
+		name = "spth_spirit_power_exploration_approach_pause"
+		icon = GFX_situation_approach_research
+		icon_background = GFX_situation_approach_bg_yellow
+	}
+	approach = {
+		name = "spth_spirit_power_exploration_approach_kaile"
+		icon = GFX_situation_approach_research
+		icon_background = GFX_situation_approach_bg_red
+	}
+	monthly_progress = {
+		base = 8
+		modifier = {
+			mult = 0
+			desc = situation_spth_spirit_power_exploration_no_progress_desc
+			hidden_trigger = {
+				has_situation_flag = phase_2
+				NOR = {
+					owner = {
+						check_variable = {
+							which = ap_spth_gsk_1_contact_counter
+							value >= 2
+						}
+					}
+					years_passed >= 15
+				}
+			}
+		}
+		modifier = {
+			add = 8
+			desc = situation_spth_spirit_power_exploration_accelerated_desc
+			hidden_trigger = {
+				owner = {
+					check_variable = {
+						which = ap_spth_gsk_1_contact_counter
+						value >= 4
+					}
+				}
+			}
+		}
+		modifier = {
+			mult = 0
+			desc = situation_spth_spirit_power_exploration_paused_desc
+			current_situation_approach = spth_spirit_power_exploration_approach_pause
+		}
+		modifier = {
+			add = 30
+			desc = situation_spth_spirit_power_exploration_kaile_desc
+			current_situation_approach = spth_spirit_power_exploration_approach_kaile
+		}
+	}
+}
