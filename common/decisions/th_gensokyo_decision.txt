@@ -132,6 +132,57 @@ decision_gensokyo_pop_convert_activate = {
 	}
 }
 
+decision_restore_gensokyo_planet_class = {
+	icon = decision_refresh_existed_barrier
+	sound = megastructure_upgraded
+	enactment_time = 0
+	resources = {
+		category = decisions
+		cost = {
+			sr_lingli = 5
+			unity = 40
+			multiplier = trigger:planet_size
+		}
+	}
+	allow = {
+		# we only consider about these situation
+		OR = {
+			is_planet_class = pc_nuked
+			is_planet_class = pc_desert
+			is_planet_class = pc_barren
+			is_planet_class = pc_barren_cold
+		}
+	}
+	potential = {
+		exists = from
+		from = { has_authority = auth_gensokyo }
+		exists = space_owner
+		space_owner = { is_same_value = from }
+		is_star = no
+		is_astral_scar = no
+		OR = {
+			has_planet_flag = is_spth_gensokyo_ringworld
+			has_planet_flag = is_spth_gensokyo_planet
+			has_planet_flag = is_spth_gensokyo_city
+		}
+		NOR = {
+			is_planet_class = pc_gensokyo_planet
+			is_planet_class = pc_gensokyo_city
+			is_planet_class = pc_ringworld_th
+		}
+	}
+	effect = {
+		switch = {
+			trigger = has_planet_flag
+			is_spth_gensokyo_ringworld = { spth_change_pc_gensokyo_ringworld_effect = yes }
+			is_spth_gensokyo_planet = { spth_change_pc_gensokyo_planet_effect = yes }
+			is_spth_gensokyo_city = { spth_change_pc_gensokyo_city_effect = yes }
+			default = {}
+		}
+	}
+	ai_weight = { base = 0 }
+}
+
 decision_gensokyo_project = {
 	owned_planets_only = yes
 	icon = decision_arcology_project
@@ -195,72 +246,11 @@ decision_gensokyo_project = {
 		# Make city-planet
 		custom_tooltip = decision_gensokyo_project_effects
 		hidden_effect = {
-            spth_effect_count_th_deposits = { deposit = d_zhulin }
-            spth_effect_count_th_deposits = { deposit = d_yokai_mountain }
-            spth_effect_count_th_deposits = { deposit = d_sunshine_flower_field }
-            spth_effect_count_th_deposits = { deposit = d_th_underway }
-            spth_effect_count_th_deposits = { deposit = d_false_heaven_shield }
-            spth_effect_count_th_deposits = { deposit = d_wifi_tower }
-            spth_effect_count_th_deposits = { deposit = d_mosen }
-            clear_deposits = yes
-            spth_effect_restore_th_deposits = { deposit = d_zhulin }
-            spth_effect_restore_th_deposits = { deposit = d_yokai_mountain }
-            spth_effect_restore_th_deposits = { deposit = d_sunshine_flower_field }
-            spth_effect_restore_th_deposits = { deposit = d_th_underway }
-            spth_effect_restore_th_deposits = { deposit = d_false_heaven_shield }
-            spth_effect_restore_th_deposits = { deposit = d_wifi_tower }
-            spth_effect_restore_th_deposits = { deposit = d_mosen }
-            if = {
-                limit = { has_modifier = spth_hakurei_barrier_info }
-                add_deposit = d_hakurei_barrier
-            }
-			change_pc = pc_gensokyo_city
-			set_planet_entity = {
-				entity = "gensokyo_city_entity"
-				graphical_culture = owner
-			}
-			this = {
-				save_event_target_as = spth_new_gensokyo_planet
-			}
-			owner = {
-				switch = {
-					trigger = has_country_flag
-					spth_scarlet_start = {
-						event_target:spth_new_gensokyo_planet = {
-							create_ambient_object = {
-								type = "spth_scarlet_city_object"
-								entity_offset_height = {
-									min = -35
-									max = -40
-								}
-								location = this
-							}
-							last_created_ambient_object = {
-								set_location = {
-									target = event_target:spth_new_gensokyo_planet
-								}
-							}
-						}
-					}
-					spth_hakurei_start = {
-						event_target:spth_new_gensokyo_planet = {
-							create_ambient_object = {
-								type = "spth_hakurei_city_object"
-								entity_offset_height = {
-									min = -35
-									max = -40
-								}
-								location = this
-							}
-							last_created_ambient_object = {
-								set_location = {
-									target = event_target:spth_new_gensokyo_planet
-								}
-							}
-						}
-					}
-				}
-			}
+			remove_planet_flag = is_spth_gensokyo_ringworld
+			remove_planet_flag = is_spth_gensokyo_planet
+			set_planet_flag = is_spth_gensokyo_city
+			spth_reset_planet_deposits_effect = yes
+			spth_change_pc_gensokyo_city_effect = yes
 			# owner = {
 			# 	country_event = { id = distar.201 } # port for living planet distar.197, triggers in event
 			# }
@@ -331,72 +321,11 @@ decision_gensokyo_planet_project = {
 		# Make city-planet
 		custom_tooltip = decision_gensokyo_planet_project_effects
 		hidden_effect = {
-			spth_effect_count_th_deposits = { deposit = d_zhulin }
-			spth_effect_count_th_deposits = { deposit = d_yokai_mountain }
-			spth_effect_count_th_deposits = { deposit = d_sunshine_flower_field }
-			spth_effect_count_th_deposits = { deposit = d_th_underway }
-			spth_effect_count_th_deposits = { deposit = d_false_heaven_shield }
-			spth_effect_count_th_deposits = { deposit = d_wifi_tower }
-			spth_effect_count_th_deposits = { deposit = d_mosen }
-			clear_deposits = yes
-			spth_effect_restore_th_deposits = { deposit = d_zhulin }
-			spth_effect_restore_th_deposits = { deposit = d_yokai_mountain }
-			spth_effect_restore_th_deposits = { deposit = d_sunshine_flower_field }
-			spth_effect_restore_th_deposits = { deposit = d_th_underway }
-			spth_effect_restore_th_deposits = { deposit = d_false_heaven_shield }
-			spth_effect_restore_th_deposits = { deposit = d_wifi_tower }
-			spth_effect_restore_th_deposits = { deposit = d_mosen }
-			if = {
-                limit = { has_modifier = spth_hakurei_barrier_info }
-                add_deposit = d_hakurei_barrier
-            }
-			change_pc = pc_gensokyo_planet
-			set_planet_entity = {
-				entity = "gensokyo_city_entity"
-				graphical_culture = owner
-			}
-			this = {
-				save_event_target_as = spth_new_gensokyo_planet
-			}
-			owner = {
-				switch = {
-					trigger = has_country_flag
-					spth_moriya_start = {
-						event_target:spth_new_gensokyo_planet = {
-							create_ambient_object = {
-								type = "spth_moriya_city_object"
-								entity_offset_height = {
-									min = -35
-									max = -40
-								}
-								location = this
-							}
-							last_created_ambient_object = {
-								set_location = {
-									target = event_target:spth_new_gensokyo_planet
-								}
-							}
-						}
-					}
-					spth_hakurei_start = {
-						event_target:spth_new_gensokyo_planet = {
-							create_ambient_object = {
-								type = "spth_hakurei_city_object"
-								entity_offset_height = {
-									min = -35
-									max = -40
-								}
-								location = this
-							}
-							last_created_ambient_object = {
-								set_location = {
-									target = event_target:spth_new_gensokyo_planet
-								}
-							}
-						}
-					}
-				}
-			}
+			remove_planet_flag = is_spth_gensokyo_city
+			remove_planet_flag = is_spth_gensokyo_ringworld
+			set_planet_flag = is_spth_gensokyo_planet
+			spth_reset_planet_deposits_effect = yes
+			spth_change_pc_gensokyo_planet_effect = yes
 			# owner = {
 			# 	country_event = { id = distar.201 } # port for living planet distar.197, triggers in event
 			# }
@@ -538,32 +467,11 @@ decision_gensokyo_ring_project = {
 		# Make city-planet
 		custom_tooltip = decision_gensokyo_project_effects
 		hidden_effect = {
-            spth_effect_count_th_deposits = { deposit = d_zhulin }
-            spth_effect_count_th_deposits = { deposit = d_yokai_mountain }
-            spth_effect_count_th_deposits = { deposit = d_sunshine_flower_field }
-            spth_effect_count_th_deposits = { deposit = d_th_underway }
-            spth_effect_count_th_deposits = { deposit = d_false_heaven_shield }
-            spth_effect_count_th_deposits = { deposit = d_wifi_tower }
-            spth_effect_count_th_deposits = { deposit = d_mosen }
-            clear_deposits = yes
-            spth_effect_restore_th_deposits = { deposit = d_zhulin }
-            spth_effect_restore_th_deposits = { deposit = d_yokai_mountain }
-            spth_effect_restore_th_deposits = { deposit = d_sunshine_flower_field }
-            spth_effect_restore_th_deposits = { deposit = d_th_underway }
-            spth_effect_restore_th_deposits = { deposit = d_false_heaven_shield }
-            spth_effect_restore_th_deposits = { deposit = d_wifi_tower }
-            spth_effect_restore_th_deposits = { deposit = d_mosen }
-            if = {
-                limit = { has_modifier = spth_hakurei_barrier_info }
-                add_deposit = d_hakurei_barrier
-            }
-			remove_all_districts = yes
-			change_pc = pc_ringworld_th
-
-			set_planet_entity = {
-				entity = "ringworld_habitable_entity"
-				graphical_culture = owner
-			}
+			remove_planet_flag = is_spth_gensokyo_city
+			remove_planet_flag = is_spth_gensokyo_planet
+			set_planet_flag = is_spth_gensokyo_ringworld
+			spth_reset_planet_deposits_effect = yes
+			spth_change_pc_gensokyo_ringworld_effect = yes
 			# this = {
 			# 	save_event_target_as = spth_new_gensokyo_planet
 			# }
