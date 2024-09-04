@@ -5,17 +5,28 @@ country_event = {
 	id = spth_colony.1
 	hide_window = yes
 	is_triggered_only = yes
-	trigger = {
-		has_authority = auth_gensokyo
-	}
+	trigger = { has_authority = auth_gensokyo }
 	immediate = {
 		every_owned_planet = {
-			limit = { has_deposit = d_hakurei_barrier }
-			set_variable = {
-				which = planet_genso_job_buff_modifier
-				value = value:planet_genso_job_buff_modifier
+			limit = {
+				OR = {
+					has_modifier = spth_planet_pop_convert
+					has_deposit = d_hakurei_barrier
+				}
+			}
+			if = {
+				limit = { has_deposit = d_hakurei_barrier }
+				set_variable = {
+					which = planet_genso_job_buff_modifier
+					value = value:planet_genso_job_buff_modifier
+				}
 			}
 			spth_count_to_be_converted_pops = yes
+			remove_modifier = spth_planet_pop_convert
+			add_modifier = {
+				modifier = spth_planet_pop_convert
+				multiplier = spth_to_be_converted_pops_counter
+			}
 		}
 	}
 }
@@ -42,15 +53,26 @@ planet_event = {
 	trigger = {
 		exists = owner
 		owner = { has_authority = auth_gensokyo }
-		has_deposit = d_hakurei_barrier
+		OR = {
+			has_modifier = spth_planet_pop_convert
+			has_deposit = d_hakurei_barrier
+		}
 	}
 	
 	immediate = {
-		set_variable = {
-			which = planet_genso_job_buff_modifier
-			value = value:planet_genso_job_buff_modifier
+		if = {
+			limit = { has_deposit = d_hakurei_barrier }
+			set_variable = {
+				which = planet_genso_job_buff_modifier
+				value = value:planet_genso_job_buff_modifier
+			}
 		}
 		spth_count_to_be_converted_pops = yes
+		remove_modifier = spth_planet_pop_convert
+		add_modifier = {
+			modifier = spth_planet_pop_convert
+			multiplier = spth_to_be_converted_pops_counter
+		}
 	}
 }
 
@@ -63,8 +85,10 @@ country_event = {
 		has_country_flag = spth_pop_convert_enabled
 	}
 	immediate = {
+		set_update_modifiers_batch = begin
 		every_owned_planet = {
 			limit = { has_modifier = spth_planet_pop_convert }
+			set_variable = { which = to_be_converted_amount value = 0 }
 			export_trigger_value_to_variable = {
 				trigger = num_assigned_jobs
 				parameters = {
@@ -72,16 +96,28 @@ country_event = {
 				}
 				variable = to_be_converted_amount
 			}
-			every_owned_pop = {
-				limit = {
-					has_job = spth_to_be_converted
-				}
-				kill_pop = yes
+			if = {
+				limit = { check_variable = { which = to_be_converted_amount value >= 10 } }
+				set_variable = { which = to_be_converted_amount value = 10 }
 			}
 			while = {
 				count = to_be_converted_amount
 				create_pop = { species = root.owner_main_species }
 			}
+			while = {
+				count = to_be_converted_amount
+				random_owned_pop = {
+					limit = { has_job = spth_to_be_converted }
+					kill_pop = yes
+				}
+			}
 		}
+		spth_count_to_be_converted_pops = yes
+		remove_modifier = spth_planet_pop_convert
+		add_modifier = {
+			modifier = spth_planet_pop_convert
+			multiplier = spth_to_be_converted_pops_counter
+		}
+		set_update_modifiers_batch = end
 	}
 }
