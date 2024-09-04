@@ -188,12 +188,10 @@ spth_special_project_torifune_shield = {
 	}
 }
 
-# reset ship design: spth_unlock_super_carrier = { reset = yes }
-# unlock with flag: spth_unlock_super_carrier = { flag = yes }
-# just unlock ship: spth_unlock_super_carrier = yes
+# unlock the super carrier ship design
 spth_unlock_super_carrier = {
 	optimize_memory
-	[[flag] set_country_flag = can_build_spth_super_carrier]
+	# [[flag] set_country_flag = can_build_spth_super_carrier]
 	# [[reset]
 	# 	remove_global_ship_design = NAME_spth_super_carrier_basic
 	# 	add_global_ship_design = NAME_spth_super_carrier_basic
@@ -260,6 +258,44 @@ spth_spawn_kedama_fleet = {
 			[[spth_kedama_small_rare_sp] while = { count = $spth_kedama_small_rare_sp$ } create_ship = { name = random design = NAME_spth_kedama_small_rare_sp } ]
 			[[spth_kedama_small_titan] while = { count = $spth_kedama_small_titan$ } create_ship = { name = random design = NAME_spth_kedama_small_titan } ]
 			set_location = $location$
+		}
+	}
+}
+
+spth_roll_advanced_techs = {
+	optimize_memory
+	add_resource = { sr_lingli = $cost$ }
+	random_list = {
+		$failed_factor$ = {}
+		$success_factor$ = { set_country_flag = spth_advanced_tech_get }
+	}
+	reroll_random = yes
+	if = {
+		limit = { has_country_flag = spth_advanced_tech_get }
+		remove_country_flag = spth_advanced_tech_get
+		change_variable = { which = spth_advanced_techs_count value = 1 }
+		random_list = {
+			1 = {
+				modifier = {
+					factor = 0
+					has_technology = tech_spth_weapon_laevatain
+				}
+				give_technology = { tech = tech_spth_weapon_laevatain }
+			}
+			1 = {
+				modifier = {
+					factor = 0
+					has_technology = tech_spth_hv_bombardment
+				}
+				give_technology = { tech = tech_spth_hv_bombardment }
+			}
+			1 = {
+				modifier = {
+					factor = 0
+					has_technology = tech_spth_super_carrier_theory
+				}
+				give_technology = { tech = tech_spth_super_carrier_theory }
+			}
 		}
 	}
 }
