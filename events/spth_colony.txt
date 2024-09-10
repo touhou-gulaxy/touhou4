@@ -83,6 +83,52 @@ planet_event = {
 }
 
 country_event = {
+	id = spth_colony.200
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		any_owned_planet = {
+			has_planet_flag = megastructure
+			has_planet_flag = is_spth_megastructure_planet
+			num_pops > 1
+		}
+	}
+	immediate = {
+		every_owned_planet = {
+			limit = {
+				has_planet_flag = megastructure
+				has_planet_flag = is_spth_megastructure_planet
+				num_pops > 1
+				is_colony = yes
+			}
+			planet_event = { id = spth_colony.201 }
+		}
+	}
+}
+planet_event = {
+	id = spth_colony.201
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_planet_flag = megastructure
+		has_planet_flag = is_spth_megastructure_planet
+		num_pops > 1
+	}
+	immediate = {
+		set_variable = { which = spth_megastructure_pop_count value = 0 }
+		export_trigger_value_to_variable = {
+			trigger = num_pops
+			variable = spth_megastructure_pop_count
+		}
+		change_variable = { which = spth_megastructure_pop_count value = -1 }
+		while = {
+			count = spth_megastructure_pop_count
+			random_owned_pop = { kill_pop = yes }
+		}
+	}
+}
+
+country_event = {
 	id = spth_colony.3
 	hide_window = yes
 	is_triggered_only = yes
