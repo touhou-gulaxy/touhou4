@@ -340,3 +340,99 @@ spth_roll_advanced_techs = {
 		}
 	}
 }
+
+scarlet_weather_storm_add = {
+	optimize_memory
+	scarlet_weather_$type$_storm_add = yes
+}
+scarlet_weather_storm_remove = {
+	optimize_memory
+	scarlet_weather_$type$_storm_remove = yes
+}
+scarlet_weather_reimu_storm_add = {
+	optimize_memory
+	set_star_flag = storm_system
+	set_global_flag = cosmic_storm_has_occurred
+
+	inline_script = {
+		script = "cosmic_storms/StormVisuals"
+		STORM_NAME = "gravity_storm"
+	}
+	if = {
+		limit = {
+			has_owner = yes
+		}
+		owner = {
+			set_country_flag = affected_by_scarlet_weather_reimu_storm
+		}
+	}
+}
+scarlet_weather_reimu_storm_remove = {
+	optimize_memory
+	remove_storm_visuals_effect = yes
+	remove_star_flag = storm_system
+	if = {
+		limit = {
+			has_owner = yes
+		}
+		owner = {
+			remove_country_flag = affected_by_scarlet_weather_reimu_storm
+		}
+	}
+}
+
+scarlet_weather_system_selector = {
+	optimize_memory
+	start_storm_area_placing = {
+		sacrifice_leader_with_ui = yes
+		cosmic_storm = scarlet_weather_$type$_storm
+		immediate = yes
+		reticle_radius = {
+			base = 100
+		}
+		max_range = {
+			base = 1500
+		}
+		on_confirm = {
+			last_created_cosmic_storm = { set_storm_flag = scarlet_weather_$type$_man_made_@root }
+		}
+		on_cancel = {
+
+		}
+	}
+}
+scarlet_weather_break = {
+	optimize_memory
+	every_cosmic_storm = {
+		limit = {
+			has_storm_flag = scarlet_weather_$type$_man_made_@root
+		}
+		destroy_cosmic_storm = yes
+	}
+}
+spth_very_COOOOLL_system_selector = {
+	optimize_memory
+	start_storm_area_placing = {
+		sacrifice_leader_with_ui = no # yes则弹出窗口选择要牺牲的领袖
+		cosmic_storm = example_selector_storm # 风暴类型
+		immediate = yes
+		reticle_radius = {
+			base = 10
+		}
+		max_range = {
+			base = 1000 # 大圈选择范围
+		}
+		on_confirm = { # 国家域
+			last_created_cosmic_storm = {
+				every_system_within_storm = {
+					# 在这里写范围内星系效果
+					destroy_star_system = yes
+				}
+				destroy_cosmic_storm = yes
+			}
+		}
+		on_cancel = { # 国家域
+			# 取消选择的效果
+		}
+	}
+}
