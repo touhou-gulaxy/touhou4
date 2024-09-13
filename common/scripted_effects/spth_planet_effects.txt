@@ -267,3 +267,51 @@ spth_count_to_be_converted_pops = {
         }
     }
 }
+
+spth_spawn_habitat_cracker_effect = {
+    optimize_memory
+    if = {
+        limit = { has_planet_flag = is_spth_megastructure_planet }
+        switch = {
+            trigger = is_planet_class
+            pc_space_shrine_habitat = {
+                create_ambient_object = {
+                    location = this
+                    type = habitat_cracker_object
+                    play_animation_once = yes
+                    duration = 5
+                    use_3d_location = yes
+                    base_angle_towards = star
+                    entity_face_object = star
+                    entity_offset = { min = 0 max = 0 }
+                    entity_scale_to_size = yes
+                    scale = 0.10
+                }
+                save_event_target_as = target_habitat
+                solar_system = {
+                    spawn_megastructure = {
+                        type = th_shrine_mega_ruined
+                        owner = this.owner
+                        coords_from = PREV
+                    }
+                    star = { set_planet_flag = habitat_build_site }
+                    every_fleet_in_system = {
+                        limit = {
+                            is_ship_class = shipclass_habitat_station
+                        }
+                        orbit = {
+                            remove_planet_flag = has_megastructure
+                        }
+                        delete_fleet = this
+                    }
+                }
+                remove_planet = yes
+            }
+            default = {
+                # do nothing
+            }
+        }
+    } else = {
+        spawn_habitat_cracker_effect = yes
+    }
+}
