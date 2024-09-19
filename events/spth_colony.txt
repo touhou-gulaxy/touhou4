@@ -1,6 +1,6 @@
 namespace = spth_colony
 
-# monthly update current barrier capacity as a planet variable
+# monthly update current barrier capacity and faith strength as planet variables (and more monthly refreshes)
 country_event = {
 	id = spth_colony.1
 	hide_window = yes
@@ -16,10 +16,39 @@ country_event = {
 			}
 			if = {
 				limit = { has_deposit = d_hakurei_barrier }
-				set_variable = {
-					which = planet_genso_job_buff_modifier
-					value = value:planet_genso_job_buff_modifier
-				}
+				spth_effect_refresh_barrier_and_faith = yes
+				# set_variable = {
+				# 	which = planet_genso_job_buff_modifier
+				# 	value = value:planet_genso_job_buff_modifier
+				# }
+				# set_variable = {
+				# 	which = planet_available_barrier_capacity
+				# 	value = value:planet_available_barrier_capacity
+				# }
+				# set_variable = {
+				# 	which = planet_barrier_pressure_ratio
+				# 	value = value:planet_barrier_pressure_ratio
+				# }
+				# set_variable = {
+				# 	which = planet_base_faith_strength
+				# 	value = value:planet_base_faith_strength
+				# }
+				# set_variable = {
+				# 	which = planet_weak_genso_job_produce_barrier_modifier
+				# 	value = value:planet_weak_genso_job_produce_barrier_modifier
+				# }
+				# set_variable = {
+				# 	which = planet_weak_genso_job_produce_faith_modifier
+				# 	value = value:planet_weak_genso_job_produce_faith_modifier
+				# }
+				# set_variable = {
+				# 	which = planet_weak_genso_job_upkeep_barrier_modifier
+				# 	value = value:planet_weak_genso_job_upkeep_barrier_modifier
+				# }
+				# set_variable = {
+				# 	which = planet_weak_genso_job_upkeep_faith_modifier
+				# 	value = value:planet_weak_genso_job_upkeep_faith_modifier
+				# }
 			}
 			spth_count_to_be_converted_pops = yes
 			if = {
@@ -49,12 +78,6 @@ country_event = {
 						name = decision_establish_barrier
 					}
 				}
-				# if = {
-				# 	limit = { NOT = { has_building = building_mls_1 } }
-				# 	select_decision = {
-				# 		name = decision_th_loc_project
-				# 	}
-				# }
 			}
 		}
 	}
@@ -240,5 +263,36 @@ country_event = {
 			}
 		}
 		set_update_modifiers_batch = end
+	}
+}
+
+## 星球信仰点月度刷新
+
+country_event = {
+	id = spth_colony.4
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+	}
+	immediate = {
+		every_owned_planet = {
+			limit = {
+				has_deposit = d_hakurei_barrier
+			}
+			planet_event = { id = spth_colony.401 }
+		}
+	}
+}
+
+planet_event = {
+	id = spth_colony.401
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		set_variable = {
+			which = planet_base_faith_strength
+			value = value:planet_base_faith_strength
+		}
 	}
 }
