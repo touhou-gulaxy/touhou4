@@ -1,4 +1,4 @@
-# planet scope
+# scope: planet
 planet_genso_job_buff_modifier = {
 	base = 1
 	add = modifier:planet_barrier_capacity_add
@@ -6,6 +6,110 @@ planet_genso_job_buff_modifier = {
 	min = 0
 	max = 1
 }
+# scope: planet
+planet_available_barrier_capacity = {
+	base = 1
+	add = modifier:planet_barrier_capacity_add
+	subtract = modifier:planet_barrier_capacity_use
+	min = 0
+	max = 1
+}
+# scope: planet
+planet_base_faith_strength = {
+	base = 0
+	add = trigger:num_sapient_pops
+	modifier = {
+		owner = {
+			has_ascension_perk = ap_toho2
+		}
+		multiply = 1.2
+	}
+	modifier = {
+		owner = {
+			has_ascension_perk = ap_toho3
+		}
+		multiply = 1.2
+	}
+	modifier = {
+		owner = {
+			has_ascension_perk = ap_toho4
+		}
+		multiply = 1.2
+	}
+	min = 0
+}
+# scope: planet
+planet_barrier_pressure_ratio = {
+	base = 1
+	multiply = modifier:planet_barrier_capacity_use
+	divide = modifier:planet_barrier_capacity_add
+	min = 0
+	max = 3
+}
+# scope: planet
+# update planet's planet_barrier_pressure_ratio variable before using this
+planet_weak_genso_job_produce_barrier_modifier = {
+	base = 0
+	add = value:planet_barrier_pressure_ratio
+	subtract = 1.5
+	square = yes
+	multiply = -1
+	add = 1.25
+	modifier = {
+		check_variable = {
+			which = planet_barrier_pressure_ratio
+			value <= 1
+		}
+		set = 1
+	}
+	modifier = {
+		check_variable = {
+			which = planet_barrier_pressure_ratio
+			value >= 2.5
+		}
+		set = 0.25
+	}
+	min = 0
+}
+# scope: planet
+planet_weak_genso_job_produce_faith_modifier = {
+	base = 0
+	add = value:planet_base_faith_strength
+	add = modifier:planet_faith_strength_add
+	square_root = yes
+	divide = 20
+	multiply = value:planet_weak_genso_job_produce_barrier_modifier
+	min = 0
+	add = 1
+}
+# scope: planet
+planet_weak_genso_job_upkeep_barrier_modifier = {
+	base = 0
+	add = value:planet_barrier_pressure_ratio
+	square_root = yes
+	divide = 2
+	add = 0.5
+	modifier = {
+		check_variable = {
+			which = planet_barrier_pressure_ratio
+			value <= 1
+		}
+		set = 1
+	}
+	min = 1
+}
+# scope: planet
+planet_weak_genso_job_upkeep_faith_modifier = {
+	base = 0
+	add = value:planet_base_faith_strength
+	add = modifier:planet_faith_strength_add
+	square_root = yes
+	divide = 18
+	multiply = value:planet_weak_genso_job_upkeep_barrier_modifier
+	min = 0
+	add = 1
+}
+
 spth_police_station_factor = {
 	base = 0
 	add = trigger:num_pops
