@@ -61,71 +61,40 @@
 # 不知道会产生什么程度的天气
 
 scarlet_weather_reimu_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = reimu
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
     triggered_fleet_modifier = {
-        potential = {
-            always = yes
-        }
-        storm_base_modifier = 1
-    }
-    storm_min_radius = {
-        base = 25
+        potential = { always = yes }
         modifier = {
-            mult = value:storm_size_multiplier
+            ship_speed_mult = 0.20
+            ship_accuracy_mult = -0.10
+            ship_tracking_mult = -0.10
         }
     }
-
-    storm_max_radius = {
-        base = 50
-        modifier = {
-            mult = value:storm_size_multiplier
-        }
-    }
-
-    storm_min_steps = {
-        set = value:storm_range_min
-    }
-
-    storm_max_steps = {
-        set = value:storm_range_max
-    }
-
-    storm_speed = {
-        base = 0.02
-    }
-
-    storm_activation_period_in_months = {
-        base = 12
-    }
-
-    storm_monthly_added_devastation = {
-        base = 0.2
-    }
-
-    spawn_weight = {
-        base = 0
-    }
-    description = shroud_storm_lore_description
-
-    ### positive effects ###
-
     triggered_fleet_modifier = {
-        potential = {
-            always = yes
-        }
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
         modifier = {
-            ship_evasion_mult = 1
-            ship_evasion_add = 100
+            ships_sr_lingli_upkeep_mult = -0.25
+            ships_energy_upkeep_mult = 0.25
         }
     }
-
-    ### negative effects ###
-
     triggered_planet_modifier = {
-        potential = {
-            always = yes
-        }
-        planet_jobs_produces_mult = -0.2
-        mult = value:storm_resistant_production_multiplier
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        planet_jobs_sr_lingli_produces_mult = 0.5
+        planet_jobs_energy_upkeep_mult = 0.25
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_building_build_speed_mult = -0.25
+        building_time_mult = 0.2
     }
 
     on_start = {
@@ -134,14 +103,12 @@ scarlet_weather_reimu_storm = {
             scarlet_weather_storm_add = { type = reimu }
         }
     }
-
     on_finished = {
         every_system_within_storm = {
             removed_from_storm_base_effect = yes
             scarlet_weather_storm_remove = { type = reimu }
         }
     }
-
     on_moved = {
         every_system_added_to_storm = {
             added_to_storm_base_effect = yes
@@ -157,99 +124,188 @@ scarlet_weather_reimu_storm = {
     cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
     cosmic_storm_event_sprite = "GFX_gravity_storm"
     icon = GFX_planetview_storm_gravity_modifier_frame
-
     cosmic_storm_texture_lightning_paths = {
         "gfx/map/storms/lightning/lightning_small_storm_01.dds"
         "gfx/map/storms/lightning/lightning_small_storm_02.dds"
         "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
         "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
     }
-
     cosmic_storm_galaxy_lightning_time = 10.0
     cosmic_storm_galaxy_max_opacity = 0.4
 }
-example_selector_storm = {
+scarlet_weather_marisa_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = marisa
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
     triggered_fleet_modifier = {
-        potential = {
-            always = yes
-        }
-        storm_base_modifier = 1
-    }
-    storm_min_radius = {
-        base = 1
-    }
-
-    storm_max_radius = {
-        base = 1
-    }
-
-    storm_min_steps = {
-        set = 1
-    }
-
-    storm_max_steps = {
-        set = 1
-    }
-
-    storm_speed = {
-        base = 0.02
-    }
-
-    storm_activation_period_in_months = {
-        base = 12
-    }
-
-    storm_monthly_added_devastation = {
-        base = 0.2
-    }
-
-    spawn_weight = {
-        base = 0
-    }
-    description = shroud_storm_lore_description
-
-    ### positive effects ###
-
-    triggered_fleet_modifier = {
-        potential = {
-            always = yes
-        }
+        potential = { always = yes }
         modifier = {
-            ship_evasion_mult = 1
-            ship_evasion_add = 100
+            ship_weapon_damage = 0.50
+            ship_fire_rate_mult = -0.25
+            weapon_type_energy_weapon_damage_mult = 1.00
         }
     }
-
-    ### negative effects ###
-
+    triggered_fleet_modifier = {
+        potential = { always = yes }
+        modifier = {
+            weapon_type_energy_weapon_damage_mult = 1.00
+            ships_sr_lingli_upkeep_mult = 0.20
+        }
+    }
     triggered_planet_modifier = {
-        potential = {
-            always = yes
-        }
-        planet_jobs_produces_mult = -0.2
-        mult = value:storm_resistant_production_multiplier
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        army_defense_damage_mult = 0.30
+        planet_pop_assembly_organic_mult = -0.30
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_jobs_energy_produces_add = 0.30
     }
 
+    on_start = {
+        every_system_within_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = marisa }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = marisa }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = marisa }
+        }
+
+        every_system_removed_from_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = marisa }
+        }
+    }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_gravity_storm"
+    icon = GFX_planetview_storm_gravity_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_small_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_small_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 10.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
+scarlet_weather_sakuya_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = sakuya
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
+    triggered_fleet_modifier = {
+        potential = { always = yes }
+        modifier = {
+            ship_accuracy_mult = 0.20
+            ship_tracking_mult = 0.20
+            ships_alloys_upkeep_mult = 0.25
+        }
+    }
+    triggered_fleet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        modifier = {
+            ships_sr_fuka_upkeep_mult = -0.25
+        }
+    }
+    triggered_planet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        planet_jobs_sr_fuka_produces_add = 0.10
+        planet_jobs_sr_fuka_produces_mult = 0.20
+        planet_jobs_sr_lingli_upkeep_mult = 0.20
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_stability_mult = -0.25
+    }
+
+    on_start = {
+        every_system_within_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+
+        every_system_removed_from_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_gravity_storm"
+    icon = GFX_planetview_storm_gravity_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_small_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_small_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 10.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
+
+spth_selector_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = selector
+        min_radius = 1
+        max_radius = 1
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
     on_start = {
         every_system_within_storm = {
             added_to_storm_base_effect = yes
             scarlet_weather_storm_add = { type = reimu }
         }
     }
-
     on_finished = {
         every_system_within_storm = {
             removed_from_storm_base_effect = yes
             scarlet_weather_storm_remove = { type = reimu }
         }
     }
-
     on_moved = {
         every_system_added_to_storm = {
             added_to_storm_base_effect = yes
             scarlet_weather_storm_add = { type = reimu }
         }
-
         every_system_removed_from_storm = {
             removed_from_storm_base_effect = yes
             scarlet_weather_storm_remove = { type = reimu }
@@ -259,14 +315,12 @@ example_selector_storm = {
     cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
     cosmic_storm_event_sprite = "GFX_gravity_storm"
     icon = GFX_planetview_storm_gravity_modifier_frame
-
     cosmic_storm_texture_lightning_paths = {
         "gfx/map/storms/lightning/lightning_small_storm_01.dds"
         "gfx/map/storms/lightning/lightning_small_storm_02.dds"
         "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
         "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
     }
-
     cosmic_storm_galaxy_lightning_time = 10.0
     cosmic_storm_galaxy_max_opacity = 0.4
 }
