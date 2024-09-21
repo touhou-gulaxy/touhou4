@@ -98,27 +98,26 @@ fleet_event = {
             limit = { is_in_combat = yes }
             set_update_modifiers_batch = begin
             every_owned_ship = {
-                limit = { has_shield_hp > 0 }
-                set_variable = { which = yukari_kamikakushi_reduce_value value = value:yukari_kamikakushi_shield_value }
-                set_variable = { which = yukari_kamikakushi_check_value value = value:yukari_kamikakushi_reduce_value }
-                multiply_variable = { which = yukari_kamikakushi_check_value value = -1 }
-                change_variable = { which = yukari_kamikakushi_check_value value = 1 }
-                multiply_variable = { which = yukari_kamikakushi_check_value value = yukari_kamikakushi_shield_init_hp }
-                subtract_variable = { which = yukari_kamikakushi_reduce_value value = yukari_kamikakushi_check_value }
-                # (1 - percent) * shield_init > 0 -> reduce shield
-                if = {
-                    limit = { check_variable = { which = yukari_kamikakushi_reduce_value value > 0 } }
-                    reduce_shield = yukari_kamikakushi_reduce_value
+                yukari_kamikakushi_reduce_effect = yes
+                random_list = {
+                    20 = {
+                        modifier = { factor = value:yukari_kamikakushi_chance_reduce always = yes }
+                        clear_shield = yes
+                    }
+                    80 = {
+                        modifier = { factor = value:yukari_kamikakushi_chance_base always = yes }
+                        # do nothing here
+                    }
                 }
+                reroll_random = yes
             }
             set_update_modifiers_batch = end
             fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
         } else = {
             every_owned_ship = {
-                clear_variable = yukari_kamikakushi_reduction_value
+                clear_variable = yukari_kamikakushi_reduce_hardening
                 clear_variable = yukari_kamikakushi_reduce_value
-                clear_variable = yukari_kamikakushi_shield_init_hp
-                clear_variable = yukari_kamikakushi_check_value
+                TH_clear_all_dynamic_modifier = yes
             }
         }
     }
@@ -838,26 +837,25 @@ country_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        fromfrom = {
-            any_owned_ship = { has_component = spth_ship_part_kamikakushi_0 }
-        }
+        fromfrom = { any_owned_ship = { has_component = spth_ship_part_kamikakushi_0 } }
         NOR = {
             from = { spth_should_close_combat_system = yes }
-            fromfromfrom = {
-                any_owned_ship = { has_component = spth_ship_part_kamikakushi_0 }
-            }
+            fromfromfrom = { any_owned_ship = { has_component = spth_ship_part_kamikakushi_0 } }
         }
     }
     immediate = {
         fromfromfrom = {
             every_owned_ship = {
-                set_variable = { which = yukari_kamikakushi_reduction_value value = value:yukari_kamikakushi_reduction_value }
-                add_modifier = { modifier = yukari_kamikakushi_reduction multiplier = yukari_kamikakushi_reduction_value }
-                set_variable = { which = yukari_kamikakushi_shield_init_hp value = trigger:has_shield_hp }
-                if = {
-                    limit = { has_shield_hp > 0 }
-                    reduce_shield = yukari_kamikakushi_shield_init_hp
+                set_variable = {
+                    which = yukari_kamikakushi_reduce_value
+                    value = value:yukari_kamikakushi_reduce_value
                 }
+                set_variable = {
+                    which = yukari_kamikakushi_reduce_hardening
+                    value = value:yukari_kamikakushi_hardening_reduce_value
+                }
+                yukari_kamikakushi_reduce_effect = yes
+                clear_shield = yes
             }
             fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
         }
@@ -942,7 +940,7 @@ country_event = {
             }
         }
         # 为阿夸时不启用护盾装甲效率
-        from = { NOT = { spth_should_close_combat_system = yes } }
+        from = { spth_should_close_combat_system = no }
     }
     immediate = {
         # 硬化提升=护盾/装甲效率*100%
