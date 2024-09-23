@@ -60,6 +60,7 @@
 # 	比那名居天子
 # 不知道会产生什么程度的天气
 
+# 舰船变快命中追踪降低，能量维护费++，灵力维护费--
 scarlet_weather_reimu_storm = {
     inline_script = {
         script = cosmic_storms/spth_storm_config
@@ -88,8 +89,11 @@ scarlet_weather_reimu_storm = {
     }
     triggered_planet_modifier = {
         potential = { exists = owner owner = { has_authority = auth_gensokyo } }
-        planet_jobs_sr_lingli_produces_mult = 0.5
-        planet_jobs_energy_upkeep_mult = 0.25
+        planet_jobs_sr_lingli_upkeep_mult = -0.50
+        planet_districts_sr_lingli_upkeep_mult = -0.50
+        planet_buildings_sr_lingli_upkeep_mult = -0.50
+        planet_clear_blocker_time_mult = 0.25
+        building_time_mult = 0.05
     }
     triggered_planet_modifier = {
         potential = { always = yes }
@@ -133,6 +137,7 @@ scarlet_weather_reimu_storm = {
     cosmic_storm_galaxy_lightning_time = 10.0
     cosmic_storm_galaxy_max_opacity = 0.4
 }
+# 舰船伤害上升射速下降灵力维护费++，岗位能量产出++，防御部队伤害++，有机人口组装--
 scarlet_weather_marisa_storm = {
     inline_script = {
         script = cosmic_storms/spth_storm_config
@@ -205,7 +210,501 @@ scarlet_weather_marisa_storm = {
     cosmic_storm_galaxy_lightning_time = 10.0
     cosmic_storm_galaxy_max_opacity = 0.4
 }
+# 舰船合金维护费上升符卡维护费下降命中追踪增加，稳定度--，符卡产出+++，灵力维护费++
 scarlet_weather_sakuya_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = sakuya
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
+    triggered_fleet_modifier = {
+        potential = { always = yes }
+        modifier = {
+            ship_accuracy_mult = 0.20
+            ship_tracking_mult = 0.20
+            ships_alloys_upkeep_mult = 0.25
+        }
+    }
+    triggered_fleet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        modifier = {
+            ships_sr_fuka_upkeep_mult = -0.25
+        }
+    }
+    triggered_planet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        planet_jobs_sr_fuka_produces_add = 0.10
+        planet_jobs_sr_fuka_produces_mult = 0.20
+        planet_jobs_sr_lingli_upkeep_mult = 0.20
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_stability_mult = -0.25
+    }
+
+    on_start = {
+        every_system_within_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+
+        every_system_removed_from_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_gravity_storm"
+    icon = GFX_planetview_storm_gravity_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_small_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_small_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 10.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
+# 舰船灵力维护费下降灵力武器增幅，灵力产出+++，消费品产出--，消费品维护++
+scarlet_weather_alice_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = alice
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
+    triggered_fleet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        modifier = {
+            ships_sr_lingli_upkeep_mult = -0.5
+            weapon_type_lingli_weapon_damage_mult = 1
+            weapon_type_lingli_weapon_fire_rate_mult = 1
+        }
+    }
+    triggered_planet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        planet_jobs_sr_lingli_produces_mult = 1.00
+    }
+    triggered_planet_modifier = {
+        potential = { has_planet_flag = is_spth_megastructure_planet is_planet_class = pc_space_shrine_habitat }
+        planet_spth_space_shrine_sp_mult = 0.50
+        planet_spth_space_shrine_sp_add = 250
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_jobs_consumer_goods_produces_mult = -0.10
+        planet_jobs_consumer_goods_upkeep_mult = 1
+    }
+
+    on_start = {
+        every_system_within_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+
+        every_system_removed_from_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_gravity_storm"
+    icon = GFX_planetview_storm_gravity_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_small_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_small_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 10.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
+# 舰船闪避上升提升撤离相关，凝聚力产出++，研究人员维护++
+scarlet_weather_patchouli_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = sakuya
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
+    triggered_fleet_modifier = {
+        potential = { always = yes }
+        modifier = {
+            ship_evasion_mult = 1
+            ship_evasion_add = 100
+            ship_emergency_ftl_min_days_mult = -1
+            ship_disengage_chance_mult = 0.2
+            ship_disengage_opportunities_add = 8
+        }
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_jobs_unity_produces_mult = 1
+        planet_researchers_upkeep_mult = 1
+    }
+
+    on_start = {
+        every_system_within_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+
+        every_system_removed_from_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_gravity_storm"
+    icon = GFX_planetview_storm_gravity_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_small_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_small_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 10.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
+# 冈格尼尔根据舰船大小伤害射速增加，岗位产出--，人口增长+++
+scarlet_weather_remilia_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = sakuya
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
+    triggered_fleet_modifier = {
+        potential = { always = yes }
+        modifier = {
+            weapon_type_gungnir_weapon_damage_mult = 0.06
+            weapon_type_gungnir_weapon_fire_rate_mult = 0.05
+        }
+        multiplier = trigger:ship_size_multiplier
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_jobs_produces_mult = -0.50
+        planet_pop_assembly_organic_add = 2.00
+        planet_pop_assembly_organic_mult = 0.25
+        pop_growth_speed = 1.00
+    }
+
+    on_start = {
+        every_system_within_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+
+        every_system_removed_from_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_gravity_storm"
+    icon = GFX_planetview_storm_gravity_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_small_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_small_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 10.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
+# TODO: 修改完下面的并且补全风暴
+# 舰船禁用船体恢复根据大小提升射速伤害，灵力产出+++，消费品产出--，消费品维护++
+scarlet_weather_yuyuko_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = sakuya
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
+    affect_hp_regen = yes
+    triggered_fleet_modifier = {
+        potential = { always = yes }
+        modifier = {
+            ship_accuracy_mult = 0.20
+            ship_tracking_mult = 0.20
+            ships_alloys_upkeep_mult = 0.25
+        }
+    }
+    triggered_fleet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        modifier = {
+            ships_sr_fuka_upkeep_mult = -0.25
+        }
+    }
+    triggered_planet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        planet_jobs_sr_fuka_produces_add = 0.10
+        planet_jobs_sr_fuka_produces_mult = 0.20
+        planet_jobs_sr_lingli_upkeep_mult = 0.20
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_stability_mult = -0.25
+    }
+
+    on_start = {
+        every_system_within_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+
+        every_system_removed_from_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_gravity_storm"
+    icon = GFX_planetview_storm_gravity_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_small_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_small_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 10.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
+# 舰船禁用护盾装甲每日回复减少护盾，，结界承载力++
+scarlet_weather_yakumo_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = sakuya
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
+    triggered_fleet_modifier = {
+        potential = { always = yes }
+        modifier = {
+            ship_accuracy_mult = 0.20
+            ship_tracking_mult = 0.20
+            ships_alloys_upkeep_mult = 0.25
+        }
+    }
+    triggered_fleet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        modifier = {
+            ships_sr_fuka_upkeep_mult = -0.25
+        }
+    }
+    triggered_planet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        planet_jobs_sr_fuka_produces_add = 0.10
+        planet_jobs_sr_fuka_produces_mult = 0.20
+        planet_jobs_sr_lingli_upkeep_mult = 0.20
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_stability_mult = -0.25
+    }
+
+    on_start = {
+        every_system_within_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+
+        every_system_removed_from_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_gravity_storm"
+    icon = GFX_planetview_storm_gravity_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_small_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_small_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 10.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
+# 舰船ftl提升，人口食物维护+++，矿工和战略资源收集者产出+++
+scarlet_weather_aya_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config
+        type = sakuya
+        min_radius = 25
+        max_radius = 50
+        storm_speed = 0.02
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0.2
+        spawn_weight = 0
+    }
+    triggered_fleet_modifier = {
+        potential = { always = yes }
+        modifier = {
+            ship_accuracy_mult = 0.20
+            ship_tracking_mult = 0.20
+            ships_alloys_upkeep_mult = 0.25
+        }
+    }
+    triggered_fleet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        modifier = {
+            ships_sr_fuka_upkeep_mult = -0.25
+        }
+    }
+    triggered_planet_modifier = {
+        potential = { exists = owner owner = { has_authority = auth_gensokyo } }
+        planet_jobs_sr_fuka_produces_add = 0.10
+        planet_jobs_sr_fuka_produces_mult = 0.20
+        planet_jobs_sr_lingli_upkeep_mult = 0.20
+    }
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        planet_stability_mult = -0.25
+    }
+
+    on_start = {
+        every_system_within_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            added_to_storm_base_effect = yes
+            scarlet_weather_storm_add = { type = sakuya }
+        }
+
+        every_system_removed_from_storm = {
+            removed_from_storm_base_effect = yes
+            scarlet_weather_storm_remove = { type = sakuya }
+        }
+    }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/gravity_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_gravity_storm"
+    icon = GFX_planetview_storm_gravity_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_small_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_small_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 10.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
+# 舰船隐形上升反隐下降，符卡产出--，凝聚力产出+++
+scarlet_weather_reisen_storm = {
     inline_script = {
         script = cosmic_storms/spth_storm_config
         type = sakuya

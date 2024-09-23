@@ -93,149 +93,33 @@ fleet_event = {
     id = Th_dynamic_battle_vict.6
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        has_fleet_flag = spth_debuff_yukari_kamikakushi_0
-    }
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-
-            set_variable = { which = yukari_kamikakushi_ship_counter value = 0 }
-            random_list = {
-                10 = {
-                    every_owned_ship = {
-                        set_timed_ship_flag = {
-                            flag = spth_t0_yukari_kamikakushi_0
-                            days = 7
-                        }
-                        ship_event = { id = Th_dynamic_battle_vict.7 }
-                        ship_event = { id = Th_dynamic_battle_vict.10 days = 8 }
+            set_update_modifiers_batch = begin
+            every_owned_ship = {
+                yukari_kamikakushi_reduce_effect = yes
+                random_list = {
+                    20 = {
+                        modifier = { factor = value:yukari_kamikakushi_chance_reduce always = yes }
+                        clear_shield = yes
+                    }
+                    80 = {
+                        modifier = { factor = value:yukari_kamikakushi_chance_base always = yes }
+                        # do nothing here
                     }
                 }
-                40 = {
-                    # ship counter
-                    # ceil(rand(0.25, 0.50) * ship_count)
-                    set_variable_to_random_value = {
-                        min = 0.25
-                        max = 0.50
-                        which = yukari_kamikakushi_ship_factor
-                    }
-                    export_trigger_value_to_variable = {
-                        trigger = count_owned_ship
-                        variable = yukari_kamikakushi_ship_counter
-                    }
-                    multiply_variable = {
-                        which = yukari_kamikakushi_ship_counter
-                        value = yukari_kamikakushi_ship_factor
-                    }
-                    ceiling_variable = yukari_kamikakushi_ship_counter
-                    while = {
-                        count = yukari_kamikakushi_ship_counter
-                        random_owned_ship = {
-                            ship_event = { id = Th_dynamic_battle_vict.8 }
-                            ship_event = { id = Th_dynamic_battle_vict.10 days = 8 }
-                        }
-                    }
-                }
-                50 = {
-                    # ship counter
-                    # ceil(rand(0.10, 0.25) * ship_count / 100)
-                    set_variable_to_random_value = {
-                        min = 0.10
-                        max = 0.25
-                        which = yukari_kamikakushi_ship_factor
-                    }
-                    export_trigger_value_to_variable = {
-                        trigger = count_owned_ship
-                        variable = yukari_kamikakushi_ship_counter
-                    }
-                    multiply_variable = {
-                        which = yukari_kamikakushi_ship_counter
-                        value = yukari_kamikakushi_ship_factor
-                    }
-                    ceiling_variable = yukari_kamikakushi_ship_counter
-                    while = {
-                        count = yukari_kamikakushi_ship_counter
-                        random_owned_ship = {
-                            ship_event = { id = Th_dynamic_battle_vict.9 }
-                            ship_event = { id = Th_dynamic_battle_vict.10 days = 8 }
-                        }
-                    }
-                }
+                reroll_random = yes
             }
-            reroll_random = yes
-
-            fleet_event = { id = Th_dynamic_battle_vict.6 days = 17 }
+            set_update_modifiers_batch = end
+            fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
         } else = {
-            remove_fleet_flag = spth_debuff_yukari_kamikakushi_0
-            clear_variable = yukari_kamikakushi_ship_counter
-            clear_variable = yukari_kamikakushi_ship_factor
+            every_owned_ship = {
+                clear_variable = yukari_kamikakushi_reduce_hardening
+                clear_variable = yukari_kamikakushi_reduce_value
+                TH_clear_all_dynamic_modifier = yes
+            }
         }
-    }
-}
-
-# yukari kamikakushi_0 - 10%
-ship_event = {
-    id = Th_dynamic_battle_vict.7
-    hide_window = yes
-    is_triggered_only = yes
-    trigger = {
-        has_ship_flag = spth_t0_yukari_kamikakushi_0
-    }
-    immediate = {
-        spth_debuff_yukari_kamikakushi_0 = {
-            inner_effect = spth_debuff_yukari_kamikakushi_0_t0
-            caller = Th_dynamic_battle_vict.7
-            flag = spth_t0_yukari_kamikakushi_0
-        }
-    }
-}
-# yukari kamikakushi_0 - 40%
-ship_event = {
-    id = Th_dynamic_battle_vict.8
-    hide_window = yes
-    is_triggered_only = yes
-    trigger = {
-        has_ship_flag = spth_t1_yukari_kamikakushi_0
-    }
-    immediate = {
-        spth_debuff_yukari_kamikakushi_0 = {
-            inner_effect = spth_debuff_yukari_kamikakushi_0_t1
-            caller = Th_dynamic_battle_vict.8
-            flag = spth_t1_yukari_kamikakushi_0
-        }
-    }
-}
-# yukari kamikakushi_0 - 50%
-ship_event = {
-    id = Th_dynamic_battle_vict.9
-    hide_window = yes
-    is_triggered_only = yes
-    trigger = {
-        has_ship_flag = spth_t2_yukari_kamikakushi_0
-    }
-    immediate = {
-        spth_debuff_yukari_kamikakushi_0 = {
-            inner_effect = spth_debuff_yukari_kamikakushi_0_t2
-            caller = Th_dynamic_battle_vict.9
-            flag = spth_t2_yukari_kamikakushi_0
-        }
-    }
-}
-# yukari kamikakushi_0 - clear debuff
-ship_event = {
-    id = Th_dynamic_battle_vict.10
-    hide_window = yes
-    is_triggered_only = yes
-    trigger = {
-        NOR = {
-            has_ship_flag = spth_t0_yukari_kamikakushi_0
-            has_ship_flag = spth_t1_yukari_kamikakushi_0
-            has_ship_flag = spth_t2_yukari_kamikakushi_0
-        }
-    }
-    immediate = {
-        TH_clear_all_dynamic_modifier = yes
     }
 }
 
@@ -953,19 +837,27 @@ country_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        fromfrom = {
-            any_owned_ship = { has_component = spth_ship_part_kamikakushi_0 }
-        }
+        fromfrom = { any_owned_ship = { has_component = spth_ship_part_kamikakushi_0 } }
         NOR = {
             from = { spth_should_close_combat_system = yes }
-            fromfromfrom = {
-                any_owned_ship = { has_component = spth_ship_part_kamikakushi_0 }
-            }
+            fromfromfrom = { any_owned_ship = { has_component = spth_ship_part_kamikakushi_0 } }
         }
     }
     immediate = {
         fromfromfrom = {
-            fleet_event = { id = Th_dynamic_battle_vict.6 }
+            every_owned_ship = {
+                set_variable = {
+                    which = yukari_kamikakushi_reduce_value
+                    value = value:yukari_kamikakushi_reduce_value
+                }
+                set_variable = {
+                    which = yukari_kamikakushi_reduce_hardening
+                    value = value:yukari_kamikakushi_hardening_reduce_value
+                }
+                yukari_kamikakushi_reduce_effect = yes
+                clear_shield = yes
+            }
+            fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
         }
     }
 }
@@ -1048,7 +940,7 @@ country_event = {
             }
         }
         # 为阿夸时不启用护盾装甲效率
-        from = { NOT = { spth_should_close_combat_system = yes } }
+        from = { spth_should_close_combat_system = no }
     }
     immediate = {
         # 硬化提升=护盾/装甲效率*100%
