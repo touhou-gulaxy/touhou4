@@ -2,9 +2,9 @@ namespace = spth_fleet
 
 # 轨道轰炸： 100~200
 
-# A ship has been built
-# Root = Ship
-# From = Planet
+# Checked when a ship built
+# Ship Scope, the ship just be built
+# From(Starbase/Megastructure Scope): Shipyard built the ship
 ship_event = {
     id = spth_fleet.1
     hide_window = yes
@@ -15,6 +15,8 @@ ship_event = {
             is_ship_size = spth_ur_didact_flagship
             is_ship_size = TH_super_carrier
             is_ship_size = spth_hv_bombardment_ship
+            is_ship_size = spth_remove_shrine_shipyard
+            is_ship_size = spth_allocate_shrine_shipyard
         }
     }
     immediate = {
@@ -38,6 +40,84 @@ ship_event = {
             }
             spth_hv_bombardment_ship = {
                 set_ship_flag = has_sg_sub_flagship
+            }
+            spth_remove_shrine_shipyard = {
+                from = {
+                    if = {
+                        limit = { is_scope_type = megastructure is_megastructure_type = th_shrine_mega_shipyard }
+                        solar_system = {
+                            random_system_planet = {
+                                limit = { prevprev = { has_megastructure_flag = is_shrine_shipyard_@prev } }
+                                # 船坞数量必须大于0
+                                if = {
+                                    limit = { check_variable = { which = spth_torifune_shrine_shipyard_count value > 0 } }
+                                    change_variable = { which = spth_torifune_shrine_shipyard_count value = -1 }
+                                    set_variable = {
+                                        which = spth_torifune_shrine_shipyard_rest
+                                        value = spth_torifune_shrine_shipyard_count
+                                    }
+                                    change_variable = { which = spth_torifune_shrine_shipyard_rest value = -6 }
+                                    prevprev = {
+                                        remove_modifier = spth_spth_torifune_shrine_shipyard_adjust
+                                        add_modifier = {
+                                            modifier = spth_spth_torifune_shrine_shipyard_adjust
+                                            mult = prev.spth_torifune_shrine_shipyard_rest
+                                        }
+                                    }
+                                    clear_variable = spth_torifune_shrine_shipyard_rest
+                                    prevprevprev.owner = { change_variable = { which = th_shrine_mega_shipyard_removed_count value = 1 } }
+                                }
+                            }
+                        }
+                    }
+                }
+                fleet = {
+                    delete_fleet = {
+                        target = this
+                        destroy_template = yes
+                        kill_leader = no
+                    }
+                }
+                delete_ship = this
+            }
+            spth_allocate_shrine_shipyard = {
+                from = {
+                    if = {
+                        limit = { is_scope_type = megastructure is_megastructure_type = th_shrine_mega_shipyard }
+                        solar_system = {
+                            random_system_planet = {
+                                limit = { prevprev = { has_megastructure_flag = is_shrine_shipyard_@prev } }
+                                # 必须要有可用船坞
+                                if = {
+                                    limit = { prevprevprev.owner = { check_variable = { which = th_shrine_mega_shipyard_removed_count value > 0 } } }
+                                    change_variable = { which = spth_torifune_shrine_shipyard_count value = 1 }
+                                    set_variable = {
+                                        which = spth_torifune_shrine_shipyard_rest
+                                        value = spth_torifune_shrine_shipyard_count
+                                    }
+                                    change_variable = { which = spth_torifune_shrine_shipyard_rest value = -6 }
+                                    prevprev = {
+                                        remove_modifier = spth_spth_torifune_shrine_shipyard_adjust
+                                        add_modifier = {
+                                            modifier = spth_spth_torifune_shrine_shipyard_adjust
+                                            mult = prev.spth_torifune_shrine_shipyard_rest
+                                        }
+                                    }
+                                    clear_variable = spth_torifune_shrine_shipyard_rest
+                                    prevprevprev.owner = { change_variable = { which = th_shrine_mega_shipyard_removed_count value = -1 } }
+                                }
+                            }
+                        }
+                    }
+                }
+                fleet = {
+                    delete_fleet = {
+                        target = this
+                        destroy_template = yes
+                        kill_leader = no
+                    }
+                }
+                delete_ship = this
             }
             default = {
             }
@@ -198,6 +278,32 @@ country_event = {
     immediate = {
         set_country_flag = has_given_spth_super_carrier_designs
         spth_unlock_super_carrier = yes
+    }
+}
+
+# 研究完鸟船船坞调整，给舰船设计
+# This = Country
+country_event = {
+    id = spth_fleet.4
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_technology = tech_th_shrine_mega_2_control
+        NOT = { has_country_flag = has_given_th_shrine_mega_2_control_designs }
+    }
+    immediate = {
+        set_country_flag = has_given_th_shrine_mega_2_control_designs
+        if = {
+            limit = { NOT = { has_existing_ship_design = spth_remove_shrine_shipyard } }
+            create_ship_design = { design = spth_remove_shrine_shipyard }
+            add_ship_design = last_created_design
+        }
+        if = {
+            limit = { NOT = { has_existing_ship_design = spth_allocate_shrine_shipyard } }
+            create_ship_design = { design = spth_allocate_shrine_shipyard }
+            add_ship_design = last_created_design
+        }
+        set_variable = { which = th_shrine_mega_shipyard_removed_count value = 0 }
     }
 }
 
