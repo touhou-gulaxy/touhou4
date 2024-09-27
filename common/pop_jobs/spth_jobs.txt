@@ -1087,31 +1087,19 @@ spth_spellcard_foundry = {
 		has_trait = trait_touhou
 	}
 	resources = {
-		category = planet_metallurgists
+		category = planet_spth_spellcard_specialist
 		upkeep = {
 			energy = 3
 			minerals = 3
 			sr_lingli = 0.3
 			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
 		}
-		produces = {
-			sr_fuka = 1
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			sr_fuka = 0.5
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-			sr_fuka = 0.5
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
+		inline_script = { script = jobs/spth_job_single_produce resource = sr_fuka count = 1 }
+		inline_script = { script = jobs/spth_job_single_city_produce resource = sr_fuka count = 1 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce resource = sr_fuka count = 0.5 ap = ap_toho3 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce resource = sr_fuka count = 0.5 ap = ap_toho4 }
+		inline_script = { script = jobs/spth_job_single_ap_produce resource = sr_fuka count = 0.5 ap = ap_toho3 }
+		inline_script = { script = jobs/spth_job_single_ap_produce resource = sr_fuka count = 0.5 ap = ap_toho4 }
 	}
 }
 
@@ -1156,6 +1144,8 @@ spth_to_be_converted = {
 }
 
 # 幻想乡普通岗位 初期产出略高于原版，随着飞升逐渐提升
+# old = 5+2+6+5 = 18, 部分不吃信仰加成
+# new = 17, 24 全吃信仰加成
 spth_story_researcher = {
 	icon = researcher
 	category = specialist
@@ -1169,81 +1159,15 @@ spth_story_researcher = {
 		is_sapient = yes
 	}
 	possible_precalc = can_fill_specialist_job
-	possible = {
-		always = yes
-	}
+	possible = { always = yes }
 
-	resources = {
-		category = planet_researchers
-		produces = {
-			physics_research = 3
-			engineering_research = 3
-			society_research = 3
-		}
-		produces = {
-			physics_research = 2
-			engineering_research = 2
-			society_research = 2
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho2 }
-			}
-			physics_research = 2
-			engineering_research = 2
-			society_research = 2
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			physics_research = 3
-			engineering_research = 3
-			society_research = 3
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			physics_research = 3
-			engineering_research = 3
-			society_research = 3
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-			physics_research = 5
-			engineering_research = 5
-			society_research = 5
-			unity = 0.5
-		}
-		upkeep = {
-			consumer_goods = 2
-			sr_lingli = 0.04
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			consumer_goods = 2
-			sr_lingli = 0.06
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			consumer_goods = 2
-			sr_lingli = 0.06
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
+	inline_script = {
+		script = jobs/spth_common_research_produce
+		base = 5 city_base = 1 upkeep = 2 lingli_upkeep = 0.4 unity = 0.5
+		ap_2_base = 2 ap_2_city_base = 1 ap_2_upkeep = 2 ap_2_lingli_upkeep = 0.4
+		ap_3_base = 4 ap_3_city_base = 2 ap_3_upkeep = 2 ap_3_lingli_upkeep = 0.6
+		ap_4_base = 6 ap_4_city_base = 3 ap_4_upkeep = 2 ap_4_lingli_upkeep = 0.8
 	}
-
 	weight = {
 		weight = @specialist_job_weight
 		mult = value:job_weights_research_modifier|JOB|researcher|
@@ -1270,6 +1194,8 @@ spth_story_researcher = {
 		}
 	}
 }
+# old = 8+2+10+12 = 32, 部分不吃信仰加成
+# new = 30, 40 全吃信仰加成
 spth_story_chief_researcher = {
 	category = ruler
 	condition_string = SPECIALIST_JOB_TRIGGER
@@ -1282,10 +1208,16 @@ spth_story_chief_researcher = {
 		is_sapient = yes
 	}
 	possible_precalc = can_fill_ruler_job
-	possible = {
-		has_trait = trait_touhou
-	}
+	possible = { has_trait = trait_touhou }
 
+	inline_script = {
+		script = jobs/spth_chief_research_produce
+		base = 8 city_base = 2 unity = 1
+		ap_2_base = 4 ap_2_city_base = 2
+		ap_3_base = 8 ap_3_city_base = 3
+		ap_4_base = 10 ap_4_city_base = 3
+		energy = 0.25 minerals = 0.25
+	}
 	resources = {
 		category = planet_researchers
 		produces = {
@@ -1399,6 +1331,8 @@ spth_story_chief_researcher = {
 		}
 	}
 }
+# old = 5+2+5+5 = 17, 部分不吃信仰加成
+# new = 16, 20 全吃信仰加成
 spth_story_factory_worker = {
 	# icon = foundry
 	category = specialist
@@ -1418,66 +1352,46 @@ spth_story_factory_worker = {
 
 	resources = {
 		category = planet_metallurgists
-		produces = {
-			alloys = 4
-			consumer_goods = 0.75
+		inline_script = {
+			script = jobs/spth_job_twin_produce
+			resource_1 = alloys count_1 = 5 resource_2 = consumer_goods count_2 = 0.75
+		}
+		inline_script = {
+			script = jobs/spth_job_twin_city_produce
+			resource_1 = alloys count_1 = 1 resource_2 = consumer_goods count_2 = 0.25
+		}
+		inline_script = {
+			script = jobs/spth_job_twin_ap_produce ap = ap_toho2
+			resource_1 = alloys count_1 = 2 resource_2 = consumer_goods count_2 = 0.25
+		}
+		inline_script = {
+			script = jobs/spth_job_twin_ap_city_produce ap = ap_toho2
+			resource_1 = alloys count_1 = 1 resource_2 = consumer_goods count_2 = 0.10
+		}
+		inline_script = {
+			script = jobs/spth_job_twin_ap_produce ap = ap_toho4
+			resource_1 = alloys count_1 = 4 resource_2 = consumer_goods count_2 = 0.25
 		}
 		produces = {
-			alloys = 1
-			consumer_goods = 0.25
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho2 }
-			}
-			alloys = 2
-			consumer_goods = 0.25
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			alloys = 2
-			consumer_goods = 0.25
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			alloys = 3
+			trigger = { owner = { has_ascension_perk = ap_toho3 } }
+			alloys = 5
 			consumer_goods = 0.25
 			sr_living_metal = 0.25
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
 			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-			alloys = 5
-			consumer_goods = 0.25
-		}
-		upkeep = {
-			minerals = 4
-		}
-		upkeep = {
-			minerals = 2
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			minerals = 2
-			trigger = {
+				planet = { spth_is_gensokyo_city = yes }
 				owner = { has_ascension_perk = ap_toho3 }
 			}
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
+			alloys = 2
+			consumer_goods = 0.15
+			sr_living_metal = 0.15
+			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
-		upkeep = {
-			minerals = 2
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-		}
+		inline_script = { script = jobs/spth_job_single_upkeep resource = minerals count = 5 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho3 resource = minerals count = 2 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho4 resource = minerals count = 3 }
 	}
 
 	weight = {
@@ -1501,6 +1415,8 @@ spth_story_factory_worker = {
 		}
 	}
 }
+# old = 6+2+5+6 = 19, 部分不吃信仰加成
+# new = 18, 25 全吃信仰加成
 spth_story_industry_worker = {
 	category = specialist
 	condition_string = SPECIALIST_JOB_TRIGGER
@@ -1519,61 +1435,25 @@ spth_story_industry_worker = {
 
 	resources = {
 		category = planet_artisans
-		produces = {
-			consumer_goods = 5
-		}
-		produces = {
-			consumer_goods = 1
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho2 }
-			}
-			consumer_goods = 2
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			consumer_goods = 2
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			consumer_goods = 3
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
+		inline_script = { script = jobs/spth_job_single_produce resource = consumer_goods count = 6 }
+		inline_script = { script = jobs/spth_job_single_city_produce resource = consumer_goods count = 1 }
+		inline_script = { script = jobs/spth_job_single_ap_produce ap = ap_toho2 resource = consumer_goods count = 1 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = ap_toho2 resource = consumer_goods count = 2 }
+		inline_script = { script = jobs/spth_job_single_ap_produce ap = ap_toho3 resource = consumer_goods count = 4 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = ap_toho3 resource = consumer_goods count = 2 }
 		produces = {
 			trigger = {
 				owner = { has_ascension_perk = ap_toho4 }
 			}
 			consumer_goods = 6
-			unity = 2
+			unity = 1
 			sr_fuka = 0.25
+			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
-		upkeep = {
-			minerals = 4
-		}
-		upkeep = {
-			minerals = 2
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			minerals = 3
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			minerals = 3
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-		}
+		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = ap_toho4 resource = consumer_goods count = 4 }
+		inline_script = { script = jobs/spth_job_single_upkeep resource = minerals count = 5 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho3 resource = minerals count = 3 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho4 resource = minerals count = 3 }
 	}
 
 	weight = {
@@ -1597,6 +1477,8 @@ spth_story_industry_worker = {
 		}
 	}
 }
+# old = 6+2+6+5 = 19, 部分不吃信仰加成
+# new = 19, 25 全吃信仰加成
 spth_story_technician = {
 	category = worker
 	condition_string = WORKER_JOB_TRIGGER
@@ -1609,59 +1491,27 @@ spth_story_technician = {
 		is_sapient = yes
 	}
 	possible_precalc = can_fill_worker_job
-	possible = {
-		has_trait = trait_touhou
-	}
+	possible = { has_trait = trait_touhou }
 
 	resources = {
 		category = planet_technician
-		produces = {
-			energy = 4.5
+		inline_script = { script = jobs/spth_job_single_produce resource = energy count = 6 }
+		inline_script = { script = jobs/spth_job_single_city_produce resource = energy count = 1 }
+		inline_script = { script = jobs/spth_job_single_ap_produce ap = ap_toho2 resource = energy count = 3 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = ap_toho2 resource = energy count = 1 }
+		inline_script = { script = jobs/spth_job_single_ap_produce ap = ap_toho3 resource = energy count = 4 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = ap_toho3 resource = energy count = 2 }
+		inline_script = {
+			script = jobs/spth_job_twin_ap_produce ap = ap_toho4
+ 			resource_1 = energy count_1 = 6 resource_2 = sr_dark_matter count_2 = 0.25
 		}
-		produces = {
-			energy = 1.5
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
+		inline_script = {
+			script = jobs/spth_job_twin_ap_city_produce ap = ap_toho4
+			resource_1 = energy count_1 = 2 resource_2 = sr_dark_matter count_2 = 0.25
 		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho2 }
-			}
-			energy = 2
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			energy = 3
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			energy = 3
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-			energy = 5
-			sr_dark_matter = 0.5
-		}
-		upkeep = {
-			sr_lingli = 0.25
-		}
-		upkeep = {
-			sr_lingli = 0.25
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			sr_lingli = 0.5
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-		}
+		inline_script = { script = jobs/spth_job_single_upkeep resource = sr_lingli count = 0.25 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho3 resource = sr_lingli count = 0.25 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho4 resource = sr_lingli count = 0.5 }
 	}
 
 	weight = {
@@ -1685,6 +1535,8 @@ spth_story_technician = {
 		}
 	}
 }
+# old = 6+2+6+5 = 19, 部分不吃信仰加成
+# new = 20, 26 全吃信仰加成
 spth_story_miner = {
 	category = worker
 	condition_string = WORKER_JOB_TRIGGER
@@ -1703,60 +1555,23 @@ spth_story_miner = {
 
 	resources = {
 		category = planet_miners
-		produces = {
-			minerals = 4.5
+		inline_script = { script = jobs/spth_job_single_produce resource = minerals count = 6 }
+		inline_script = { script = jobs/spth_job_single_city_produce resource = minerals count = 1 }
+		inline_script = { script = jobs/spth_job_single_ap_produce ap = ap_toho2 resource = minerals count = 4 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = ap_toho2 resource = minerals count = 1 }
+		inline_script = { script = jobs/spth_job_single_ap_produce ap = ap_toho3 resource = minerals count = 4 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = ap_toho3 resource = minerals count = 2 }
+		inline_script = {
+			script = jobs/spth_job_twin_ap_produce ap = ap_toho4
+			resource_1 = minerals count_1 = 6 resource_2 = nanites count_2 = 0.25
 		}
-		produces = {
-			minerals = 1.5
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
+		inline_script = {
+			script = jobs/spth_job_twin_ap_city_produce ap = ap_toho4
+			resource_1 = minerals count_1 = 2 resource_2 = nanites count_2 = 0.25
 		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho2 }
-			}
-			minerals = 2
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			minerals = 2
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			minerals = 2
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-			minerals = 4
-			nanites = 0.25
-		}
-		upkeep = {
-			energy = 2
-		}
-		upkeep = {
-			energy = 1
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			energy = 1
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			energy = 1
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-		}
+		inline_script = { script = jobs/spth_job_single_upkeep resource = energy count = 3 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho3 resource = energy count = 2 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho4 resource = energy count = 2 }
 	}
 
 	weight = {
@@ -1780,6 +1595,8 @@ spth_story_miner = {
 		}
 	}
 }
+# old = 6+2+6+5 = 19
+# new = 18, 26 全吃信仰加成
 spth_story_farmer = {
 	category = worker
 	condition_string = WORKER_JOB_TRIGGER
@@ -1798,60 +1615,23 @@ spth_story_farmer = {
 
 	resources = {
 		category = planet_farmers
-		produces = {
-			food = 5
+		inline_script = { script = jobs/spth_job_single_produce resource = food count = 6 }
+		inline_script = { script = jobs/spth_job_single_city_produce resource = food count = 1 }
+		inline_script = { script = jobs/spth_job_single_ap_produce ap = ap_toho2 resource = food count = 2 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = ap_toho2 resource = food count = 1 }
+		inline_script = { script = jobs/spth_job_single_ap_produce ap = ap_toho3 resource = food count = 4 }
+		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = ap_toho3 resource = food count = 2 }
+		inline_script = {
+			script = jobs/spth_job_twin_ap_produce ap = ap_toho4
+			resource_1 = food count_1 = 6 resource_2 = sr_zro count_2 = 0.15
 		}
-		produces = {
-			food = 1
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
+		inline_script = {
+			script = jobs/spth_job_twin_ap_city_produce ap = ap_toho4
+			resource_1 = food count_1 = 3 resource_2 = sr_zro count_2 = 0.15
 		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho2 }
-			}
-			food = 1
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			food = 1
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			food = 1
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-			food = 2
-			sr_zro = 0.15
-		}
-		upkeep = {
-			energy = 2
-		}
-		upkeep = {
-			energy = 1
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			energy = 2
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
-		}
-		upkeep = {
-			energy = 2
-			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
-			}
-		}
+		inline_script = { script = jobs/spth_job_single_upkeep resource = energy count = 3 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho3 resource = energy count = 2.5 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = ap_toho4 resource = energy count = 2.5 }
 	}
 
 	weight = {
@@ -1894,58 +1674,41 @@ spth_story_chemist = {
 	resources = {
 		category = planet_chemists
 		produces = {
-			exotic_gases = 0.5
-			volatile_motes = 0.5
-			rare_crystals = 0.5
-		}
-		produces = {
-			exotic_gases = 0.25
-			volatile_motes = 0.25
-			rare_crystals = 0.25
+			exotic_gases = 0.75
+			volatile_motes = 0.75
+			rare_crystals = 0.75
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
 			trigger = {
 				owner = { has_ascension_perk = ap_toho2 }
 			}
-			exotic_gases = 0.25
-			volatile_motes = 0.25
-			rare_crystals = 0.25
+			exotic_gases = 0.40
+			volatile_motes = 0.40
+			rare_crystals = 0.40
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
 			trigger = {
 				owner = { has_ascension_perk = ap_toho3 }
 			}
-			exotic_gases = 1
-			volatile_motes = 1
-			rare_crystals = 1
-		}
-		produces = {
-			trigger = {
-				owner = { has_ascension_perk = ap_toho3 }
-			}
-			exotic_gases = 0.5
-			volatile_motes = 0.5
-			rare_crystals = 0.5
+			exotic_gases = 1.25
+			volatile_motes = 1.25
+			rare_crystals = 1.25
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
 			trigger = {
 				owner = { has_ascension_perk = ap_toho4 }
 			}
-			exotic_gases = 1.2
-			volatile_motes = 1.2
-			rare_crystals = 1.2
-
+			exotic_gases = 1.35
+			volatile_motes = 1.35
+			rare_crystals = 1.35
+			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		upkeep = {
-			minerals = 4
+			minerals = 6
 			energy = 2
-		}
-		upkeep = {
-			minerals = 2
-			energy = 1
 			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
 		}
 		upkeep = {

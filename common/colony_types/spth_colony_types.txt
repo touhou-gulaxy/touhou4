@@ -443,6 +443,68 @@ col_spth_refine = {
         }
     }
 }
+col_spth_spellcard = {
+    icon = GFX_colony_type_bureaucratic
+    potential = {
+        exists = owner
+        owner = {
+            has_authority = auth_gensokyo
+        }
+        NOT = {
+            uses_district_set = cosmogenesis_world
+        }
+        is_special_colony_type = no
+        is_capital = no
+        NOT = { is_planet_class = pc_nanotech }
+    }
+    planet_modifier = {
+        planet_spth_spellcard_specialist_sr_fuka_produces_add = 0.1
+        planet_spth_spellcard_specialist_sr_fuka_produces_mult = 0.15
+    }
+    inline_script = { script = colony_types/spth_colony_ringworld_modifier }
+    inline_script = { script = colony_types/spth_colony_tr_adaptability_modifier type = spth_spellcard_specialist }
+    weight_modifier = {
+        inline_script = {
+            script = colony_types/spth_colony_base_weight
+            type = col_spth_spellcard more_resource = sr_lingli less_resource = sr_fuka
+        }
+        inline_script = {
+            script = colony_types/spth_colony_building_add_weight
+            building_1 = building_spth_spellcard_workshop building_2 = building_spth_spellcard_workshop weight = 1000
+        }
+        inline_script = { script = colony_types/spth_colony_building_weights building = building_spth_spellcard_workshop mult = 1000 }
+    }
+}
+col_spth_spiritual_power = {
+    icon = GFX_colony_type_generator
+    potential = {
+        exists = owner
+        owner = {
+            has_authority = auth_gensokyo
+        }
+        NOT = {
+            uses_district_set = cosmogenesis_world
+        }
+        is_special_colony_type = no
+        is_capital = no
+        NOT = { is_planet_class = pc_nanotech }
+    }
+    planet_modifier = {
+        planet_spth_monk_sr_lingli_produces_add = 0.2
+        planet_spth_monk_sr_lingli_produces_mult = 0.15
+    }
+    inline_script = { script = colony_types/spth_colony_ringworld_modifier }
+    inline_script = { script = colony_types/spth_colony_tr_adaptability_modifier type = spth_monk }
+    inline_script = {
+        script = colony_types/spth_colony_standard_weight
+        type = col_spth_spiritual_power
+        more_resource = sr_fuka
+        less_resource = sr_lingli
+        common_building = building_spth_spellcard_workshop
+        special_building = building_spth_eientei
+        district = district_spth_sp_produce
+    }
+}
 col_spth_research_city = {
     icon = GFX_colony_type_research
     potential = {
@@ -521,53 +583,17 @@ col_spth_foundry_city = {
         planet_metallurgists_upkeep_mult = -0.20
     }
 
-    triggered_planet_modifier = {
-        potential = { is_ringworld = yes }
-        pop_growth_speed = 0.15
-        planet_pop_assembly_mult = 0.15
-        planet_pop_assembly_organic_mult = 0.15
-    }
+    inline_script = { script = colony_types/spth_colony_ringworld_modifier }
+    inline_script = { script = colony_types/spth_colony_tr_adaptability_modifier type = metallurgists }
 
-    triggered_planet_modifier = {
-        potential = {
-            exists = owner
-            owner = { has_tradition = tr_adaptability_finish }
-        }
-        modifier = {
-            planet_metallurgists_produces_mult = 0.05
-        }
-    }
-
-    weight_modifier = {
-        base = 128000
-        modifier = {
-            add = 10
-            has_designation = col_spth_foundry
-        }
-        modifier = {
-            add = 10
-            OR = {
-                has_building = building_spth_foundry
-                has_building = building_spth_common_foundry
-            }
-        }
-        complex_trigger_modifier = {
-            trigger = num_buildings
-            parameters = {
-                type = building_spth_common_foundry
-            }
-            mode = add
-            mult = 3
-        }
-        modifier = {
-            add = 11
-            has_designation = col_spth_foundry
-            exists = owner
-            owner = {
-                has_monthly_income = { resource = consumer_goods value >= 0 }
-                has_monthly_income = { resource = alloys value < 0 }
-            }
-        }
+    inline_script = {
+        script = colony_types/spth_colony_standard_weight
+        type = col_spth_foundry_city
+        more_resource = consumer_goods
+        less_resource = alloys
+        common_building = building_spth_common_foundry
+        special_building = building_spth_foundry
+        district = district_gensokyo_jiqiao
     }
 }
 col_spth_factory_city = {
