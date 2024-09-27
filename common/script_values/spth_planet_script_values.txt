@@ -3,6 +3,7 @@ planet_genso_job_buff_modifier = {
 	base = 1
 	add = modifier:planet_barrier_capacity_add
 	subtract = modifier:planet_barrier_capacity_use
+	ceiling = yes
 	min = 0
 	max = 1
 }
@@ -39,6 +40,13 @@ planet_base_faith_strength = {
 	min = 0
 }
 # scope: planet
+planet_faith_sum = {
+	base = 0
+	add = modifier:planet_faith_strength_add
+	add = value:planet_base_faith_strength
+	min = 0
+}
+# scope: planet
 planet_barrier_pressure_ratio = {
 	base = 1
 	multiply = modifier:planet_barrier_capacity_use
@@ -72,6 +80,7 @@ planet_weak_genso_job_produce_barrier_modifier = {
 	min = 0
 }
 # scope: planet
+# 最终输出的弱产出加成倍率
 planet_weak_genso_job_produce_faith_modifier = {
 	base = 0
 	add = value:planet_base_faith_strength
@@ -82,6 +91,8 @@ planet_weak_genso_job_produce_faith_modifier = {
 	min = 0
 	add = 1
 }
+# scope: planet
+# 最终输出的强产出加成倍率
 planet_strong_genso_job_produce_faith_modifier = {
 	base = 0
 	add = value:planet_base_faith_strength
@@ -109,6 +120,7 @@ planet_weak_genso_job_upkeep_barrier_modifier = {
 	min = 1
 }
 # scope: planet
+# 最终输出的弱维护费加成倍率
 planet_weak_genso_job_upkeep_faith_modifier = {
 	base = 0
 	add = value:planet_base_faith_strength
@@ -120,6 +132,7 @@ planet_weak_genso_job_upkeep_faith_modifier = {
 	add = 1
 }
 # scope: planet
+# 最终输出的强维护费加成倍率
 planet_strong_genso_job_upkeep_faith_modifier = {
 	base = 0
 	add = value:planet_base_faith_strength
@@ -130,11 +143,34 @@ planet_strong_genso_job_upkeep_faith_modifier = {
 	min = 0
 	add = 1
 }
-
+# scope: planet
+planet_part1_sp_upkeep_faith_pressure_modifier = {
+	base = -20
+	add = modifier:planet_faith_strength_pressure
+	min = 0
+	mult = 0.01
+}
+# scope: planet
+planet_part2_sp_upkeep_faith_pressure_modifier = {
+	base = -20
+	subtract = modifier:planet_faith_strength_add
+	subtract = value:planet_base_faith_strength
+	add = modifier:planet_faith_strength_pressure
+	min = 0
+	mult = 0.04
+}
+# scope: planet
+# 最终输出的灵力维护费倍率
+planet_sp_upkeep_faith_pressure_modifier = {
+	base = 1
+	add = value:planet_part1_sp_upkeep_faith_pressure_modifier
+	add = value:planet_part2_sp_upkeep_faith_pressure_modifier
+}
+# scope: planet
 spth_police_station_factor = {
 	base = 0
 	add = trigger:num_pops
-	multiply = value:planet_genso_job_buff_modifier
+	multiply = planet_weak_genso_job_produce_barrier_modifier
 	min = 0
 }
 # 人口组装速度倍率
@@ -229,7 +265,6 @@ planet_genso_research_buff_modifier = {
 	multiply = value:planet_genso_research_buff_building_factor
 	square_root = yes
 	multiply = value:planet_genso_research_buff_capacity_factor
-	# multiply = value:planet_genso_job_buff_modifier
 	ceiling = yes
 	multiply = 2.4
 	min = 1
