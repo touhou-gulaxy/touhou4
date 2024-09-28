@@ -119,9 +119,9 @@ fun readComponentAttributeCSV(content: List<String>): List<ComponentAttribute> {
     return res
 }
 
-//readComponentResourceCSV(Path("./components_resources.csv").readLines().drop(1)).forEach {
-//    println(it)
-//}
-readComponentAttributeCSV(Path("./components_attributes.csv").readLines().drop(1)).forEach {
+readComponentResourceCSV(Path("./components_resources.csv").readLines().drop(1)).forEach {
     println(it)
 }
+//readComponentAttributeCSV(Path("./components_attributes.csv").readLines().drop(1)).forEach {
+//    println(it)
+//}
