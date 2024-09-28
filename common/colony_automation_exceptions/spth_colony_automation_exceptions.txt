@@ -3,25 +3,154 @@ automate_spth_planet_capital_districts = {
     category = "planet_automation_spth_designation_construction"
     available = {
         owner = { has_authority = auth_gensokyo }
-        OR = {
-            has_designation = col_spth_capital
-            has_designation = col_spth_capital_trade
-            has_designation = col_spth_capital_foundry
-            has_designation = col_spth_capital_factory
-            has_designation = col_spth_capital_extraction
-        }
+        is_capital = yes
         free_district_slots > 0
         spth_is_touhou_reshape_planet = no
     }
     prio_districts = {
+        district_spth_generic_factory
+        district_spth_sp_produce
         district_city
         district_industrial
         district_generator
         district_farming
         district_mining
-        district_spth_sp_produce
-        district_spth_generic_factory
         district_spth_human_village
+    }
+}
+automate_spth_planet_capital_buildings_foundry = {
+    category = "planet_automation_spth_designation_construction"
+    available = {
+        owner = { has_authority = auth_gensokyo }
+        has_designation = col_capital_foundry
+        free_building_slots > 0
+    }
+    emergency = yes
+    buildings = {
+        building_capital = {
+            building = building_capital
+            available = { always = yes }
+        }
+
+        building_spth_cloner = {
+            building = building_spth_cloner
+            available = {
+                check_variable_arithmetic = {
+                    which = modifier:planet_barrier_capacity_use
+                    add = 1
+                    value < modifier:planet_barrier_capacity_add
+                }
+                NOR = {
+                    has_building = building_spth_cloner
+                    has_building_construction = building_spth_cloner
+                }
+            }
+        }
+        inline_script = { script = colony_automation/spth_barrier_buildings building = building_spth_foundry }
+        building_spth_common_foundry = {
+            building = building_spth_common_foundry
+            available = {
+                owner = { resource_income_compare = { resource = alloys value < 640 } }
+            }
+        }
+        building_spth_housing = {
+            building = building_spth_housing
+            available = { OR = { free_housing < 0 free_amenities < 0 } }
+        }
+        building_spth_research_base_1 = {
+            building = building_spth_research_base_1
+            available = { always = yes }
+        }
+    }
+}
+automate_spth_planet_capital_buildings_factory = {
+    category = "planet_automation_spth_designation_construction"
+    available = {
+        owner = { has_authority = auth_gensokyo }
+        has_designation = col_capital_factory
+        free_building_slots > 0
+    }
+    emergency = yes
+    buildings = {
+        building_capital = {
+            building = building_capital
+            available = { always = yes }
+        }
+
+        building_spth_cloner = {
+            building = building_spth_cloner
+            available = {
+                check_variable_arithmetic = {
+                    which = modifier:planet_barrier_capacity_use
+                    add = 1
+                    value < modifier:planet_barrier_capacity_add
+                }
+                NOR = {
+                    has_building = building_spth_cloner
+                    has_building_construction = building_spth_cloner
+                }
+            }
+        }
+        inline_script = { script = colony_automation/spth_barrier_buildings building = building_spth_factory }
+        building_spth_common_factory = {
+            building = building_spth_common_factory
+            available = {
+                owner = { resource_income_compare = { resource = consumer_goods value < 640 } }
+            }
+        }
+        building_spth_housing = {
+            building = building_spth_housing
+            available = { OR = { free_housing < 0 free_amenities < 0 } }
+        }
+        building_spth_research_base_1 = {
+            building = building_spth_research_base_1
+            available = { always = yes }
+        }
+    }
+}
+automate_spth_planet_capital_buildings_mining = {
+    category = "planet_automation_spth_designation_construction"
+    available = {
+        owner = { has_authority = auth_gensokyo }
+        has_designation = col_capital_extraction
+        free_building_slots > 0
+    }
+    emergency = yes
+    buildings = {
+        building_capital = {
+            building = building_capital
+            available = { always = yes }
+        }
+
+        building_spth_cloner = {
+            building = building_spth_cloner
+            available = {
+                check_variable_arithmetic = {
+                    which = modifier:planet_barrier_capacity_use
+                    add = 1
+                    value < modifier:planet_barrier_capacity_add
+                }
+                NOR = {
+                    has_building = building_spth_cloner
+                    has_building_construction = building_spth_cloner
+                }
+            }
+        }
+        inline_script = { script = colony_automation/spth_barrier_buildings building = building_spth_mining_station }
+        building_spth_mining_centre = {
+            building = building_spth_mining_centre
+            available = {
+                owner = { resource_income_compare = { resource = minerals value < 640 } }
+            }
+        }
+        building_spth_housing = {
+            building = building_spth_housing
+            available = { OR = { free_housing < 0 free_amenities < 0 } }
+        }
+        building_spth_research_base_1 = {
+            building = building_spth_research_base_1
+            available = { always = yes }
+        }
     }
 }
 automate_spth_planet_capital_buildings = {
@@ -29,11 +158,8 @@ automate_spth_planet_capital_buildings = {
     available = {
         owner = { has_authority = auth_gensokyo }
         OR = {
+            has_designation = col_capital
             has_designation = col_spth_capital
-            has_designation = col_spth_capital_trade
-            has_designation = col_spth_capital_foundry
-            has_designation = col_spth_capital_factory
-            has_designation = col_spth_capital_extraction
         }
         free_building_slots > 0
     }
@@ -46,28 +172,47 @@ automate_spth_planet_capital_buildings = {
 
         building_spth_cloner = {
             building = building_spth_cloner
-            available = { always = yes }
+            available = {
+                check_variable_arithmetic = {
+                    which = modifier:planet_barrier_capacity_use
+                    add = 1
+                    value < modifier:planet_barrier_capacity_add
+                }
+                NOR = {
+                    has_building = building_spth_cloner
+                    has_building_construction = building_spth_cloner
+                }
+            }
+        }
+        building_spth_mining_centre = {
+            building = building_spth_mining_centre
+            available = {
+                owner = { resource_income_compare = { resource = minerals value < 20 } }
+            }
+        }
+        building_spth_power_station = {
+            building = building_spth_power_station
+            available = {
+                owner = { resource_income_compare = { resource = energy value < 20 } }
+            }
+        }
+        building_spth_common_farm = {
+            building = building_spth_common_farm
+            available = {
+                owner = { resource_income_compare = { resource = food value < 10 } }
+            }
         }
         building_spth_common_foundry = {
             building = building_spth_common_foundry
-            available = { always = yes }
+            available = {
+                owner = { resource_income_compare = { resource = alloys value < 100 } }
+            }
         }
-        # spth_building_foundry = {
-        #     building = building_spth_foundry
-        #     available = {
-        #         check_modifier_value = {
-        #             modifier = planet_barrier_capacity_use
-        #             value < modifier:planet_barrier_capacity_add
-        #         }
-        #     }
-        # }
-        building_spth_research_base_1 = {
-            building = building_spth_research_base_1
-            available = { always = yes }
-        }
-        building_spth_housing = {
-            building = building_spth_housing
-            available = { OR = { free_housing < 0 free_amenities < 0 } }
+        building_spth_common_factory = {
+            building = building_spth_common_factory
+            available = {
+                owner = { resource_income_compare = { resource = consumer_goods value < 75 } }
+            }
         }
         building_spth_research_base_2 = {
             building = building_spth_research_base_2
@@ -77,19 +222,21 @@ automate_spth_planet_capital_buildings = {
                 owner = { has_ascension_perk = ap_toho2 }
             }
         }
+        building_spth_housing = {
+            building = building_spth_housing
+            available = { OR = { free_housing < 0 free_amenities < 0 } }
+        }
+        building_spth_research_base_1 = {
+            building = building_spth_research_base_1
+            available = { always = yes }
+        }
     }
 }
 automate_spth_planet_capital_genso_city_districts = {
     category = "planet_automation_spth_designation_construction"
     available = {
         owner = { has_authority = auth_gensokyo }
-        OR = {
-            has_designation = col_spth_capital
-            has_designation = col_spth_capital_trade
-            has_designation = col_spth_capital_foundry
-            has_designation = col_spth_capital_factory
-            has_designation = col_spth_capital_extraction
-        }
+        has_designation = col_spth_capital
         free_district_slots > 0
         spth_is_gensokyo_city = yes
     }
