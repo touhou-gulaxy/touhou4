@@ -12,7 +12,10 @@ country_event = {
 				OR = {
 					has_modifier = spth_planet_pop_convert
 					has_deposit = d_hakurei_barrier
-					NOT = { is_variable_set = planet_weak_genso_job_produce_faith_modifier }
+					NOR = {
+						is_variable_set = planet_weak_genso_job_produce_faith_modifier
+						is_variable_set = spth_planet_reactor_upkeep_mult
+					}
 				}
 			}
 			if = {
@@ -22,6 +25,10 @@ country_event = {
 			if = {
 				limit = { NOT = { is_variable_set = planet_weak_genso_job_produce_faith_modifier } }
 				set_variable = { which = planet_weak_genso_job_produce_faith_modifier value = 1 }
+			}
+			if = {
+				limit = { NOT = { is_variable_set = spth_planet_reactor_upkeep_mult } }
+				set_variable = { which = spth_planet_reactor_upkeep_mult value = 100 }
 			}
 			spth_count_to_be_converted_pops = yes
 			if = {
@@ -277,8 +284,32 @@ planet_event = {
 	desc = spth_colony.11.desc
 	picture = GFX_evt_hakurei_shrine_in_night
 	is_triggered_only = yes
+	trigger = { NOT = { has_planet_flag = has_open_spth_reactor_adjust_ui } }
+	diplomatic = yes
+	custom_gui = spiritual_power_reactor_ui
+	custom_gui_option = spiritual_power_reactor_button
+	picture_event_data = { room = spth_muq_room }
+	immediate = {
+		set_planet_flag = has_open_spth_reactor_adjust_ui
+		if = {
+			limit = { NOT = { is_variable_set = spth_planet_reactor_upkeep_mult } }
+			set_variable = { which = spth_planet_reactor_upkeep_mult value = 100 }
+		}
+		set_variable = { which = spth_planet_reactor_display_produce value = value:spth_planet_reactor_procude_mult }
+	}
+	after = {
+		hidden_effect = {
+			clear_variable = spth_planet_reactor_display_produce
+			remove_planet_flag = has_open_spth_reactor_adjust_ui
+		}
+		if = {
+			limit = { has_planet_flag = close_spth_planet_reactor_ui }
+			remove_planet_flag = close_spth_planet_reactor_ui
+		} else = { planet_event = { id = spth_colony.11 } }
+	}
 	option = {
 		name = spth_colony.11.a
+		custom_tooltip = spth_colony.11.tooltip
 		hidden_effect = {
 			remove_planet_flag = spth_planet_reactor_use_food
 			remove_planet_flag = spth_planet_reactor_use_minerals
@@ -287,6 +318,7 @@ planet_event = {
 	}
 	option = {
 		name = spth_colony.11.b
+		custom_tooltip = spth_colony.11.tooltip
 		hidden_effect = {
 			set_planet_flag = spth_planet_reactor_use_food
 			remove_planet_flag = spth_planet_reactor_use_minerals
@@ -295,6 +327,7 @@ planet_event = {
 	}
 	option = {
 		name = spth_colony.11.c
+		custom_tooltip = spth_colony.11.tooltip
 		hidden_effect = {
 			remove_planet_flag = spth_planet_reactor_use_food
 			set_planet_flag = spth_planet_reactor_use_minerals
@@ -303,10 +336,17 @@ planet_event = {
 	}
 	option = {
 		name = spth_colony.11.d
+		custom_tooltip = spth_colony.11.tooltip
 		hidden_effect = {
 			remove_planet_flag = spth_planet_reactor_use_food
 			remove_planet_flag = spth_planet_reactor_use_minerals
 			set_planet_flag = spth_planet_reactor_use_consumer_goods
 		}
+	}
+	option = {
+		name = spth_colony.11.exit
+		custom_tooltip = spth_colony.11.tooltip
+		default_hide_option = yes
+		hidden_effect = { set_planet_flag = close_spth_planet_reactor_ui }
 	}
 }
