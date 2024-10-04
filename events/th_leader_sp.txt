@@ -5,6 +5,36 @@ namespace = th_leader_sp
 @skill_support_t1 = 0.1
 @skill_support_t2 = 0.2
 
+# 绀珠之药
+country_event = {
+    id = th_leader_sp.100
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { any_owned_leader = { has_leader_flag = spth_auto_clear_negative_traits } }
+    immediate = {
+        every_owned_leader = {
+            limit = { has_leader_flag = spth_auto_clear_negative_traits }
+            if = {
+                limit = { NOT = { has_trait = spth_auto_clear_negative_traits } }
+                remove_leader_flag = spth_auto_clear_negative_traits
+                remove_leader_flag = immune_to_negative_traits
+            } else_if = {
+                limit = { num_leader_traits = { negative = yes value > 0 } }
+                if = {
+                    limit = {
+                        prev = {
+                            resource_stockpile_compare = { resource = sr_lingli value >= 120 }
+                            resource_stockpile_compare = { resource = sr_fuka value >= 60 }
+                        }
+                    }
+                    prev = { add_resource = { sr_lingli = -120 sr_fuka = -60 } }
+                    remove_all_negative_traits = yes
+                }
+            }
+        }
+    }
+}
+
 # 拥戴 俘获陆军 attacker
 # 开片了
 planet_event = {
