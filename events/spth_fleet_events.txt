@@ -37,6 +37,7 @@ ship_event = {
                 set_ship_flag = has_sg_sub_flagship
                 set_ship_flag = is_spth_super_carrier
                 set_variable = { which = spth_super_carrier_inv_counter value = 0 }
+                set_name = gungnir
             }
             spth_hv_bombardment_ship = {
                 set_ship_flag = has_sg_sub_flagship
@@ -120,6 +121,7 @@ ship_event = {
                 delete_ship = this
             }
             default = {
+                # 你是？
             }
         }
     }
@@ -617,6 +619,7 @@ country_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
+        NOT = { has_country_flag = disable_spth_supercarrier_system }
         fromfrom = {
             any_owned_ship = {
                 is_ship_size = TH_super_carrier
@@ -625,7 +628,28 @@ country_event = {
             }
         }
     }
-    immediate = { spth_super_carrier_init_system_self = yes }
+    immediate = {
+        spth_super_carrier_init_system_self = yes
+        if = {
+            limit = { NOT = { has_country_flag = has_triggered_spth_supercarrier_settings_first_time } }
+            set_country_flag = has_triggered_spth_supercarrier_settings_first_time
+            country_event = { id = spth_fleet.1008 }
+        }
+        if = {
+            limit = { NOT = { has_country_flag = disable_spth_supercarrier_bossbar } }
+            fromfrom = {
+                random_owned_ship = {
+                    limit = { is_ship_size = TH_super_carrier }
+                    prevprev = {
+                        country_event = {
+                            id = spth_fleet.1010
+                            scopes = { fromfromfromfrom = prev }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 ship_event = {
@@ -687,56 +711,11 @@ country_event = {
             clear_variable = spth_super_carrier_inv_max
             set_variable = { which = spth_super_carrier_inv_counter value = 0 }
         }
+        fromfrom.solar_system = { system_event = { id = spth_fleet.1007 days = 1 } }
         fromfromfrom = {
-            create_fleet = {
-                name = spth_super_carrier_destroyed_storm
-                settings = {
-                    can_upgrade = no
-                    spawn_debris = no
-                    can_change_leader = no
-                    uses_naval_capacity = no
-                    is_boss = yes
-                    is_ultra_boss = yes
-                    garrison = no
-                    can_change_composition = no
-                }
-                effect = {
-                    set_owner = root.from
-                    create_ship = {
-                        design = spth_super_carrier_destroyed_storm
-                        effect = {
-                            set_name = spth_super_carrier_destroyed_storm
-                            set_ship_flag = spth_super_carrier_destroyed_storm
-                            set_disable_at_health = 0.01
-                            ship_event = { id = Th_dynamic_battle_vict.47 days = 2 }
-                        }
-                    }
-                    create_ship = {
-                        design = spth_super_carrier_destroyed_storm_last
-                        effect = {
-                            set_ship_flag = spth_super_carrier_destroyed_storm
-                            set_name = spth_super_carrier_destroyed_storm_last
-                            set_disable_at_health = 0.01
-                        }
-                    }
-                    set_location = {
-                        target = prev
-                        distance = 0
-                        angle = random
-                    }
-                    fleet_event = { id = spth_fleet.1006 days = 4 }
-                }
-            }
-            solar_system = {
-                create_ambient_object = {
-                    type = "star_explosion"
-                    play_animation_once = yes
-                    location = prev
-                }
-                last_created_ambient_object = {
-                    set_location = { target = prev distance = 0 angle = random }
-                }
-            }
+            set_disabled = no
+            destroy_ship = this
+            delete_ship = this
         }
     }
 }
@@ -766,5 +745,132 @@ fleet_event = {
             destroy_template = yes
             kill_leader = no
         }
+    }
+}
+system_event = {
+    id = spth_fleet.1007
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        create_fleet = {
+            name = spth_super_carrier_destroyed_storm
+            settings = {
+                can_upgrade = no
+                spawn_debris = no
+                can_change_leader = no
+                uses_naval_capacity = no
+                is_boss = yes
+                is_ultra_boss = yes
+                garrison = no
+                can_change_composition = no
+            }
+            effect = {
+                set_owner = root.from
+                create_ship = {
+                    design = spth_super_carrier_destroyed_storm
+                    effect = {
+                        set_name = spth_super_carrier_destroyed_storm
+                        set_ship_flag = spth_super_carrier_destroyed_storm
+                        set_disable_at_health = 0.01
+                        ship_event = { id = Th_dynamic_battle_vict.47 days = 2 }
+                    }
+                }
+                create_ship = {
+                    design = spth_super_carrier_destroyed_storm_last
+                    effect = {
+                        set_ship_flag = spth_super_carrier_destroyed_storm
+                        set_name = spth_super_carrier_destroyed_storm_last
+                        set_disable_at_health = 0.01
+                    }
+                }
+                set_location = {
+                    target = prev
+                    distance = 0
+                    angle = random
+                }
+                fleet_event = { id = spth_fleet.1006 days = 4 }
+            }
+        }
+        create_ambient_object = {
+            type = "star_explosion"
+            play_animation_once = yes
+            location = prev
+        }
+        last_created_ambient_object = {
+            set_location = { target = prev distance = 0 angle = random }
+        }
+    }
+}
+country_event = {
+    id = spth_fleet.1008
+    title = spth_fleet.1008
+    desc = spth_fleet.1008.desc
+    diplomatic = yes
+    custom_gui = spth_leader_function_ui
+    custom_gui_option = spth_leader_function_button
+    picture_event_data = { room = spth_muq_room }
+    is_triggered_only = yes
+    trigger = {
+        is_multiplayer = no is_ai = no
+        NOT = { has_country_flag = has_show_spth_supercarrier_bossbar_settings }
+    }
+    immediate = { set_country_flag = has_show_spth_supercarrier_bossbar_settings }
+    option = {
+        name = spth_fleet.1008.a
+        allow = { hidden_trigger = { has_country_flag = disable_spth_supercarrier_bossbar } }
+        hidden_effect = { remove_country_flag = disable_spth_supercarrier_bossbar }
+    }
+    option = {
+        name = spth_fleet.1008.b
+        allow = { hidden_trigger = { NOT = { has_country_flag = disable_spth_supercarrier_bossbar } } }
+        hidden_effect = { set_country_flag = disable_spth_supercarrier_bossbar }
+    }
+    option = {
+        name = spth_fleet.1008.return
+        country_event = { id = gensokyo_start.1250 }
+    }
+    option = {
+        name = spth_fleet.1008.exit
+        default_hide_option = yes
+    }
+    after = {
+        remove_country_flag = has_show_spth_supercarrier_bossbar_settings
+    }
+}
+
+country_event = {
+    id =  spth_fleet.1010
+    title = "BUTTON_TEXT_NULL"
+    desc = "BUTTON_TEXT_NULL"
+    hide_window = no
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = has_show_spth_supercarrier_bossbar }
+        is_multiplayer = no is_ai = no
+    }
+    diplomatic = yes
+    custom_gui = spth_boss_hp_test
+    diplomatic_title = "spth_get_boss_name"
+    immediate = {
+        set_country_flag = has_show_spth_supercarrier_bossbar
+        fromfromfromfrom = {
+            save_global_event_target_as = is_spth_boss
+        }
+    }
+    abort_trigger = {
+        OR = {
+            NOT = { exists = fromfromfromfrom }
+            AND = {
+                exists = fromfromfromfrom
+                OR = {
+                    fromfromfromfrom = { has_hp = 0 }
+                    fromfromfromfrom = { is_in_combat = no }
+                }
+            }
+        }
+    }
+    abort_effect = {
+        remove_country_flag = has_show_spth_supercarrier_bossbar
+        clear_global_event_target = is_spth_boss
     }
 }
