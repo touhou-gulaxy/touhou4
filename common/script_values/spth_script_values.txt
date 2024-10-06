@@ -329,3 +329,30 @@ spth_is_boss_limt_hp = {
 	add = event_target:is_spth_boss.trigger:has_hp
 	# multiply = value:spth_supercarrier_inv_counter
 }
+
+ship_spth_extra_life_power_down = {
+	base = 0
+	add = modifier:ship_spth_extra_life_power_down
+	min = -0.9
+	max = 0
+}
+ship_spth_extra_life_power_down_value = {
+	base = 0
+	# +100% damage, down = 0.1(10%) -> reduce_value = 0.1*100% = 10%
+	modifier = {
+		check_modifier_value = { modifier = ship_weapon_damage value > 0 }
+		add = modifier:ship_weapon_damage
+		multiply = value:ship_spth_extra_life_power_down
+	}
+	# +0% damage, down = 0.1 -> reduce_value = down = 10%
+	# -50% damage, down = 0.1 -> reduce_value = down = 10%
+	# if damage + 0.9 < down, do nothing.
+	modifier = {
+		check_modifier_value = { modifier = ship_weapon_damage value <= 0 }
+		check_variable_arithmetic = {
+			which = modifier:ship_weapon_damage add = 0.9
+			value >= value:ship_spth_extra_life_power_down
+		}
+		add = value:ship_spth_extra_life_power_down
+	}
+}

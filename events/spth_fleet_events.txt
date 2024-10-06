@@ -665,31 +665,139 @@ ship_event = {
         } else = { spth_super_carrier_finalize_system_self = yes }
     }
 }
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.1100
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            any_owned_ship = {
+                spth_combat_extra_life_check = yes
+                NOT = { has_ship_flag = has_triggered_spth_extra_life }
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            every_owned_ship = {
+                limit = {
+                    NOT = { has_ship_flag = has_triggered_spth_extra_life }
+                    spth_combat_extra_life_check = yes
+                }
+                set_ship_flag = has_triggered_spth_extra_life
+                set_disable_at_health = 0.01
+            }
+            fleet_event = { id = spth_fleet.1101 days = 1 }
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.1101
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = {
+                limit = {
+                    NOT = { has_ship_flag = has_triggered_spth_extra_life }
+                    spth_combat_extra_life_check = yes
+                }
+                set_ship_flag = has_triggered_spth_extra_life
+                set_disable_at_health = 0.01
+            }
+            fleet_event = { id = spth_fleet.1101 days = 1 }
+        } else = {
+            every_owned_ship = {
+                limit = { has_ship_flag = has_triggered_spth_extra_life }
+                remove_ship_flag = has_triggered_spth_extra_life
+                set_disable_at_health = -1
+            }
+        }
+    }
+}
+@spth_extra_life_cooldown = 120
+# 禁用触发
 # This = Ship
 # From = Disabler Ship
 ship_event = {
     id = spth_fleet.1002
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        OR = {
-            has_ship_flag = spth_super_carrier_sys_triggered
-            has_ship_flag = spth_super_carrier_destroyed_storm
+    trigger = { spth_ship_has_extra_life = yes }
+    immediate = {
+        if = {
+            limit = { NOT = { has_ship_flag = has_triggered_spth_extra_life } }
+            repair_ship = yes
+            if = {
+                limit = { has_ship_flag = spth_super_carrier_destroyed_storm }
+                set_disable_at_health = 0.01 set_disabled = no
+            } else = {
+                change_variable = { which = spth_super_carrier_inv_counter value = 1 }
+                owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
+                if = {
+                    limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 10 } }
+                    set_disable_at_health = -1
+                } else = {
+                    set_disable_at_health = 0.01
+                }
+                set_disabled = no
+            }
+        } else = {
+            fire_on_action = {
+                on_action = on_trigger_spth_extra_life
+                scopes = {
+                    from = from
+                    fromfrom = fleet
+                    fromfromfrom = from.fleet
+                    fromfromfromfrom = solar_system
+                }
+            }
         }
     }
+}
+ship_event = {
+    id = spth_fleet.1102
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { NOT = { has_ship_flag = is_spth_space_shrine_station } }
     immediate = {
-        repair_ship = yes
-        if = {
-            limit = { has_ship_flag = spth_super_carrier_destroyed_storm }
-            repair_ship = yes set_disable_at_health = 0.01 set_disabled = no
-        } else = {
-            change_variable = { which = spth_super_carrier_inv_counter value = 1 }
-            owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
+        from = {
+            # 扣除残机
+            set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+            add_modifier = { modifier = ship_spth_extra_life_lose days = @spth_extra_life_cooldown }
+            add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = @spth_extra_life_cooldown }
+            clear_variable = ship_spth_extra_life_reduce
+            repair_ship = yes
             if = {
-                limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 10 } }
-                set_disable_at_health = -1
-            } else = {
+                limit = { check_modifier_value = { modifier = ship_spth_extra_life value >= 1 } }
                 set_disable_at_health = 0.01
+            } else = {
+                set_disable_at_health = -1
+            }
+            set_disabled = no
+        }
+    }
+}
+ship_event = {
+    id = spth_fleet.1103
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { has_ship_flag = is_spth_space_shrine_station }
+    immediate = {
+        from = {
+            # 扣除残机
+            add_modifier = { modifier = ship_spth_extra_life_lose days = 60 }
+            repair_ship = yes
+            if = {
+                limit = { check_modifier_value = { modifier = ship_spth_extra_life value >= 1 } }
+                set_disable_at_health = 0.01
+            } else = {
+                set_disable_at_health = -1
             }
             set_disabled = no
         }
