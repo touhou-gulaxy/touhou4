@@ -82,6 +82,26 @@ th_shrine_mega = {
 				fail_text = "requires_no_anomaly"
 				NOT = { has_anomaly = yes }
 			}
+			custom_tooltip = {
+				fail_text = "requires_no_existing_megastructure"
+				solar_system = {
+					NOT = {
+						any_system_megastructure = {
+							OR = {
+								is_megastructure_type = th_shrine_mega
+								is_megastructure_type = th_shrine_mega_1
+								is_megastructure_type = th_shrine_mega_2
+								is_megastructure_type = th_shrine_mega_shipyard
+								is_megastructure_type = th_shrine_mega_ruined
+								is_megastructure_type = th_shrine_mega_2_ruined
+								is_megastructure_type = th_shrine_mega_restored
+								is_megastructure_type = th_shrine_mega_2_restored
+							}
+						}
+						any_system_colony = { has_planet_flag = is_spth_megastructure_planet }
+					}
+				}
+			}
 		}
 	}
 
@@ -109,6 +129,7 @@ th_shrine_mega = {
 	on_build_complete = {
 		set_star_flag = touhou_mega_built
 	}
+	construction_blocks_and_blocked_by = self_type
 }
 
 th_shrine_mega_1 = {
@@ -502,6 +523,287 @@ th_shrine_mega_shipyard = {
 		starbase_shipyard_build_speed_mult = 0.25
 		trade_value_add = 200
 	}
+}
+th_shrine_mega_2_ruined = {
+	portrait = GFX_megastructure_construction_background
+	entity = "Toho_Tower_entity"
+	potential = {
+		always = no
+	}
+}
+th_shrine_mega_2_restored = { ###贸易
+	portrait = GFX_spaceshirine
+	entity = "Toho_Tower_entity"
+	construction_entity = "Toho_Tower_entity"
+	place_entity_on_planet_plane = no
+	entity_offset = { x = -30 y = -30 }
+	build_time = 1000 #########################################
+	show_galactic_map_icon = yes
+
+	resources = {
+		category = megastructures
+		cost = {
+			sr_lingli = 10000
+		}
+		upkeep = {
+			sr_lingli = 10
+			energy = 50
+		}
+		produces = {
+			sr_fuka = 50
+			food = 1000
+			society_research = 160
+		}
+	}
+
+	country_modifier = {
+		country_resource_max_add = 8000
+	}
+	ship_modifier = {
+		ship_starting_experience_add = 200
+		ship_speed_mult = 0.1
+		ship_evasion_add = 30
+	}
+	station_modifier = {
+		starbase_shipyard_capacity_add = 4
+		starbase_shipyard_build_cost_mult = -0.05
+		starbase_shipyard_build_speed_mult = 0.20
+		trade_value_add = 200
+	}
+	on_build_complete = {
+		from = {
+			set_country_flag = has_built_or_repaired_megastructure
+		}
+		spawn_planet = {
+			class = "pc_torifune_shrine_habitat"
+			location = fromfrom
+			has_ring = no
+			orbit_angle = random
+			orbit_distance_offset = 45
+			size = 16
+			init_effect = {
+				set_name = random
+				set_planet_entity = {
+					entity = "Toho_Tower_planet_01_entity"
+					# graphical_culture = fromfrom
+				}
+				set_surveyed = {
+					surveyed = yes
+					surveyor = FROM
+				}
+				set_owner = from
+				set_controller = from
+				set_all_comms_surveyed = yes
+				clear_blockers = yes
+				trigger_megastructure_icon = yes
+				set_planet_flag = megastructure
+				set_planet_flag = habitat
+				set_planet_flag = is_spth_megastructure_planet
+				set_planet_flag = is_spth_th_shrine_mega_2
+				set_planet_flag = habitat_level_10
+				set_planet_flag = spth_torifune_shrine_research_mode_soc
+				set_variable = { which = spth_torifune_shrine_shipyard_count value = 6 }
+				start_colony = { owner = root.from species = root.from.owner_main_species }
+				add_deposit = d_megastructure_th_shrine_mega_2
+				set_colony_type = col_spth_megastructure
+				solar_system = {
+					spawn_megastructure = {
+						type = th_shrine_mega_shipyard
+						owner = from
+						planet = prev
+						graphical_culture = fromfrom
+						init_effect = {
+							set_megastructure_flag = ag_ancient_construction_section_megashipyard
+							set_megastructure_flag = is_shrine_shipyard_@prevprev
+						}
+					}
+				}
+			}
+		}
+		fromfrom.solar_system = {
+			set_star_flag = has_habitat
+		}
+		remove_megastructure = fromfrom
+	}
+
+	upgrade_from = {
+		th_shrine_mega_2_ruined
+	}
+}
+
+mega_spth_space_shrine_station_platform = {
+	entity = "construction_platform_entity"
+	construction_entity = "construction_platform_entity"
+	portrait = "GFX_megastructure_construction_background"
+	place_entity_on_planet_plane = no
+	show_galactic_map_icon = yes
+	build_time = 2400
+	prerequisites = { tech_spth_space_shrine_station }
+	resources = {
+		category = megastructures
+		cost = {
+			alloys = 50000
+			sr_lingli = 500
+			sr_fuka = 5000
+		}
+		upkeep = {
+			energy = 5
+		}
+	}
+	possible = {
+		exists = starbase
+		custom_tooltip = {
+			fail_text = "requires_inside_border"
+			is_inside_border = from
+		}
+		custom_tooltip = {
+			fail_text = "requires_surveyed_system"
+			NOT = {
+				any_system_planet = {
+					is_surveyed = {
+						who = prev.from
+						status = no
+					}
+				}
+			}
+		}
+		custom_tooltip = {
+			fail_text = "requires_no_black_hole"
+			NOT = { is_star_class = sc_black_hole }
+		}
+		custom_tooltip = {
+			fail_text = "requires_no_binary_trinary"
+			NOR = {
+				is_star_class = sc_binary_1
+				is_star_class = sc_binary_2
+				is_star_class = sc_binary_3
+				is_star_class = sc_binary_4
+				is_star_class = sc_binary_5
+				is_star_class = sc_binary_6
+				is_star_class = sc_binary_7
+				is_star_class = sc_binary_8
+				is_star_class = sc_binary_9
+				is_star_class = sc_binary_10
+				is_star_class = sc_trinary_1
+				is_star_class = sc_trinary_2
+				is_star_class = sc_trinary_3
+				is_star_class = sc_trinary_4
+			}
+		}
+		custom_tooltip = {
+			fail_text = "spth_requires_requires_no_existing_station"
+			from = {
+				NOT = { any_megastructure = {
+					OR = {
+						is_megastructure_type = mega_spth_space_shrine_station_platform
+						is_megastructure_type = mega_spth_space_shrine_station
+					}
+				} }
+				count_owned_ship = { limit = { is_ship_size = spth_space_shrine_station } count < 1 }
+			}
+		}
+	}
+	placement_rules = {
+		planet_possible = {
+			custom_tooltip = {
+				fail_text = "must_build_around_star"
+				is_star = yes
+			}
+			custom_tooltip = {
+				fail_text = "requires_no_anomaly"
+				NOT = { has_anomaly = yes }
+			}
+			custom_tooltip = {
+				fail_text = "spth_requires_requires_no_existing_station"
+				NOT = { has_planet_flag = has_space_shrine_starbase }
+			}
+		}
+	}
+	ai_weight = {
+		weight = 10
+
+		modifier = {
+			factor = 3
+			starbase = { NOT = { has_starbase_size >= starbase_starfortress } }
+		}
+
+		modifier = {
+			factor = 3
+			any_neighbor_system = {
+				exists = owner
+				NOT = {
+					owner = { is_same_value = from }
+				}
+			}
+		}
+	}
+
+	on_build_start = {}
+	on_build_cancel = {}
+	on_build_complete = {
+		fromfrom.planet = {
+			set_planet_flag = has_space_shrine_starbase
+		}
+	}
+	construction_blocks_and_blocked_by = self_type
+}
+mega_spth_space_shrine_station = {
+	entity = "Toho_Tower_entity"
+	construction_entity = "Toho_Tower_entity"
+	portrait = "GFX_spaceshirine"
+	place_entity_on_planet_plane = no
+	show_galactic_map_icon = yes
+	build_time = 1200
+	prerequisites = { tech_spth_space_shrine_station }
+	resources = {
+		category = megastructures
+		cost = {
+			alloys = 50000
+			sr_lingli = 2000
+			sr_fuka = 20000
+		}
+		upkeep = {
+			energy = 5
+		}
+	}
+	possible = {
+		custom_tooltip = {
+			fail_text = "spth_requires_requires_no_existing_station"
+			from = {
+				count_owned_ship = { limit = { is_ship_size = spth_space_shrine_station } count < 1 }
+			}
+		}
+	}
+	placement_rules = {}
+	ai_weight = {
+		weight = 10
+
+		modifier = {
+			factor = 3
+			starbase = { NOT = { has_starbase_size >= starbase_starfortress } }
+		}
+
+		modifier = {
+			factor = 3
+			any_neighbor_system = {
+				exists = owner
+				NOT = {
+					owner = { is_same_value = from }
+				}
+			}
+		}
+	}
+	upgrade_from = { mega_spth_space_shrine_station_platform }
+	on_build_start = {}
+	on_build_cancel = {}
+	on_build_complete = {
+		fromfrom.planet = {
+			remove_planet_flag = has_space_shrine_starbase
+		}
+		spth_create_player_space_shrine = { OWNER = from LOCATION = fromfrom }
+		remove_megastructure = fromfrom
+	}
+	construction_blocks_and_blocked_by = self_type
 }
 
 spth_story_ring_world_base = {

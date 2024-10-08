@@ -70,8 +70,8 @@ scarlet_weather_storm_apply_aftermath_modifier = {
 
 scarlet_weather_storm_add = {
     optimize_memory
-    set_star_flag = storm_system
-    set_global_flag = cosmic_storm_has_occurred
+    set_star_flag = scarlet_weather_storm_system
+    set_global_flag = scarlet_weather_cosmic_storm_has_occurred
     inline_script = {
         script = "cosmic_storms/StormVisuals"
         STORM_NAME = "gravity_storm"
@@ -81,15 +81,57 @@ scarlet_weather_storm_add = {
         owner = { set_country_flag = affected_by_scarlet_weather_$type$_storm }
     }
 }
+scarlet_weather_event_storm_add = {
+    optimize_memory
+    set_star_flag = space_shrine_jumped_system
+    set_star_flag = scarlet_weather_storm_system
+    set_global_flag = scarlet_weather_cosmic_storm_has_occurred
+    inline_script = {
+        script = "cosmic_storms/StormVisuals"
+        STORM_NAME = "shroud_storm"
+    }
+    if = {
+        limit = { has_owner = yes }
+        owner = { set_country_flag = affected_by_scarlet_weather_$type$_storm }
+    }
+    star = {
+        create_ambient_object = {
+            type = shroud_storm
+            location = this
+        }
+        last_created_ambient_object = {
+            set_ambient_object_flag = scarlet_weather_event_space_storm_object
+            set_location = {
+                target = prev
+                distance = 0
+                angle = random
+            }
+        }
+    }
+}
 scarlet_weather_storm_remove = {
     optimize_memory
     remove_storm_visuals_effect = yes
-    remove_star_flag = storm_system
+    remove_star_flag = scarlet_weather_storm_system
     if = {
         limit = { has_owner = yes }
         owner = { remove_country_flag = affected_by_scarlet_weather_$type$_storm }
     }
     scarlet_weather_storm_apply_aftermath_modifier = { type = $type$ }
+}
+scarlet_weather_event_storm_remove = {
+    optimize_memory
+    remove_storm_visuals_effect = yes
+    remove_star_flag = scarlet_weather_storm_system
+    remove_star_flag = space_shrine_jumped_system
+    if = {
+        limit = { has_owner = yes }
+        owner = { remove_country_flag = affected_by_scarlet_weather_$type$_storm }
+    }
+    random_system_ambient_object = {
+        limit = { has_ambient_object_flag = scarlet_weather_event_space_storm_object }
+        destroy_ambient_object = this
+    }
 }
 
 scarlet_weather_system_selector = {

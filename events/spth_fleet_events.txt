@@ -64,6 +64,11 @@ ship_event = {
                                             modifier = spth_spth_torifune_shrine_shipyard_adjust
                                             mult = prev.spth_torifune_shrine_shipyard_rest
                                         }
+                                        if = {
+                                            limit = { check_modifier_value = { modifier = starbase_shipyard_capacity_add value <= 0 } }
+                                            remove_megastructure = this
+                                            prev = { remove_planet_flag = spth_shrine_mega_shipyard_removed }
+                                        }
                                     }
                                     clear_variable = spth_torifune_shrine_shipyard_rest
                                     prevprevprev.owner = { change_variable = { which = th_shrine_mega_shipyard_removed_count value = 1 } }
@@ -600,6 +605,30 @@ planet_event = {
     }
 }
 
+ship_event = {
+    id = spth_fleet.200
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { has_ship_flag = is_spth_space_shrine_station }
+    immediate = {
+        solar_system = {
+            every_cosmic_storm = {
+                limit = { has_storm_flag = spth_space_shrine_station_generated_storm_@prevprev }
+                destroy_cosmic_storm = yes
+            }
+            spawn_random_storm = {
+                type = space_shrine_storm
+                cosmic_storm_start_position = this
+                immediate = yes
+            }
+            last_created_cosmic_storm = {
+                set_storm_flag = spth_space_shrine_station_generated_storm_@prevprev
+            }
+        }
+        fleet = { set_location = { target = system_star angle = random distance = -1 } }
+    }
+}
+
 # 超级航母战斗系统
 # 战斗时每45天可复活10次 完成
 # 前30天内每天修复一次全舰队船体，且提升舰队舰船血量 完成
@@ -688,6 +717,10 @@ country_event = {
                     NOT = { has_ship_flag = has_triggered_spth_extra_life }
                     spth_combat_extra_life_check = yes
                 }
+                if = {
+                    limit = { NOT = { is_variable_set = spth_extra_life_used } }
+                    set_variable = { which = spth_extra_life_used value = 0 }
+                }
                 set_ship_flag = has_triggered_spth_extra_life
                 set_disable_at_health = 0.01
             }
@@ -707,6 +740,10 @@ fleet_event = {
                     NOT = { has_ship_flag = has_triggered_spth_extra_life }
                     spth_combat_extra_life_check = yes
                 }
+                if = {
+                    limit = { NOT = { is_variable_set = spth_extra_life_used } }
+                    set_variable = { which = spth_extra_life_used value = 0 }
+                }
                 set_ship_flag = has_triggered_spth_extra_life
                 set_disable_at_health = 0.01
             }
@@ -716,11 +753,12 @@ fleet_event = {
                 limit = { has_ship_flag = has_triggered_spth_extra_life }
                 remove_ship_flag = has_triggered_spth_extra_life
                 set_disable_at_health = -1
+                clear_variable = spth_extra_life_used
             }
         }
     }
 }
-@spth_extra_life_cooldown = 120
+@spth_extra_life_cooldown = 180
 # 禁用触发
 # This = Ship
 # From = Disabler Ship
@@ -730,12 +768,12 @@ ship_event = {
     is_triggered_only = yes
     trigger = { spth_ship_has_extra_life = yes }
     immediate = {
+        repair_ship = yes
         if = {
             limit = { NOT = { has_ship_flag = has_triggered_spth_extra_life } }
-            repair_ship = yes
             if = {
                 limit = { has_ship_flag = spth_super_carrier_destroyed_storm }
-                set_disable_at_health = 0.01 set_disabled = no
+                set_disable_at_health = 0.01
             } else = {
                 change_variable = { which = spth_super_carrier_inv_counter value = 1 }
                 owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
@@ -745,9 +783,14 @@ ship_event = {
                 } else = {
                     set_disable_at_health = 0.01
                 }
-                set_disabled = no
             }
         } else = {
+            if = {
+                limit = { check_modifier_value = { modifier = ship_spth_extra_life value > 1 } }
+                set_disable_at_health = 0.01
+            } else = {
+                set_disable_at_health = -1
+            }
             fire_on_action = {
                 on_action = on_trigger_spth_extra_life
                 scopes = {
@@ -758,29 +801,7 @@ ship_event = {
                 }
             }
         }
-    }
-}
-ship_event = {
-    id = spth_fleet.1102
-    hide_window = yes
-    is_triggered_only = yes
-    trigger = { NOT = { has_ship_flag = is_spth_space_shrine_station } }
-    immediate = {
-        from = {
-            # 扣除残机
-            set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
-            add_modifier = { modifier = ship_spth_extra_life_lose days = @spth_extra_life_cooldown }
-            add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = @spth_extra_life_cooldown }
-            clear_variable = ship_spth_extra_life_reduce
-            repair_ship = yes
-            if = {
-                limit = { check_modifier_value = { modifier = ship_spth_extra_life value >= 1 } }
-                set_disable_at_health = 0.01
-            } else = {
-                set_disable_at_health = -1
-            }
-            set_disabled = no
-        }
+        set_disabled = no
     }
 }
 ship_event = {
@@ -789,17 +810,45 @@ ship_event = {
     is_triggered_only = yes
     trigger = { has_ship_flag = is_spth_space_shrine_station }
     immediate = {
-        from = {
-            # 扣除残机
-            add_modifier = { modifier = ship_spth_extra_life_lose days = 60 }
-            repair_ship = yes
-            if = {
-                limit = { check_modifier_value = { modifier = ship_spth_extra_life value >= 1 } }
-                set_disable_at_health = 0.01
-            } else = {
-                set_disable_at_health = -1
-            }
-            set_disabled = no
+        if = {
+            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+            change_variable = { which = spth_extra_life_used value = 1 }
+            remove_modifier = ship_spth_extra_life_lose
+            add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 90 }
+            ship_event = { id = spth_fleet.1105 days = 90 }
+        }
+        set_variable = { which = ship_spth_extra_life_var value = modifier:ship_spth_extra_life }
+    }
+}
+ship_event = {
+    id = spth_fleet.1104
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { NOT = { has_ship_flag = is_spth_space_shrine_station } }
+    immediate = {
+        if = {
+            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+            change_variable = { which = spth_extra_life_used value = 1 }
+            remove_modifier = ship_spth_extra_life_lose
+            add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+            ship_event = { id = spth_fleet.1105 days = 90 }
+        }
+        set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+        add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = @spth_extra_life_cooldown }
+        clear_variable = ship_spth_extra_life_reduce
+    }
+}
+ship_event = {
+    id = spth_fleet.1105
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { is_variable_set = spth_extra_life_used }
+    immediate = {
+        if = {
+            limit = { check_variable = { which = spth_extra_life_used value > 0 } }
+            subtract_variable = { which = spth_extra_life_used value = 1 }
+            remove_modifier = ship_spth_extra_life_lose
+            add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 90 }
         }
     }
 }

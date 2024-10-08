@@ -1,0 +1,69 @@
+space_shrine_storm = {
+    inline_script = {
+        script = cosmic_storms/spth_storm_config_all
+        type = space_shrine_storm
+        min_radius = 25
+        max_radius = 50
+        min_range = 50
+        max_range = 50
+        storm_speed = 0
+        storm_activation_period_in_months = 12
+        storm_monthly_added_devastation = 0
+        spawn_weight = 0
+    }
+    affect_hp_regen = no
+    affect_armor_regen = no
+    affect_shield_regen = no
+
+    triggered_fleet_modifier = {
+        potential = { always = yes }
+        weapon_type_energy_weapon_damage_mult = 1
+        weapon_type_explosive_weapon_damage_mult = 1
+        weapon_type_kinetic_weapon_damage_mult = 1
+        ship_cloaking_detection_add = -10
+    }
+    triggered_fleet_modifier = {
+        potential = { owner = { has_authority = auth_gensokyo } }
+        weapon_type_lingli_weapon_damage_mult = 2
+        weapon_type_strike_craft_speed_mult = 2
+        ship_speed_mult = 0.25
+        ship_evasion_add = 50
+        ship_cloaking_strength_add = 10
+    }
+    on_start = {
+        every_system_within_storm = {
+            set_cosmic_storm = { cosmic_storm = prev }
+            scarlet_weather_event_storm_add = { type = event_common }
+        }
+    }
+    on_moved = {
+        every_system_added_to_storm = {
+            set_cosmic_storm = { cosmic_storm = prev }
+            scarlet_weather_event_storm_add = { type = event_common }
+        }
+
+        every_system_removed_from_storm = {
+            unset_cosmic_storm = yes
+            scarlet_weather_event_storm_remove = { type = event_common }
+        }
+    }
+    on_finished = {
+        every_system_within_storm = {
+            unset_cosmic_storm = yes
+            scarlet_weather_event_storm_remove = { type = event_common }
+        }
+    }
+    show_notification = { always = no }
+    cosmic_storm_texture_path = "gfx/map/storms/NebulaOpacity.dds"
+    cosmic_storm_texture_color_path = "gfx/map/storms/shroud_storm_color.dds"
+    cosmic_storm_event_sprite = "GFX_shroud_storm"
+    icon = GFX_planetview_storm_shroud_modifier_frame
+    cosmic_storm_texture_lightning_paths = {
+        "gfx/map/storms/lightning/lightning_big_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_big_storm_02.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_01.dds"
+        "gfx/map/storms/lightning/lightning_mid_storm_02.dds"
+    }
+    cosmic_storm_galaxy_lightning_time = 5.0
+    cosmic_storm_galaxy_max_opacity = 0.4
+}
