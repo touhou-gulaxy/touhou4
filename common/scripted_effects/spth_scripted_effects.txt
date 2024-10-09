@@ -356,13 +356,36 @@ spth_create_player_space_shrine = {
 				design = NAME_spth_space_shrine_station
 				prefix = yes
 				effect = {
+					if = {
+						limit = {
+							OR = {
+								has_global_flag = install_kuat_mod
+								has_global_flag = has_ancient_empire_mod
+							}
+						}
+						set_ship_flag = has_ag_flagship
+					}
 					set_ship_flag = is_spth_space_shrine_station
+					set_ship_flag = player_space_shrine_station
 					set_name = NAME_spth_space_shrine_station_fleet
 					set_disable_at_health = 0.01
+					if = {
+						limit = { exists = event_target:player_space_shrine_@$OWNER$ }
+						event_target:player_space_shrine_@$OWNER$ = {
+							delete_ship = this
+							delete_fleet = {
+								destroy_template = yes
+								target = this.fleet
+							}
+						}
+						clear_global_event_target = player_space_shrine_@$OWNER$
+					}
+					save_global_event_target_as = player_space_shrine_@$OWNER$
 					ship_event = { id = spth_fleet.200 days = 1 }
 				}
 			}
 			set_fleet_flag = is_spth_space_shrine_station
+			set_fleet_flag = player_space_shrine_station
 			set_location = { target = $LOCATION$ angle = random distance = -10 }
 		}
 	}
