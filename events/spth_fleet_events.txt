@@ -609,23 +609,51 @@ ship_event = {
     id = spth_fleet.200
     hide_window = yes
     is_triggered_only = yes
-    trigger = { has_ship_flag = is_spth_space_shrine_station }
+    trigger = {
+        has_ship_flag = is_spth_space_shrine_station
+        NOT = { has_ship_flag = has_triggered_space_shrine_change_system }
+    }
     immediate = {
+        set_timed_ship_flag = { flag = has_triggered_space_shrine_change_system days = 1 }
+        fleet = { set_location = { target = system_star angle = random distance = -1 } }
         solar_system = {
             every_cosmic_storm = {
                 limit = { has_storm_flag = spth_space_shrine_station_generated_storm_@prevprev }
                 destroy_cosmic_storm = yes
+            }
+            # remove and set sc
+            every_system = {
+                limit = { has_star_flag = space_shrine_station_system }
+                remove_star_flag = space_shrine_station_system
+                every_system_planet = {
+                    limit = { has_modifier = space_shrine_planet_buff }
+                    remove_modifier = space_shrine_planet_buff
+                }
+                random_system_planet = {
+                    limit = { is_primary_star = yes is_variable_set = space_shrine_original_size }
+                    change_pc = pc_spiritual_power_star
+                    set_planet_size = space_shrine_original_size
+                    clear_variable = space_shrine_original_size
+                }
+                set_star_class = sc_spiritual_power_star
+            }
+            set_star_flag = space_shrine_station_system
+            every_system_planet = {
+                limit = { is_colony = yes }
+                add_modifier = { modifier = space_shrine_planet_buff }
+            }
+            random_system_planet = {
+                limit = { is_primary_star = yes }
+                set_variable = { which = space_shrine_original_size value = trigger:planet_size }
+                set_planet_size = 1 set_planet_entity = { entity = spiritual_power_star_entity }
             }
             spawn_random_storm = {
                 type = space_shrine_storm
                 cosmic_storm_start_position = this
                 immediate = yes
             }
-            last_created_cosmic_storm = {
-                set_storm_flag = spth_space_shrine_station_generated_storm_@prevprev
-            }
+            last_created_cosmic_storm = { set_storm_flag = spth_space_shrine_station_generated_storm_@prevprev }
         }
-        fleet = { set_location = { target = system_star angle = random distance = -10 } }
     }
 }
 

@@ -364,6 +364,18 @@ spth_spawn_habitat_cracker_effect = {
                 remove_planet = yes
             }
             pc_torifune_shrine_habitat = {
+                create_ambient_object = {
+                    location = this
+                    type = habitat_cracker_object
+                    play_animation_once = yes
+                    duration = 5
+                    use_3d_location = yes
+                    base_angle_towards = star
+                    entity_face_object = star
+                    entity_offset = { min = 0 max = 0 }
+                    entity_scale_to_size = yes
+                    scale = 0.10
+                }
                 save_event_target_as = target_habitat
                 solar_system = {
                     spawn_megastructure = {
@@ -381,7 +393,21 @@ spth_spawn_habitat_cracker_effect = {
                         }
                         delete_fleet = this
                     }
+                    random_system_megastructure = {
+                        limit = {
+                            is_megastructure_type = th_shrine_mega_shipyard
+                            has_megastructure_flag = is_shrine_shipyard_@prevprev
+                        }
+                        remove_megastructure = this
+                    }
                 }
+                # 多余的船坞全丢出去
+                if = {
+                    limit = { check_variable = { which = spth_torifune_shrine_shipyard_count value > 6 } }
+                    subtract_variable = { which = spth_torifune_shrine_shipyard_count value = 6 }
+                    owner = { change_variable = { which = th_shrine_mega_shipyard_removed_count value = prev.spth_torifune_shrine_shipyard_count } }
+                }
+                remove_planet = yes
             }
             default = {
                 # do nothing
