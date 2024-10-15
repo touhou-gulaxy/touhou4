@@ -167,6 +167,7 @@ TH_test_boost = {
 }
 
 # 检测舰队装甲与护盾效率
+# This: our fleet
 spth_armor_shield_efficiency_system_check = {
     optimize_memory
     export_trigger_value_to_variable = {
@@ -185,25 +186,56 @@ spth_armor_shield_efficiency_system_check = {
         if = {
             limit = { NOT = { has_fleet_flag = has_spth_shield_efficiency_buff } }
             set_fleet_flag = has_spth_shield_efficiency_buff
-            from = { every_owned_ship = { set_ship_flag = has_spth_shield_efficiency_debuff } }
+            # from = { every_owned_ship = { set_ship_flag = has_spth_shield_efficiency_debuff } }
         }
     } else = {
         remove_fleet_flag = has_spth_shield_efficiency_buff
-        from = { every_owned_ship = { remove_ship_flag = has_spth_shield_efficiency_debuff } }
+        # from = { every_owned_ship = { remove_ship_flag = has_spth_shield_efficiency_debuff } }
     }
     if = {
         limit = { check_variable = { which = spth_armor_efficiency_count value > 0 } }
         if = {
             limit = { NOT = { has_fleet_flag = has_spth_armor_efficiency_buff } }
             set_fleet_flag = has_spth_armor_efficiency_buff
-            from = { every_owned_ship = { set_ship_flag = has_spth_armor_efficiency_debuff } }
+            # from = { every_owned_ship = { set_ship_flag = has_spth_armor_efficiency_debuff } }
         }
     } else = {
         remove_fleet_flag = has_spth_armor_efficiency_buff
-        from = { every_owned_ship = { remove_ship_flag = has_spth_armor_efficiency_debuff } }
+        # from = { every_owned_ship = { remove_ship_flag = has_spth_armor_efficiency_debuff } }
     }
-    from = { every_owned_ship = { spth_armor_shield_efficiency_system_debuff = yes } }
+    # from = { every_owned_ship = { spth_armor_shield_efficiency_system_debuff = yes } }
     every_owned_ship = { spth_armor_shield_efficiency_system_buff = yes }
+    set_update_modifiers_batch = end
+}
+#This: enemy fleet
+spth_armor_shield_efficiency_system_check_enemy = {
+    optimize_memory
+    set_update_modifiers_batch = begin
+    # if = {
+    #     limit = { check_variable = { which = spth_shield_efficiency_count value > 0 } }
+    #     if = {
+    #         limit = { NOT = { has_fleet_flag = has_spth_shield_efficiency_buff } }
+    #         set_fleet_flag = has_spth_shield_efficiency_buff
+    #         from = { every_owned_ship = { set_ship_flag = has_spth_shield_efficiency_debuff } }
+    #     }
+    # } else = {
+    #     remove_fleet_flag = has_spth_shield_efficiency_buff
+    #     from = { every_owned_ship = { remove_ship_flag = has_spth_shield_efficiency_debuff } }
+    # }
+    # if = {
+    #     limit = { check_variable = { which = spth_armor_efficiency_count value > 0 } }
+    #     if = {
+    #         limit = { NOT = { has_fleet_flag = has_spth_armor_efficiency_buff } }
+    #         set_fleet_flag = has_spth_armor_efficiency_buff
+    #         from = { every_owned_ship = { set_ship_flag = has_spth_armor_efficiency_debuff } }
+    #     }
+    # } else = {
+    #     remove_fleet_flag = has_spth_armor_efficiency_buff
+    #     from = { every_owned_ship = { remove_ship_flag = has_spth_armor_efficiency_debuff } }
+    # }
+    every_owned_ship = { set_ship_flag = has_spth_shield_efficiency_debuff }
+    every_owned_ship = { set_ship_flag = has_spth_armor_efficiency_debuff }
+    every_owned_ship = { spth_armor_shield_efficiency_system_debuff = yes }
     set_update_modifiers_batch = end
 }
 # 加成系统
@@ -289,6 +321,7 @@ spth_armor_shield_efficiency_system_end = {
     clear_variable = spth_armor_damage_debuff
     TH_clear_all_dynamic_modifier = yes
 }
+# This: our fleet
 spth_armor_shield_efficiency_system_end_fleet = {
     optimize_memory
     clear_variable = spth_shield_efficiency_count
@@ -298,7 +331,12 @@ spth_armor_shield_efficiency_system_end_fleet = {
     clear_variable = spth_shield_damage_debuff
     clear_variable = spth_armor_damage_debuff
     every_owned_ship = { spth_armor_shield_efficiency_system_end = yes }
-    from = { every_owned_ship = { spth_armor_shield_efficiency_system_end = yes } }
+    # from = { every_owned_ship = { spth_armor_shield_efficiency_system_end = yes } }
+}
+# This: enemy fleet
+spth_armor_shield_efficiency_system_end_fleet_enemy = {
+    optimize_memory
+    every_owned_ship = { spth_armor_shield_efficiency_system_end = yes }
 }
 # 舰队数据刷新
 # this = fleet
