@@ -539,6 +539,7 @@ fleet_event = {
                     destroy_ambient_object = this
                 }
             }
+            remove_fleet_flag = has_triggered_spth_crisis_effect_weapon
             every_owned_ship = {
                 set_update_modifiers_batch = begin
                 spth_story_crisis_weapon_system_clear_flags = yes
@@ -963,53 +964,61 @@ country_event = {
     immediate = {
         # 硬化提升=护盾/装甲效率*100%
         fromfrom = {
-            set_variable = { which = spth_shield_efficiency_count value = 0 }
-            set_variable = { which = spth_armor_efficiency_count value = 0 }
-            every_owned_ship = {
-                set_variable = { which = spth_shield_efficiency_var_hardening value = 0 }
-                set_variable = { which = spth_armor_efficiency_var_hardening value = 0 }
-                # ship_event = { id = Th_dynamic_battle_vict.21 }
-            }
-            set_variable = { which = spth_shield_damage_debuff value = 0 }
-            set_variable = { which = spth_armor_damage_debuff value = 0 }
-            every_owned_ship = {
-                prev = {
-                    change_variable = { which = spth_shield_damage_debuff value = prev.modifier:ship_spth_shield_efficiency }
-                    change_variable = { which = spth_armor_damage_debuff value = prev.modifier:ship_spth_armor_efficiency }
+            if = {
+                limit = { NOT = { has_fleet_flag = has_triggered_spth_effiency_self } }
+                set_fleet_flag = has_triggered_spth_effiency_self
+                set_variable = { which = spth_shield_efficiency_count value = 0 }
+                set_variable = { which = spth_armor_efficiency_count value = 0 }
+                every_owned_ship = {
+                    set_variable = { which = spth_shield_efficiency_var_hardening value = 0 }
+                    set_variable = { which = spth_armor_efficiency_var_hardening value = 0 }
+                    # ship_event = { id = Th_dynamic_battle_vict.21 }
                 }
-            }
-            set_variable = { which = spth_ship_counter value = 0 }
-            export_trigger_value_to_variable = {
-                trigger = count_owned_ship
-                variable = spth_ship_counter
-            }
-            divide_variable = { which = spth_shield_damage_debuff value = spth_ship_counter }
-            divide_variable = { which = spth_armor_damage_debuff value = spth_ship_counter }
-            clear_variable = spth_ship_counter
-            if = {
-                limit = { check_variable = { which = spth_shield_damage_debuff value > 0.95 } }
-                set_variable = { which = spth_shield_damage_debuff value = 0.95 }
-            }
-            if = {
-                limit = { check_variable = { which = spth_armor_damage_debuff value > 0.95 } }
-                set_variable = { which = spth_armor_damage_debuff value = 0.95 }
+                set_variable = { which = spth_shield_damage_debuff value = 0 }
+                set_variable = { which = spth_armor_damage_debuff value = 0 }
+                every_owned_ship = {
+                    prev = {
+                        change_variable = { which = spth_shield_damage_debuff value = prev.modifier:ship_spth_shield_efficiency }
+                        change_variable = { which = spth_armor_damage_debuff value = prev.modifier:ship_spth_armor_efficiency }
+                    }
+                }
+                set_variable = { which = spth_ship_counter value = 0 }
+                export_trigger_value_to_variable = {
+                    trigger = count_owned_ship
+                    variable = spth_ship_counter
+                }
+                divide_variable = { which = spth_shield_damage_debuff value = spth_ship_counter }
+                divide_variable = { which = spth_armor_damage_debuff value = spth_ship_counter }
+                clear_variable = spth_ship_counter
+                if = {
+                    limit = { check_variable = { which = spth_shield_damage_debuff value > 0.95 } }
+                    set_variable = { which = spth_shield_damage_debuff value = 0.95 }
+                }
+                if = {
+                    limit = { check_variable = { which = spth_armor_damage_debuff value > 0.95 } }
+                    set_variable = { which = spth_armor_damage_debuff value = 0.95 }
+                }
+                fleet_event = { id = Th_dynamic_battle_vict.22 }
             }
         }
         fromfromfrom = {
-            every_owned_ship = {
-                set_variable = {
-                    which = spth_shield_damage_debuff
-                    value = root.fromfrom.spth_shield_damage_debuff
+            if = {
+                limit = { NOT = { has_fleet_flag = has_triggered_spth_effiency_enemy } }
+                set_fleet_flag = has_triggered_spth_effiency_enemy
+                every_owned_ship = {
+                    set_variable = {
+                        which = spth_shield_damage_debuff
+                        value = root.fromfrom.spth_shield_damage_debuff
+                    }
+                    set_variable = {
+                        which = spth_armor_damage_debuff
+                        value = root.fromfrom.spth_armor_damage_debuff
+                    }
+                    # ship_event = { id = Th_dynamic_battle_vict.20 }
                 }
-                set_variable = {
-                    which = spth_armor_damage_debuff
-                    value = root.fromfrom.spth_armor_damage_debuff
-                }
-                # ship_event = { id = Th_dynamic_battle_vict.20 }
+                fleet_event = { id = Th_dynamic_battle_vict.23 }
             }
         }
-        fromfrom = { fleet_event = { id = Th_dynamic_battle_vict.22 } }
-        fromfromfrom = { fleet_event = { id = Th_dynamic_battle_vict.23 } }
     }
 }
 
@@ -1025,8 +1034,12 @@ country_event = {
     id = Th_dynamic_battle_vict.1010
     hide_window = yes
     is_triggered_only = yes
-    trigger = { fromfrom = { any_owned_ship = { spth_has_crisis_effect_weapon = yes } } }
+    trigger = { fromfrom = {
+        NOT = { has_fleet_flag = has_triggered_spth_crisis_effect_weapon }
+        any_owned_ship = { spth_has_crisis_effect_weapon = yes }
+    } }
     immediate = {
+        fromfrom = { set_fleet_flag = has_triggered_spth_crisis_effect_weapon }
         set_update_modifiers_batch = begin
         fromfrom = {
             if = {
