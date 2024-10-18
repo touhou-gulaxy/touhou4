@@ -1,5 +1,5 @@
 namespace = gensokyo_start
-###开局科技
+### 标准开局科技
 country_event = {
 	id = gensokyo_start.0
 	hide_window = yes
@@ -7,36 +7,19 @@ country_event = {
 	
 	trigger = {
 		has_authority = auth_gensokyo
-		NOT = { has_origin = origin_spth_story_gensokyo }
+		NOR = {
+			has_origin = origin_spth_story_gensokyo
+			has_origin = origin_gensokyo_city
+		}
 	}
 
 	immediate = {
 		add_research_option = tech_spth_spirit_power_beginning
 		give_technology = { tech = "tech_th_weapon_mofashu" message = no }
-		if = {
-			limit = {
-				has_civic = civic_scarlet_devil
-			}
-			give_technology = { tech = "tech_worker_0" message = no }
-			give_technology = { tech = "tech_specialist_0" message = no }
-		}
-		else_if = {
-			limit = {
-				has_civic = civic_gensokyo
-			}
-            unlock_council_slots = 1
-			give_technology = { tech = "tech_worker_0" message = no }
-		}
 		capital_scope = {
 			while = { count = 4 create_pop = { species = owner.founder_species } }
 			spth_effect_establish_barrier = yes
 			add_building = building_spth_cloner
-			add_building = building_spth_common_foundry
-			add_building = building_spth_mining_centre
-			remove_building = building_research_lab_1
-			add_building = building_spth_research_base_1
-			remove_building = building_bureaucratic_1
-			add_building = building_spth_tavern
 			remove_building = building_commercial_zone
 			while = { count = 3 remove_district = district_city }
 			while = { count = 2 remove_district = district_farming }
@@ -62,20 +45,23 @@ country_event = {
 	immediate = {
 		random_owned_planet = {
 			limit = {
-				is_planet_class = pc_gensokyo_city
+				is_planet_class = pc_gensokyo_planet
 			}
 			remove_all_districts = yes
 			clear_blockers = yes
 			clear_deposits = yes
+			spth_effect_establish_barrier = yes
 			add_deposit = d_spirit_power_spring
-			add_deposit = d_hakurajinjia
-			add_deposit = d_mosen
-			add_deposit = d_yokai_mountain
-			add_deposit = d_renli
-			add_deposit = d_zhulin
-			add_deposit = d_th_underway
 			add_district = district_gensokyo_renli
-			add_district = district_gensokyo_jinja
+			add_district = district_gensokyo_mosen
+			add_district = district_gensokyo_yaoguai
+			add_district = district_gensokyo_kyuuto
+			add_district = district_gensokyo_genbu_ravine
+			add_district = district_gensokyo_misty_lake
+			# add_deposit = d_spth_gp_military_command
+			# add_deposit = d_spth_gp_scout
+			# add_deposit = d_spth_gp_journalist
+			# add_deposit = d_spth_gp_nuclear_hell
 			save_event_target_as = new_pc_gensokyo_city
 			if = {
 				limit = {
@@ -125,38 +111,33 @@ country_event = {
 	}
 
 	immediate = {
-		if = {
-			limit = { has_origin = origin_th_hm_default}
-			every_owned_planet = {
-				add_building = building_hmgfb_1
-				if = {
-					limit = {
-						owner = {
-							is_ai = yes
-							NOT = {
-								has_global_flag = spth_AI_NOT_plus
-							}
-						}
-					}
-					remove_building = building_bureaucratic_1
-					add_building = building_hmgfb_2
-					set_planet_flag = hm_num_2
-				}
-			}
-			set_country_flag = th_hm_default_origin
-		}
+		# if = {
+		# 	limit = { has_origin = origin_th_hm_default}
+		# 	every_owned_planet = {
+		# 		add_building = building_hmgfb_1
+		# 		if = {
+		# 			limit = {
+		# 				owner = {
+		# 					is_ai = yes
+		# 					NOT = {
+		# 						has_global_flag = spth_AI_NOT_plus
+		# 					}
+		# 				}
+		# 			}
+		# 			remove_building = building_bureaucratic_1
+		# 			add_building = building_hmgfb_2
+		# 			set_planet_flag = hm_num_2
+		# 		}
+		# 	}
+		# 	set_country_flag = th_hm_default_origin
+		# }
 		if = {
 			limit = { has_origin = origin_gensokyo_resource}
-			
-			give_technology = { tech = "tech_gensokyo_building_1" message = no }
-			give_technology = { tech = "tech_gensokyo_building_2" message = no }
-			give_technology = { tech = "tech_gensokyo_building_3" message = no }
-			give_technology = { tech = "tech_gensokyo_building_4" message = no }
-			give_technology = { tech = "tech_th_lingli_storage" message = no }
+
 			add_resource = {
 				sr_lingli = 3000
 				sr_fuka = 2000
-				alloys = 10000
+				alloys = 4000
 				consumer_goods = 10000
 				energy = 5000
 				minerals = 5000
@@ -172,57 +153,60 @@ country_event = {
 							}
 						}
 					}
-					remove_building = building_bureaucratic_1
-					remove_building = building_research_lab_1
-					remove_building = building_foundry_1
 					add_building = building_spth_research_base_1
 					add_building = building_spth_common_foundry
 					add_building = building_spth_common_factory
 					add_building = building_spth_cloner
+					remove_building = building_bureaucratic_1
+					add_building = building_spth_tavern
 				}
+				add_building = building_spth_common_foundry
+				add_building = building_spth_mining_centre
+				remove_building = building_research_lab_1
+				add_building = building_spth_research_base_1
 				add_modifier = {
 					modifier = spth_gsk_start_grow
 					years = 10
 				}
 			}
 		}
-		if = {
-			limit = { has_origin = origin_th_hm_trad}
-			add_tradition = tr_supremacy_adopt
-			add_tradition = tr_supremacy_fleet_logistical_corps
-			add_tradition = tr_supremacy_master_shipwrights
-			add_tradition = tr_supremacy_war_games
-			add_tradition = tr_supremacy_overwhelming_force
-			add_tradition = tr_supremacy_great_game
-
-			add_tradition = tr_expansion_adopt
-			add_tradition = tr_expansion_colonization_fever
-			add_tradition = tr_expansion_a_new_life
-			add_tradition = tr_expansion_courier_network
-			add_tradition = tr_expansion_reach_for_the_stars
-			add_tradition = tr_expansion_galactic_ambition
-			
-			capital_scope = {
-				add_modifier = {
-					modifier = spth_hm_start_grow
-					years = 25
-				}
-				if = {
-					limit = { 
-						owner = {
-							is_ai = yes
-							NOT = {
-								has_global_flag = spth_AI_NOT_plus
-							}
-						}
-					}
-					remove_building = building_bureaucratic_1
-					add_building = building_hmgfb_2
-					add_building = building_hmgfb_1
-					set_planet_flag = hm_num_2
-				}
-			}
-		}
+		# if = {
+		# 	limit = { has_origin = origin_th_hm_trad}
+		# 	add_tradition = tr_supremacy_adopt
+		# 	add_tradition = tr_supremacy_fleet_logistical_corps
+		# 	add_tradition = tr_supremacy_master_shipwrights
+		# 	add_tradition = tr_supremacy_war_games
+		# 	add_tradition = tr_supremacy_overwhelming_force
+		# 	add_tradition = tr_supremacy_great_game
+		#
+		# 	add_tradition = tr_expansion_adopt
+		# 	add_tradition = tr_expansion_colonization_fever
+		# 	add_tradition = tr_expansion_a_new_life
+		# 	add_tradition = tr_expansion_courier_network
+		# 	add_tradition = tr_expansion_reach_for_the_stars
+		# 	add_tradition = tr_expansion_galactic_ambition
+		#
+		# 	capital_scope = {
+		# 		add_modifier = {
+		# 			modifier = spth_hm_start_grow
+		# 			years = 25
+		# 		}
+		# 		if = {
+		# 			limit = {
+		# 				owner = {
+		# 					is_ai = yes
+		# 					NOT = {
+		# 						has_global_flag = spth_AI_NOT_plus
+		# 					}
+		# 				}
+		# 			}
+		# 			remove_building = building_bureaucratic_1
+		# 			add_building = building_hmgfb_2
+		# 			add_building = building_hmgfb_1
+		# 			set_planet_flag = hm_num_2
+		# 		}
+		# 	}
+		# }
 	}
 }
 ### AI增强开关
