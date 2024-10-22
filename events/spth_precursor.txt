@@ -1,0 +1,126 @@
+namespace = spth_precursor
+
+# triggered on_survey_planet
+# this = ship
+# root = ship
+# from = planet
+ship_event = {
+    id = spth_precursor.100
+    title = spth_precursor.100.name
+    desc = spth_precursor.100.desc
+    picture = GFX_evt_touhou_makai_bg
+    event_chain = touhou_makai_chain
+    location = from
+    is_triggered_only = yes
+    trigger = {
+        solar_system = {
+            NOT = { is_same_value = root.owner.capital_scope.solar_system }
+        }
+        owner = {
+            is_ai = no
+            spth_has_precursor_intro = no
+            has_authority = auth_gensokyo
+        }
+        from = {
+            has_anomaly = no
+            is_star = no
+        }
+    }
+    weight_multiplier = {
+        factor = 1
+        modifier = {
+            NOT = { owner = { has_authority = auth_gensokyo } }
+            mult = 0
+        }
+        modifier = {
+            owner = { has_relic = r_th_latency }
+            mult = 4
+        }
+    }
+    immediate = {
+        owner = {
+            begin_event_chain = {
+                event_chain = touhou_makai_chain
+                target = root
+            }
+            create_point_of_interest = {
+                id = touhou_makai_chain_poi.1
+                name = touhou_makai_chain_poi.1
+                desc = touhou_makai_chain_poi.1.desc
+                event_chain = touhou_makai_chain
+                location = root.from
+            }
+        }
+    }
+    option = {
+        name = spth_precursor.100.a
+        owner = {
+            tooltip = {
+                begin_event_chain = {
+                    event_chain = "touhou_makai_chain"
+                    target = root
+                }
+            }
+            if = {
+                limit = { has_ancrel = yes }
+                small_artifact_reward = yes
+            }
+        }
+    }
+    option = {
+        name = spth_precursor.100.b
+        owner = {
+            tooltip = {
+                begin_event_chain = {
+                    event_chain = "touhou_makai_chain"
+                    target = root
+                }
+            }
+            if = {
+                limit = { has_ancrel = yes }
+                small_artifact_reward = yes
+            }
+        }
+    }
+    after = {
+        hidden_effect = {
+            owner = {
+                country_event = {
+                    id = spth_precursor.101
+                    days = 60
+                    random = 30
+                    scopes = { from = root.from }
+                }
+            }
+        }
+    }
+}
+country_event = {
+    id = spth_precursor.101
+    title = spth_precursor.101.name
+    desc = spth_precursor.101.desc
+    event_chain = touhou_makai_chain
+    picture = GFX_evt_spth_nebula_stars
+    location = from.star
+    is_triggered_only = yes
+    option = {
+        name = spth_precursor.101.a
+        from = {
+            spawn_astral_rift = {
+                in_place_of = from
+                id = touhou_precursor_makai_intro
+                graphics_entity_name = astral_rift_6_entity
+                init_effect = {
+                    save_event_target_as = touhou_precursor_makai_intro_rift
+                }
+            }
+            create_point_of_interest = {
+                id = touhou_makai_chain_poi.2
+                name = touhou_makai_chain_poi.2
+                desc = touhou_makai_chain_poi.2.desc
+                event_chain = touhou_makai_chain
+                location = event_target:touhou_precursor_makai_intro_rift
+            }
+        }
+    }
+}

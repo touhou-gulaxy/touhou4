@@ -269,22 +269,35 @@ spth_super_carrier_computer_cooldown = {
 
 spth_get_ship_size = {
 	base = 0
-	complex_trigger_modifier = {
-		trigger = ship_size_multiplier
-		mode = add
-	}
-	# in case some idiot fill an negative value into ship_size_multiplier
+	add = trigger:ship_size_multiplier
+	# in case some idiot fill an negative or zero value into ship_size_multiplier
 	abs = yes
+	min = 0
 }
 spth_get_ship_size_square_root = {
 	base = 0
-	complex_trigger_modifier = {
-		trigger = ship_size_multiplier
-		mode = add
-	}
-	# in case some idiot fill an negative value into ship_size_multiplier
+	add = trigger:ship_size_multiplier
+	# in case some idiot fill an negative value or zero into ship_size_multiplier
 	abs = yes
 	square_root = yes
+	min = 0
+}
+spth_reduce_shield_value = {
+	base = 0
+	add = trigger:has_shield_hp
+	mult = $percent$
+	divide = 100
+	floor = yes
+	min = 0
+	max = value:spth_reduce_shield_value_max|subtract|$subtract$|factor|$factor$|
+}
+spth_reduce_shield_value_max = {
+	base = 0
+	add = trigger:has_shield_hp
+	subtract = $subtract$
+	mult = $factor$
+	floor = yes
+	min = 0
 }
 yukari_kamikakushi_chance_base = {
 	base = 100

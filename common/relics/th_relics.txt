@@ -45,6 +45,64 @@ r_th_latency = {
 	}
 	# Possible check for activation
 }
+r_th_yin_yang_orb = {
+	activation_duration = @th_triumph_duration
+	portrait = "GFX_relic_th_cannonball"
+	sound = "relic_activation_khans_throne"
+	score = 2000
+	resources = {
+		category = relics
+		cost = { influence = 10 }
+		upkeep = { sr_lingli = 10 }
+		produces = { sr_fuka = 10 }
+	}
+	possible = {
+		custom_tooltip = {
+			fail_text = "requires_relic_no_cooldown"
+			NOT = { has_modifier = relic_activation_cooldown }
+		}
+		custom_tooltip = {
+			fail_text = "action_lateral_artifacting_not_same_relic"
+			NAND = {
+				has_country_flag = lateral_artifacting_available
+				last_activated_relic = r_th_yin_yang_orb
+			}
+		}
+		is_ai = no
+	}
+	ai_weight = {
+		weight = 100
+	}
+	can_be_stolen = no
+	active_effect = {
+		custom_tooltip = r_th_yin_yang_orb_tooltip
+		hidden_effect = {
+			set_variable = { which = r_th_yin_yang_orb_var value = modifier:weapon_type_kinetic_weapon_damage_mult }
+			if = {
+				limit = { check_variable = { which = r_th_yin_yang_orb_var value < modifier:weapon_type_energy_weapon_damage_mult } }
+				set_variable = { which = r_th_yin_yang_orb_var value = modifier:weapon_type_energy_weapon_damage_mult }
+			}
+			reroll_random = yes
+			random_list = {
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.050 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.055 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.060 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.065 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.070 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.075 } }
+			}
+			add_modifier = {
+				modifier = r_th_yin_yang_orb
+				days = @th_triumph_duration
+				mult = r_th_yin_yang_orb_var
+			}
+			add_modifier = {
+				modifier = "relic_activation_cooldown"
+				days = @th_triumph_duration
+			}
+		}
+	}
+}
 
 ########阴阳玉
 r_th_cannonball = {
