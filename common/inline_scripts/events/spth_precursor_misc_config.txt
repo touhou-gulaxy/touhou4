@@ -1,0 +1,65 @@
+id = spth_precursor.$id$
+title = spth_precursor.$id$.name
+desc = {
+    text = spth_precursor.$id$.desc
+    trigger = { NOT = { has_country_flag = spth_precursor_$id$_finished } }
+}
+desc = {
+    text = spth_precursor.$id$.after_desc
+    trigger = { has_country_flag = spth_precursor_$id$_finished }
+}
+picture = $picture$
+event_chain = $event_chain$
+location = from
+is_triggered_only = yes
+immediate = {
+    create_point_of_interest = {
+        id = $event_chain$_poi.$poi$
+        name = spth_precursor.$id$.name
+        desc = spth_precursor.$id$.poi_desc
+        event_chain = $event_chain$
+    }
+}
+option = {
+    name = spth_precursor.research
+    enable_special_project = {
+        name = spth_project_precursor_$id$
+        owner = this
+        location = from
+    }
+}
+option = {
+    name = spth_precursor.interest
+    tooltip = {
+        add_event_chain_counter = {
+            event_chain = $event_chain$
+            counter = $counter$
+            amount = 1
+        }
+    }
+    hidden_effect = {
+        if = {
+            limit = {
+                NOT = {
+                    has_completed_event_chain_counter = {
+                        event_chain = $event_chain$
+                        counter = $counter$
+                    }
+                }
+            }
+            add_event_chain_counter = {
+                event_chain = $event_chain$
+                counter = $counter$
+                amount = 1
+            }
+        } else_if = {
+            limit = { NOT = { has_country_flag = $finish_flag$ } }
+            set_country_flag = $finish_flag$
+            country_event = {
+                id = spth_precursor.$finish_id$
+                days = 30
+                random = 30
+            }
+        }
+    }
+}
