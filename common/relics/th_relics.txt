@@ -46,27 +46,19 @@ r_th_latency = {
 	# Possible check for activation
 }
 r_th_yin_yang_orb = {
-	activation_duration = @th_triumph_duration
+	activation_duration = 3600
 	portrait = "GFX_relic_th_cannonball"
 	sound = "relic_activation_khans_throne"
 	score = 2000
 	resources = {
 		category = relics
 		cost = { influence = 10 }
-		upkeep = { sr_lingli = 10 }
-		produces = { sr_fuka = 10 }
+		produces = { sr_fuka = 10 sr_lingli = 10 }
 	}
 	possible = {
 		custom_tooltip = {
 			fail_text = "requires_relic_no_cooldown"
 			NOT = { has_modifier = relic_activation_cooldown }
-		}
-		custom_tooltip = {
-			fail_text = "action_lateral_artifacting_not_same_relic"
-			NAND = {
-				has_country_flag = lateral_artifacting_available
-				last_activated_relic = r_th_yin_yang_orb
-			}
 		}
 		is_ai = no
 	}
@@ -76,6 +68,10 @@ r_th_yin_yang_orb = {
 	can_be_stolen = no
 	active_effect = {
 		custom_tooltip = r_th_yin_yang_orb_tooltip
+		add_modifier = {
+			modifier = "relic_activation_cooldown"
+			days = 3600
+		}
 		hidden_effect = {
 			set_variable = { which = r_th_yin_yang_orb_var value = modifier:weapon_type_kinetic_weapon_damage_mult }
 			if = {
@@ -91,15 +87,19 @@ r_th_yin_yang_orb = {
 				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.070 } }
 				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.075 } }
 			}
+			if = {
+				limit = { has_modifier = r_th_yin_yang_orb }
+				remove_modifier = r_th_yin_yang_orb
+			}
 			add_modifier = {
 				modifier = r_th_yin_yang_orb
-				days = @th_triumph_duration
+				days = 3600
 				mult = r_th_yin_yang_orb_var
 			}
-			add_modifier = {
-				modifier = "relic_activation_cooldown"
-				days = @th_triumph_duration
-			}
+			# set_timed_country_flag = {
+			# 	flag = th_yin_yang_orb_cooldown
+			# 	days = 3600
+			# }
 		}
 	}
 }
