@@ -468,6 +468,55 @@ country_event = {
 		portrait = aqiu1
 	}
 	option = {
+		name = gensokyo_start.1147.query
+		hidden_effect = {
+			set_country_flag = can_close_spth_leader_function_page
+			set_country_flag = spth_leader_lists_display_got
+			random_owned_leader = {
+				limit = {
+					OR = {
+						has_trait = leader_trait_reimu
+						has_trait = leader_trait_remilia
+						has_trait = leader_trait_yuyuko
+						has_trait = leader_trait_satori
+						has_trait = leader_trait_sanae
+					}
+				}
+				save_event_target_as = spth_leader_lists_from
+			}
+			if = {
+				limit = { exists = event_target:spth_leader_lists_from }
+				event_target:spth_leader_lists_from = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1153
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { exists = ruler }
+				ruler = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1153
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else = {
+				random_owned_leader = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1153
+							scopes = { from = prev }
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
 		name = gensokyo_start.1147.a
 		tooltip = { country_event = { id = gensokyo_start.1148 } }
 		hidden_effect = {
@@ -969,6 +1018,124 @@ country_event = {
 		script = events/spth_leader_select_last_options
 		close_ui_flag = can_close_spth_leader_function_destiny
 		return_id = gensokyo_start.1147
+	}
+}
+# from = 开局选择的统治者，找不到则为ruler
+country_event = {
+	id = gensokyo_start.1153
+	title = gensokyo_start.1147
+	desc = gensokyo_start.1153.desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = has_show_spth_leader_lists } }
+	immediate = {
+		set_country_flag = has_show_spth_leader_lists
+	}
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = from
+	}
+	# 已获得 = spth_leader_lists_display_got
+	# 未获得 = spth_leader_lists_display_not_got
+	# 全部 = spth_leader_lists_display_all
+	# 分列 = spth_leader_lists_display_all_divide
+	# 颜色 = spth_leader_lists_display_color
+	option = {
+		name = gensokyo_start.1153.a
+		allow = { NOT = { has_country_flag = spth_leader_lists_display_got } }
+		hidden_effect = {
+			remove_country_flag = spth_leader_lists_display_got
+			remove_country_flag = spth_leader_lists_display_not_got
+			remove_country_flag = spth_leader_lists_display_all
+			remove_country_flag = spth_leader_lists_display_all_divide
+			set_country_flag = spth_leader_lists_display_got
+		}
+	}
+	option = {
+		name = gensokyo_start.1153.b
+		allow = { NOT = { has_country_flag = spth_leader_lists_display_not_got } }
+		hidden_effect = {
+			remove_country_flag = spth_leader_lists_display_got
+			remove_country_flag = spth_leader_lists_display_not_got
+			remove_country_flag = spth_leader_lists_display_all
+			remove_country_flag = spth_leader_lists_display_all_divide
+			set_country_flag = spth_leader_lists_display_not_got
+		}
+	}
+	option = {
+		name = gensokyo_start.1153.c
+		allow = { NOT = { has_country_flag = spth_leader_lists_display_all } }
+		hidden_effect = {
+			remove_country_flag = spth_leader_lists_display_got
+			remove_country_flag = spth_leader_lists_display_not_got
+			remove_country_flag = spth_leader_lists_display_all
+			remove_country_flag = spth_leader_lists_display_all_divide
+			set_country_flag = spth_leader_lists_display_all
+		}
+	}
+	option = {
+		name = gensokyo_start.1153.d
+		allow = { NOT = { has_country_flag = spth_leader_lists_display_all_divide } }
+		hidden_effect = {
+			remove_country_flag = spth_leader_lists_display_got
+			remove_country_flag = spth_leader_lists_display_not_got
+			remove_country_flag = spth_leader_lists_display_all
+			remove_country_flag = spth_leader_lists_display_all_divide
+			set_country_flag = spth_leader_lists_display_all_divide
+		}
+	}
+	option = {
+		name = gensokyo_start.1147.color
+		hidden_effect = {
+			if = {
+				limit = { has_country_flag = spth_leader_lists_display_color }
+				remove_country_flag = spth_leader_lists_display_color
+			} else = { set_country_flag = spth_leader_lists_display_color }
+		}
+	}
+	# 统治者阵列
+	option = { name = gensokyo_start.1153.ruler }
+	inline_script = { script = events/spth_leader_display_ruler id = reimu }
+	inline_script = { script = events/spth_leader_display_ruler id = remilia }
+	inline_script = { script = events/spth_leader_display_ruler id = yuyuko }
+	inline_script = { script = events/spth_leader_display_ruler id = sanae }
+	inline_script = { script = events/spth_leader_display_ruler id = satori }
+	# 普通阵列
+	inline_script = { script = events/spth_leader_display_options name = common }
+	# 分列阵列
+	option = {
+		name = gensokyo_start.1153.got
+		trigger = { has_country_flag = spth_leader_lists_display_all_divide }
+	}
+	inline_script = { script = events/spth_leader_display_options name = divide_got }
+	option = {
+		name = gensokyo_start.1153.not_got
+		trigger = { has_country_flag = spth_leader_lists_display_all_divide }
+	}
+	inline_script = { script = events/spth_leader_display_options name = divide_not_got }
+	inline_script = {
+		script = events/spth_leader_select_last_options
+		close_ui_flag = can_close_spth_leader_lists
+		return_id = gensokyo_start.1147
+	}
+	after = {
+		remove_country_flag = has_show_spth_leader_lists
+		if = {
+			limit = { has_country_flag = can_close_spth_leader_lists }
+			remove_country_flag = can_close_spth_leader_lists
+			remove_country_flag = spth_leader_lists_display_got
+			remove_country_flag = spth_leader_lists_display_not_got
+			remove_country_flag = spth_leader_lists_display_all
+			remove_country_flag = spth_leader_lists_display_all_divide
+			remove_country_flag = spth_leader_lists_display_color
+		} else = {
+			country_event = {
+				id = gensokyo_start.1153
+				scopes = { from = from }
+			}
+		}
 	}
 }
 
