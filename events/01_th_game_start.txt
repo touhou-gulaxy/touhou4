@@ -1029,6 +1029,17 @@ country_event = {
 	trigger = { NOT = { has_country_flag = has_show_spth_leader_lists } }
 	immediate = {
 		set_country_flag = has_show_spth_leader_lists
+		if = {
+			limit = {
+				NOR = {
+					has_country_flag = spth_leader_lists_display_got
+					has_country_flag = spth_leader_lists_display_not_got
+					has_country_flag = spth_leader_lists_display_all
+					has_country_flag = spth_leader_lists_display_all_divide
+				}
+			}
+			set_country_flag = spth_leader_lists_display_got
+		}
 	}
 	diplomatic = yes
 	custom_gui = spth_leader_function_ui
@@ -1096,12 +1107,32 @@ country_event = {
 		}
 	}
 	# 统治者阵列
-	option = { name = gensokyo_start.1153.ruler }
-	inline_script = { script = events/spth_leader_display_ruler id = reimu }
-	inline_script = { script = events/spth_leader_display_ruler id = remilia }
-	inline_script = { script = events/spth_leader_display_ruler id = yuyuko }
-	inline_script = { script = events/spth_leader_display_ruler id = sanae }
-	inline_script = { script = events/spth_leader_display_ruler id = satori }
+	option = {
+		name = gensokyo_start.1153.ruler
+		tooltip = { country_event = { id = gensokyo_start.1154 } }
+		hidden_effect = {
+			random_owned_leader = {
+				limit = {
+					OR = {
+						has_trait = leader_trait_reimu
+						has_trait = leader_trait_remilia
+						has_trait = leader_trait_yuyuko
+						has_trait = leader_trait_satori
+						has_trait = leader_trait_sanae
+					}
+				}
+				save_event_target_as = spth_leader_lists_from
+			}
+			if = {
+				limit = { exists = event_target:spth_leader_lists_from }
+				event_target:spth_leader_lists_from = { prev = { country_event = { id = gensokyo_start.1154 scopes = { from = prev } } } }
+			} else_if = {
+				limit = { exists = ruler }
+				ruler = { prev = { country_event = { id = gensokyo_start.1154 scopes = { from = prev } } } }
+			} else = { country_event = { id = gensokyo_start.1154 scopes = { from = owner_main_species } } }
+			set_country_flag = can_close_spth_leader_lists
+		}
+	}
 	# 普通阵列
 	inline_script = { script = events/spth_leader_display_options name = common }
 	# 分列阵列
@@ -1121,21 +1152,136 @@ country_event = {
 		return_id = gensokyo_start.1147
 	}
 	after = {
-		remove_country_flag = has_show_spth_leader_lists
-		if = {
-			limit = { has_country_flag = can_close_spth_leader_lists }
-			remove_country_flag = can_close_spth_leader_lists
-			remove_country_flag = spth_leader_lists_display_got
-			remove_country_flag = spth_leader_lists_display_not_got
-			remove_country_flag = spth_leader_lists_display_all
-			remove_country_flag = spth_leader_lists_display_all_divide
-			remove_country_flag = spth_leader_lists_display_color
-		} else = {
-			country_event = {
-				id = gensokyo_start.1153
-				scopes = { from = from }
+		hidden_effect = {
+			remove_country_flag = has_show_spth_leader_lists
+			if = {
+				limit = { has_country_flag = can_close_spth_leader_lists }
+				remove_country_flag = can_close_spth_leader_lists
+				remove_country_flag = spth_leader_lists_display_got
+				remove_country_flag = spth_leader_lists_display_not_got
+				remove_country_flag = spth_leader_lists_display_all
+				remove_country_flag = spth_leader_lists_display_all_divide
+				remove_country_flag = spth_leader_lists_display_color
+			} else = { country_event = { id = gensokyo_start.1153 scopes = { from = from } } }
+			if = {
+				limit = { has_country_flag = triggered_gensokyo_start_1155 }
+				remove_country_flag = triggered_gensokyo_start_1155
+				if = {
+					limit = { any_owned_leader = { has_leader_flag = is_gensokyo_start_1155_leader } }
+					random_owned_leader = {
+						limit = { has_leader_flag = is_gensokyo_start_1155_leader }
+						prev = { country_event = { id = gensokyo_start.1155 scopes = { from = prev } } }
+					}
+				} else = { country_event = { id = gensokyo_start.1155 scopes = { from = owner_main_species } } }
 			}
 		}
+	}
+}
+country_event = {
+	id = gensokyo_start.1154
+	title = gensokyo_start.1147
+	desc = {
+		trigger = {
+			from = {
+				is_scope_type = leader
+				OR = {
+					has_trait = leader_trait_reimu
+					has_trait = leader_trait_remilia
+					has_trait = leader_trait_yuyuko
+					has_trait = leader_trait_satori
+					has_trait = leader_trait_sanae
+				}
+			}
+		}
+		text = gensokyo_start.1154.desc
+	}
+	desc = {
+		trigger = {
+			from = {
+				OR = {
+					AND = {
+						is_scope_type = leader
+						NOR = {
+							has_trait = leader_trait_reimu
+							has_trait = leader_trait_remilia
+							has_trait = leader_trait_yuyuko
+							has_trait = leader_trait_satori
+							has_trait = leader_trait_sanae
+						}
+					}
+					is_scope_type = species
+				}
+			}
+		}
+		text = gensokyo_start.1154.desc.no_select
+	}
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = has_show_spth_leader_ruler_lists } }
+	immediate = {
+		set_country_flag = has_show_spth_leader_ruler_lists
+	}
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = from
+	}
+	inline_script = { script = events/spth_leader_display_ruler id = reimu }
+	inline_script = { script = events/spth_leader_display_ruler id = remilia }
+	inline_script = { script = events/spth_leader_display_ruler id = yuyuko }
+	inline_script = { script = events/spth_leader_display_ruler id = sanae }
+	inline_script = { script = events/spth_leader_display_ruler id = satori }
+	inline_script = {
+		script = events/spth_leader_select_last_options
+		close_ui_flag = can_close_spth_leader_ruler_lists
+		return_id = gensokyo_start.1153
+	}
+	after = {
+		hidden_effect = {
+			remove_country_flag = has_show_spth_leader_ruler_lists
+			if = {
+				limit = { has_country_flag = can_close_spth_leader_ruler_lists }
+				remove_country_flag = can_close_spth_leader_ruler_lists
+			} else = {
+				country_event = {
+					id = gensokyo_start.1154
+					scopes = { from = from }
+				}
+			}
+			if = {
+				limit = { has_country_flag = triggered_gensokyo_start_1155 }
+				remove_country_flag = triggered_gensokyo_start_1155
+				country_event = { id = gensokyo_start.1155 scopes = { from = from } }
+			}
+		}
+	}
+}
+
+# from = leader if exists, or country.
+country_event = {
+	id = gensokyo_start.1155
+	title = gensokyo_start.1147
+	desc = gensokyo_start.1155.desc
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = from.species
+	}
+	location = capital_scope
+	is_triggered_only = yes
+	immediate = {
+		every_owned_leader = {
+			limit = { has_leader_flag = is_gensokyo_start_1155_leader }
+			remove_leader_flag = is_gensokyo_start_1155_leader
+		}
+	}
+	option = {
+		name = gensokyo_start.1150.return
+		default_hide_option = yes
+		country_event = { id = gensokyo_start.1153 }
+	}
+	option = {
+		name = gensokyo_start.1150.exit
 	}
 }
 
