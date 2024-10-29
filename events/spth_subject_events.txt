@@ -1,0 +1,796 @@
+namespace = spth_sub_specialist
+
+@BaseResourceLow = 500
+@BaseResourceLowBoosted = 750
+@BaseResourceMedium = 1000
+@BaseResourceMediumBoosted = 1500
+@BaseResourceHigh = 1500
+@BaseResourceHighBoosted = 2250
+@AlloysResourceLow = 150
+@AlloysResourceLowBoosted = 225
+@AlloysResourceMedium = 300
+@AlloysResourceMediumBoosted = 450
+@AlloysResourceHigh = 450
+@AlloysResourceHighBoosted = 675
+@AdvancedResourceLow = 50
+@AdvancedResourceLowBoosted = 75
+@AdvancedResourceMedium = 100
+@AdvancedResourceMediumBoosted = 150
+@AdvancedResourceHigh = 150
+@AdvancedResourceHighBoosted = 225
+@RareResourceLow = 25
+@RareResourceLowBoosted = 37.5
+@RareResourceMedium = 50
+@RareResourceMediumBoosted = 75
+@RareResourceHigh = 75
+@RareResourceHighBoosted = 112.5
+
+
+country_event = {
+    id = spth_sub_specialist.101
+    hide_window = yes
+    is_triggered_only = yes
+
+    immediate = {
+        FROMFROM = { # Winning ship.
+            if = {
+                limit = { exists = fleet.leader }
+                fleet.leader = {                   # Crusader / Crusader II
+                    if = {
+                        limit = {
+                            has_trait = leader_trait_hakurei_crusader
+                            ROOT.FROM = { # Owner of losing ship.
+                                is_default_or_fallen = yes
+                            }
+                        }
+
+                        ROOT = {
+                            if = {
+                                limit = { PREV = { has_trait = leader_trait_hakurei_crusader } }
+                                add_resource = {
+                                    sr_lingli = 1
+                                }
+                            }
+                            else = {
+                                add_resource = {
+                                    sr_lingli = 1
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+country_event = {
+    id = spth_sub_specialist.102
+    hide_window = yes
+    is_triggered_only = yes
+
+    immediate = {
+        FROMFROMFROM = { # Planet where ground combat is taking place.
+
+            # Check if dead army is a defensive army.
+            if = {
+                limit = {
+                    any_ground_combat_defender = {
+                        is_same_value = ROOT.FROM
+                    }
+                }
+
+                # Check if attacking army has general with Crusader trait.
+                random_ground_combat_attacker = {
+                    limit = {
+                        exists = leader
+                        leader = {
+                                has_trait = leader_trait_hakurei_crusader
+                        }
+                    }
+                    leader = {
+                        save_event_target_as = attacking_general
+                    }
+                }
+            }
+        }
+
+        # If attacking army has a leader with Crusader trait, award Unity.
+        if = {
+            limit = { exists = event_target:attacking_general }
+            FROMFROM = {
+                if = {
+                    limit = {
+                        event_target:attacking_general = {
+                            has_trait = leader_trait_hakurei_crusader
+                        }
+                    }
+                    add_resource = {
+                        sr_fuka = 1
+                    }
+                }
+                else = {
+                    add_resource = {
+                        sr_fuka = 1
+                    }
+                }
+            }
+        }
+    }
+}
+
+country_event = {
+    id = spth_sub_specialist.103
+    hide_window = yes
+    is_triggered_only = yes
+
+    immediate = {
+        if = {
+            limit = {
+                any_subject = {
+                    OR = {
+                        is_spth_specialist_subject_type_level = { TYPE = cirno LEVEL = 3 }
+                        is_spth_specialist_subject_type_level = { TYPE = moriya LEVEL = 3 }
+                        is_spth_specialist_subject_type_level = { TYPE = hakurei LEVEL = 3 }
+                    }
+                }
+            }
+            every_subject = {
+                limit = {
+                    OR = {
+                        is_spth_specialist_subject_type_level = { TYPE = cirno LEVEL = 3 }
+                        is_spth_specialist_subject_type_level = { TYPE = moriya LEVEL = 3 }
+                        is_spth_specialist_subject_type_level = { TYPE = hakurei LEVEL = 3 }
+                    }
+                }
+                spth_add_subject_buildings = yes
+            }
+        }
+    }
+}
+
+country_event = {
+    id = spth_sub_specialist.104
+    hide_window = yes
+    is_triggered_only = yes
+
+    immediate = {
+        if = {
+            limit = {
+                any_subject = {
+                    is_spth_specialist_subject_type_level = { TYPE = hakurei LEVEL = 3 }
+                }
+            }
+            every_subject = {
+                limit = {
+                    is_spth_specialist_subject_type_level = { TYPE = hakurei LEVEL = 3 }
+                }
+                every_owned_leader = {
+                    limit = {
+                        not = { has_trait = leader_trait_hakurei_crusader }
+                    }
+                    add_trait_no_notify = leader_trait_hakurei_crusader
+                }
+            }
+        }
+        else_if = {
+            limit = {
+                any_subject = {
+                    is_spth_specialist_subject_type_level = { TYPE = moriya LEVEL = 3 }
+                }
+            }
+            every_subject = {
+                limit = {
+                    is_spth_specialist_subject_type_level = { TYPE = moriya LEVEL = 3 }
+                }
+                every_owned_leader = {
+                    limit = {
+                        NOT = {
+                            OR = {
+                                has_trait = leader_trait_moriya_investigator
+                                has_trait = leader_trait_moriya_explorer
+                                has_trait = leader_trait_moriya_observer
+                            }
+                        }
+                    }
+                    random_list = {
+                        1 = {
+                            add_trait_no_notify = leader_trait_moriya_investigator
+                        }
+                        1 = {
+                            add_trait_no_notify = leader_trait_moriya_explorer
+                        }
+                        1 = {
+                            add_trait_no_notify = leader_trait_moriya_observer
+                        }
+                    }
+                }
+            }
+        }
+        else_if = {
+            limit = {
+                any_subject = {
+                    is_spth_specialist_subject_type_level = { TYPE = cirno LEVEL = 3 }
+                }
+            }
+            every_subject = {
+                limit = {
+                    is_spth_specialist_subject_type_level = { TYPE = cirno LEVEL = 3 }
+                }
+                every_owned_leader = {
+                    limit = {
+                        NOT = {
+                            OR = {
+                                has_trait = leader_trait_cirno_prospectorium_0
+                                has_trait = leader_trait_cirno_prospectorium_1
+                                has_trait = leader_trait_cirno_prospectorium_2
+                            }
+                        }
+                    }
+                    random_list = {
+                        1 = {
+                            add_trait_no_notify = leader_trait_cirno_prospectorium_0
+                        }
+                        1 = {
+                            add_trait_no_notify = leader_trait_cirno_prospectorium_1
+                        }
+                        1 = {
+                            add_trait_no_notify = leader_trait_cirno_prospectorium_2
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+country_event = { # Yearly Pulse
+    id = spth_sub_specialist.001
+    hide_window = yes
+    is_triggered_only = yes
+
+    trigger = {
+        OR = {
+            is_spth_specialist_subject_type = { TYPE = cirno }
+            any_subject = {
+                is_spth_specialist_subject_type = { TYPE = cirno }
+            }
+        }
+        any_planet_within_border = {
+            valid_for_prospectorium_discovery = yes
+        }
+    }
+
+    immediate = {
+        random = {
+            chance = 20
+            random_planet_within_border = {
+                limit = { valid_for_prospectorium_discovery = yes }
+                save_event_target_as = cirno_discovery_target
+            }
+            country_event = {
+                id = spth_sub_specialist.002
+                days = 1
+                random = 180
+            }
+        }
+    }
+}
+
+country_event = { # Special Project Event
+    id = spth_sub_specialist.002
+    title = spth_sub_specialist.002.title
+    desc = spth_sub_specialist.002.desc
+    picture = GFX_evt_crystal_mining
+    show_sound = evn_ove_crystal_mining
+
+    is_triggered_only = yes
+    location = event_target:cirno_discovery_target
+
+    trigger = {
+        OR = {
+            is_spth_specialist_subject_type = { TYPE = cirno }
+            any_subject = {
+                is_spth_specialist_subject_type = { TYPE = cirno }
+            }
+        }
+        event_target:cirno_discovery_target = {
+            valid_for_prospectorium_discovery = yes
+        }
+    }
+
+    immediate = {
+        event_target:cirno_discovery_target = { set_planet_flag = resource_discovery_flag }
+        random_list = {
+            15 = {
+                set_country_flag = cirno_resource_discovery_energy
+                set_country_flag = cirno_resource_discovery_minerals
+                set_country_flag = cirno_resource_discovery_foods
+            }
+            10 = {
+                set_country_flag = cirno_resource_discovery_rare_crystals
+                set_country_flag = cirno_resource_discovery_volatile_motes
+                set_country_flag = cirno_resource_discovery_exotic_gases
+                set_country_flag = cirno_resource_discovery_spiritual_power
+            }
+            5 = {
+                set_country_flag = cirno_resource_discovery_zro
+                set_country_flag = cirno_resource_discovery_dark_matter
+                set_country_flag = cirno_resource_discovery_living_metal
+            }
+        }
+    }
+
+    option = { # Energy
+        name = spth_sub_specialist.002.a
+        trigger = { has_country_flag = cirno_resource_discovery_energy }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_ENERGY
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.a.tt
+    }
+
+    option = { # Minerals
+        name = spth_sub_specialist.002.b
+        trigger = { has_country_flag = cirno_resource_discovery_minerals }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_MINERALS
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.b.tt
+    }
+
+    option = { # Foods
+        name = spth_sub_specialist.002.c
+        trigger = { has_country_flag = cirno_resource_discovery_foods }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_FOODS
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.c.tt
+    }
+
+    option = { # Rare Crystals
+        name = spth_sub_specialist.002.d
+        trigger = { has_country_flag = cirno_resource_discovery_rare_crystals }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_RARE_CRYSTALS
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.d.tt
+    }
+
+    option = { # Volatile Motes
+        name = spth_sub_specialist.002.e
+        trigger = { has_country_flag = cirno_resource_discovery_volatile_motes }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_VOLATILE_MOTES
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.e.tt
+    }
+
+    option = { # Exotic Gases
+        name = spth_sub_specialist.002.f
+        trigger = { has_country_flag = cirno_resource_discovery_exotic_gases }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_EXOTIC_GASES
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.f.tt
+    }
+
+    option = { # spiritual power
+        name = spth_sub_specialist.002.g
+        trigger = { has_country_flag = cirno_resource_discovery_spiritual_power }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_SPIRITUAL_POWER
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.g.tt
+    }
+
+    option = { # Zro
+        name = spth_sub_specialist.002.h
+        trigger = { has_country_flag = cirno_resource_discovery_zro }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_ZRO
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.h.tt
+    }
+
+    option = { # Dark Matter
+        name = spth_sub_specialist.002.i
+        trigger = { has_country_flag = cirno_resource_discovery_dark_matter }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_DARK_MATTER
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.i.tt
+    }
+
+    option = { # Living Metal
+        name = spth_sub_specialist.002.j
+        trigger = { has_country_flag = cirno_resource_discovery_living_metal }
+        enable_special_project = {
+            name = CIRNO_RESOURCE_DISCOVERY_LIVING_METAL
+            location = event_target:cirno_discovery_target
+        }
+        custom_tooltip = spth_sub_specialist.002.j.tt
+    }
+
+    after = {
+        cirno_resource_discovery_remove_flag_effect = yes
+    }
+}
+
+country_event = { # Reward - Energy
+    id = spth_sub_specialist.1200
+    title = spth_sub_specialist.1200.title
+    desc = spth_sub_specialist.1200.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = energy
+                DEPOSIT1 = d_energy_3
+                DEPOSIT2 = d_energy_4
+                DEPOSIT3 = d_energy_5
+                RESOURCELOW = @BaseResourceLow
+                RESOURCELOWBOOSTED = @BaseResourceLowBoosted
+                RESOURCEMEDIUM = @BaseResourceMedium
+                RESOURCEMEDIUMBOOSTED = @BaseResourceMediumBoosted
+                RESOURCEHIGH = @BaseResourceHigh
+                RESOURCEHIGHBOOSTED = @BaseResourceHighBoosted
+            }
+        }
+    }
+}
+
+country_event = { # Reward - Minerals
+    id = spth_sub_spth_sub_specialist.1210
+    title = spth_sub_specialist.1210.title
+    desc = spth_sub_specialist.1210.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = minerals
+                DEPOSIT1 = d_minerals_3
+                DEPOSIT2 = d_minerals_4
+                DEPOSIT3 = d_minerals_5
+                RESOURCELOW = @BaseResourceLow
+                RESOURCELOWBOOSTED = @BaseResourceLowBoosted
+                RESOURCEMEDIUM = @BaseResourceMedium
+                RESOURCEMEDIUMBOOSTED = @BaseResourceMediumBoosted
+                RESOURCEHIGH = @BaseResourceHigh
+                RESOURCEHIGHBOOSTED = @BaseResourceHighBoosted
+            }
+        }
+    }
+}
+
+country_event = { # Reward - Foods
+    id = spth_sub_specialist.1220
+    title = spth_sub_specialist.1220.title
+    desc = spth_sub_specialist.1220.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = food
+                DEPOSIT1 = d_spth_food_3
+                DEPOSIT2 = d_spth_food_4
+                DEPOSIT3 = d_spth_food_5
+                RESOURCELOW = @AlloysResourceLow
+                RESOURCELOWBOOSTED = @AlloysResourceLowBoosted
+                RESOURCEMEDIUM = @AlloysResourceMedium
+                RESOURCEMEDIUMBOOSTED = @AlloysResourceMediumBoosted
+                RESOURCEHIGH = @AlloysResourceHigh
+                RESOURCEHIGHBOOSTED = @AlloysResourceHighBoosted
+            }
+        }
+    }
+}
+
+country_event = { # Reward - Rare Crystals
+    id = spth_sub_specialist.1230
+    title = spth_sub_specialist.1230.title
+    desc = spth_sub_specialist.1230.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = rare_crystals
+                DEPOSIT1 = d_rare_crystals_1
+                DEPOSIT2 = d_rare_crystals_2
+                DEPOSIT3 = d_rare_crystals_3
+                RESOURCELOW = @AdvancedResourceLow
+                RESOURCELOWBOOSTED = @AdvancedResourceLowBoosted
+                RESOURCEMEDIUM = @AdvancedResourceMedium
+                RESOURCEMEDIUMBOOSTED = @AdvancedResourceMediumBoosted
+                RESOURCEHIGH = @AdvancedResourceHigh
+                RESOURCEHIGHBOOSTED = @AdvancedResourceHighBoosted
+            }
+        }
+    }
+}
+
+country_event = { # Reward - Volatile Motes
+    id = spth_sub_specialist.1240
+    title = spth_sub_specialist.1240.title
+    desc = spth_sub_specialist.1240.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = volatile_motes
+                DEPOSIT1 = d_volatile_motes_1
+                DEPOSIT2 = d_volatile_motes_2
+                DEPOSIT3 = d_volatile_motes_3
+                RESOURCELOW = @AdvancedResourceLow
+                RESOURCELOWBOOSTED = @AdvancedResourceLowBoosted
+                RESOURCEMEDIUM = @AdvancedResourceMedium
+                RESOURCEMEDIUMBOOSTED = @AdvancedResourceMediumBoosted
+                RESOURCEHIGH = @AdvancedResourceHigh
+                RESOURCEHIGHBOOSTED = @AdvancedResourceHighBoosted
+            }
+        }
+    }
+}
+
+country_event = { # Reward - Exotic Gases
+    id = spth_sub_specialist.1250
+    title = spth_sub_specialist.1250.title
+    desc = spth_sub_specialist.1250.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = exotic_gases
+                DEPOSIT1 = d_exotic_gases_1
+                DEPOSIT2 = d_exotic_gases_2
+                DEPOSIT3 = d_exotic_gases_3
+                RESOURCELOW = @AdvancedResourceLow
+                RESOURCELOWBOOSTED = @AdvancedResourceLowBoosted
+                RESOURCEMEDIUM = @AdvancedResourceMedium
+                RESOURCEMEDIUMBOOSTED = @AdvancedResourceMediumBoosted
+                RESOURCEHIGH = @AdvancedResourceHigh
+                RESOURCEHIGHBOOSTED = @AdvancedResourceHighBoosted
+            }
+        }
+    }
+}
+
+country_event = { # Reward - Exotic Gases
+    id = spth_sub_specialist.1290
+    title = spth_sub_specialist.1290.title
+    desc = spth_sub_specialist.1290.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = sr_lingli
+                DEPOSIT1 = d_sr_lingli_1
+                DEPOSIT2 = d_sr_lingli_2
+                DEPOSIT3 = d_sr_lingli_3
+                RESOURCELOW = @AdvancedResourceLow
+                RESOURCELOWBOOSTED = @AdvancedResourceLowBoosted
+                RESOURCEMEDIUM = @AdvancedResourceMedium
+                RESOURCEMEDIUMBOOSTED = @AdvancedResourceMediumBoosted
+                RESOURCEHIGH = @AdvancedResourceHigh
+                RESOURCEHIGHBOOSTED = @AdvancedResourceHighBoosted
+            }
+        }
+    }
+}
+
+country_event = { # Reward - Zro
+    id = spth_sub_specialist.1260
+    title = spth_sub_specialist.1260.title
+    desc = spth_sub_specialist.1260.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = sr_zro
+                DEPOSIT1 = d_zro_deposit_1
+                DEPOSIT2 = d_zro_deposit_1
+                DEPOSIT3 = d_zro_deposit_1
+                RESOURCELOW = @RareResourceLow
+                RESOURCELOWBOOSTED = @RareResourceLowBoosted
+                RESOURCEMEDIUM = @RareResourceMedium
+                RESOURCEMEDIUMBOOSTED = @RareResourceMediumBoosted
+                RESOURCEHIGH = @RareResourceHigh
+                RESOURCEHIGHBOOSTED = @RareResourceHighBoosted
+            }
+        }
+    }
+}
+
+country_event = { # Reward - Dark Matter
+    id = spth_sub_specialist.1270
+    title = spth_sub_specialist.1270.title
+    desc = spth_sub_specialist.1270.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = sr_dark_matter
+                DEPOSIT1 = d_dark_matter_deposit_1
+                DEPOSIT2 = d_dark_matter_deposit_1
+                DEPOSIT3 = d_dark_matter_deposit_1
+                RESOURCELOW = @RareResourceLow
+                RESOURCELOWBOOSTED = @RareResourceLowBoosted
+                RESOURCEMEDIUM = @RareResourceMedium
+                RESOURCEMEDIUMBOOSTED = @RareResourceMediumBoosted
+                RESOURCEHIGH = @RareResourceHigh
+                RESOURCEHIGHBOOSTED = @RareResourceHighBoosted
+            }
+        }
+    }
+}
+
+country_event = { # Reward - Living Metal
+    id = spth_sub_specialist.1280
+    title = spth_sub_specialist.1280.title
+    desc = spth_sub_specialist.1280.desc
+    picture = GFX_evt_physics_cache
+    show_sound = evn_ove_scholarium_cache_physics
+
+    is_triggered_only = yes
+
+    option = {
+        name = EXCELLENT
+        event_target:cirno_discovery_target = {
+            prospectorium_resource_discovery_reward_effect = {
+                RESOURCE = sr_living_metal
+                DEPOSIT1 = d_living_metal_deposit
+                DEPOSIT2 = d_living_metal_deposit
+                DEPOSIT3 = d_living_metal_deposit
+                RESOURCELOW = @RareResourceLow
+                RESOURCELOWBOOSTED = @RareResourceLowBoosted
+                RESOURCEMEDIUM = @RareResourceMedium
+                RESOURCEMEDIUMBOOSTED = @RareResourceMediumBoosted
+                RESOURCEHIGH = @RareResourceHigh
+                RESOURCEHIGHBOOSTED = @RareResourceHighBoosted
+            }
+        }
+    }
+}
+
+
+country_event = { # Yearly Pulse
+    id = spth_sub_specialist.003
+    hide_window = yes
+    is_triggered_only = no
+    fire_only_once =  yes
+
+    trigger = {
+        any_subject = {
+            is_spth_specialist_subject_type = { TYPE = moriya }
+        }
+    }
+
+    immediate = {
+        # save_event_target_as = spth_moriya_1_discovery_target
+        country_event = {
+            id = spth_sub_specialist.004
+            days = 15
+        }
+    }
+}
+
+country_event = { # Special Project Event
+    id = spth_sub_specialist.004
+    title = spth_sub_specialist.004.title
+    desc = spth_sub_specialist.004.desc
+    picture = GFX_spth_sub_specialist.004
+
+    # location = event_target:spth_moriya_1_discovery_target
+    fire_only_once = no
+    is_triggered_only = yes
+
+    immediate = {
+
+
+    }
+
+    option = {
+        name = spth_sub_specialist.004.a
+        set_policy = {
+            policy = spth_moriya_1_discovery_policy
+            option = spth_moriya_1_discovery_policy_0
+            cooldown = yes
+        }
+        every_subject = {
+            limit = {
+                has_country_flag = spth_moriya_subject_flag
+            }
+            add_modifier = {
+                modifier = spth_moriya_1_discovery_policy_0_m
+            }
+        }
+    }
+
+    option = {
+        name = spth_sub_specialist.004.b
+        set_policy = {
+            policy = spth_moriya_1_discovery_policy
+            option = spth_moriya_1_discovery_policy_1
+            cooldown = yes
+        }
+        every_subject = {
+            limit = {
+                has_country_flag = spth_moriya_subject_flag
+            }
+            add_modifier = {
+                modifier = spth_moriya_1_discovery_policy_1_m
+            }
+        }
+    }
+
+    option = {
+        name = spth_sub_specialist.004.c
+        set_policy = {
+            policy = spth_moriya_1_discovery_policy
+            option = spth_moriya_1_discovery_policy_2
+            cooldown = yes
+        }
+        every_subject = {
+            limit = {
+                has_country_flag = spth_moriya_subject_flag
+            }
+            add_modifier = {
+                modifier = spth_moriya_1_discovery_policy_2_m
+            }
+        }
+    }
+}
