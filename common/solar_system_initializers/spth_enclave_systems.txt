@@ -25,6 +25,8 @@ spth_enclave_curator_system = {
             clear_deposits = yes
             prevent_anomaly = yes
             save_global_event_target_as = spth_enclave_curator_system_star
+            add_deposit = d_physics_25
+            add_modifier = { modifier = spth_curator_star_modifier }
         }
     }
     change_orbit = 200
@@ -108,6 +110,7 @@ spth_enclave_curator_system = {
             create_country = {
                 name = NAME_spth_curator
                 adjective = NAME_spth_curator
+                name_list = touhouchs
                 authority = auth_gensokyo
                 type = spth_enclave
                 civics = {
@@ -151,12 +154,15 @@ spth_enclave_curator_system = {
                         create_ship = {
                             name = NAME_spth_curator
                             design = spth_curator_capital
+                            effect = {
+                                set_ship_flag = is_spth_space_shrine_station
+                                set_disable_at_health = 0.01
+                                save_global_event_target_as = player_space_shrine_@prevprev
+                                add_modifier = { modifier = ship_spth_extra_life_modify mult = 15 }
+                            }
                         }
-                        set_location = {
-                            target = prevprev.star
-                            angle = random
-                            distance = 25
-                        }
+                        set_fleet_flag = is_spth_space_shrine_station
+                        set_location = { target = prevprev.star angle = random distance = 0 }
                         save_event_target_as = CustomCapital
                         prev = {
                             set_custom_capital_location = event_target:CustomCapital
@@ -169,7 +175,8 @@ spth_enclave_curator_system = {
                         spth_create_fleet = {
                             NAME = NAME_spth_curator_defence_fleet
                             can_disband = no is_boss = no
-                            OWNER = prevprev location = this
+                            OWNER = event_target:spth_enclave_curator_country
+                            location = prev
                             flag = spth_enclave_curator_defence_fleet
                             bombardment = spth_kamikakushi
                             spth_curator_defence_bc_tor = 2

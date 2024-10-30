@@ -526,7 +526,7 @@ spth_story_crisis_weapon_system_self = {
     if = {
         limit = { has_ship_flag = spth_story_crisis_titan_kinetic_system }
         random_list = {
-            32 = { repair_percentage = spth_story_crisis_titan_kinetic_repair_perc }
+            32 = { spth_repair_ship_perc = { hp_perc = spth_story_crisis_titan_kinetic_repair_perc ar_perc = spth_story_crisis_titan_kinetic_repair_perc } }
             68 = {}
         }
     }
@@ -570,10 +570,10 @@ spth_story_crisis_weapon_system_self = {
                 add_modifier = { modifier = sakura_yyk_upkeep }
             }
             random_list = {
-                30 = { repair_percentage = 0.10 }
-                30 = { repair_percentage = 0.16 }
-                20 = { repair_percentage = 0.24 }
-                20 = { repair_percentage = 0.32 }
+                30 = { spth_repair_ship_perc = { hp_perc = 0.10 ar_perc = 0.10 } }
+                30 = { spth_repair_ship_perc = { hp_perc = 0.16 ar_perc = 0.16 } }
+                20 = { spth_repair_ship_perc = { hp_perc = 0.24 ar_perc = 0.24 } }
+                20 = { spth_repair_ship_perc = { hp_perc = 0.32 ar_perc = 0.32 } }
             }
         }
     }
@@ -691,7 +691,7 @@ spth_story_crisis_weapon_system_self = {
             has_ship_flag = spth_story_crisis_computer_protect
             NOT = { has_ship_flag = spth_story_crisis_computer_protect_cd }
         }
-        repair_ship = yes
+        spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 }
         set_timed_ship_flag = { flag = spth_story_crisis_computer_protect_cd days = 2 }
     }
 }
@@ -887,6 +887,12 @@ spth_reduce_shield = {
         reduce_shield = value:spth_reduce_shield_value|percent|$percent$|factor|$factor$|subtract|2|
     }
 }
+spth_repair_ship_perc = {
+    optimize_memory
+    [[all_hp] repair_ship = $all_hp$ ]
+    [[hp_perc] repair_percentage = $hp_perc$ ]
+    [[ar_perc] repair_armor_percentage = $ar_perc$ ]
+}
 yukari_kamikakushi_reduce_effect = {
     optimize_memory
     TH_dynamic_modifier_conditional = {
@@ -913,4 +919,16 @@ yukari_kamikakushi_reduce_effect = {
         limit_value = yukari_kamikakushi_reduce_value
         value = yukari_kamikakushi_reduce_value
     }
+}
+
+spth_always_remove_modifer = {
+    optimize_memory
+    set_variable = { which = spth_always_remove_$modifier$_var value = 0 }
+    export_modifier_to_variable = { modifier = $modifier$ variable = spth_always_remove_$modifier$_var }
+    if = {
+        limit = { check_variable = { which = spth_always_remove_$modifier$_var value > 0 } }
+        set_variable = { which = debug_spth_always_remove_$modifier$ value = spth_always_remove_$modifier$_var }
+        add_modifier = { modifier = spth_always_remove_$modifier$ mult = spth_always_remove_$modifier$_var }
+    }
+    clear_variable = spth_always_remove_$modifier$_var
 }

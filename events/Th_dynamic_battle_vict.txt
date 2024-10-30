@@ -233,11 +233,11 @@ country_event = {
         }
         fromfromfrom.fleet = {
             random_list = {
-                30 = { random_owned_ship = { repair_percentage = 0.10 } }
-                30 = { random_owned_ship = { repair_percentage = 0.25 } }
-                20 = { random_owned_ship = { repair_percentage = 0.35 } }
-                19 = { random_owned_ship = { repair_percentage = 0.50 } }
-                1 = { random_owned_ship = { repair_ship = yes } }
+                30 = { random_owned_ship = { spth_repair_ship_perc = { hp_perc = 0.1 ar_perc = 0.1 } } }
+                30 = { random_owned_ship = { spth_repair_ship_perc = { hp_perc = 0.25 ar_perc = 0.25 } } }
+                20 = { random_owned_ship = { spth_repair_ship_perc = { hp_perc = 0.35 ar_perc = 0.35 } } }
+                19 = { random_owned_ship = { spth_repair_ship_perc = { hp_perc = 0.50 ar_perc = 0.50 } } }
+                1 = { random_owned_ship = { spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 } } }
             }
             reroll_random = yes
         }
@@ -450,8 +450,8 @@ country_event = {
                 multiply_variable = { which = spth_scarlet_harvest_repair value = 0.20 }
                 if = {
                     limit = { check_variable = { which = spth_scarlet_harvest_repair value >= 1 } }
-                    repair_ship = yes
-                } else = { repair_percentage = spth_scarlet_harvest_repair }
+                    spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 }
+                } else = { spth_repair_ship_perc = { hp_perc = spth_scarlet_harvest_repair ar_perc = spth_scarlet_harvest_repair } }
                 clear_variable = spth_scarlet_harvest_repair
                 add_modifier = { modifier = scarlet_harvest_regen days = 2 }
                 add_modifier = { modifier = scarlet_harvest_upgrade days = 60 }
@@ -619,7 +619,7 @@ ship_event = {
                 remove_modifier = spth_story_crisis_computer_protect
                 break = yes
             } else = {
-                repair_ship = yes
+                spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 }
                 ship_event = { id = Th_dynamic_battle_vict.45 days = 3 }
             }
         } else = {
@@ -1350,3 +1350,39 @@ ship_event = {
     immediate = { TH_test_boost = yes }
 }
 
+
+# +绝对抹除修正+
+# ship_steal_defeated_ship_chance,
+# fleet_capture_defeated_leader_chance
+country_event = {
+    id = Th_dynamic_battle_vict.10000
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            spth_always_remove_modifier_check = yes
+            NOT = { has_fleet_flag = triggered_spth_always_remove_modifier }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_fleet_flag = triggered_spth_always_remove_modifier
+            fleet_event = { id = Th_dynamic_battle_vict.10001 }
+        }
+    }
+}
+fleet_event = {
+    id = Th_dynamic_battle_vict.10001
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            spth_always_remove_modifer = { modifier = ship_steal_defeated_ship_chance }
+            spth_always_remove_modifer = { modifier = fleet_capture_defeated_leader_chance }
+            fleet_event = { id = Th_dynamic_battle_vict.10001 days = 1 }
+        } else = {
+            remove_fleet_flag = triggered_spth_always_remove_modifier
+        }
+    }
+}
