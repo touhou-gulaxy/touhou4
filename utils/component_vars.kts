@@ -1,16 +1,17 @@
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
+import kotlin.math.roundToInt
 
 data class ComponentResource(
-    val clazz: String,
-    val size: String,
-    val type: String,
-    val costAlloys: Float,
-    val costSp: Float,
-    val costFk: Float,
-    val upkeepEnergy: Float,
-    val upkeepSp: Float,
-    val upkeepFk: Float,
+    var clazz: String,
+    var size: String,
+    var type: String,
+    var costAlloys: Float,
+    var costSp: Float,
+    var costFk: Float,
+    var upkeepEnergy: Float,
+    var upkeepSp: Float,
+    var upkeepFk: Float,
 ) {
     override fun toString(): String {
         // spth_[common/crisis/special/[name]]_[weapon/utility]_[type]_[cost/upkeep]_[resource]
@@ -24,24 +25,24 @@ data class ComponentResource(
 }
 
 data class ComponentAttribute(
-    val name: String,
-    val tag: String,
-    val type: String,
-    val damage_min: Float,
-    val damage_max: Float,
-    val windup_min: Float,
-    val windup_max: Float,
-    val fire_time: Float,
-    val min_range: Float,
-    val range: Float,
-    val accuracy: Float,
-    val tracking: Float,
-    val shield_penetration: Float,
-    val armor_penetration: Float,
-    val shield_damage: Float,
-    val armor_damage: Float,
-    val hull_damage: Float,
-    val power: Int,
+    var name: String,
+    var tag: String,
+    var type: String,
+    var damage_min: Float,
+    var damage_max: Float,
+    var windup_min: Float,
+    var windup_max: Float,
+    var fire_time: Float,
+    var min_range: Float,
+    var range: Float,
+    var accuracy: Float,
+    var tracking: Float,
+    var shield_penetration: Float,
+    var armor_penetration: Float,
+    var shield_damage: Float,
+    var armor_damage: Float,
+    var hull_damage: Float,
+    var power: Int,
 ) {
     override fun toString(): String {
         return "@spth_${name}_${tag}_${type}_damage_min = $damage_min\n" +
@@ -59,6 +60,9 @@ data class ComponentAttribute(
                 "@spth_${name}_${tag}_${type}_armor_damage = $armor_damage\n" +
                 "@spth_${name}_${tag}_${type}_hull_damage = $hull_damage\n" +
                 "@spth_${name}_${tag}_${type}_power = $power"
+    }
+    fun toCSVLine(): String {
+        return "$name,$tag,$type,${damage_min.roundToInt()},${damage_max.roundToInt()},${windup_min.roundToInt()},${windup_max.roundToInt()},${fire_time.roundToInt()},${min_range.roundToInt()},${range.roundToInt()},$accuracy,$tracking,$shield_penetration,$armor_penetration,$shield_damage,$armor_damage,$hull_damage,$power"
     }
 }
 
@@ -125,3 +129,16 @@ fun readComponentAttributeCSV(content: List<String>): List<ComponentAttribute> {
 readComponentAttributeCSV(Path("./components_attributes.csv").readLines().drop(1)).forEach {
     println(it)
 }
+//readComponentAttributeCSV(Path("./components_attributes.csv").readLines().drop(1)).map {
+//    it.name += "_mutation"
+//    it.power = 0
+//    it.range /= 1.25f
+//    it.min_range /= 1.25f
+//    it.damage_min /= 2.025f
+//    it.damage_max /= 2.025f
+//    it.fire_time /= 1.10f
+//    it
+//}.forEach {
+//    println(it.toCSVLine())
+//}
+
