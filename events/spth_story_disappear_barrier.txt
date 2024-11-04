@@ -252,6 +252,130 @@ planet_event = {
     }
 }
 
+# 香霖堂触发
+event = {
+    id = disappear_barrier.202
+    hide_window = yes
+    is_triggered_only = yes
+    fire_only_once = yes
+    trigger = {
+        any_country = { is_ai = no has_authority = auth_gensokyo }
+    }
+    immediate = {
+        random_country = {
+            limit = { is_ai = no has_authority = auth_gensokyo }
+            spth_spawn_enclave_system = { type = curator }
+            every_playable_country = {
+                limit = { is_ai = no has_authority = auth_gensokyo NOT = { is_same_value = prev } }
+                country_event = { id = disappear_barrier.204 days = 30 random = 30 }
+            }
+        }
+    }
+}
+# A fleet has entered a system | See also: on_fleet_auto_move_arrival
+# Scope = Fleet
+# From = System
+fleet_event = {
+    id = disappear_barrier.203
+    title = disappear_barrier.203
+    desc = disappear_barrier.203.desc
+    picture = GFX_evt_satellite_in_orbit
+    show_sound = event_yellow_alert
+    location = from
+    is_triggered_only = yes
+    trigger = {
+        exists = owner
+        from = { has_star_flag = spth_enclave_curator_system }
+        owner = { NOT = { has_country_flag = disappear_barrier_203_fired } }
+    }
+    immediate = { owner = { set_country_flag = disappear_barrier_203_fired } }
+    option = { name = disappear_barrier.203.a }
+    option = { name = disappear_barrier.203.b }
+}
+country_event = {
+    id = disappear_barrier.204
+    title = disappear_barrier.204
+    desc = disappear_barrier.204.desc
+    picture = GFX_evt_satellite_in_orbit
+    show_sound = event_yellow_alert
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = disappear_barrier_204_fired } }
+    immediate = { owner = { set_country_flag = disappear_barrier_204_fired } }
+    option = { name = disappear_barrier.204.a }
+    option = { name = disappear_barrier.204.b }
+}
+
+# 香霖堂 custom_diplomacy
+# Triggers when trying to open the diplomacy view for countries with custom diplomacy.
+# Country scope
+# This = target country (player)
+# From = source country
+country_event = {
+    id = disappear_barrier.205
+    title = NAME_spth_curator
+    desc = {
+        text = disappear_barrier.205.desc
+        trigger = {
+            OR = {
+                NOT = { exists = ruler }
+                ruler = {
+                    NOT = { has_leader_flag = spth_sp_leader }
+                    NOR = {
+                        has_trait = leader_trait_remilia
+                        has_trait = leader_trait_reimu
+                        has_trait = leader_trait_yuyuko
+                        has_trait = leader_trait_satori
+                        has_trait = leader_trait_sanae
+                    }
+                }
+            }
+        }
+    }
+    desc = {
+        text = disappear_barrier.205.desc.remilia
+        trigger = {
+            exists = ruler
+            ruler = { has_leader_flag = spth_sp_leader has_trait = leader_trait_remilia }
+        }
+    }
+    desc = {
+        text = disappear_barrier.205.desc.reimu
+        trigger = {
+            exists = ruler
+            ruler = { has_leader_flag = spth_sp_leader has_trait = leader_trait_reimu }
+        }
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_enclave_diplomacy_ui
+    custom_gui_option = spth_enclave_diplomacy_button
+    location = event_target:spth_enclave_curator_system_star
+    picture_event_data = {
+        room = kourindou_room
+        portrait = spth_curator_por
+    }
+    trigger = {
+        from = { is_country_type = spth_enclave has_country_flag = spth_enclave_curator_country }
+        has_authority = auth_gensokyo
+    }
+    option = {
+        name = disappear_barrier.205.a
+    }
+    option = {
+        name = disappear_barrier.205.b
+    }
+    option = {
+        name = disappear_barrier.205.c
+    }
+    option = {
+        name = disappear_barrier.205.d
+        allow = { always = no }
+    }
+    option = {
+        name = disappear_barrier.205.exit
+    }
+}
+
 # 主事件链
 country_event = {
     id = disappear_barrier.1000

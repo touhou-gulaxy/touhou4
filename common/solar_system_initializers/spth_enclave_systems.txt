@@ -118,7 +118,7 @@ spth_enclave_curator_system = {
                     civic = civic_ancient_preservers
                 }
                 origin = "origin_default"
-                species = event_target:spth_curator_species
+                species = event_target:spth_enclave_curator_species
                 flag = {
                     icon = {
                         category="touhousp"
@@ -142,7 +142,26 @@ spth_enclave_curator_system = {
                 ignore_initial_colony_error = yes
             }
             last_created_country = {
-                every_playable_country = { establish_communications_no_message = prev }
+                every_playable_country = {
+                    limit = { NOT = { is_same_value = prev } }
+                    establish_communications_no_message = prev
+                    if = {
+                        limit = { has_authority = auth_gensokyo }
+                        prev = {
+                            add_opinion_modifier = {
+                                modifier = opinion_enclave_gensokyo
+                                who = prev
+                            }
+                        }
+                    } else = {
+                        prev = {
+                            add_opinion_modifier = {
+                                modifier = opinion_enclave_non_gensokyo
+                                who = prev
+                            }
+                        }
+                    }
+                }
                 set_country_flag = spth_enclave_curator_country
                 set_graphical_culture = strg_01
                 save_global_event_target_as = spth_enclave_curator_country
@@ -174,16 +193,15 @@ spth_enclave_curator_system = {
                         limit = { has_planet_flag = spth_enclave_curator_defender_pos }
                         spth_create_fleet = {
                             NAME = NAME_spth_curator_defence_fleet
-                            can_disband = no is_boss = no
+                            can_disband = no is_boss = yes
                             OWNER = event_target:spth_enclave_curator_country
                             location = prev
                             flag = spth_enclave_curator_defence_fleet
                             bombardment = spth_kamikakushi
-                            spth_curator_defence_bc_tor = 2
-                            spth_curator_defence_bc_tlx = 4
-                            spth_curator_defence_bc_tmp = 4
-                            spth_curator_defence_cr = 16
-                            spth_curator_defence_co = 24
+                            spth_curator_defence_bc_tor = 5
+                            spth_curator_defence_bc_tlx = 10
+                            spth_curator_defence_bc_tmp = 10
+                            spth_curator_defence_bc_ylx = 10
                         }
                     }
                 }
