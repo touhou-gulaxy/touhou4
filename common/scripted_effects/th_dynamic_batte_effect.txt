@@ -72,76 +72,120 @@ sakuya_the_world_dynamic = {
     }
 }
 
+spth_dynamic_battle_init = {
+    optimize_memory
+    fromfrom = {
+        if = {
+            limit = { NOT = { has_fleet_flag = TH_$type$_dynamic_boost } }
+            every_owned_ship = { set_variable = { which = $type$_dynamic_boost_duration_debug value = modifier:$modifier$ } }
+            random_owned_ship = {
+                limit = { check_modifier_value = { modifier = $modifier$ value > 0 } }
+                prev = {
+                    set_variable = { which = $type$_dynamic_boost_duration_debug value = prev.modifier:$modifier$ }
+                    set_timed_fleet_flag = { flag = TH_$type$_dynamic_boost days = prev.modifier:$modifier$ }
+                }
+                save_event_target_as = spth_dynamic_battle_init_$type$_temp
+            }
+            fleet_event = { id = $boost_id$ }
+            clear_variable = $type$_dynamic_boost_duration_debug
+        }
+    }
+    fromfromfrom = {
+        if = {
+            limit = { NOT = { has_fleet_flag = TH_$type$_dynamic_vict } }
+            every_owned_ship = { set_variable = { which = $type$_dynamic_vict_duration_debug value = event_target:spth_dynamic_battle_init_$type$_temp.modifier:$modifier$ } }
+            set_variable = { which = $type$_dynamic_vict_duration_debug value = event_target:spth_dynamic_battle_init_$type$_temp.modifier:$modifier$ }
+            set_timed_fleet_flag = { flag = TH_$type$_dynamic_vict days = event_target:spth_dynamic_battle_init_$type$_temp.modifier:$modifier$ }
+            fleet_event = { id = $vict_id$ }
+            clear_variable = $type$_dynamic_vict_duration_debug
+        }
+    }
+}
 satori_dynamic_battle = {
     optimize_memory
     if = {
         limit = { is_in_combat = yes }
-
-        TH_dynamic_modifier_conditional = { modifier = ship_evasion_mult relation = ">" limit_value = -1 value = -1 }
-
-        ship_event = { id = Th_dynamic_battle_vict.2 days = $interval$ }
+        every_owned_ship = {
+            TH_dynamic_modifier_conditional = { modifier = ship_evasion_mult relation = ">" limit_value = -1 value = -1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_evasion_add relation = ">" limit_value = -100 value = -100 }
+        }
+        fleet_event = { id = Th_dynamic_battle_vict.2 days = $interval$ }
     }
     else = {
-        TH_clear_all_dynamic_modifier = yes
         if = {
-            limit = { has_ship_flag = TH_satori_dynamic_vict }
-            remove_ship_flag = TH_satori_dynamic_vict
+            limit = { has_fleet_flag = TH_satori_dynamic_vict }
+            remove_fleet_flag = TH_satori_dynamic_vict
+        }
+        every_owned_ship = {
+            TH_clear_all_dynamic_modifier = yes
+            clear_variable = satori_dynamic_vict_duration_debug
         }
     }
 }
-
 satori_dynamic_boost = {
     optimize_memory
     if = {
         limit = { is_in_combat = yes }
-
-        TH_dynamic_modifier_conditional = { modifier = ship_accuracy_add relation = "<" limit_value = 1 value = 1 }
-        TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = "<" limit_value = 1 value = 1 }
-
-        ship_event = { id = Th_dynamic_battle_vict.3 days = $interval$ }
+        every_owned_ship = {
+            TH_dynamic_modifier_conditional = { modifier = ship_accuracy_add relation = "<" limit_value = 100 value = 100 }
+            TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = "<" limit_value = 1 value = 1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_tracking_add relation = "<" limit_value = 100 value = 100 }
+            TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = "<" limit_value = 1 value = 1 }
+        }
+        fleet_event = { id = Th_dynamic_battle_vict.3 days = $interval$ }
     }
     else = {
-        TH_clear_all_dynamic_modifier = yes
         if = {
-            limit = { has_ship_flag = TH_satori_dynamic_boost }
-            remove_ship_flag = TH_satori_dynamic_boost
+            limit = { has_fleet_flag = TH_satori_dynamic_boost }
+            remove_fleet_flag = TH_satori_dynamic_boost
+        }
+        every_owned_ship = {
+            TH_clear_all_dynamic_modifier = yes
+            clear_variable = satori_dynamic_boost_duration_debug
         }
     }
 }
-
 koishi_dynamic_battle = {
     optimize_memory
     if = {
         limit = { is_in_combat = yes }
-
-        TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = ">" limit_value = -1 value = -1 }
-        TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = ">" limit_value = -1 value = -1 }
-
-        ship_event = { id = Th_dynamic_battle_vict.4 days = $interval$ }
+        every_owned_ship = {
+            TH_dynamic_modifier_conditional = { modifier = ship_accuracy_add relation = ">" limit_value = -100 value = -100 }
+            TH_dynamic_modifier_conditional = { modifier = ship_tracking_add relation = ">" limit_value = -100 value = -100 }
+            TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = ">" limit_value = -1 value = -1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = ">" limit_value = -1 value = -1 }
+        }
+        fleet_event = { id = Th_dynamic_battle_vict.4 days = $interval$ }
     }
     else = {
-        TH_clear_all_dynamic_modifier = yes
         if = {
-            limit = { has_ship_flag = TH_koishi_dynamic_vict }
-            remove_ship_flag = TH_koishi_dynamic_vict
+            limit = { has_fleet_flag = TH_koishi_dynamic_vict }
+            remove_fleet_flag = TH_koishi_dynamic_vict
+        }
+        every_owned_ship = {
+            TH_clear_all_dynamic_modifier = yes
+            clear_variable = koishi_dynamic_vict_duration_debug
         }
     }
 }
-
 koishi_dynamic_boost = {
     optimize_memory
     if = {
         limit = { is_in_combat = yes }
-
-        TH_dynamic_modifier_conditional = { modifier = ship_evasion_mult relation = "<" limit_value = 1 value = 1 }
-
-        ship_event = { id = Th_dynamic_battle_vict.5 days = $interval$ }
+        every_owned_ship = {
+            TH_dynamic_modifier_conditional = { modifier = ship_evasion_mult relation = "<" limit_value = 1 value = 1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_evasion_add relation = "<" limit_value = 90 value = 90 }
+        }
+        fleet_event = { id = Th_dynamic_battle_vict.5 days = $interval$ }
     }
     else = {
-        TH_clear_all_dynamic_modifier = yes
         if = {
-            limit = { has_ship_flag = TH_koishi_dynamic_boost }
-            remove_ship_flag = TH_koishi_dynamic_boost
+            limit = { has_fleet_flag = TH_koishi_dynamic_boost }
+            remove_fleet_flag = TH_koishi_dynamic_boost
+        }
+        every_owned_ship = {
+            TH_clear_all_dynamic_modifier = yes
+            clear_variable = koishi_dynamic_boost_duration_debug
         }
     }
 }
@@ -294,10 +338,6 @@ spth_armor_shield_efficiency_system_debuff = {
             value = 1
         }
     }
-    remove_modifier = spth_shield_efficiency_debuff
-    remove_modifier = spth_armor_efficiency_debuff
-    add_modifier = { modifier = spth_shield_efficiency_debuff multiplier = value:spth_shield_damage_debuff_value }
-    add_modifier = { modifier = spth_armor_efficiency_debuff multiplier = value:spth_armor_damage_debuff_value }
     # set_update_modifiers_batch = end
 }
 # 系统结束运行
@@ -814,6 +854,8 @@ TH_clear_all_dynamic_modifier = {
     remove_modifier = TH_dynamic_remove_ship_speed_mult
     remove_modifier = TH_dynamic_remove_ship_shield_penetration_mult
     remove_modifier = TH_dynamic_remove_ship_armor_penetration_mult
+    remove_modifier = TH_dynamic_remove_ship_shield_penetration_add
+    remove_modifier = TH_dynamic_remove_ship_armor_penetration_add
     remove_modifier = TH_dynamic_remove_ship_armor_damage_mult
     remove_modifier = TH_dynamic_remove_ship_shield_damage_mult
     remove_modifier = TH_dynamic_remove_ship_hull_damage_mult
@@ -842,6 +884,8 @@ TH_clear_all_dynamic_modifier = {
     remove_modifier = TH_dynamic_reset_ship_speed_mult
     remove_modifier = TH_dynamic_reset_ship_shield_penetration_mult
     remove_modifier = TH_dynamic_reset_ship_armor_penetration_mult
+    remove_modifier = TH_dynamic_reset_ship_shield_penetration_add
+    remove_modifier = TH_dynamic_reset_ship_armor_penetration_add
     remove_modifier = TH_dynamic_reset_ship_armor_damage_mult
     remove_modifier = TH_dynamic_reset_ship_shield_damage_mult
     remove_modifier = TH_dynamic_reset_ship_hull_damage_mult

@@ -7,7 +7,7 @@ namespace = Th_dynamic_battle_vict
 @interval_the_world_first = 2
 @interval_the_world_final = 3
 @interval_satori_eye = 3
-@interval_koishi_eye = 3
+@interval_koishi_eye = 2
 
 #######################################################
 ####################### 舰船动修 #######################
@@ -28,61 +28,73 @@ ship_event = {
 }
 
 # Satori Victim
-ship_event = {
+fleet_event = {
     id = Th_dynamic_battle_vict.2
     hide_window = yes
     is_triggered_only = yes
     immediate = {
         if = {
-            limit = { has_ship_flag = TH_satori_dynamic_vict }
+            limit = { has_fleet_flag = TH_satori_dynamic_vict }
             satori_dynamic_battle = { interval = @interval_satori_eye }
         } else = {
-            TH_clear_all_dynamic_modifier = yes
+            every_owned_ship = {
+                TH_clear_all_dynamic_modifier = yes
+                clear_variable = satori_dynamic_vict_duration_debug
+            }
         }
     }
 }
 
 # Satori Boost
-ship_event = {
+fleet_event = {
     id = Th_dynamic_battle_vict.3
     hide_window = yes
     is_triggered_only = yes
     immediate = {
         if = {
-            limit = { has_ship_flag = TH_satori_dynamic_boost }
+            limit = { has_fleet_flag = TH_satori_dynamic_boost }
             satori_dynamic_boost = { interval = @interval_satori_eye }
         } else = {
-            TH_clear_all_dynamic_modifier = yes
+            every_owned_ship = {
+                TH_clear_all_dynamic_modifier = yes
+                clear_variable = satori_dynamic_boost_duration_debug
+            }
         }
     }
 }
 
 # Koishi Victim
-ship_event = {
+fleet_event = {
     id = Th_dynamic_battle_vict.4
     hide_window = yes
     is_triggered_only = yes
     immediate = {
         if = {
-            limit = { has_ship_flag = TH_koishi_dynamic_vict }
+            limit = { has_fleet_flag = TH_koishi_dynamic_vict }
             koishi_dynamic_battle = { interval = @interval_koishi_eye }
         } else = {
-            TH_clear_all_dynamic_modifier = yes
+            every_owned_ship = {
+                TH_clear_all_dynamic_modifier = yes
+                clear_variable = koishi_dynamic_vict_duration_debug
+            }
         }
     }
 }
 
 # Koishi Boost
-ship_event = {
+fleet_event = {
     id = Th_dynamic_battle_vict.5
     hide_window = yes
     is_triggered_only = yes
     immediate = {
         if = {
-            limit = { has_ship_flag = TH_koishi_dynamic_boost }
+            limit = { has_fleet_flag = TH_koishi_dynamic_boost }
             koishi_dynamic_boost = { interval = @interval_koishi_eye }
         } else = {
-            TH_clear_all_dynamic_modifier = yes
+            every_owned_ship = {
+                TH_clear_all_dynamic_modifier = yes
+                clear_variable = koishi_dynamic_boost_duration_debug
+            }
         }
     }
 }
@@ -698,6 +710,7 @@ country_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
+        always = no
         fromfrom = {
             any_owned_ship = {
                 OR = {
@@ -774,35 +787,11 @@ country_event = {
     id = Th_dynamic_battle_vict.1001
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        fromfrom = {
-            any_owned_ship = {
-                has_component = th_ship_part_satori
-            }
-        }
-        NOT = {
-            fromfromfrom = {
-                any_owned_ship = {
-                    has_component = th_ship_part_satori
-                }
-            }
-        }
-    }
-
+    trigger = { spth_dynamic_ship_part_trigger = { type = ship_th_satori } }
     immediate = {
-        fromfrom = {
-            every_owned_ship = {
-                limit = { NOT = { has_ship_flag = TH_satori_dynamic_boost } }
-                set_timed_ship_flag = { flag = TH_satori_dynamic_boost days = @last_satori_eye }
-                ship_event = { id = Th_dynamic_battle_vict.3 }
-            }
-        }
-        fromfromfrom = {
-            every_owned_ship = {
-                limit = { NOT = { has_ship_flag = TH_satori_dynamic_vict } }
-                set_timed_ship_flag = { flag = TH_satori_dynamic_vict days = @last_satori_eye }
-                ship_event = { id = Th_dynamic_battle_vict.2 }
-            }
+        spth_dynamic_battle_init = {
+            type = satori modifier = ship_th_satori
+            boost_id = Th_dynamic_battle_vict.3 vict_id = Th_dynamic_battle_vict.2
         }
     }
 }
@@ -817,34 +806,11 @@ country_event = {
     id = Th_dynamic_battle_vict.514
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        fromfrom = {
-            any_owned_ship = {
-                has_component = th_ship_part_koishi
-            }
-        }
-        NOR = {
-            fromfromfrom = {
-                any_owned_ship = { has_component = th_ship_part_koishi }
-                spth_should_close_combat_system = yes
-            }
-        }
-    }
-
+    trigger = { spth_dynamic_ship_part_trigger = { type = ship_th_koishi close_system_check = yes } }
     immediate = {
-        fromfrom = {
-            every_owned_ship = {
-                limit = { NOT = { has_ship_flag = TH_koishi_dynamic_boost } }
-                set_timed_ship_flag = { flag = TH_koishi_dynamic_boost days = @last_koishi_eye }
-                ship_event = { id = Th_dynamic_battle_vict.5 }
-            }
-        }
-        fromfromfrom = {
-            every_owned_ship = {
-                limit = { NOT = { has_ship_flag = TH_koishi_dynamic_vict } }
-                set_timed_ship_flag = { flag = TH_koishi_dynamic_vict days = @last_koishi_eye }
-                ship_event = { id = Th_dynamic_battle_vict.4 }
-            }
+        spth_dynamic_battle_init = {
+            type = koishi modifier = ship_th_koishi
+            boost_id = Th_dynamic_battle_vict.5 vict_id = Th_dynamic_battle_vict.4
         }
     }
 }
@@ -1020,7 +986,8 @@ country_event = {
                         which = spth_armor_damage_debuff
                         value = root.fromfrom.spth_armor_damage_debuff
                     }
-                    # ship_event = { id = Th_dynamic_battle_vict.20 }
+                    add_modifier = { modifier = spth_shield_efficiency_debuff multiplier = value:spth_shield_damage_debuff_value }
+                    add_modifier = { modifier = spth_armor_efficiency_debuff multiplier = value:spth_armor_damage_debuff_value }
                 }
                 fleet_event = { id = Th_dynamic_battle_vict.23 }
             }
