@@ -403,6 +403,13 @@ spth_roll_advanced_techs = {
 	}
 }
 
+spth_add_starbase_buildings = {
+	optimize_memory
+	if = {
+		limit = { NOT = { has_starbase_building = $building$ } }
+		set_starbase_building = { slot = $slot$ building = $building$ }
+	}
+}
 spth_create_player_space_shrine = {
 	optimize_memory
 	create_fleet = {
@@ -439,9 +446,7 @@ spth_create_player_space_shrine = {
 						clear_global_event_target = player_space_shrine_@$OWNER$
 					}
 					save_global_event_target_as = player_space_shrine_@$OWNER$
-					starbase = {
-						set_ship_construction_type = starbase_shipyard
-					}
+					starbase = { set_ship_construction_type = starbase_shipyard }
 					ship_event = { id = spth_fleet.200 days = 1 }
 				}
 			}
@@ -451,28 +456,17 @@ spth_create_player_space_shrine = {
 		}
 	}
 	$OWNER$ = {
-		every_owned_fleet = {
+		every_owned_ship = {
 			limit = {
 				is_ship_size = spth_space_shrine_station
-				has_fleet_flag = is_spth_space_shrine_station
+				has_ship_flag = is_spth_space_shrine_station
+				starbase = { has_starbase_building = space_shrine_yard }
 			}
 			starbase = {
-				if = {
-					limit = { NOT = { has_starbase_building = titan_yards } }
-					set_starbase_building = { slot = 1 building = titan_yards }
-				}
-				if = {
-					limit = { NOT = { has_starbase_building = colossus_yards } }
-					set_starbase_building = { slot = 2 building = colossus_yards }
-				}
-				if = {
-					limit = { NOT = { has_starbase_building = toho_yards } }
-					set_starbase_building = { slot = 3 building = toho_yards }
-				}
-				if = {
-					limit = { NOT = { has_starbase_building = space_shrine_yard } }
-					set_starbase_building = { slot = 4 building = space_shrine_yard }
-				}
+				spth_add_starbase_buildings = { slot = 1 building = titan_yards }
+				spth_add_starbase_buildings = { slot = 2 building = colossus_yards }
+				spth_add_starbase_buildings = { slot = 3 building = toho_yards }
+				spth_add_starbase_buildings = { slot = 4 building = space_shrine_yard }
 			}
 		}
 	}
