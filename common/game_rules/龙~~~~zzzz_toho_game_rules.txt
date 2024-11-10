@@ -3,7 +3,7 @@
 #From = planet, potential target
 can_orbital_bombard = {
     exists = FROM.OWNER
-    ###_|绝对禁止|	+RSnf/阿夸/精灵/繁星录	########################################
+    ###_|绝对禁止|	+RSnf/阿夸/精灵	########################################
     NOR = {
         any_controlled_ship = {
             is_ship_size = colossus
@@ -16,39 +16,6 @@ can_orbital_bombard = {
                 has_planet_flag = enable_kuat_shield
                 has_planet_flag = enable_spth_plantary_shield
                 has_planet_flag = spth_lunar_repair_barrier
-            }
-        }
-    }
-    ##_|特殊星球|	+MOP_M	####################	此类星球只在特定情况下允许轨道轰炸
-    #	MOP_M
-    if = { limit = { from = { has_building = building_training_bomboardment } }
-        ROOT.CONTROLLER = {
-            OR = {
-                is_country_type = extradimensional
-                is_country_type = extradimensional_2
-                is_country_type = extradimensional_3
-                is_country_type = swarm
-                is_country_type = ai_empire
-                is_country_type = cybrex_empire
-                is_country_type = synth_queen
-                is_country_type = awakened_synth_queen
-                is_country_type = synth_queen_convoys
-                is_country_type = synth_queen_outposts
-                is_country_type = gray_goo
-                is_country_type = dormant_marauders
-                is_country_type = marauder_raiders
-                is_country_type = ruined_marauders
-                is_country_type = vol
-                AND = {
-                    is_country_type = awakened_marauders
-                    FROM.CONTROLLER = {
-                        NAND = {
-                            is_subject_with_preset = { PRESET = preset_satrapy }
-                            NOT = { has_country_flag = rebelling_satrapy }
-                        }
-                    }
-                }
-                is_ELF_can_orbital_bombard_country_type = yes	# 精灵
             }
         }
     }
@@ -134,11 +101,22 @@ can_orbital_bombard = {
                 is_country_type = gray_goo
                 is_country_type = vol
                 AND = {
+                    is_country_type = frenzied_voidworms
+                    has_country_flag = can_bombard
+                    FROM.CONTROLLER = { has_country_flag = tormented_by_frenzied_voidworms }
+                }
+                AND = {
                     OR = {
                         is_country_type = awakened_marauders
                         is_country_type = formless
                     }
                     FROM.CONTROLLER = { is_hostile = prev }
+                }
+                AND = {
+                    is_voidworms_hostile_country_type = yes
+                    ROOT = {
+                        is_ship_size = voidworms_titan
+                    }
                 }
 
                 is_country_type = ev_leviathans_crisis			# ev
@@ -192,26 +170,32 @@ can_orbital_bombard = {
 
 can_enter_system_by_jump = {
     custom_tooltip = {
-        success_text = "debug: can jump"
+        # success_text = "debug: can jump"
         fail_text = cannot_jump_to_system
         OR = {
-            ###_绝对通行	z_fw
+            ###_绝对通行	FW
             root = {
                 OR = {
-                    has_country_flag = z_fw_r_celestial_orrey_activited			# 璀璨星图
-                    has_country_flag = z_fw_r_cheat_quantum_beacon_activited	# 永恒星炬
+                    has_country_flag = FW_flg_cntr_CHT_orrery_ON		# 璀璨星图
+                    has_country_flag = FW_flg_cntr_CHT_beacon_ON		# 永恒星炬
                 }
             }
-            ###_特殊通行	AAR
+            ###_特殊通行	+AAR/TAC/多彩
             root = {
-                has_country_flag = AAR_flg_cntr_JUMP_webway_TGT			# 网道行者
+                #	|禁止条件|
+                #	|通行可用|
+                OR = {
+                    has_country_flag = AAR_flg_cntr_JUMP_webway_TGT		# |AAR|网道行者
+                    has_country_flag = TAC_traveler						# |TAC|
+                    has_country_flag = wtmnb_order						# |多彩|wtmnb
+                }
             }
 
             ###_基础条件
             AND = {
                 ##_Sealed system
                 OR = {
-                    # vanillacommon/game_rules
+                    # vanilla
                     NOT = { has_star_flag = sealed_system }
                     AND = {
                         root = { has_country_flag = entered_sealed_system }
@@ -219,29 +203,43 @@ can_enter_system_by_jump = {
                     }
                 }
 
-                ##_特殊禁入星系		+wsg/古代帝国/阿夸/SOFE/Giga/Ehof/seooc/多彩
+                ##_特殊禁入星系		+wsg/古代帝国/阿夸/SOFE/Giga/Ehof/seooc/多彩/TAC/莉莉
                 NOR = {
                     has_star_flag = spth_story_crisis_outpost
                     has_star_flag = spth_story_crisis_home
-
                     # vanilla
                     has_star_flag = lcluster
 
                     # wsg
-                    has_star_flag = wg_sealed_system
-                    has_star_flag = wg_psionic_systems
-                    # 古代帝国
+                    AND = { has_global_flag = has_wsg_mod	# 舰r激活
+                        OR = {
+                            has_star_flag = wg_sealed_system
+                            has_star_flag = wg_psionic_systems
+                            AND = { exists = space_owner
+                                space_owner = { is_country_type = monolith_crisis_country }
+                            }
+                        }
+                    }
+                    #	古代帝国
                     has_star_flag = ag_no_jump_in_system
-                    # 阿夸
-                    kuat_is_kuat_system = yes
+                    #	阿夸
+                    has_star_flag = kuat_initial_system
+                    has_star_flag = Kuat_empire_system
                     has_star_flag = ag_kae_e_area_system
                     AND = {
                         has_global_flag = starkillerbase_not_passed
                         has_star_flag = starkiller_system
                     }
-                    # SOFE
+                    #	SOFE
                     has_star_flag = outercluster
-                    # seooc
+                    #	Giga
+                    has_star_flag = ehof_compound_system
+                    has_star_flag = giga_core_03
+                    cohesive_system = yes
+                    urmazin_system = yes
+                    everchanging_system = yes
+                    katzen_jump_blocked_system = yes
+                    #	seooc
                     has_star_flag = nep_Krahen_cluster
                     has_star_flag = nep_Scrus_cluster
                     AND = {
@@ -251,14 +249,32 @@ can_enter_system_by_jump = {
                             has_star_flag = nep_heptagram_cluster
                         }
                     }
-                    # 多彩
-                    AND = {
-                        has_global_flag = love_between_us
+                    #	|多彩|
+                    AND = { has_global_flag = love_between_us	# |安装|
                         OR = {
                             has_star_flag = ten_crisis_system
                             any_neighbor_system = { has_star_flag = ten_crisis_system }
+                            AND = {
+                                exists = event_target:holylight_god_heaven_empire
+                                OR = {
+                                    has_star_flag = SUC_lustgod_ring_world_system
+                                    has_star_flag = init_sample_of_death
+                                    has_star_flag = init_sample_of_prosperity
+                                    has_star_flag = init_INN_holylight_god_system2
+                                }
+                            }
                         }
                     }
+                    #	|精灵|
+                    has_star_flag = ELF_Singularity_System
+                    has_star_flag = wtmnb_star_11th		# wtmnb
+                    #	莉莉
+                    has_star_flag = al_huge_home_bed
+                    #	驴岛
+                    has_star_flag = ark_isolated
+                    #	SCFE
+                    has_star_flag = formless_system
+                    AND = { has_star_flag = scfe_shaded_colony_system		root = { scfe_can_jump_in_shaded_system = no } }
                 }
             }
         }
@@ -398,7 +414,6 @@ can_species_be_assembled = {
                 root = {
                     # Event 'clones.3' should cover this, but extra safety check.
                     OR = {
-                        # has_building = building_spth_cloner
                         has_building = building_clone_army_clone_vat
                         #	星海帝皇
                         has_building = building_clone_guard_clone_vat
@@ -507,6 +522,8 @@ can_species_be_assembled = {
         is_archetype = SHENHAI
         is_archetype = UNITED_FLEET
         is_archetype = NANITES_CROP
+        #   繁星录
+        is_archetype = TOUHOUGIRLS
         #	久远
         KZ_VOY_trgr_plnt_CLONE = yes
         #	azl/azlr
