@@ -741,7 +741,7 @@ country_event = {
     immediate = {
         fromfrom = {
             set_fleet_flag = has_triggered_spth_extra_life
-            every_owned_ship = {
+            every_owned_ship = {spth_fleet.1001
                 limit = {
                     NOT = { has_ship_flag = has_triggered_spth_extra_life }
                     spth_combat_extra_life_check = yes
@@ -788,7 +788,7 @@ fleet_event = {
         }
     }
 }
-@spth_extra_life_cooldown = 180
+@spth_extra_life_cooldown = 16
 # 禁用触发
 # This = Ship
 # From = Disabler Ship
@@ -1060,5 +1060,183 @@ country_event = {
     abort_effect = {
         remove_country_flag = has_show_spth_supercarrier_bossbar
         clear_global_event_target = is_spth_boss
+    }
+}
+
+# 幽幽子组件特效
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.1200
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            NOT = { has_fleet_flag = ship_spth_yuyuko_fan_display_fired }
+            NOT = { has_fleet_order = merge_fleet_order }
+            any_owned_ship = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_display value > 0 } }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            # 清空返魂蝶击杀变量
+            every_owned_ship = {
+                limit = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } }
+                if = {
+                    limit = { is_variable_set = resurrection_butterfly_kill_count }
+                    set_variable = { which = resurrection_butterfly_kill_count value = 0 }
+                }
+                if = {
+                    limit = { is_variable_set = resurrection_butterfly_extra_count }
+                    set_variable = { which = resurrection_butterfly_extra_count value = 0 }
+                }
+                remove_modifier = weapon_type_resurrection_butterfly_bouns
+                remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
+            }
+            set_fleet_flag = ship_spth_yuyuko_fan_display_fired
+            create_ambient_object = {
+                type = spth_th07_yuyuko_fan_object
+                location = this
+                use_3d_location = yes
+                entity_offset_height = 16
+                effect = { set_ambient_object_flag = ship_spth_yuyuko_fan_@prev }
+            }
+            last_created_ambient_object = { set_location = { target = prev distance = 0 angle = random } }
+            fleet_event = { id = spth_fleet.1201 days = 1 }
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.1201
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            fleet_event = { id = spth_fleet.1201 days = 1 }
+        } else = {
+            remove_fleet_flag = ship_spth_yuyuko_fan_display_fired
+            every_ambient_object = {
+                limit = { NOT = { prev.owner = { any_owned_fleet = { prevprev = { has_ambient_object_flag = ship_spth_yuyuko_fan_@prev } } } } }
+                destroy_ambient_object = this
+            }
+            random_ambient_object = {
+                limit = { has_ambient_object_flag = ship_spth_yuyuko_fan_@prev }
+                destroy_ambient_object = this
+            }
+        }
+    }
+}
+# This = owner of ship 1 (combatant)
+# From = owner of ship 2 (destroyed)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = spth_fleet.1202
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        OR = {
+            fromfrom = {
+                OR = {
+                    check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 }
+                    check_modifier_value = { modifier = ship_spth_ghost_of_ghost_count value > 0 }
+                }
+            }
+            fromfromfrom = {
+                exists = fleet
+                fleet = {
+                    any_owned_ship = {
+                        check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 }
+                    }
+                }
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            if = {
+                limit = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } }
+                if = {
+                    limit = { NOT = { is_variable_set = resurrection_butterfly_kill_count } }
+                    set_variable = { which = resurrection_butterfly_kill_count value = 0 }
+                }
+                change_variable = { which = resurrection_butterfly_kill_count value = 1 }
+                remove_modifier = weapon_type_resurrection_butterfly_bouns
+                add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = resurrection_butterfly_kill_count }
+                random_list = {
+                    0 = {
+                        modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_count }
+                        if = {
+                            limit = { NOT = { is_variable_set = resurrection_butterfly_extra_count } }
+                            set_variable = { which = resurrection_butterfly_extra_count value = 0 }
+                        }
+                        change_variable = { which = resurrection_butterfly_extra_count value = 1 }
+                        remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
+                        add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = resurrection_butterfly_extra_count }
+                    }
+                    0 = {
+                        modifier = {
+                            add = modifier:ship_spth_yuyuko_fan_weapon_max
+                            subtract = modifier:ship_spth_yuyuko_fan_weapon_count
+                        }
+                    }
+                }
+                reroll_random = yes
+            }
+            if = {
+                limit = { check_modifier_value = { modifier = ship_spth_ghost_of_ghost_count value > 0 } }
+                random_list = {
+                    0 = {
+                        modifier = { add = modifier:ship_spth_ghost_of_ghost_count max = 20 }
+                        remove_modifier = spth_ghost_of_danmaku_bouns
+                        add_modifier = { modifier = spth_ghost_of_danmaku_bouns days = 60 }
+                    }
+                    20 = { modifier = { subtract = modifier:ship_spth_ghost_of_ghost_count min = 0 } }
+                }
+                reroll_random = yes
+            }
+        }
+        fromfromfrom = {
+            if = {
+                limit = {
+                    exists = fleet
+                    fleet = { any_owned_ship = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } } }
+                }
+            }
+            fleet = {
+                every_owned_ship = {
+                    limit = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } }
+                    if = {
+                        limit = { NOT = { is_variable_set = resurrection_butterfly_kill_count } }
+                        set_variable = { which = resurrection_butterfly_kill_count value = 0 }
+                    }
+                    change_variable = { which = resurrection_butterfly_kill_count value = 1 }
+                    remove_modifier = weapon_type_resurrection_butterfly_bouns
+                    add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = resurrection_butterfly_kill_count }
+                    random_list = {
+                        0 = {
+                            modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_count }
+                            if = {
+                                limit = { NOT = { is_variable_set = resurrection_butterfly_extra_count } }
+                                set_variable = { which = resurrection_butterfly_extra_count value = 0 }
+                            }
+                            change_variable = { which = resurrection_butterfly_extra_count value = 1 }
+                            remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
+                            add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = resurrection_butterfly_extra_count }
+                        }
+                        0 = {
+                            modifier = {
+                                add = modifier:ship_spth_yuyuko_fan_weapon_max
+                                subtract = modifier:ship_spth_yuyuko_fan_weapon_count
+                            }
+                        }
+                    }
+                    reroll_random = yes
+                }
+            }
+        }
     }
 }
