@@ -746,7 +746,12 @@ country_event = {
     id = spth_fleet.1100
     hide_window = yes
     is_triggered_only = yes
-    trigger = { fromfrom = { NOT = { has_fleet_flag = has_triggered_spth_extra_life } } }
+    trigger = {
+        fromfrom = {
+            NOT = { has_fleet_flag = has_triggered_spth_extra_life }
+            any_owned_ship = { check_modifier_value = { modifier = ship_spth_extra_life value > 0 } }
+        }
+    }
     immediate = {
         fromfrom = {
             set_fleet_flag = has_triggered_spth_extra_life
@@ -789,8 +794,8 @@ fleet_event = {
         } else = {
             remove_fleet_flag = has_triggered_spth_extra_life
             every_owned_ship = {
+                limit = { has_ship_flag = has_triggered_spth_extra_life }
                 remove_ship_flag = has_triggered_spth_extra_life
-                set_disable_at_health = -1
                 clear_variable = spth_extra_life_used
             }
         }
@@ -826,9 +831,7 @@ ship_event = {
             if = {
                 limit = { check_modifier_value = { modifier = ship_spth_extra_life value > 1 } }
                 set_disable_at_health = 0.01
-            } else = {
-                set_disable_at_health = -1
-            }
+            } else = { set_disable_at_health = -1 }
             fire_on_action = {
                 on_action = on_trigger_spth_extra_life
                 scopes = {
