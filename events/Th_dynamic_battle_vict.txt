@@ -132,6 +132,7 @@ fleet_event = {
             set_update_modifiers_batch = end
             fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
         } else = {
+            remove_fleet_flag = kamikakushi_reduce_triggered
             every_owned_ship = {
                 clear_variable = yukari_kamikakushi_reduce_hardening
                 clear_variable = yukari_kamikakushi_reduce_value
@@ -836,19 +837,23 @@ country_event = {
     }
     immediate = {
         fromfromfrom = {
-            every_owned_ship = {
-                set_variable = {
-                    which = yukari_kamikakushi_reduce_value
-                    value = value:yukari_kamikakushi_reduce_value
+            if = {
+                limit = { NOT = { has_fleet_flag = kamikakushi_reduce_triggered } }
+                set_fleet_flag = kamikakushi_reduce_triggered
+                every_owned_ship = {
+                    set_variable = {
+                        which = yukari_kamikakushi_reduce_value
+                        value = value:yukari_kamikakushi_reduce_value
+                    }
+                    set_variable = {
+                        which = yukari_kamikakushi_reduce_hardening
+                        value = value:yukari_kamikakushi_hardening_reduce_value
+                    }
+                    yukari_kamikakushi_reduce_effect = yes
+                    clear_shield = yes
                 }
-                set_variable = {
-                    which = yukari_kamikakushi_reduce_hardening
-                    value = value:yukari_kamikakushi_hardening_reduce_value
-                }
-                yukari_kamikakushi_reduce_effect = yes
-                clear_shield = yes
+                fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
             }
-            fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
         }
     }
 }
