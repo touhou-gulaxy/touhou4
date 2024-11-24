@@ -782,6 +782,79 @@ country_event = {
 		}
 	}
 	option = {
+		name = gensokyo_start.1147.g
+		hidden_effect = {
+			set_country_flag = can_close_spth_leader_function_page
+			if = {
+				limit = { exists = ruler }
+				country_event = {
+					id = gensokyo_start.1157
+					scopes = { from = ruler }
+				}
+			} else_if = {
+				limit = {
+					any_owned_leader = {
+						OR = {
+							has_trait = leader_trait_reimu
+							has_trait = leader_trait_remilia
+							has_trait = leader_trait_yuyuko
+							has_trait = leader_trait_satori
+							has_trait = leader_trait_sanae
+						}
+					}
+				}
+				random_owned_leader = {
+					limit = {
+						OR = {
+							has_trait = leader_trait_reimu
+							has_trait = leader_trait_remilia
+							has_trait = leader_trait_yuyuko
+							has_trait = leader_trait_satori
+							has_trait = leader_trait_sanae
+						}
+					}
+					prev = {
+						country_event = {
+							id = gensokyo_start.1157
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { has_leader_flag = spth_sp_leader } }
+				random_owned_leader = {
+					limit = { has_leader_flag = spth_sp_leader }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1157
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { species = { is_species_class = THSC } } }
+				random_owned_leader = {
+					limit = { species = { is_species_class = THSC } }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1157
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else = {
+				random_owned_leader = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1157
+							scopes = { from = prev }
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
 		name = gensokyo_start.1147.exit
 		default_hide_option = yes
 		hidden_effect = { set_country_flag = can_close_spth_leader_function_page }
@@ -971,34 +1044,6 @@ country_event = {
 			}
 		}
 	}
-	option = {
-		name = gensokyo_start.1150.d
-		allow = {
-			custom_tooltip = {
-				fail_text = gensokyo_start.1148.select.fail
-				has_country_flag = spth_clear_negative_has_select_leader
-			}
-		}
-		hidden_effect = {
-			from = {
-				change_leader_portrait = from.species
-			}
-		}
-	}
-	# option = {
-	# 	name = gensokyo_start.1150.e
-	# 	allow = {
-	# 		custom_tooltip = {
-	# 			fail_text = gensokyo_start.1148.select.fail
-	# 			has_country_flag = spth_clear_negative_has_select_leader
-	# 		}
-	# 	}
-	# 	hidden_effect = {
-	# 		from = {
-	# 			change_leader_portrait = mol12
-	# 		}
-	# 	}
-	# }
 	inline_script = { script = events/spth_leader_select_leaders name = clear }
 	inline_script = {
 		script = events/spth_leader_select_last_options
@@ -1317,6 +1362,42 @@ country_event = {
 	}
 	option = {
 		name = gensokyo_start.1150.exit
+	}
+}
+
+
+country_event = {
+	id = gensokyo_start.1157
+	inline_script = {
+		script = events/spth_leader_select_base
+		id = gensokyo_start.1157
+		title = gensokyo_start.1147
+		desc = gensokyo_start.1157.desc
+		selected_desc = gensokyo_start.1157.desc.selected
+		show_ui_flag = has_show_spth_leader_function_change_portrait
+		close_ui_flag = can_close_spth_leader_function_change_portrait
+		selected_flag = spth_change_portrait_has_select_leader
+		portrait_target = spth_leader_function_change_portrait_portrait@root
+	}
+	option = {
+		name = gensokyo_start.1157.a
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.fail
+				has_country_flag = spth_change_portrait_has_select_leader
+			}
+		}
+		if = {
+			limit = { exists = from }
+			from = { change_leader_portrait = from.species }
+		}
+	}
+	inline_script = { script = events/spth_leader_change_portrait }
+	inline_script = { script = events/spth_leader_select_leaders name = portrait }
+	inline_script = {
+		script = events/spth_leader_select_last_options
+		close_ui_flag = can_close_spth_leader_function_change_portrait
+		return_id = gensokyo_start.1147
 	}
 }
 
