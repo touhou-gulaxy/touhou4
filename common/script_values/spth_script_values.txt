@@ -372,3 +372,47 @@ spth_space_shrine_extra_life_rest = {
 		mode = add
 	}
 }
+spth_resource_stockpile = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = resource_stockpile_compare
+		trigger_scope = this
+		parameters = { resource = $spth_resource$ }
+		mode = add
+	}
+}
+spth_tr_spiritual_power_finish_factor = {
+	base = 0
+	add = 0.1
+	modifier = { add = 0.15 has_ascension_perk = ap_toho3 }
+	modifier = { add = 0.2 has_ascension_perk = ap_toho4 }
+	modifier = { add = 0.2 has_ascension_perk = ap_spth_gensokyo_planet }
+	modifier = { add = 0.25 has_technology = tech_th_shrine_mega }
+	modifier = { mult = value:spth_resource_stockpile|spth_resource|astral_threads| resource_stockpile_compare = { resource = astral_threads value <= 400 } }
+	modifier = { mult = value:spth_tr_spiritual_power_finish_factor_1 resource_stockpile_compare = { resource = astral_threads value > 400 } }
+	modifier = { add = value:spth_tr_spiritual_power_finish_factor_2 has_relic = r_th_latency resource_stockpile_compare = { resource = minor_artifacts value <= 2500 } }
+	modifier = { add = value:spth_tr_spiritual_power_finish_factor_3 has_relic = r_th_latency resource_stockpile_compare = { resource = minor_artifacts value > 2500 } }
+}
+spth_tr_spiritual_power_finish_factor_1 = {
+	base = 0
+	add = value:spth_resource_stockpile|spth_resource|astral_threads|
+	subtract = 400
+	min = 0
+	square_root = yes
+	mult = 0.5
+	add = 400
+}
+spth_tr_spiritual_power_finish_factor_2 = {
+	base = 0
+	add = value:spth_resource_stockpile|spth_resource|minor_artifacts|
+	mult = 0.25
+}
+spth_tr_spiritual_power_finish_factor_3 = {
+	base = 0
+	add = value:spth_resource_stockpile|spth_resource|minor_artifacts|
+	subtract = 2500
+	min = 0
+	square_root = yes
+	mult = 0.5
+	add = 2500
+}
