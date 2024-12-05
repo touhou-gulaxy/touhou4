@@ -259,3 +259,110 @@ special_project = { inline_script = { script = sp/spth_project_precursor_makai_c
 special_project = { inline_script = { script = sp/spth_project_precursor_makai_config id = 108 picture = GFX_evt_mysterious_signal } }
 special_project = { inline_script = { script = sp/spth_project_precursor_makai_config id = 109 picture = GFX_evt_spth_nebula } }
 special_project = { inline_script = { script = sp/spth_project_precursor_makai_config id = 110 picture = GFX_evt_astral_rift_research_lab } }
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_spth_shinki_1
+    key = spth_precursor_capital_makai_discover
+    desc = {
+        text = spth_precursor_capital_makai_discover_desc
+        trigger = { always = yes }
+    }
+    event_chain = touhou_makai_chain
+    cost = 0
+    days_to_research = 90
+    tech_department = physics_technology
+    sound = yes
+    location = yes
+    event_scope = planet_event
+    on_start = { }
+    on_success = {
+        owner = {
+            set_global_flag = spth_precursor_capital_makai_spawned
+            set_spawn_system_batch = begin
+            random_system_within_border = {
+                spawn_system = {
+                    initializer = spth_precursor_capital_makai
+                    hyperlane = no
+                    effect = {
+                        add_hyperlane = {
+                            from = this
+                            to = prev
+                        }
+                    }
+                }
+            }
+            set_spawn_system_batch = end
+            if = {
+                limit = { NOT = { has_event_chain = touhou_makai_chain } }
+                begin_event_chain = { event_chain = touhou_makai_chain target = this }
+            }
+            create_point_of_interest = {
+                id = spth_precursor_capital_makai.poi
+                name = spth_precursor_capital_makai.poi
+                desc = spth_precursor_capital_makai.poi.desc
+                event_chain = touhou_makai_chain
+                location = event_target:spth_precursor_capital_makai_system
+            }
+            country_event = { id = spth_precursor.115 }
+            every_playable_country = {
+                limit = { NOT = { is_same_value = prev } }
+                if = {
+                    limit = { has_special_project = spth_precursor_capital_makai_discover }
+                    abort_special_project = {
+                        type = spth_precursor_capital_makai_discover
+                        location = capital_scope
+                    }
+                }
+                country_event = {
+                    id = spth_precursor.116
+                    days = 30
+                    random = 30
+                    scopes = { from = prev }
+                }
+            }
+        }
+    }
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_megastructure_construction
+    key = spth_precursor_capital_makai_wedge_repair
+    desc = {
+        text = spth_precursor_capital_makai_wedge_repair_desc
+        trigger = { always = yes }
+    }
+    event_chain = touhou_makai_chain
+    cost = 0
+    days_to_research = 540
+    tech_department = engineering_technology
+    sound = yes
+    location = yes
+    event_scope = planet_event
+    on_start = { }
+    on_success = {
+        solar_system = {
+            spawn_megastructure = {
+                type = spth_makai_wedge_0
+                coords_from = star
+                owner = root.from
+                orbit_distance = 0
+                orbit_angle = 0
+                graphical_culture = root.from
+                init_effect = {
+                    set_megastructure_flag = is_repaired_makai_wedge
+                }
+            }
+        }
+        event_target:makai_wedge_ruined_object = {
+            destroy_ambient_object = this
+        }
+        random_megastructure = {
+            limit = { has_megastructure_flag = is_repaired_makai_wedge }
+            save_global_event_target_as = makai_wedge_ruined_object
+        }
+        from = {
+            spth_precursor_unlock_makai_ship_core = yes
+            country_event = { id = spth_precursor.124 }
+        }
+    }
+}

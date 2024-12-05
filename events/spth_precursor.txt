@@ -229,6 +229,7 @@ country_event = {
     custom_gui = spth_event_large_window
     custom_gui_option = spth_event_large_ui_option
     picture_event_data = { room = hakuri_shrine_night_room }
+    show_sound = event_psionic
     option = {
         name = spth_precursor.114.a
     }
@@ -236,5 +237,304 @@ country_event = {
         hidden_effect = {
             set_country_flag = spth_precursor_114_fired
         }
+    }
+}
+country_event = {
+    id = spth_precursor.115
+    title = spth_precursor.115.name
+    desc = spth_precursor.115.desc
+    is_triggered_only = yes
+    location = event_target:spth_precursor_capital_makai_system
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = hakuri_shrine_night_room }
+    show_sound = event_mystic_reveal
+    option = {
+        name = TH_ACKNOWLEDGED
+    }
+}
+country_event = {
+    id = spth_precursor.116
+    title = spth_precursor.116.name
+    desc = spth_precursor.116.desc
+    is_triggered_only = yes
+    location = event_target:spth_precursor_capital_makai_system
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = hakuri_shrine_night_room }
+    show_sound = event_mystic_reveal
+    immediate = {
+        if = {
+            limit = { NOT = { has_event_chain = touhou_makai_chain } }
+            begin_event_chain = { event_chain = touhou_makai_chain target = this }
+        }
+        create_point_of_interest = {
+            id = spth_precursor_capital_makai.poi
+            name = spth_precursor_capital_makai.poi
+            desc = spth_precursor_capital_makai.poi.desc
+            event_chain = touhou_makai_chain
+            location = event_target:spth_precursor_capital_makai_system
+        }
+    }
+    option = {
+        name = TH_INTERESTRING
+    }
+}
+fleet_event = {
+    id = spth_precursor.117
+    title = spth_precursor.117.name
+    desc = spth_precursor.117.desc
+    is_triggered_only = yes
+    trigger = {
+        exists = owner
+        from = { has_star_flag = spth_precursor_capital_makai }
+        owner = { NOT = { has_country_flag = spth_precursor_117_fired } }
+    }
+    immediate = {
+        owner = { set_country_flag = spth_precursor_117_fired }
+    }
+    location = event_target:makai_wedge_ruined_object
+    show_sound = event_mystic_reveal_light
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = makai_wedge_ruined_room }
+    option = {
+        name = TH_SO_INTERESTRING
+    }
+    after = {
+        event_target:makai_wedge_ruined_object = {
+            create_archaeological_site = site_spth_precursor_makai_wedge
+        }
+    }
+}
+
+country_event = {
+    id = spth_precursor.118
+    title = spth_precursor.118.name
+    desc = spth_precursor.118.desc
+    is_triggered_only = yes
+    location = event_target:makai_wedge_ruined_object
+    show_sound = event_mystic_reveal_light
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = makai_wedge_ruined_room }
+    immediate = {
+        event_target:makai_wedge_ruined_object = {
+            destroy_ambient_object = this
+        }
+        event_target:spth_precursor_capital_makai_system.star = {
+            create_ambient_object = {
+                type = spth_precursor_capital_makai_wedge_active_object
+                use_3d_location = yes
+                entity_offset_height = { min = 0 max = 25 }
+                location = this
+            }
+            last_created_ambient_object = {
+                set_ambient_object_flag = spth_precursor_capital_makai_wedge_ruined
+                save_global_event_target_as = makai_wedge_ruined_object
+                set_location = prev
+            }
+        }
+    }
+    option = {
+        name = TH_WORYING
+    }
+    after = {
+        country_event = { id = spth_precursor.119 days = 60 random = 30 }
+    }
+}
+country_event = {
+    id = spth_precursor.119
+    title = spth_precursor.119.name
+    desc = spth_precursor.119.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_atmospheric_entry_room }
+    option = {
+        name = TH_WORYING
+    }
+    after = {
+        country_event = { id = spth_precursor.120 days = 360 }
+    }
+}
+country_event = {
+    id = spth_precursor.120
+    title = spth_precursor.120.name
+    desc = spth_precursor.120.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_atmospheric_entry_room }
+    option = {
+        name = TH_WORYING
+    }
+    after = {
+        country_event = { id = spth_precursor.121 days = 360 random = 360 }
+    }
+}
+
+country_event = {
+    id = spth_precursor.121
+    title = spth_precursor.121.name
+    desc = spth_precursor.121.desc
+    is_triggered_only = yes
+    show_sound = event_ancient_drone
+    location = event_target:spth_kamikakushi_invader_fleet
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = makai_wedge_ruined_room }
+    immediate = {
+        if = {
+            limit = { NOT = { event_target:global_event_country = { is_variable_set = spth_lunar_capital_crisis_difficulty } } }
+            event_target:global_event_country = { set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 } }
+        }
+        set_update_modifiers_batch = begin
+        create_country = {
+            name = spth_kamikakushi_invader
+            type = spth_kamikakushi_invader
+            flag = {
+                icon = {
+                    category = "touhousp"
+                    file = "flag_th4.dds"
+                }
+                colors = {
+                    "white"
+                    "white"
+                    "white"
+                    "null"
+                }
+                background = {
+                    category = "backgrounds"
+                    file = "00_solid.dds"
+                }
+            }
+            name_list = touhouchs
+            effect = {
+                set_graphical_culture = strg_01
+                set_country_flag = touhou_mod_country
+                set_country_flag = spth_kamikakushi_invader_country
+                save_global_event_target_as = spth_kamikakushi_invader_country
+                every_playable_country = {
+                    limit = { NOT = { is_same_value = prev } }
+                    establish_communications_no_message = prev
+                }
+            }
+        }
+        event_target:makai_wedge_ruined_object = {
+            solar_system = {
+                every_system_colony = {
+                    every_owned_pop = { kill_pop = yes }
+                    destroy_colony = yes
+                }
+                every_fleet_in_system = {
+                    set_mia = mia_return_home
+                }
+            }
+            spth_create_fleet = {
+                NAME = spth_kamikakushi_invader_titan
+                can_disband = no is_boss = yes
+                OWNER = event_target:spth_kamikakushi_invader_country
+                location = prev uses_naval_capacity = no
+                flag = spth_kamikakushi_invader_fleet
+                spth_kamikakushi_invader_titan = 1
+                spth_kamikakushi_invader_bc_tlx = 10
+                spth_kamikakushi_invader_bc_tmp = 20
+                spth_kamikakushi_invader_bc_tor = 20
+                spth_kamikakushi_invader_bc_ylx = 10
+                evt_target = spth_kamikakushi_invader_fleet
+            }
+            spth_create_fleet = {
+                NAME = spth_kamikakushi_invader_bc_tlx
+                can_disband = no is_boss = yes
+                OWNER = event_target:spth_kamikakushi_invader_country
+                location = event_target:spth_precursor_capital_makai_lunar
+                uses_naval_capacity = no
+                flag = spth_kamikakushi_invader_fleet
+                spth_kamikakushi_invader_bc_tlx = 5
+                spth_kamikakushi_invader_bc_tmp = 10
+                spth_kamikakushi_invader_bc_tor = 10
+                spth_kamikakushi_invader_bc_ylx = 5
+                evt_target = spth_kamikakushi_invader_fleet
+            }
+        }
+        set_update_modifiers_batch = end
+    }
+    option = {
+        name = spth_precursor.121.a
+    }
+    option = {
+        name = spth_precursor.121.b
+    }
+}
+# destroy every enemy fleet.
+country_event = {
+    id = spth_precursor.122
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        from = {
+            is_country_type = spth_kamikakushi_invader
+            count_owned_fleet = {
+                limit = {
+                    has_fleet_flag = spth_kamikakushi_invader_fleet
+                    NOT = { is_same_value = root.fromfromfrom }
+                }
+                count = 0
+            }
+        }
+        fromfromfrom = { has_fleet_flag = spth_kamikakushi_invader_fleet }
+    }
+    immediate = {
+        country_event = { id = spth_precursor.123 }
+        from = { destroy_country = yes }
+    }
+}
+country_event = {
+    id = spth_precursor.123
+    title = spth_precursor.123.name
+    desc = spth_precursor.123.desc
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = spth_precursor_123_fired } }
+    location = event_target:spth_temp_location
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_small_space_battle_room }
+    immediate = {
+        set_country_flag = spth_precursor_123_fired
+        event_target:spth_precursor_capital_makai_system.star = {
+            save_event_target_as = spth_temp_location
+        }
+    }
+    option = {
+        name = spth_precursor.123.a
+        save_global_event_target_as = spth_makai_repair_country
+        enable_special_project = {
+            name = spth_precursor_capital_makai_wedge_repair
+            location = event_target:spth_temp_location
+            owner = root
+        }
+    }
+}
+country_event = {
+    id = spth_precursor.124
+    title = spth_precursor.124.name
+    desc = spth_precursor.124.desc
+    is_triggered_only = yes
+    location = event_target:makai_wedge_ruined_object
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    option = {
+        name = spth_precursor.124.a
     }
 }

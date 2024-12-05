@@ -1,0 +1,126 @@
+spth_makai_wedge_0 = {
+    portrait = GFX_spth_makai_wedge
+    entity = spth_precursor_capital_makai_wedge_entity
+    construction_entity = spth_precursor_capital_makai_wedge_entity
+    place_entity_on_planet_plane = no
+    entity_offset = { x = -20 y = -20 }
+    show_in_outliner = no
+    show_galactic_map_icon = no
+    build_time = 1800
+    resources = {
+        category = megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            influence = 100
+        }
+        produces = {
+            astral_threads = 10
+            physics_research = 400
+        }
+    }
+    country_modifier = {
+        country_resource_max_astral_threads_add = 2000
+    }
+    station_modifier = {
+        catapult_spread_base = 10
+        catapult_range_base = 1000
+        quantum_catapult_megastructure_bypass_windup_mult = -0.90
+    }
+    bypass_type = quantum_catapult
+    potential = { always = no }
+    dismantle_potential = { always = no }
+    ai_weight = { weight = 1000 }
+}
+spth_makai_wedge_1 = {
+    portrait = GFX_spth_makai_wedge
+    entity = spth_precursor_capital_makai_wedge_entity
+    construction_entity = spth_precursor_capital_makai_wedge_entity
+    place_entity_on_planet_plane = no
+    entity_offset = { x = -20 y = -20 }
+    show_in_outliner = no
+    show_galactic_map_icon = no
+    build_time = 5
+    resources = {
+        category = megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            influence = 100
+        }
+        produces = {
+            astral_threads = 10
+            physics_research = 400
+        }
+    }
+    country_modifier = {
+        country_resource_max_astral_threads_add = 2000
+    }
+    station_modifier = {
+        catapult_spread_base = 10
+        catapult_range_base = 1000
+        quantum_catapult_megastructure_bypass_windup_mult = -0.90
+    }
+    on_build_complete = {
+        from = { set_timed_country_flag = { flag = spth_makai_wedge_0_warp_used days = 360 }  }
+        spawn_megastructure = {
+            type = spth_makai_wedge_0
+            coords_from = fromfrom
+            owner = from
+            init_effect = {
+                save_global_event_target_as = makai_wedge_ruined_object
+            }
+        }
+        remove_megastructure = fromfrom
+        every_fleet_in_system = {
+            limit = {
+                exists = owner
+                owner = { is_same_value = root.from }
+                any_controlled_ship = { is_disabled = no is_ship_class = shipclass_military }
+                is_in_combat = no
+            }
+            random_list = {
+                40 = {
+                    set_location = {
+                        target = event_target:spth_makai_ship_core_unlocked_player
+                        distance = 30 angle = random
+                    }
+                }
+                20 = {
+                    set_location = {
+                        target = event_target:spth_makai_ship_core_unlocked_player.star
+                        distance = 5 angle = random
+                    }
+                }
+                20 = {
+                    set_location = {
+                        target = event_target:spth_makai_ship_core_unlocked_player.star
+                        distance = 10 angle = random
+                    }
+                }
+                20 = {
+                    set_location = {
+                        target = event_target:spth_makai_ship_core_unlocked_player.star
+                        distance = 20 angle = random
+                    }
+                }
+            }
+            reroll_random = yes
+        }
+    }
+    upgrade_from = { spth_makai_wedge_0 }
+    bypass_type = quantum_catapult
+    potential = { always = yes }
+    possible = {
+        from = {
+            custom_tooltip = {
+                fail_text = spth_makai_wedge_0_warp_used
+                NOT = { has_country_flag = spth_makai_wedge_0_warp_used }
+            }
+        }
+        exists = event_target:spth_makai_ship_core_unlocked_player
+        event_target:spth_makai_ship_core_unlocked_player = { owner = { is_same_value = root.from } }
+    }
+    dismantle_potential = { always = no }
+    ai_weight = { weight = 1000 }
+}

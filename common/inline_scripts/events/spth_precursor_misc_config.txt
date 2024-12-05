@@ -24,6 +24,7 @@ option = {
         name = spth_precursor.$id$.name
         desc = spth_precursor.$id$.poi_desc
         event_chain = $event_chain$
+        location = from
     }
     enable_special_project = {
         name = spth_project_precursor_$id$
@@ -45,25 +46,24 @@ option = {
     hidden_effect = {
         if = {
             limit = {
-                NOT = {
-                    has_completed_event_chain_counter = {
-                        event_chain = $event_chain$
-                        counter = $counter$
-                    }
-                }
+                NOT = { has_completed_event_chain_counter = { event_chain = $event_chain$ counter = $counter$ } }
             }
             add_event_chain_counter = {
                 event_chain = $event_chain$
                 counter = $counter$
                 amount = 1
             }
-        } else_if = {
-            limit = { NOT = { has_country_flag = $finish_flag$ } }
-            set_country_flag = $finish_flag$
-            country_event = {
-                id = spth_precursor.$finish_id$
-                days = 30
-                random = 30
+            if = {
+                limit = {
+                    NOT = { has_country_flag = $finish_flag$ }
+                    has_completed_event_chain_counter = { event_chain = $event_chain$ counter = $counter$ }
+                }
+                set_country_flag = $finish_flag$
+                country_event = {
+                    id = spth_precursor.$finish_id$
+                    days = 30
+                    random = 30
+                }
             }
         }
     }
