@@ -290,19 +290,43 @@ spth_settings_more_functions = {
 }
 spth_settings_cheat_disable = {
     potential = { from = { NOT = { has_country_flag = enable_spth_cheat } } }
-    allow = { hidden_trigger = { from = { has_country_flag = allow_enable_spth_cheat_ui } } }
+    allow = { hidden_trigger = { always = no } }
     effect = {
-        from = {
-            set_country_flag = enable_spth_cheat
-            remove_country_flag = allow_enable_spth_cheat_ui
-        }
+        custom_tooltip = kill_computer_line
     }
 }
 spth_settings_cheat_enable = {
     potential = { from = { has_country_flag = enable_spth_cheat } }
     allow = { always = yes }
     effect = {
-
+        custom_tooltip = kill_computer_line
+        hidden_effect = {
+            country_event = { id = gensokyo_start.1251 }
+        }
+    }
+}
+spth_settings_debug_btn = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            if = {
+                limit = { NOT = { is_variable_set = spth_debug_click_count } }
+                set_variable = { which = spth_debug_click_count value = 0 }
+            }
+            change_variable = { which = spth_debug_click_count value = 1 }
+            if = {
+                limit = {
+                    has_country_flag = spth_cheat_less_click
+                    check_variable = { which = spth_debug_click_count value >= 4 }
+                }
+                set_country_flag = enable_spth_cheat
+            } else_if = {
+                limit = { check_variable = { which = spth_debug_click_count value >= 51 } }
+                set_country_flag = enable_spth_cheat
+                set_country_flag = spth_cheat_less_click
+            }
+        }
     }
 }
 spth_settings_switch_pop_on_reload = {

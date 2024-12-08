@@ -396,80 +396,7 @@ country_event = {
     custom_gui_option = spth_event_large_ui_option
     picture_event_data = { room = makai_wedge_ruined_room }
     immediate = {
-        if = {
-            limit = { NOT = { event_target:global_event_country = { is_variable_set = spth_lunar_capital_crisis_difficulty } } }
-            event_target:global_event_country = { set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 } }
-        }
-        set_update_modifiers_batch = begin
-        create_country = {
-            name = spth_kamikakushi_invader
-            type = spth_kamikakushi_invader
-            flag = {
-                icon = {
-                    category = "touhousp"
-                    file = "flag_th4.dds"
-                }
-                colors = {
-                    "white"
-                    "white"
-                    "white"
-                    "null"
-                }
-                background = {
-                    category = "backgrounds"
-                    file = "00_solid.dds"
-                }
-            }
-            name_list = touhouchs
-            effect = {
-                set_graphical_culture = strg_01
-                set_country_flag = touhou_mod_country
-                set_country_flag = spth_kamikakushi_invader_country
-                save_global_event_target_as = spth_kamikakushi_invader_country
-                every_playable_country = {
-                    limit = { NOT = { is_same_value = prev } }
-                    establish_communications_no_message = prev
-                }
-            }
-        }
-        event_target:makai_wedge_ruined_object = {
-            solar_system = {
-                every_system_colony = {
-                    every_owned_pop = { kill_pop = yes }
-                    destroy_colony = yes
-                }
-                every_fleet_in_system = {
-                    set_mia = mia_return_home
-                }
-            }
-            spth_create_fleet = {
-                NAME = spth_kamikakushi_invader_titan
-                can_disband = no is_boss = yes
-                OWNER = event_target:spth_kamikakushi_invader_country
-                location = prev uses_naval_capacity = no
-                flag = spth_kamikakushi_invader_fleet
-                spth_kamikakushi_invader_titan = 1
-                spth_kamikakushi_invader_bc_tlx = 10
-                spth_kamikakushi_invader_bc_tmp = 20
-                spth_kamikakushi_invader_bc_tor = 20
-                spth_kamikakushi_invader_bc_ylx = 10
-                evt_target = spth_kamikakushi_invader_fleet
-            }
-            spth_create_fleet = {
-                NAME = spth_kamikakushi_invader_bc_tlx
-                can_disband = no is_boss = yes
-                OWNER = event_target:spth_kamikakushi_invader_country
-                location = event_target:spth_precursor_capital_makai_lunar
-                uses_naval_capacity = no
-                flag = spth_kamikakushi_invader_fleet
-                spth_kamikakushi_invader_bc_tlx = 5
-                spth_kamikakushi_invader_bc_tmp = 10
-                spth_kamikakushi_invader_bc_tor = 10
-                spth_kamikakushi_invader_bc_ylx = 5
-                evt_target = spth_kamikakushi_invader_fleet
-            }
-        }
-        set_update_modifiers_batch = end
+        spth_spawn_kamikakushi_guard = yes
     }
     option = {
         name = spth_precursor.121.a
@@ -488,6 +415,7 @@ country_event = {
     is_triggered_only = yes
     trigger = {
         from = {
+            NOT = { has_country_flag = spth_debug_spawn_flag }
             is_country_type = spth_kamikakushi_invader
             count_owned_fleet = {
                 limit = {

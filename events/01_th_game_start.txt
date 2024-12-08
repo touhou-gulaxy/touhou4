@@ -437,6 +437,10 @@ country_event = {
 	option = {
 		name = gensokyo_start.1145.exit
 		default_hide_option = yes
+		hidden_effect = {
+			remove_country_flag = enable_spth_cheat
+			set_variable = { which = spth_debug_click_count value = 0 }
+		}
 	}
 }
 country_event = {
@@ -1707,5 +1711,112 @@ country_event = {
 		} else = {
 			country_event = { id = gensokyo_start.1250 }
 		}
+	}
+}
+country_event = {
+	id = gensokyo_start.1251
+	title = gensokyo_start.1251
+	desc = gensokyo_start.1251.desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = gensokyo_start_1251_opened } }
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = th_yukari_1_room }
+	immediate = { set_country_flag = gensokyo_start_1251_opened }
+	after = {
+		hidden_effect = {
+			remove_country_flag = gensokyo_start_1251_opened
+			if = {
+				limit = { has_country_flag = gensokyo_start_1251_exit }
+				remove_country_flag = gensokyo_start_1251_exit
+			} else = { country_event = { id = gensokyo_start.1251 } }
+		}
+	}
+	option = {
+		name = gensokyo_start.1251.a
+		allow = { always = no }
+	}
+	option = {
+		name = gensokyo_start.1251.b
+		allow = { always = no }
+	}
+	option = {
+		name = gensokyo_start.1251.c
+		allow = { always = no }
+	}
+	option = {
+		name = gensokyo_start.1251.d
+		add_resource = { sr_lingli = 114514 }
+	}
+	option = {
+		name = gensokyo_start.1251.e
+		add_resource = { sr_fuka = 114514 }
+	}
+	option = {
+		name = gensokyo_start.1251.f
+		trigger = { NOT = { has_modifier = touhou_cheat_modifier } }
+		add_modifier = { modifier = touhou_cheat_modifier }
+	}
+	option = {
+		name = gensokyo_start.1251.f_alt
+		trigger = { has_modifier = touhou_cheat_modifier }
+		remove_modifier = touhou_cheat_modifier
+	}
+	option = {
+		name = gensokyo_start.1251.g
+		allow = { NOT = { exists = event_target:spth_precursor_capital_makai_system } }
+		set_global_flag = spth_precursor_capital_makai_spawned
+		set_spawn_system_batch = begin
+		random_system_within_border = {
+			spawn_system = {
+				initializer = spth_precursor_capital_makai
+				hyperlane = no
+				effect = {
+					add_hyperlane = {
+						from = this
+						to = prev
+					}
+				}
+			}
+		}
+		set_spawn_system_batch = end
+		if = {
+			limit = { NOT = { has_event_chain = touhou_makai_chain } }
+			begin_event_chain = { event_chain = touhou_makai_chain target = this }
+		}
+		create_point_of_interest = {
+			id = spth_precursor_capital_makai.poi
+			name = spth_precursor_capital_makai.poi
+			desc = spth_precursor_capital_makai.poi.desc
+			event_chain = touhou_makai_chain
+			location = event_target:spth_precursor_capital_makai_system
+		}
+		every_playable_country = {
+			limit = { NOT = { is_same_value = prev } }
+			if = {
+				limit = { has_special_project = spth_precursor_capital_makai_discover }
+				abort_special_project = {
+					type = spth_precursor_capital_makai_discover
+					location = capital_scope
+				}
+			}
+			country_event = {
+				id = spth_precursor.116
+				days = 30
+				random = 30
+				scopes = { from = prev }
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1251.h
+		allow = { exists = event_target:spth_precursor_capital_makai_system }
+		spth_spawn_kamikakushi_guard = { debug_spawn_flag = yes }
+	}
+	option = {
+		name = gensokyo_start.1251.exit
+		default_hide_option = yes
+		hidden_effect = { set_country_flag = gensokyo_start_1251_exit }
 	}
 }

@@ -9,16 +9,7 @@ ship_event = {
     id = spth_fleet.1
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        OR = {
-            is_ship_size = spth_cr_dreadnought
-            is_ship_size = spth_ur_didact_flagship
-            is_ship_size = TH_super_carrier
-            is_ship_size = spth_hv_bombardment_ship
-            is_ship_size = spth_remove_shrine_shipyard
-            is_ship_size = spth_allocate_shrine_shipyard
-        }
-    }
+    trigger = { is_touhou_buildable_ship = yes }
     immediate = {
         switch = {
             trigger = is_ship_size
@@ -813,24 +804,39 @@ ship_event = {
     id = spth_fleet.1002
     hide_window = yes
     is_triggered_only = yes
-    trigger = { spth_ship_has_extra_life = yes }
+    trigger = { has_touhou_disable = yes }
     immediate = {
         spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 }
         if = {
-            limit = { NOT = { has_ship_flag = has_triggered_spth_extra_life } }
+            limit = { has_touhou_invincible = yes }
+            set_disable_at_health = 0.01
+            fire_on_action = {
+                on_action = on_disable_touhou_invincible
+                scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+            }
+        } else_if = {
+            limit = { is_ship_size = TH_super_carrier }
+            change_variable = { which = spth_super_carrier_inv_counter value = 1 }
+            owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
             if = {
-                limit = { has_ship_flag = spth_super_carrier_destroyed_storm }
-                set_disable_at_health = 0.01
-            } else_if = {
-                limit = { is_ship_size = TH_super_carrier }
-                change_variable = { which = spth_super_carrier_inv_counter value = 1 }
-                owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
-                if = {
-                    limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 10 } }
-                    set_disable_at_health = -1
-                } else = {
-                    set_disable_at_health = 0.01
+                limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 10 } }
+                set_disable_at_health = -1
+                fire_on_action = {
+                    on_action = on_disable_touhou_supercarrier_ended
+                    scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
                 }
+            } else = {
+                set_disable_at_health = 0.01
+                fire_on_action = {
+                    on_action = on_disable_touhou_supercarrier
+                    scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+                }
+            }
+        } else_if = {
+            limit = { NOT = { has_ship_flag = has_triggered_spth_extra_life } }
+            fire_on_action = {
+                on_action = on_disable_non_spth_extra_life
+                scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
             }
         } else = {
             if = {
@@ -839,12 +845,7 @@ ship_event = {
             } else = { set_disable_at_health = -1 }
             fire_on_action = {
                 on_action = on_trigger_spth_extra_life
-                scopes = {
-                    from = from
-                    fromfrom = fleet
-                    fromfromfrom = from.fleet
-                    fromfromfromfrom = solar_system
-                }
+                scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
             }
         }
         set_disabled = no
