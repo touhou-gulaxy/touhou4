@@ -281,6 +281,7 @@ spth_create_fleet = {
 			set_location = { target = $location$ distance = $distance|25$ angle = random }
 			[[bombardment] set_fleet_bombardment_stance = $bombardment$ ]
 			[[flag] set_fleet_flag = $flag$ ]
+			[[flag2] set_fleet_flag = $flag2$ ]
 
 			# kedama ships
 			[[spth_kedama_small_common] while = { count = $spth_kedama_small_common$ } create_ship = { name = random design = NAME_spth_kedama_small_common } ]
@@ -305,6 +306,7 @@ spth_create_fleet = {
 			[[spth_kamikakushi_invader_bc_ylx] while = { count = $spth_kamikakushi_invader_bc_ylx$ create_ship = { name = random design = spth_kamikakushi_invader_bc_ylx } } ]
 			[[spth_makai_ship_core_0] while = { count = $spth_makai_ship_core_0$ create_ship = { name = NAME_spth_makai_ship_core_0 design = NAME_spth_makai_ship_core_0 } } ]
 			[[spth_makai_ship_core_1] while = { count = $spth_makai_ship_core_1$ create_ship = { name = NAME_spth_makai_ship_core_1 design = NAME_spth_makai_ship_core_1 } } ]
+			[[spth_kamikakushi_gate] while = { count = $spth_kamikakushi_gate$ create_ship = { name = NAME_spth_kamikakushi_gate design = NAME_spth_kamikakushi_gate } } ]
 
 			[[fleet_action] fleet_event = { id = $fleet_action$ } ]
 			[[fleet_action_delayed] fleet_event = { id = $fleet_action_delayed$ days = $DAYS$ random = $DAYS_RANDOM$ } ]
@@ -695,38 +697,6 @@ spth_spawn_kamikakushi_guard = {
 			}
 		}
 	}
-	create_country = {
-		name = spth_kamikakushi_invader
-		type = spth_kamikakushi_invader
-		flag = {
-			icon = {
-				category = "touhousp"
-				file = "flag_th4.dds"
-			}
-			colors = {
-				"white"
-				"white"
-				"white"
-				"null"
-			}
-			background = {
-				category = "backgrounds"
-				file = "00_solid.dds"
-			}
-		}
-		name_list = touhouchs
-		effect = {
-			set_graphical_culture = strg_01
-			set_country_flag = touhou_mod_country
-			set_country_flag = spth_kamikakushi_invader_country
-			[[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
-			save_global_event_target_as = spth_kamikakushi_invader_country
-			every_playable_country = {
-				limit = { NOT = { is_same_value = prev } }
-				establish_communications_no_message = prev
-			}
-		}
-	}
 	event_target:makai_wedge_ruined_object = {
 		solar_system = {
 			every_system_colony = {
@@ -766,6 +736,100 @@ spth_spawn_kamikakushi_guard = {
 	}
 	set_update_modifiers_batch = end
 }
+spth_spawn_kamikakushi_diplomacy = {
+	optimize_memory
+	if = {
+		limit = { NOT = { exists = event_target:spth_kamikakushi_diplomacy } }
+		create_country = {
+			name = spth_kamikakushi_diplomacy
+			type = spth_kamikakushi_diplomacy
+			flag = {
+				icon = {
+					category = "touhousp"
+					file = "flag_th4.dds"
+				}
+				colors = {
+					"purple"
+					"purple"
+					"purple"
+					"null"
+				}
+				background = {
+					category = "backgrounds"
+					file = "00_solid.dds"
+				}
+			}
+			name_list = touhouchs
+			effect = {
+				set_graphical_culture = strg_01
+				set_country_flag = touhou_mod_country
+				set_country_flag = spth_kamikakushi_diplomacy
+				[[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
+				save_global_event_target_as = spth_kamikakushi_diplomacy
+				random_country = {
+					limit = { NOT = { is_same_value = prev } has_country_flag = spth_kamikaushi_repaired_wedge_country }
+					establish_communications_no_message = prev
+				}
+			}
+		}
+	}
+}
+spth_spawn_kamikakushi_country = {
+	optimize_memory
+	if = {
+		limit = { NOT = { exists = event_target:spth_kamikakushi_country } }
+		create_country = {
+			name = spth_kamikakushi_country
+			type = spth_kamikakushi_country
+			flag = {
+				icon = {
+					category = "touhousp"
+					file = "flag_th4.dds"
+				}
+				colors = {
+					"purple"
+					"purple"
+					"purple"
+					"null"
+				}
+				background = {
+					category = "backgrounds"
+					file = "00_solid.dds"
+				}
+			}
+			name_list = touhouchs
+			effect = {
+				set_graphical_culture = strg_01
+				set_country_flag = touhou_mod_country
+				set_country_flag = spth_kamikakushi_country
+				[[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
+				save_global_event_target_as = spth_kamikakushi_country
+				every_playable_country = {
+					limit = { NOT = { is_same_value = prev } }
+					establish_communications_no_message = prev
+				}
+			}
+		}
+	}
+}
+spth_spawn_kamikakushi_invade_system = {
+	optimize_memory
+	set_spawn_system_batch = begin
+	random_system_within_border = {
+		spawn_system = {
+			initializer = $initializer$
+			hyperlane = no
+			effect = {
+				add_hyperlane = {
+					from = this
+					to = prev
+				}
+				save_event_target_as = last_kamikakushi_invade_system
+			}
+		}
+	}
+	set_spawn_system_batch = end
+}
 spth_precursor_unlock_makai_ship_core = {
 	optimize_memory
 	every_owned_ship = {
@@ -781,5 +845,100 @@ spth_precursor_unlock_makai_ship_core = {
 			}
 		}
 		delete_ship = this
+	}
+}
+
+spth_kamikaushi_refused = {
+	optimize_memory
+	hidden_effect = {
+		set_country_flag = touhou_crisis_102_refuse
+		set_country_flag = touhou_crisis_102_has_chosen
+		set_global_flag = spth_kamikaushi_crisis_intro
+	}
+	country_event = { id = touhou_crisis.105 days = 180 }
+}
+spth_kamikakushi_destroy_wedge = {
+	optimize_memory
+	set_country_flag = touhou_crisis_102_accept
+	set_country_flag = touhou_crisis_102_has_chosen
+	if = {
+		limit = { exists = event_target:makai_wedge_ruined_object }
+		event_target:makai_wedge_ruined_object = {
+			remove_megastructure = this
+		}
+	}
+	event_target:spth_precursor_capital_makai_system.star = {
+		create_ambient_object = {
+			type = spth_precursor_capital_makai_wedge_object
+			use_3d_location = yes
+			entity_offset_height = { min = 0 max = 25 }
+			location = this
+		}
+		last_created_ambient_object = {
+			set_ambient_object_flag = spth_precursor_capital_makai_wedge_ruined
+			set_ambient_object_flag = spth_precursor_capital_makai_wedge_destroyed
+			save_global_event_target_as = makai_wedge_ruined_object
+			set_location = prev
+		}
+	}
+	country_event = { id = touhou_crisis.103 }
+}
+
+spth_kamikakushi_spawn_preview_fleet = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_preview
+		can_disband = no is_boss = yes
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_preview_fleet
+		flag2 = spth_kamikakushi_fleet
+		spth_kamikakushi_invader_bc_tlx = 2
+		spth_kamikakushi_invader_bc_tmp = 7
+		spth_kamikakushi_invader_bc_tor = 7
+		spth_kamikakushi_invader_bc_ylx = 4
+	}
+}
+spth_kamikakushi_spawn_invader_fleet = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_invader
+		can_disband = no is_boss = yes
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_invader_fleet
+		flag2 = spth_kamikakushi_fleet
+		spth_kamikakushi_invader_titan = 1
+		spth_kamikakushi_invader_bc_tlx = 7
+		spth_kamikakushi_invader_bc_tmp = 13
+		spth_kamikakushi_invader_bc_tor = 13
+		spth_kamikakushi_invader_bc_ylx = 7
+	}
+}
+spth_kamikakushi_spawn_defence_fleet = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_defence
+		can_disband = no is_boss = yes
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_defence_fleet
+		flag2 = spth_kamikakushi_fleet
+		spth_kamikakushi_invader_titan = 2
+		spth_kamikakushi_invader_bc_tlx = 10
+		spth_kamikakushi_invader_bc_tmp = 20
+		spth_kamikakushi_invader_bc_tor = 20
+		spth_kamikakushi_invader_bc_ylx = 10
+	}
+}
+spth_kamikakushi_spawn_gate = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_gate
+		can_disband = no is_boss = yes
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_gate
+		spth_kamikakushi_gate = 1
 	}
 }

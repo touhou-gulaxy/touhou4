@@ -1,0 +1,400 @@
+namespace = touhou_crisis
+
+# 隙间侵军
+# flags:
+# country:
+#   touhou_crisis_102_refuse 拒绝
+#   touhou_crisis_102_accept 接受
+#   touhou_crisis_102_wait 等待
+#   touhou_crisis_102_has_chosen 已经做出选择
+#   has_open_spth_kamikakushi_diplomacy 开启隙间之里外交界面
+# global:
+#   spth_kamikaushi_repaired_wedge 修复主楔
+#   spth_kamikaushi_crisis_intro 引入天灾
+#   spth_kamikaushi_crisis_start 天灾开始
+#   spth_kamikaushi_crisis_ended 天灾结束
+# star:
+#   spth_kamikaushi_crisis_gate_1 第一传送门
+#   spth_kamikaushi_crisis_gate_2 第二传送门
+#   spth_kamikaushi_crisis_base 军事基地
+#   spth_kamikaushi_crisis_gate_3 第三传送门
+#   spth_kamikaushi_crisis_gate_main 反攻传送门
+#   spth_kamikaushi_crisis_home 生产设施
+
+# 年检 魔界引入
+event = {
+    id = touhou_crisis.100
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = event_target:makai_wedge_ruined_object
+        event_target:makai_wedge_ruined_object = {
+            is_scope_type = megastructure
+            has_megastructure_flag = is_repaired_makai_wedge
+            exists = owner
+            owner = { is_same_value = event_target:spth_makai_repair_country }
+        }
+    }
+    immediate = {
+        event_target:global_event_country = {
+            if = {
+                limit = { NOT = { is_variable_set = touhou_crisis_100_counter } }
+                set_variable = { which = touhou_crisis_100_counter value = 0 }
+            }
+            if = {
+                limit = { NOT = { has_global_flag = spth_kamikaushi_repaired_wedge } }
+                set_global_flag = spth_kamikaushi_repaired_wedge
+            }
+            reroll_random = yes
+            random_list = {
+                10 = {
+                    modifier = { add = 10 check_variable = { which = touhou_crisis_100_counter value > 1 } }
+                    modifier = { add = 20 check_variable = { which = touhou_crisis_100_counter value > 3 } }
+                    modifier = { add = 30 check_variable = { which = touhou_crisis_100_counter value > 5 } }
+                    modifier = { add = 40 check_variable = { which = touhou_crisis_100_counter value > 7 } }
+                }
+                90 = {
+                    modifier = { add = -10 check_variable = { which = touhou_crisis_100_counter value > 1 } }
+                    modifier = { add = -20 check_variable = { which = touhou_crisis_100_counter value > 3 } }
+                    modifier = { add = -30 check_variable = { which = touhou_crisis_100_counter value > 5 } }
+                    modifier = { add = -40 check_variable = { which = touhou_crisis_100_counter value > 7 } }
+                    change_variable = { which = touhou_crisis_100_counter value = 1 }
+                    event_target:makai_wedge_ruined_object.owner = {
+                        set_country_flag = spth_kamikaushi_repaired_wedge_country
+                        country_event = { id = touhou_crisis.101 }
+                    }
+                }
+            }
+            reroll_random = yes
+        }
+    }
+}
+country_event = {
+    id = touhou_crisis.101
+    title = touhou_crisis.101.name
+    desc = touhou_crisis.101.desc
+    is_triggered_only = yes
+    trigger = { has_global_flag = spth_kamikaushi_repaired_wedge }
+    location = event_target:makai_wedge_ruined_object
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mysterious_signal_room }
+    option = {
+        name = touhou_crisis.101.a
+        country_event = { id = touhou_crisis.102 days = 15 random = 15 }
+    }
+}
+
+country_event = {
+    id = touhou_crisis.102
+    title = touhou_crisis.102.name
+    desc = touhou_crisis.102.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    force_open = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    diplomatic_title = touhou_crisis.102.dipo
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = spth_kamikakushi_por_1
+    }
+    option = {
+        name = touhou_crisis.102.a
+        is_dialog_only = yes
+        response_text = touhou_crisis.102.a.response
+    }
+    option = {
+        name = touhou_crisis.102.who
+        is_dialog_only = yes
+        response_text = touhou_crisis.102.who.response
+    }
+    option = {
+        name = touhou_crisis.102.b
+        is_dialog_only = yes
+        response_text = touhou_crisis.102.b.response
+    }
+    option = {
+        name = touhou_crisis.102.c
+        is_dialog_only = yes
+        response_text = touhou_crisis.102.c.response
+    }
+    option = {
+        name = touhou_crisis.102.d
+        custom_tooltip = touhou_crisis.102.d.tooltip
+        response_text = touhou_crisis.102.d.response
+        hidden_effect = { spth_kamikaushi_refused = yes }
+    }
+    option = {
+        name = touhou_crisis.102.e
+        trigger = { NOT = { has_country_flag = touhou_crisis_102_refuse } }
+        custom_tooltip = touhou_crisis.102.e.tooltip
+        response_text = touhou_crisis.102.e.response
+        hidden_effect = { spth_kamikakushi_destroy_wedge = yes }
+    }
+    option = {
+        name = touhou_crisis.102.f
+        trigger = { NOT = { has_country_flag = touhou_crisis_102_refuse } }
+        custom_tooltip = touhou_crisis.102.f.tooltip
+        response_text = touhou_crisis.102.f.response
+        hidden_effect = {
+            set_country_flag = touhou_crisis_102_wait
+        }
+        country_event = { id = touhou_crisis.109 days = 1800 }
+    }
+    after = {
+        hidden_effect = {
+            if = {
+                limit = {
+                    OR = {
+                        has_country_flag = touhou_crisis_102_wait
+                        has_country_flag = touhou_crisis_102_accept
+                    }
+                }
+                spth_spawn_kamikakushi_diplomacy = yes
+            }
+        }
+    }
+}
+country_event = {
+    id = touhou_crisis.103
+    title = touhou_crisis.103.name
+    desc = touhou_crisis.103.desc
+    is_triggered_only = yes
+    location = event_target:makai_wedge_ruined_object
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_large_explosion_room }
+    option = {
+        name = touhou_crisis.103.a
+    }
+}
+country_event = {
+    id = touhou_crisis.104
+    title = touhou_crisis.104.name
+    desc = touhou_crisis.104.desc
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = touhou_crisis_102_has_chosen } }
+    diplomatic = yes
+    force_open = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    diplomatic_title = touhou_crisis.102.dipo
+    immediate = { set_country_flag = has_open_spth_kamikakushi_diplomacy }
+    after = { hidden_effect = { remove_country_flag = has_open_spth_kamikakushi_diplomacy } }
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = spth_kamikakushi_por_1
+    }
+    option = {
+        name = touhou_crisis.104.a
+        response_text = touhou_crisis.104.a.response
+        hidden_effect = { spth_kamikaushi_refused = yes }
+    }
+    option = {
+        name = touhou_crisis.104.b
+        response_text = touhou_crisis.104.b.response
+        custom_tooltip = touhou_crisis.102.e.tooltip
+        hidden_effect = { spth_kamikakushi_destroy_wedge = yes }
+    }
+}
+
+country_event = {
+    id = touhou_crisis.105
+    title = touhou_crisis.105.name
+    desc = touhou_crisis.105.desc
+    is_triggered_only = yes
+    location = capital_scope
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_travel_room }
+    option = {
+        name = TH_WORYING
+        country_event = { id = touhou_crisis.106 days = 360 }
+    }
+}
+country_event = {
+    id = touhou_crisis.106
+    title = touhou_crisis.106.name
+    desc = touhou_crisis.106.desc
+    is_triggered_only = yes
+    location = capital_scope
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_atmospheric_entry_room }
+    option = {
+        name = TH_BE_CAREFULE
+        country_event = { id = touhou_crisis.107 days = 360 random = 360 }
+    }
+}
+country_event = {
+    id = touhou_crisis.107
+    title = touhou_crisis.107.name
+    desc = touhou_crisis.107.desc
+    is_triggered_only = yes
+    location = capital_scope
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mercenary_fleet_room }
+    option = {
+        name = TH_PREPARE_WAR
+        country_event = { id = touhou_crisis.108 days = 60 random = 30 }
+    }
+}
+country_event = {
+    id = touhou_crisis.108
+    title = touhou_crisis.108.name
+    desc = touhou_crisis.108.desc
+    is_triggered_only = yes
+    location = capital_scope
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_evil_room }
+    immediate = {
+        set_update_modifiers_batch = begin
+        spth_spawn_kamikakushi_country = yes
+        set_update_modifiers_batch = end
+        spth_spawn_kamikakushi_invade_system = { initializer = spth_kamikaushi_crisis_gate_1 }
+        event_target:last_kamikakushi_invade_system = {
+            random_system_planet = {
+                limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+                save_event_target_as = spth_kamikakushi_spawnpoint
+            }
+            spth_kamikakushi_spawn_gate = yes
+            spth_kamikakushi_spawn_preview_fleet = yes
+            spth_kamikakushi_spawn_preview_fleet = yes
+            spth_kamikakushi_spawn_invader_fleet = yes
+            spth_kamikakushi_spawn_defence_fleet = yes
+        }
+    }
+    option = {
+        name = TH_ACKNOWLEDGED
+    }
+}
+
+# 5年检测自循环
+country_event = {
+    id = touhou_crisis.109
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = touhou_crisis_102_wait
+        NOT = { has_country_flag = touhou_crisis_102_accept }
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { has_country_flag = has_open_spth_kamikakushi_diplomacy } }
+            country_event = { id = touhou_crisis.104 }
+        } else = { country_event = { id = touhou_crisis.109 days = 30 } }
+    }
+}
+# 联系隙间之里
+# Country scope
+# This = target country (player)
+# From = source country
+country_event = {
+    id = touhou_crisis.110
+    title = touhou_crisis.110.name
+    desc = {
+        text = touhou_crisis.110.desc
+        trigger = {
+            has_country_flag = touhou_crisis_102_wait
+            NOT = { has_country_flag = touhou_crisis_102_accept }
+        }
+    }
+    desc = {
+        text = touhou_crisis.110.accept.desc
+        trigger = {
+            has_country_flag = touhou_crisis_102_wait
+            has_country_flag = touhou_crisis_102_accept
+        }
+    }
+    desc = {
+        text = touhou_crisis.110.refuse.desc
+        trigger = {
+            has_country_flag = touhou_crisis_102_refuse
+        }
+    }
+    is_triggered_only = yes
+    trigger = {
+        from = { is_same_value = event_target:spth_kamikakushi_diplomacy }
+        NOT = { has_country_flag = has_open_spth_kamikakushi_diplomacy }
+        has_country_flag = spth_kamikaushi_repaired_wedge_country
+    }
+    immediate = { set_country_flag = has_open_spth_kamikakushi_diplomacy }
+    after = { hidden_effect = { remove_country_flag = has_open_spth_kamikakushi_diplomacy } }
+    diplomatic = yes
+    force_open = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    diplomatic_title = touhou_crisis.102.dipo
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = spth_kamikakushi_por_1
+    }
+    # negotiate
+    option = {
+        name = touhou_crisis.110.a
+        response_text = touhou_crisis.110.a.response
+        custom_tooltip = touhou_crisis.110.a.tooltip
+        trigger = {
+            has_country_flag = touhou_crisis_102_wait
+            NOT = { has_country_flag = touhou_crisis_102_accept }
+        }
+        hidden_effect = { spth_kamikakushi_destroy_wedge = yes }
+    }
+    option = {
+        name = touhou_crisis.110.b
+        response_text = touhou_crisis.110.b.response
+        custom_tooltip = touhou_crisis.110.b.tooltip
+        trigger = {
+            is_pacifist = yes
+            has_country_flag = touhou_crisis_102_wait
+            NOT = { has_country_flag = touhou_crisis_102_accept }
+        }
+        hidden_effect = { spth_kamikaushi_refused = yes }
+    }
+    option = {
+        name = touhou_crisis.110.c
+        response_text = touhou_crisis.110.c.response
+        custom_tooltip = touhou_crisis.110.c.tooltip
+        trigger = {
+            is_pacifist = no
+            has_country_flag = touhou_crisis_102_wait
+            NOT = { has_country_flag = touhou_crisis_102_accept }
+        }
+        hidden_effect = { spth_kamikaushi_refused = yes }
+    }
+    # accept, not finished
+    option = {
+        name = touhou_crisis.110.a.accept
+        allow = { always = no }
+    }
+    # exit for not fighting
+    option = {
+        name = touhou_crisis.110.exit
+        response_text = touhou_crisis.110.exit.response
+        trigger = { has_country_flag = touhou_crisis_102_wait }
+    }
+    # 戰
+    option = {
+        name = touhou_crisis.110.a.refuse
+        response_text = touhou_crisis.110.a.refuse.response
+        trigger = { has_country_flag = touhou_crisis_102_refuse }
+    }
+}
