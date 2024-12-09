@@ -31,8 +31,7 @@ fleet_event = {
 #   spth_kamikaushi_crisis_gate_2 第二传送门
 #   spth_kamikaushi_crisis_base 军事基地
 #   spth_kamikaushi_crisis_gate_3 第三传送门
-#   spth_kamikaushi_crisis_gate_main 反攻传送门
-#   spth_kamikaushi_crisis_home 生产设施
+#   spth_kamikaushi_crisis_gate_main 反攻
 
 # 年检 魔界引入
 event = {
@@ -278,6 +277,7 @@ country_event = {
     custom_gui_option = spth_event_large_ui_option
     picture_event_data = { room = spth_fleet_evil_room }
     immediate = {
+        set_global_flag = spth_kamikaushi_crisis_start
         set_update_modifiers_batch = begin
         spth_spawn_kamikakushi_country = yes
         set_update_modifiers_batch = end
@@ -435,3 +435,110 @@ planet_event = {
         }
     }
 }
+#Invasion fleet action on orbit planet.
+country_event = {
+    id = touhou_crisis.112
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        is_touhou_crisis_faction = yes
+        from = { has_fleet_flag = spth_kamikakushi_fleet }
+        fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
+    }
+    immediate = {
+        from = {
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = touhou_crisis.12 days = 3 random = 2 }
+        }
+    }
+}
+#Invasion fleet action on win a space battle.
+country_event = {
+    id = touhou_crisis.113
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        is_touhou_crisis_faction = yes
+        fromfrom = { fleet = { has_fleet_flag = spth_kamikakushi_fleet } }
+        fromfromfrom = {
+            OR = {
+                is_ship_class = shipclass_starbase
+                is_ship_class = shipclass_military
+            }
+        }
+    }
+    after = {
+        fromfrom = {
+            solar_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        owner = { is_touhou_crisis_faction = yes }
+                        has_fleet_flag = spth_kamikakushi_fleet
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = touhou_crisis.12 days = 3 random = 2 }
+                }
+            }
+        }
+    }
+}
+#Check every month to prevent bugs.
+event = {
+    id = touhou_crisis.114
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        exists = event_target:spth_kamikakushi_country
+        event_target:spth_kamikakushi_country = {
+            any_owned_fleet = {
+                exists = this
+                is_fleet_idle = yes
+                has_fleet_flag = spth_kamikakushi_fleet
+                NAND = {
+                    exists = orbit
+                    orbit = {
+                        NOT = { is_star = yes }
+                        exists = owner
+                        owner = { is_hostile = event_target:spth_kamikakushi_country }
+                        exists = controller
+                        controller = { is_hostile = event_target:spth_kamikakushi_country }
+                    }
+                }
+            }
+        }
+    }
+    immediate = {
+        event_target:spth_kamikakushi_country = {
+            every_owned_fleet = {
+                limit = {
+                    exists = this
+                    is_fleet_idle = yes
+                    has_fleet_flag = spth_kamikakushi_fleet
+                    NAND = {
+                        exists = orbit
+                        orbit = {
+                            NOT = { is_star = yes }
+                            exists = owner
+                            owner = { is_hostile = event_target:spth_kamikakushi_country }
+                            exists = controller
+                            controller = { is_hostile = event_target:spth_kamikakushi_country }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = touhou_crisis.12 days = 3 random = 2 }
+            }
+        }
+    }
+}
+#Invasion fleet bombard a planet.
