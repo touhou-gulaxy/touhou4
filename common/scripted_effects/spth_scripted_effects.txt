@@ -808,6 +808,7 @@ spth_spawn_kamikakushi_country = {
 					limit = { NOT = { is_same_value = prev } }
 					establish_communications_no_message = prev
 				}
+				country_event = { id = touhou_crisis.19 days = 360 }
 			}
 		}
 	}
@@ -815,7 +816,8 @@ spth_spawn_kamikakushi_country = {
 spth_spawn_kamikakushi_invade_system = {
 	optimize_memory
 	set_spawn_system_batch = begin
-	random_system_within_border = {
+	random_rim_system = {
+		limit = { spth_is_no_spawn_crisis_system = no }
 		spawn_system = {
 			initializer = $initializer$
 			hyperlane = no
@@ -884,11 +886,22 @@ spth_kamikakushi_destroy_wedge = {
 	country_event = { id = touhou_crisis.103 }
 }
 
+spth_kamikakushi_add_fleet_counter = {
+	optimize_memory
+	every_country = {
+		limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+		add_event_chain_counter = {
+			event_chain = spth_kamikakushi_crisis_invasion
+			counter = spth_kamikakushi_fleet_counter
+			amount = 1
+		}
+	}
+}
 spth_kamikakushi_spawn_preview_fleet = {
 	optimize_memory
 	spth_create_fleet = {
 		NAME = NAME_spth_kamikakushi_preview
-		can_disband = no is_boss = yes
+		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
 		OWNER = event_target:spth_kamikakushi_country
 		location = event_target:spth_kamikakushi_spawnpoint
 		flag = spth_kamikakushi_preview_fleet
@@ -898,12 +911,13 @@ spth_kamikakushi_spawn_preview_fleet = {
 		spth_kamikakushi_invader_bc_tor = 7
 		spth_kamikakushi_invader_bc_ylx = 4
 	}
+	spth_kamikakushi_add_fleet_counter = yes
 }
 spth_kamikakushi_spawn_invader_fleet = {
 	optimize_memory
 	spth_create_fleet = {
 		NAME = NAME_spth_kamikakushi_invader
-		can_disband = no is_boss = yes
+		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
 		OWNER = event_target:spth_kamikakushi_country
 		location = event_target:spth_kamikakushi_spawnpoint
 		flag = spth_kamikakushi_invader_fleet
@@ -914,12 +928,13 @@ spth_kamikakushi_spawn_invader_fleet = {
 		spth_kamikakushi_invader_bc_tor = 13
 		spth_kamikakushi_invader_bc_ylx = 7
 	}
+	spth_kamikakushi_add_fleet_counter = yes
 }
 spth_kamikakushi_spawn_defence_fleet = {
 	optimize_memory
 	spth_create_fleet = {
 		NAME = NAME_spth_kamikakushi_defence
-		can_disband = no is_boss = yes
+		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
 		OWNER = event_target:spth_kamikakushi_country
 		location = event_target:spth_kamikakushi_spawnpoint
 		flag = spth_kamikakushi_defence_fleet
@@ -929,6 +944,7 @@ spth_kamikakushi_spawn_defence_fleet = {
 		spth_kamikakushi_invader_bc_tor = 20
 		spth_kamikakushi_invader_bc_ylx = 10
 	}
+	spth_kamikakushi_add_fleet_counter = yes
 }
 spth_kamikakushi_spawn_gate = {
 	optimize_memory
@@ -939,5 +955,40 @@ spth_kamikakushi_spawn_gate = {
 		location = event_target:spth_kamikakushi_spawnpoint
 		flag = spth_kamikakushi_gate
 		spth_kamikakushi_gate = 1
+		evt_target = spth_kamikakushi_gate
+	}
+	every_country = {
+		limit = {
+			has_event_chain = spth_kamikakushi_crisis_invasion
+			NOT = { has_point_of_interest = { poi = spth_kamikakushi_crisis_invasion_gate_$spth_id$ } }
+		}
+		create_point_of_interest = {
+			id = spth_kamikakushi_crisis_invasion_gate_$spth_id$
+			name = spth_kamikakushi_crisis_invasion_gate_$spth_id$
+			desc = spth_kamikakushi_crisis_invasion_gate_$spth_id$_desc
+			event_chain = spth_kamikakushi_crisis_invasion
+			picture = GFX_evt_wormhole
+			location = event_target:spth_kamikakushi_gate
+		}
+	}
+}
+spth_kamikakushi_spawn_fleets_detail = {
+	optimize_memory
+	if = {
+		limit = {
+			has_global_flag = spth_kamikaushi_crisis_gate_$spth_id$_spawned
+			NOT = { has_global_flag = spth_kamikakushi_gate_$spth_id$_destroyed }
+		}
+		random_system = {
+			limit = { has_star_flag = spth_kamikaushi_crisis_gate_$spth_id$ }
+			random_system_planet = {
+				limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+				save_event_target_as = spth_kamikakushi_spawnpoint
+			}
+			event_target:spth_kamikakushi_spawnpoint = {
+				planet_event = { id = touhou_crisis.111 days = 5 }
+			}
+		}
+		change_variable = { which = spth_kamikakushi_spawn_interval value = 1 }
 	}
 }
