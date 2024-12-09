@@ -1,5 +1,18 @@
 namespace = touhou_crisis
 
+# 天灾寻路
+fleet_event = {
+    id = touhou_crisis.12
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+    }
+    immediate = { spth_invasion_fleet_action = { ID = touhou_crisis TYPE = spth_kamikaushi OWNER = spth_kamikakushi_country } }
+}
+
 # 隙间侵军
 # flags:
 # country:
@@ -275,10 +288,10 @@ country_event = {
                 save_event_target_as = spth_kamikakushi_spawnpoint
             }
             spth_kamikakushi_spawn_gate = yes
-            spth_kamikakushi_spawn_preview_fleet = yes
-            spth_kamikakushi_spawn_preview_fleet = yes
-            spth_kamikakushi_spawn_invader_fleet = yes
             spth_kamikakushi_spawn_defence_fleet = yes
+            event_target:spth_kamikakushi_spawnpoint = {
+                planet_event = { id = touhou_crisis.111 days = 5 }
+            }
         }
     }
     option = {
@@ -396,5 +409,29 @@ country_event = {
         name = touhou_crisis.110.a.refuse
         response_text = touhou_crisis.110.a.refuse.response
         trigger = { has_country_flag = touhou_crisis_102_refuse }
+    }
+}
+
+#Invasion fleet arrived.
+planet_event = {
+    id = touhou_crisis.111
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+    }
+    immediate = {
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_invader_fleet = yes
+        spth_kamikakushi_spawn_invader_fleet = yes
+        event_target:spth_kamikakushi_country = {
+            every_owned_fleet = {
+                limit = { has_fleet_flag = spth_kamikakushi_fleet is_fleet_idle = yes }
+                fleet_event = { id = touhou_crisis.12 days = 1 random = 2  }
+            }
+        }
     }
 }
