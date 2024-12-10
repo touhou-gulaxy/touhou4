@@ -26,6 +26,12 @@ planet_event = {
         from = { is_country_type = spth_kamikakushi_country }
     }
     immediate = {
+        owner = {
+            country_event = {
+                id = touhou_crisis.14
+                scopes = { from = root fromfrom = event_target:spth_kamikakushi_country }
+            }
+        }
         set_variable = { which = touhou_crisis_13_districts_count value = trigger:num_districts }
         reroll_random = yes
         random_list = {
@@ -43,12 +49,6 @@ planet_event = {
         add_deposit = d_ruined_building_blocker
         every_owned_pop = { kill_pop = yes }
         destroy_colony = yes
-        owner = {
-            country_event = {
-                id = touhou_crisis.14
-                scopes = { from = root fromfrom = root.from }
-            }
-        }
         if = {
             limit = { is_ringworld = yes }
             spawn_ringworld_cracker_effect = yes
@@ -551,18 +551,6 @@ country_event = {
         spth_spawn_kamikakushi_country = yes
         set_update_modifiers_batch = end
         spth_spawn_kamikakushi_invade_system = { initializer = spth_kamikaushi_crisis_gate_1 }
-        event_target:last_kamikakushi_invade_system = {
-            random_system_planet = {
-                limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
-                save_event_target_as = spth_kamikakushi_spawnpoint
-            }
-            spth_kamikakushi_spawn_gate = { spth_id = 1 }
-            spth_kamikakushi_spawn_defence_fleet = yes
-            spth_kamikakushi_spawn_defence_fleet = yes
-            event_target:spth_kamikakushi_spawnpoint = {
-                planet_event = { id = touhou_crisis.111 days = 5 }
-            }
-        }
         every_country = {
             limit = {
                 is_touhou_crisis_faction = no
@@ -581,6 +569,18 @@ country_event = {
                         fromfrom = event_target:last_kamikakushi_invade_system.star
                     }
                 }
+            }
+        }
+        event_target:last_kamikakushi_invade_system = {
+            random_system_planet = {
+                limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+                save_event_target_as = spth_kamikakushi_spawnpoint
+            }
+            spth_kamikakushi_spawn_gate = { spth_id = 1 }
+            spth_kamikakushi_spawn_defence_fleet = yes
+            spth_kamikakushi_spawn_defence_fleet = yes
+            event_target:spth_kamikakushi_spawnpoint = {
+                planet_event = { id = touhou_crisis.111 days = 5 }
             }
         }
         country_event = { id = touhou_crisis.116 days = 390 }
@@ -624,7 +624,6 @@ country_event = {
     desc = {
         text = touhou_crisis.110.accept.desc
         trigger = {
-            has_country_flag = touhou_crisis_102_wait
             has_country_flag = touhou_crisis_102_accept
         }
     }
@@ -688,13 +687,14 @@ country_event = {
     # accept, not finished
     option = {
         name = touhou_crisis.110.a.accept
+        trigger = { has_country_flag = touhou_crisis_102_accept }
         allow = { always = no }
     }
-    # exit for not fighting
+    # exit for not fightinghas_country_flag = touhou_crisis_102_wait
     option = {
         name = touhou_crisis.110.exit
         response_text = touhou_crisis.110.exit.response
-        trigger = { has_country_flag = touhou_crisis_102_wait }
+        trigger = { NOT = { has_country_flag = touhou_crisis_102_refuse } }
     }
     # 戰
     option = {
