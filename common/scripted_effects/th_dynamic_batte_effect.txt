@@ -79,7 +79,7 @@ spth_dynamic_battle_init = {
             limit = { NOT = { has_fleet_flag = TH_$type$_dynamic_boost } }
             every_owned_ship = { set_variable = { which = $type$_dynamic_boost_duration_debug value = modifier:$modifier$ } }
             random_owned_ship = {
-                limit = { check_modifier_value = { modifier = $modifier$ value > 0 } }
+                limit = { has_component = th_ship_part_$type$ check_modifier_value = { modifier = $modifier$ value > 0 } }
                 prev = {
                     set_variable = { which = $type$_dynamic_boost_duration_debug value = prev.modifier:$modifier$ }
                     set_timed_fleet_flag = { flag = TH_$type$_dynamic_boost days = prev.modifier:$modifier$ }
@@ -95,7 +95,12 @@ spth_dynamic_battle_init = {
             limit = { NOT = { has_fleet_flag = TH_$type$_dynamic_vict } }
             every_owned_ship = { set_variable = { which = $type$_dynamic_vict_duration_debug value = event_target:spth_dynamic_battle_init_$type$_temp.modifier:$modifier$ } }
             set_variable = { which = $type$_dynamic_vict_duration_debug value = event_target:spth_dynamic_battle_init_$type$_temp.modifier:$modifier$ }
-            set_timed_fleet_flag = { flag = TH_$type$_dynamic_vict days = event_target:spth_dynamic_battle_init_$type$_temp.modifier:$modifier$ }
+            if = {
+                limit = { check_variable = { which = $type$_dynamic_vict_duration_debug value <= 0 } }
+                set_timed_fleet_flag = { flag = TH_$type$_dynamic_vict days = 1 }
+            } else = {
+                set_timed_fleet_flag = { flag = TH_$type$_dynamic_vict days = $type$_dynamic_vict_duration_debug }
+            }
             fleet_event = { id = $vict_id$ }
             clear_variable = $type$_dynamic_vict_duration_debug
         }
