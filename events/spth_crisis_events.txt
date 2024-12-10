@@ -26,19 +26,38 @@ planet_event = {
         from = { is_country_type = spth_kamikakushi_country }
     }
     immediate = {
-        reset_planet = yes
+        set_variable = { which = touhou_crisis_13_districts_count value = trigger:num_districts }
+        reroll_random = yes
+        random_list = {
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.1 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.2 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.3 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.4 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.5 } }
+        }
+        reroll_random = yes
+        floor_variable = touhou_crisis_13_districts_count
+        while = { count = touhou_crisis_13_districts_count add_deposit = d_ruined_district }
+        clear_variable = touhou_crisis_13_districts_count
+        add_deposit = d_ruined_building_blocker
+        add_deposit = d_ruined_building_blocker
         every_owned_pop = { kill_pop = yes }
         destroy_colony = yes
-        owner = { country_event = { id = touhou_crisis.14 } }
+        owner = {
+            country_event = {
+                id = touhou_crisis.14
+                scopes = { from = root fromfrom = root.from }
+            }
+        }
         if = {
             limit = { is_ringworld = yes }
             spawn_ringworld_cracker_effect = yes
-        }
-        else_if = {
+            change_pc = pc_ringworld_habitable_damaged
+            set_planet_entity = { entity = ringworld_habitable_damaged_entity }
+        } else_if = {
             limit = { spth_is_habitat = yes }
             spth_spawn_habitat_cracker_effect = yes
-        }
-        else_if = {
+        } else_if = {
             limit = { has_modifier = "holy_planet" }
             change_pc = pc_shattered
             remove_modifier = "holy_planet"
@@ -55,6 +74,33 @@ planet_event = {
             }
         }
         solar_system = {
+            if = {
+                limit = {
+                    count_system_colony = { count = 0 }
+                    NOT = { is_star_class = sc_spth_void }
+                }
+                every_country = {
+                    limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+                    add_event_chain_counter = {
+                        event_chain = spth_kamikakushi_crisis_invasion
+                        counter = spth_kamikakushi_system_destroyed
+                        amount = 1
+                    }
+                    country_event = { id = touhou_crisis.20 scopes = { from = prev fromfrom = root.from } }
+                }
+                create_ambient_object = { type = "star_explosion" play_animation_once = yes location = this }
+                last_created_ambient_object = { set_location = { target = prev.star distance = 0 angle = random } }
+                set_star_class = sc_spth_void
+                star = {
+                    if = {
+                        limit = { NOT = { is_planet_class = pc_spth_void } }
+                        change_pc = pc_spth_void
+                        set_variable = { which = spth_void_star_original_size value = trigger:planet_size }
+                        set_planet_flag = spth_void_star_flag
+                        set_planet_size = 1
+                    }
+                }
+            }
             every_fleet_in_system = {
                 limit = {
                     exists = owner
@@ -97,7 +143,7 @@ country_event = {
     option = { name = touhou_crisis.14.b }
 }
 
-# the gate gains invincible for 30days
+# the gate gains invincible for 15days
 country_event = {
     id = touhou_crisis.15
     hide_window = yes
@@ -222,6 +268,20 @@ country_event = {
     }
 }
 
+country_event = {
+    id = touhou_crisis.20
+    title = touhou_crisis.20.name
+    desc = touhou_crisis.20.desc
+    is_triggered_only = yes
+    location = from
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_large_explosion_room }
+    show_sound = event_super_explosion
+    option = { name = touhou_crisis.20.a ai_chance = { weight = 100 } }
+}
+
 # 隙间侵军
 # flags:
 # country:
@@ -313,7 +373,7 @@ country_event = {
     desc = touhou_crisis.102.desc
     is_triggered_only = yes
     diplomatic = yes
-    force_open = yes
+    force_open = yes{  }
     custom_gui = spth_special_diplomacy_window
     custom_gui_option = spth_special_diplomacy_option
     show_sound = event_mysterious_signal
@@ -874,9 +934,22 @@ country_event = {
             change_variable = { which = spth_kamikakushi_gate_destroyed value = 1 }
         }
         fromfromfrom.solar_system = {
+            create_ambient_object = {
+                type = "star_explosion"
+                play_animation_once = yes
+                location = this
+            }
+            last_created_ambient_object = {
+                set_location = { target = prev.star distance = 0 angle = random }
+            }
             switch = {
                 trigger = has_star_flag
                 spth_kamikaushi_crisis_gate_1 = {
+                    random_system_planet = {
+                        limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+                        save_event_target_as = spth_kamikakushi_spawnpoint
+                        planet_event = { id = touhou_crisis.111 days = 15 random = 15 }
+                    }
                     set_global_flag = spth_kamikakushi_gate_1_destroyed
                     every_country = {
                         limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
@@ -904,6 +977,11 @@ country_event = {
                 has_event_chain = spth_kamikakushi_crisis_invasion
                 NOT = { is_same_value = root }
             }
+            add_event_chain_counter = {
+                event_chain = spth_kamikakushi_crisis_invasion
+                counter = spth_kamikakushi_gate_counter
+                amount = -1
+            }
             country_event = { id = touhou_crisis.119 }
         }
     }
@@ -911,9 +989,11 @@ country_event = {
         name = touhou_crisis.118.a
     }
     after = {
-        if = {
-            limit = { event_target:global_event_country = { check_variable = { which = spth_kamikakushi_gate_destroyed value >= 3 } } }
-            country_event = { id = touhou_crisis.120 }
+        hidden_effect = {
+            if = {
+                limit = { event_target:global_event_country = { check_variable = { which = spth_kamikakushi_gate_destroyed value >= 3 } } }
+                country_event = { id = touhou_crisis.120 }
+            }
         }
     }
 }
