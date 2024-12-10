@@ -75,29 +75,35 @@ sakuya_the_world_dynamic = {
 spth_dynamic_battle_init = {
     optimize_memory
     fromfrom = {
+        save_event_target_as = spth_dynamic_our_temp
         if = {
             limit = { NOT = { has_fleet_flag = TH_$type$_dynamic_boost } }
-            every_owned_ship = { set_variable = { which = $type$_dynamic_boost_duration_debug value = modifier:$modifier$ } }
-            random_owned_ship = {
-                limit = { has_component = th_ship_part_$type$ check_modifier_value = { modifier = $modifier$ value > 0 } }
+            set_variable = { which = $type$_dynamic_boost_duration_debug value = 1 }
+            every_owned_ship = {
+                set_variable = { which = $type$_dynamic_boost_duration_debug value = modifier:$modifier$ }
                 prev = {
-                    set_variable = { which = $type$_dynamic_boost_duration_debug value = prev.modifier:$modifier$ }
-                    set_timed_fleet_flag = { flag = TH_$type$_dynamic_boost days = prev.modifier:$modifier$ }
+                    if = {
+                        limit = { check_variable = { which = $type$_dynamic_boost_duration_debug value < prev.$type$_dynamic_boost_duration_debug } }
+                        set_variable = { which = $type$_dynamic_boost_duration_debug value = prev.$type$_dynamic_boost_duration_debug }
+                    }
                 }
-                save_event_target_as = spth_dynamic_battle_init_$type$_temp
             }
+            set_timed_fleet_flag = { flag = TH_$type$_dynamic_boost days = $type$_dynamic_boost_duration_debug }
             fleet_event = { id = $boost_id$ }
-            clear_variable = $type$_dynamic_boost_duration_debug
         }
     }
     fromfromfrom = {
         if = {
             limit = { NOT = { has_fleet_flag = TH_$type$_dynamic_vict } }
-            every_owned_ship = { set_variable = { which = $type$_dynamic_vict_duration_debug value = event_target:spth_dynamic_battle_init_$type$_temp.modifier:$modifier$ } }
-            set_variable = { which = $type$_dynamic_vict_duration_debug value = event_target:spth_dynamic_battle_init_$type$_temp.modifier:$modifier$ }
+            if = {
+                limit = { NOT = { is_variable_set = $type$_dynamic_vict_duration_debug } }
+                log = "reset var for enemy \\[This.GetName]"
+                set_variable = { which = $type$_dynamic_vict_duration_debug value = event_target:spth_dynamic_our_temp.$type$_dynamic_boost_duration_debug }
+            }
+            every_owned_ship = { set_variable = { which = $type$_dynamic_vict_duration_debug value = prev.$type$_dynamic_vict_duration_debug } }
             if = {
                 limit = { check_variable = { which = $type$_dynamic_vict_duration_debug value <= 0 } }
-                set_timed_fleet_flag = { flag = TH_$type$_dynamic_vict days = 1 }
+                set_timed_fleet_flag = { flag = TH_$type$_dynamic_vict days = $default|4$ }
             } else = {
                 set_timed_fleet_flag = { flag = TH_$type$_dynamic_vict days = $type$_dynamic_vict_duration_debug }
             }
@@ -143,6 +149,7 @@ satori_dynamic_boost = {
         if = {
             limit = { has_fleet_flag = TH_satori_dynamic_boost }
             remove_fleet_flag = TH_satori_dynamic_boost
+            clear_variable = satori_dynamic_boost_duration_debug
         }
         every_owned_ship = {
             TH_clear_all_dynamic_modifier = yes
@@ -187,6 +194,7 @@ koishi_dynamic_boost = {
         if = {
             limit = { has_fleet_flag = TH_koishi_dynamic_boost }
             remove_fleet_flag = TH_koishi_dynamic_boost
+            clear_variable = koishi_dynamic_boost_duration_debug
         }
         every_owned_ship = {
             TH_clear_all_dynamic_modifier = yes
