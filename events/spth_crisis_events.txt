@@ -1,5 +1,65 @@
 namespace = touhou_crisis
 
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = touhou_crisis.10
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_crisis_faction = yes
+        fromfrom = {
+            is_ship_size = spth_kamikakushi_cruiser
+            exists = fleet fleet = { num_ships > 0 }
+        }
+    }
+    immediate = {
+        fromfrom.fleet = {
+            while = {
+                count = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+                reroll_random = yes
+                random_list = {
+                    20 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_tlx } }
+                    30 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_tmp } }
+                    30 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_tor } }
+                    20 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_ylx } }
+                }
+            }
+        }
+    }
+}
+
+# 压制矩阵效果
+country_event = {
+    id = touhou_crisis.11
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = inv_fire_only_once_temple }
+            any_owned_ship = { is_ship_size = spth_kamikakushi_cruiser }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_timed_fleet_flag = { flag = inv_fire_only_once_temple days = 10 }
+            every_owned_ship = {
+                limit = { is_ship_size = spth_kamikakushi_cruiser }
+                reroll_random = yes
+                random_list = {
+                    60 = { set_timed_ship_flag = { flag = spth_invincible days = 3 } }
+                    30 = { set_timed_ship_flag = { flag = spth_invincible days = 4 } }
+                    10 = { set_timed_ship_flag = { flag = spth_invincible days = 5 } }
+                }
+            }
+            reroll_random = yes
+        }
+    }
+}
+
 # 天灾寻路
 fleet_event = {
     id = touhou_crisis.12
@@ -584,6 +644,7 @@ country_event = {
             spth_kamikakushi_spawn_gate = { spth_id = 1 }
             spth_kamikakushi_spawn_defence_fleet = yes
             spth_kamikakushi_spawn_defence_fleet = yes
+            spth_kamikakushi_spawn_small_defence_fleet = yes
             event_target:spth_kamikakushi_spawnpoint = {
                 planet_event = { id = touhou_crisis.111 days = 5 }
             }
@@ -877,6 +938,7 @@ country_event = {
             }
             spth_kamikakushi_spawn_gate = { spth_id = 2 }
             spth_kamikakushi_spawn_defence_fleet = yes
+            spth_kamikakushi_spawn_small_defence_fleet = yes
             event_target:spth_kamikakushi_spawnpoint = {
                 planet_event = { id = touhou_crisis.111 days = 5 }
             }
@@ -906,6 +968,7 @@ country_event = {
             }
             spth_kamikakushi_spawn_gate = { spth_id = 3 }
             spth_kamikakushi_spawn_defence_fleet = yes
+            spth_kamikakushi_spawn_small_defence_fleet = yes
             event_target:spth_kamikakushi_spawnpoint = {
                 planet_event = { id = touhou_crisis.111 days = 5 }
             }
@@ -1059,5 +1122,17 @@ country_event = {
     option = {
         name = touhou_crisis.121.a
         end_event_chain = spth_kamikakushi_crisis_invasion
+        tooltip = { give_technology = { tech = tech_spth_kamikakushi_cruiser message = yes } }
+        hidden_effect = {
+            if = {
+                limit = { has_authority = auth_gensokyo }
+                give_technology = { tech = tech_spth_kamikakushi_cruiser message = yes }
+                if = {
+                    limit = { NOT = { has_existing_ship_design = spth_kamikakushi_cruiser } }
+                    create_ship_design = { design = NAME_spth_kamikakushi_cruiser_2 }
+                    add_ship_design = last_created_design
+                }
+            }
+        }
     }
 }
