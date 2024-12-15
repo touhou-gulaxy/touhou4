@@ -420,19 +420,24 @@ country_event = {
         from = {
             NOT = { has_country_flag = spth_debug_spawn_flag }
             is_country_type = spth_kamikakushi_invader
-            count_owned_fleet = {
-                limit = {
-                    has_fleet_flag = spth_kamikakushi_invader_fleet
-                    NOT = { is_same_value = root.fromfromfrom }
-                }
-                count = 0
-            }
         }
         fromfromfrom = { has_fleet_flag = spth_kamikakushi_invader_fleet }
     }
     immediate = {
-        country_event = { id = spth_precursor.123 }
-        from = { destroy_country = yes }
+        from = {
+            if = {
+                limit = { NOT = { is_variable_set = spth_precursor_122_count } }
+                set_variable = { which = spth_precursor_122_count value = 0 }
+            }
+            change_variable = { which = spth_precursor_122_count value = 1 }
+            if = {
+                limit = { check_variable = { which = spth_precursor_122_count value >= 2 } }
+                event_target:spth_kamikakushi_invader_country = {
+                    every_owned_ship = { set_disable_at_health = -1 set_disabled = no }
+                }
+                root = { country_event = { id = spth_precursor.123 } }
+            }
+        }
     }
 }
 country_event = {
