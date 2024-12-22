@@ -1,5 +1,135 @@
 namespace = touhou_crisis
 
+country_event = {
+    id = touhou_crisis.1
+    title = touhou_crisis.1.name
+    desc = touhou_crisis.1.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = {
+        room = th_arc_mifeng_room
+        portrait = spth_por_yukari_1
+    }
+    is_triggered_only = yes
+    trigger = {
+        has_authority = auth_gensokyo
+        NOT = { has_country_flag = touhou_crisis_1_fired }
+        is_multiplayer = no
+    }
+    option = {
+        name = touhou_crisis.1.exit
+        default_hide_option = yes
+        hidden_effect = { set_country_flag = touhou_crisis_1_close }
+    }
+    option = {
+        name = touhou_crisis.1.a
+        custom_tooltip = gensokyo_start.1145.easy.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 1 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 }
+            }
+        }
+    }
+    option = {
+        name = touhou_crisis.1.b
+        custom_tooltip = gensokyo_start.1145.normal.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 2 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 2 }
+            }
+        }
+    }
+    option = {
+        name = touhou_crisis.1.c
+        custom_tooltip = gensokyo_start.1145.hard.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 3 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 3 }
+            }
+        }
+    }
+    option = {
+        name = touhou_crisis.1.d
+        custom_tooltip = gensokyo_start.1145.lunatic.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 4 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 4 }
+            }
+        }
+    }
+    option = {
+        name = touhou_crisis.1.e
+        custom_tooltip = gensokyo_start.1145.phantasm.tooltip
+        trigger = { has_global_flag = spth_lunar_capital_crisis_phantasm }
+        hidden_effect = { remove_global_flag = spth_lunar_capital_crisis_phantasm }
+    }
+    option = {
+        name = touhou_crisis.1.f
+        custom_tooltip = gensokyo_start.1145.phantasm.tooltip
+        trigger = { NOT = { has_global_flag = spth_lunar_capital_crisis_phantasm } }
+        hidden_effect = { set_global_flag = spth_lunar_capital_crisis_phantasm }
+    }
+    option = {
+        name = touhou_crisis.1.g
+        custom_tooltip = gensokyo_start.1145.easy.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 8 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 8 }
+            }
+        }
+    }
+    after = {
+        hidden_effect = {
+            remove_country_flag = touhou_crisis_1_fired
+            if = {
+                limit = { has_country_flag = touhou_crisis_1_close }
+                remove_country_flag = touhou_crisis_1_close
+            } else = { country_event = { id = touhou_crisis.1 } }
+        }
+    }
+}
+
 # This = owner of ship 1 (destroyed)
 # From = owner of ship 2 (combatant)
 # FromFrom = ship 1
@@ -396,6 +526,11 @@ event = {
                     modifier = { add = 20 check_variable = { which = touhou_crisis_100_counter value > 3 } }
                     modifier = { add = 30 check_variable = { which = touhou_crisis_100_counter value > 5 } }
                     modifier = { add = 40 check_variable = { which = touhou_crisis_100_counter value > 7 } }
+                    event_target:spth_precursor_capital_makai_system.owner = {
+                        set_country_flag = spth_kamikaushi_repaired_wedge_country
+                        set_global_flag = touhou_crisis_101_fired
+                        country_event = { id = touhou_crisis.101 }
+                    }
                 }
                 90 = {
                     modifier = { add = -10 check_variable = { which = touhou_crisis_100_counter value > 1 } }
@@ -403,11 +538,6 @@ event = {
                     modifier = { add = -30 check_variable = { which = touhou_crisis_100_counter value > 5 } }
                     modifier = { add = -40 check_variable = { which = touhou_crisis_100_counter value > 7 } }
                     change_variable = { which = touhou_crisis_100_counter value = 1 }
-                    event_target:makai_wedge_ruined_object.owner = {
-                        set_country_flag = spth_kamikaushi_repaired_wedge_country
-                        set_global_flag = touhou_crisis_101_fired
-                        country_event = { id = touhou_crisis.101 }
-                    }
                 }
             }
             reroll_random = yes
@@ -595,6 +725,7 @@ country_event = {
     picture_event_data = { room = spth_mercenary_fleet_room }
     option = {
         name = TH_PREPARE_WAR
+        country_event = { id = touhou_crisis.1 }
         country_event = { id = touhou_crisis.108 days = 60 random = 30 }
     }
 }
