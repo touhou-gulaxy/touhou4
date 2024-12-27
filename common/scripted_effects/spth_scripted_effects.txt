@@ -1009,20 +1009,29 @@ spth_kamikakushi_spawn_gate = {
 spth_kamikakushi_spawn_fleets_detail = {
 	optimize_memory
 	if = {
-		limit = {
-			has_global_flag = spth_kamikaushi_crisis_gate_$spth_id$_spawned
-			NOT = { has_global_flag = spth_kamikakushi_gate_$spth_id$_destroyed }
-		}
+		limit = { has_global_flag = spth_kamikaushi_crisis_gate_$spth_id$_spawned }
 		if = {
-			limit = { event_target:spth_kamikakushi_country = { count_owned_fleet = { count <= 40 } } }
+			limit = {
+				event_target:spth_kamikakushi_country = {
+					count_owned_fleet = { limit = { has_fleet_flag = spth_kamikakushi_fleet } count <= 48 }
+				}
+			}
 			random_system = {
 				limit = { has_star_flag = spth_kamikaushi_crisis_gate_$spth_id$ }
 				random_system_planet = {
 					limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
 					save_event_target_as = spth_kamikakushi_spawnpoint
 				}
-				event_target:spth_kamikakushi_spawnpoint = {
-					planet_event = { id = touhou_crisis.111 days = 5 }
+				if = {
+					limit = { NOT = { has_global_flag = spth_kamikakushi_gate_$spth_id$_destroyed } }
+					event_target:spth_kamikakushi_spawnpoint = {
+						planet_event = { id = touhou_crisis.111 days = 5 }
+					}
+				} else = {
+
+					event_target:spth_kamikakushi_spawnpoint = {
+						planet_event = { id = touhou_crisis.122 days = 5 }
+					}
 				}
 			}
 		}

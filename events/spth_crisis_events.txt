@@ -450,10 +450,10 @@ country_event = {
         spth_kamikakushi_spawn_fleets_detail = { spth_id = 3 }
         if = {
             limit = { check_variable = { which = spth_kamikakushi_spawn_interval value = 3 } }
-            country_event = { id = touhou_crisis.19 days = 300 }
+            country_event = { id = touhou_crisis.19 days = 180 }
         } else_if = {
             limit = { check_variable = { which = spth_kamikakushi_spawn_interval value = 2 } }
-            country_event = { id = touhou_crisis.19 days = 330 }
+            country_event = { id = touhou_crisis.19 days = 240 }
         } else = { country_event = { id = touhou_crisis.19 days = 360 } }
     }
 }
@@ -1044,12 +1044,31 @@ planet_event = {
         NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
     }
     immediate = {
+        # E/N刷6队，4+2
+        # H刷8队，6+2
+        # L刷10队，6+4
+        # OD刷12队，8+4
         spth_kamikakushi_spawn_preview_fleet = yes
         spth_kamikakushi_spawn_preview_fleet = yes
         spth_kamikakushi_spawn_preview_fleet = yes
         spth_kamikakushi_spawn_preview_fleet = yes
         spth_kamikakushi_spawn_invader_fleet = yes
         spth_kamikakushi_spawn_invader_fleet = yes
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 3 } } }
+            spth_kamikakushi_spawn_preview_fleet = yes
+            spth_kamikakushi_spawn_preview_fleet = yes
+        }
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 4 } } }
+            spth_kamikakushi_spawn_invader_fleet = yes
+            spth_kamikakushi_spawn_invader_fleet = yes
+        }
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 8 } } }
+            spth_kamikakushi_spawn_preview_fleet = yes
+            spth_kamikakushi_spawn_preview_fleet = yes
+        }
         event_target:spth_kamikakushi_country = {
             every_owned_fleet = {
                 limit = { has_fleet_flag = spth_kamikakushi_fleet is_fleet_idle = yes }
@@ -1401,6 +1420,44 @@ country_event = {
                     create_ship_design = { design = NAME_spth_kamikakushi_cruiser_2 }
                     add_ship_design = last_created_design
                 }
+            }
+        }
+    }
+}
+
+#Invasion fleet arrived lesser when gate destroyed.
+planet_event = {
+    id = touhou_crisis.122
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+    }
+    immediate = {
+        # E/N刷3队，2+1
+        # H刷4队，3+1
+        # L刷5队，3+2
+        # OD刷6队，4+2
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_invader_fleet = yes
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 3 } } }
+            spth_kamikakushi_spawn_preview_fleet = yes
+        }
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 4 } } }
+            spth_kamikakushi_spawn_invader_fleet = yes
+        }
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 8 } } }
+            spth_kamikakushi_spawn_preview_fleet = yes
+        }
+        event_target:spth_kamikakushi_country = {
+            every_owned_fleet = {
+                limit = { has_fleet_flag = spth_kamikakushi_fleet is_fleet_idle = yes }
+                fleet_event = { id = touhou_crisis.12 days = 1 random = 2  }
             }
         }
     }
