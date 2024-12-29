@@ -504,3 +504,54 @@ country_event = {
         name = spth_precursor.125.a
     }
 }
+
+country_event = {
+    id = spth_precursor.1001
+    is_triggered_only = yes
+    hide_window = yes
+    immediate = {
+        set_global_flag = spth_precursor_capital_makai_spawned
+        set_spawn_system_batch = begin
+        random_system_within_border = {
+            spawn_system = {
+                initializer = spth_precursor_capital_makai
+                hyperlane = no
+                effect = {
+                    add_hyperlane = {
+                        from = this
+                        to = prev
+                    }
+                }
+            }
+        }
+        set_spawn_system_batch = end
+        if = {
+            limit = { NOT = { has_event_chain = touhou_makai_chain } }
+            begin_event_chain = { event_chain = touhou_makai_chain target = this }
+        }
+        create_point_of_interest = {
+            id = spth_precursor_capital_makai.poi
+            name = spth_precursor_capital_makai.poi
+            desc = spth_precursor_capital_makai.poi.desc
+            event_chain = touhou_makai_chain
+            location = event_target:spth_precursor_capital_makai_system
+        }
+        country_event = { id = spth_precursor.115 }
+        every_playable_country = {
+            limit = { NOT = { is_same_value = prev } }
+            if = {
+                limit = { has_special_project = spth_precursor_capital_makai_discover }
+                abort_special_project = {
+                    type = spth_precursor_capital_makai_discover
+                    location = capital_scope
+                }
+            }
+            country_event = {
+                id = spth_precursor.116
+                days = 30
+                random = 30
+                scopes = { from = prev }
+            }
+        }
+    }
+}
