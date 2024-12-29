@@ -1,5 +1,8 @@
 namespace = spth_colony
 
+@spth_megastructure_planet_max_pop = 5
+@spth_megastructure_planet_pop_minus = -5
+
 # monthly update current barrier capacity and faith strength as planet variables (and more monthly refreshes)
 country_event = {
 	id = spth_colony.1
@@ -123,7 +126,7 @@ country_event = {
 		any_owned_planet = {
 			has_planet_flag = megastructure
 			has_planet_flag = is_spth_megastructure_planet
-			num_pops > 1
+			num_pops > @spth_megastructure_planet_max_pop
 		}
 	}
 	immediate = {
@@ -131,7 +134,7 @@ country_event = {
 			limit = {
 				has_planet_flag = megastructure
 				has_planet_flag = is_spth_megastructure_planet
-				num_pops > 1
+				num_pops > @spth_megastructure_planet_max_pop
 				is_colony = yes
 			}
 			planet_event = { id = spth_colony.201 }
@@ -145,15 +148,12 @@ planet_event = {
 	trigger = {
 		has_planet_flag = megastructure
 		has_planet_flag = is_spth_megastructure_planet
-		num_pops > 1
+		num_pops > @spth_megastructure_planet_max_pop
 	}
 	immediate = {
 		set_variable = { which = spth_megastructure_pop_count value = 0 }
-		export_trigger_value_to_variable = {
-			trigger = num_pops
-			variable = spth_megastructure_pop_count
-		}
-		change_variable = { which = spth_megastructure_pop_count value = -1 }
+		export_trigger_value_to_variable = { trigger = num_pops variable = spth_megastructure_pop_count }
+		change_variable = { which = spth_megastructure_pop_count value = @spth_megastructure_planet_pop_minus }
 		while = {
 			count = spth_megastructure_pop_count
 			random_owned_pop = { kill_pop = yes }
