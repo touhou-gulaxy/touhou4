@@ -808,7 +808,16 @@ spth_spawn_kamikakushi_country = {
 			effect = {
 				set_graphical_culture = strg_01
 				set_country_flag = touhou_mod_country
+				set_country_flag = touhou_crisis_country
 				set_country_flag = spth_kamikakushi_country
+				set_country_flag = protected_from_queen_storm
+				if = {
+					limit = { NOT = { has_country_flag = has_given_starbase_spth_kamikakushi_designs } }
+					create_ship_design = { design = NAME_starbase_spth_kamikakushi }
+					add_ship_design = last_created_design
+				}
+				activate_fog_machine = spth_kamikakushi_cloud
+				fog_machine_auto_tracking = yes
 				[[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
 				save_global_event_target_as = spth_kamikakushi_country
 				every_playable_country = {
@@ -1038,6 +1047,28 @@ spth_kamikakushi_spawn_fleets_detail = {
 					event_target:spth_kamikakushi_spawnpoint = {
 						planet_event = { id = touhou_crisis.122 days = 5 }
 					}
+				}
+			}
+		}
+	}
+}
+spth_kamikukushi_spawn_starbase = {
+	optimize_memory
+	if = {
+		limit = { NOT = { exists = starbase } }
+		event_target:spth_kamikakushi_country = {
+			if = {
+				limit = { NOT = { has_country_flag = has_given_starbase_spth_kamikakushi_designs } }
+				create_ship_design = { design = NAME_starbase_spth_kamikakushi }
+				add_ship_design = last_created_design
+			}
+		}
+		create_starbase = {
+			size = starbase_spth_kamikakushi
+			owner = event_target:spth_kamikakushi_country
+			effect = {
+				fleet = {
+					set_name = random
 				}
 			}
 		}
