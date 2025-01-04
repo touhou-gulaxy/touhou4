@@ -38,10 +38,11 @@ leader_event = {
                     limit = {
                         exists = owner
                         owner = {
-                            OR ={
+                            OR = {
                                 has_country_flag = spth_ag_starlightII_sp_get
                                 has_country_flag = spth_ag_all_ai_sp_get
                             }
+                            NOT = { has_trait = th_ag_interaction_trait_starlightII_sci }
                         }
                     }
                     add_trait_no_notify = th_ag_interaction_trait_starlightII_sci
@@ -56,6 +57,7 @@ leader_event = {
                                 has_country_flag = spth_ag_Illustelia_sp_get
                                 has_country_flag = spth_ag_all_ai_sp_get
                             }
+                            NOT = { has_trait = th_ag_interaction_trait_Illustelia_sci }
                         }
                     }
                     add_trait_no_notify = th_ag_interaction_trait_Illustelia_sci
@@ -63,13 +65,19 @@ leader_event = {
             }
             ag_epsilon_titan_leader = {
                 if = {
-                    limit = { exists = owner owner = { has_country_flag = spth_ag_all_ai_sp_get } }
+                    limit = {
+                        exists = owner owner = { has_country_flag = spth_ag_all_ai_sp_get }
+                        NOT = { has_trait = th_ag_interaction_trait_Aurora_gov }
+                    }
                     add_trait_no_notify = th_ag_interaction_trait_Aurora_gov
                 }
             }
             ag_m106_galaxy_ai_leader = {
                 if = {
-                    limit = { exists = owner owner = { has_country_flag = spth_ag_all_ai_sp_get } }
+                    limit = {
+                        exists = owner owner = { has_country_flag = spth_ag_all_ai_sp_get }
+                        NOT = { has_trait = th_ag_interaction_trait_Distance_Stars_gov }
+                    }
                     add_trait_no_notify = th_ag_interaction_trait_Distance_Stars_gov
                 }
             }
@@ -100,7 +108,13 @@ country_event = {
     option = {
         name = th_ag_interaction.ok
         default_hide_option = yes
-        hidden_effect = { country_event = { id = th_ag_interaction.19 days = 60 } }
+        hidden_effect = {
+            random_owned_leader = {
+                limit = { has_leader_flag = ag_lost_ancient_ship }
+                leader_event = { id = th_ag_interaction.2 }
+            }
+            country_event = { id = th_ag_interaction.19 days = 60 }
+        }
     }
 }
 country_event = {
@@ -126,7 +140,13 @@ country_event = {
     option = {
         name = th_ag_interaction.ok
         default_hide_option = yes
-        hidden_effect = { country_event = { id = th_ag_interaction.19 days = 60 } }
+        hidden_effect = {
+            random_owned_leader = {
+                limit = { has_leader_flag = ag_kappa_computer }
+                leader_event = { id = th_ag_interaction.2 }
+            }
+            country_event = { id = th_ag_interaction.19 days = 60 }
+        }
     }
 }
 country_event = {
@@ -143,6 +163,18 @@ country_event = {
     option = {
         name = th_ag_interaction.ok
         default_hide_option = yes
+        hidden_effect = {
+            every_owned_leader = {
+                limit = {
+                    has_leader_flag = ag_ancient_leader
+                    OR = {
+                        has_leader_flag = ag_epsilon_titan_leader
+                        has_leader_flag = ag_m106_galaxy_ai_leader
+                    }
+                }
+                leader_event = { id = th_ag_interaction.2 }
+            }
+        }
     }
 }
 
