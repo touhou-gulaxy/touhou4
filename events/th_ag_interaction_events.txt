@@ -1,5 +1,151 @@
 namespace = th_ag_interaction
 
+event = {
+    id = th_ag_interaction.1
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { spth_has_ag_mod = yes }
+    immediate = {
+        every_playable_country = {
+            limit = { is_touhou_player_faction = yes }
+            every_owned_leader = {
+                limit = {
+                    has_leader_flag = ag_ancient_leader
+                    OR = {
+                        has_leader_flag = ag_lost_ancient_ship
+                        has_leader_flag = ag_kappa_computer
+                        has_leader_flag = ag_epsilon_titan_leader
+                        has_leader_flag = ag_m106_galaxy_ai_leader
+                    }
+                }
+                leader_event = { id = th_ag_interaction.2 }
+            }
+        }
+    }
+}
+
+# a new ancient leader is spawned.
+# scope: leader
+leader_event = {
+    id = th_ag_interaction.2
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        switch = {
+            trigger = has_leader_flag
+            ag_lost_ancient_ship = {
+                if = {
+                    limit = {
+                        exists = owner
+                        owner = {
+                            OR ={
+                                has_country_flag = spth_ag_starlightII_sp_get
+                                has_country_flag = spth_ag_all_ai_sp_get
+                            }
+                        }
+                    }
+                    add_trait_no_notify = th_ag_interaction_trait_starlightII_sci
+                }
+            }
+            ag_kappa_computer = {
+                if = {
+                    limit = {
+                        exists = owner
+                        owner = {
+                            OR = {
+                                has_country_flag = spth_ag_Illustelia_sp_get
+                                has_country_flag = spth_ag_all_ai_sp_get
+                            }
+                        }
+                    }
+                    add_trait_no_notify = th_ag_interaction_trait_Illustelia_sci
+                }
+            }
+            ag_epsilon_titan_leader = {
+                if = {
+                    limit = { exists = owner owner = { has_country_flag = spth_ag_all_ai_sp_get } }
+                    add_trait_no_notify = th_ag_interaction_trait_Aurora_gov
+                }
+            }
+            ag_m106_galaxy_ai_leader = {
+                if = {
+                    limit = { exists = owner owner = { has_country_flag = spth_ag_all_ai_sp_get } }
+                    add_trait_no_notify = th_ag_interaction_trait_Distance_Stars_gov
+                }
+            }
+        }
+    }
+}
+
+country_event = {
+    id = th_ag_interaction.17
+    title = th_ag_interaction.17.name
+    desc = th_ag_interaction.17.desc
+    diplomatic = yes
+    custom_gui = "spth_event_large_window"
+    custom_gui_option = "spth_event_large_ui_option"
+    picture_event_data = {
+        room = ag_ancient_ai_red_room
+        portrait = event_target:ag_lost_ancient_ship_diplo_portrait
+    }
+    is_triggered_only = yes
+    immediate = {
+        set_country_flag = spth_ag_starlightII_sp_get
+        if = {
+            limit = { NOT = { is_variable_set = spth_ag_ai_sp_get } }
+            set_variable = { which = spth_ag_ai_sp_get value = 0 }
+        }
+        change_variable = { which = spth_ag_ai_sp_get value = 1 }
+    }
+    option = {
+        name = th_ag_interaction.ok
+        default_hide_option = yes
+        hidden_effect = { country_event = { id = th_ag_interaction.19 days = 60 } }
+    }
+}
+country_event = {
+    id = th_ag_interaction.18
+    title = th_ag_interaction.18.name
+    desc = th_ag_interaction.18.desc
+    diplomatic = yes
+    custom_gui = "spth_event_large_window"
+    custom_gui_option = "spth_event_large_ui_option"
+    picture_event_data = {
+        room = ag_ancient_ai_red_room
+        portrait = event_target:ag_kappa_computer_diplo_portrait
+    }
+    is_triggered_only = yes
+    immediate = {
+        set_country_flag = spth_ag_Illustelia_sp_get
+        if = {
+            limit = { NOT = { is_variable_set = spth_ag_ai_sp_get } }
+            set_variable = { which = spth_ag_ai_sp_get value = 0 }
+        }
+        change_variable = { which = spth_ag_ai_sp_get value = 1 }
+    }
+    option = {
+        name = th_ag_interaction.ok
+        default_hide_option = yes
+        hidden_effect = { country_event = { id = th_ag_interaction.19 days = 60 } }
+    }
+}
+country_event = {
+    id = th_ag_interaction.19
+    title = th_ag_interaction.19.name
+    desc = th_ag_interaction.19.desc
+    diplomatic = yes
+    custom_gui = "spth_event_large_window"
+    custom_gui_option = "spth_event_large_ui_option"
+    picture_event_data = { room = spth_muq_room }
+    is_triggered_only = yes
+    trigger = { check_variable = { which = spth_ag_ai_sp_get value >= 2 } }
+    immediate = { set_country_flag = spth_ag_all_ai_sp_get }
+    option = {
+        name = th_ag_interaction.ok
+        default_hide_option = yes
+    }
+}
+
 country_event = {
     id = th_ag_interaction.117
     title = th_ag_interaction.117.name
