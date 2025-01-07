@@ -2,4 +2,29 @@ option = {
     name = gensokyo_start.1170.$spth_id$
     trigger = { spth_has_ag_mod = yes }
     spth_concept_query_select = { id = $spth_id$ type = $spth_type$ spth_sub = ag_data }
+    hidden_effect = {
+        if = {
+            limit = { NOT = { has_country_flag = gensokyo_start_1170_cd_$spth_id$ } }
+            if = {
+                limit = { NOT = { exists = event_target:gensokyo_start_1170_ag_message_port } }
+                if = {
+                    limit = { any_owned_leader = { spth_is_touhou_gensokyo_leader = yes has_leader_flag = flag_yukari } }
+                    random_owned_leader = {
+                        limit = { spth_is_touhou_gensokyo_leader = yes has_leader_flag = flag_yukari }
+                        save_global_event_target_as = gensokyo_start_1170_ag_message_port
+                    }
+                } else = {
+                    ruler = { save_global_event_target_as = gensokyo_start_1170_ag_message_port }
+                }
+            }
+            set_timed_country_flag = { flag = gensokyo_start_1170_cd_$spth_id$ days = 90 }
+            create_message = {
+                type = spth_ag_data_selected_message
+                localization = spth_ag_data_selected_message_$spth_id$_desc
+                days = 30
+                target = event_target:gensokyo_start_1170_ag_message_port
+                recipient = this
+            }
+        }
+    }
 }
