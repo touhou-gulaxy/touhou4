@@ -62,7 +62,7 @@ VertexStruct VS_OUTPUT
 {
 	float4  vPosition : PDX_POSITION;
 	float2  vTexCoord : TEXCOORD0;
-@ifdef ANIMATED/home/koishi/added_disk/SteamLibrary/steamapps/common/Stellaris/gfx/interface/tiles/outliner_tile.dds
+@ifdef ANIMATED
 	float4  vAnimatedTexCoord : TEXCOORD1;
 @endif
 };
