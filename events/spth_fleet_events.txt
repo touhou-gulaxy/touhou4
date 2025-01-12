@@ -959,13 +959,39 @@ country_event = {
     id = spth_fleet.1003
     hide_window = yes
     is_triggered_only = yes
-    trigger = { from = { is_touhou_player_faction = yes } fromfromfrom = { is_ship_size = TH_super_carrier } }
+    trigger = {
+        from = { is_touhou_country = yes }
+        fromfromfrom = {
+            OR = {
+                is_ship_size = TH_super_carrier
+                is_ship_size = spth_kamikakushi_super_carrier
+            }
+        }
+    }
     immediate = {
-        from = {
-            remove_country_flag = spth_super_carrier_in_combat
-            clear_variable = spth_super_carrier_combat_days
-            clear_variable = spth_super_carrier_inv_max
-            set_variable = { which = spth_super_carrier_inv_counter value = 0 }
+        if = {
+            limit = { fromfromfrom = { is_ship_size = TH_battle_cruiser } }
+            from = {
+                remove_country_flag = spth_super_carrier_in_combat
+                clear_variable = spth_super_carrier_combat_days
+                clear_variable = spth_super_carrier_inv_max
+                set_variable = { which = spth_super_carrier_inv_counter value = 0 }
+            }
+        } else_if = {
+            limit = { fromfromfrom = { is_ship_size = spth_kamikakushi_super_carrier } }
+            random_system = {
+                limit = {
+                    OR = {
+                        has_star_flag = spth_kamikaushi_crisis_gate_1
+                        has_star_flag = spth_kamikaushi_crisis_gate_2
+                        has_star_flag = spth_kamikaushi_crisis_gate_3
+                    }
+                }
+                random_system_planet = {
+                    limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+                    planet_event = { id = touhou_crisis.128 days = 240 random = 120 }
+                }
+            }
         }
         fromfrom.solar_system = { system_event = { id = spth_fleet.1007 scopes = { from = root.from } days = 1 } }
         fromfromfrom = {
