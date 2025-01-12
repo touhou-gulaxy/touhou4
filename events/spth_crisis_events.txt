@@ -185,23 +185,87 @@ country_event = {
     trigger = {
         is_touhou_country = yes
         fromfrom = {
-            NOT = { has_fleet_flag = inv_fire_only_once_temple }
-            any_owned_ship = { is_ship_size = spth_kamikakushi_cruiser }
+            OR = {
+                AND = {
+                    NOT = { has_fleet_flag = inv_fire_only_once_temple }
+                    any_owned_ship = { is_ship_size = spth_kamikakushi_cruiser }
+                }
+                has_global_flag = touhou_kamikakushi_extra_14
+                has_global_flag = touhou_kamikakushi_extra_22
+                has_global_flag = touhou_kamikakushi_extra_23
+                has_global_flag = touhou_kamikakushi_extra_24
+                has_global_flag = touhou_kamikakushi_extra_33
+                has_global_flag = touhou_kamikakushi_extra_41
+                has_global_flag = touhou_kamikakushi_extra_42
+                has_global_flag = touhou_kamikakushi_extra_43
+            }
         }
     }
     immediate = {
         fromfrom = {
-            set_timed_fleet_flag = { flag = inv_fire_only_once_temple days = 10 }
-            every_owned_ship = {
-                limit = { is_ship_size = spth_kamikakushi_cruiser }
+            if = {
+                limit = {
+                    NOT = { has_fleet_flag = inv_fire_only_once_temple }
+                    any_owned_ship = { is_ship_size = spth_kamikakushi_cruiser }
+                }
+                set_timed_fleet_flag = { flag = inv_fire_only_once_temple days = 10 }
+                every_owned_ship = {
+                    limit = { is_ship_size = spth_kamikakushi_cruiser }
+                    reroll_random = yes
+                    random_list = {
+                        60 = { set_timed_ship_flag = { flag = spth_invincible days = 3 } }
+                        30 = { set_timed_ship_flag = { flag = spth_invincible days = 4 } }
+                        10 = { set_timed_ship_flag = { flag = spth_invincible days = 5 } }
+                    }
+                }
                 reroll_random = yes
+            }
+            # if = {
+            #     limit = { has_global_flag = touhou_kamikakushi_extra_13 }
+            #     random_list = {
+            #         25 = {}
+            #         75 = {}
+            #     }
+            # }
+            if = {
+                limit = { has_global_flag = touhou_kamikakushi_extra_14 }
                 random_list = {
-                    60 = { set_timed_ship_flag = { flag = spth_invincible days = 3 } }
-                    30 = { set_timed_ship_flag = { flag = spth_invincible days = 4 } }
-                    10 = { set_timed_ship_flag = { flag = spth_invincible days = 5 } }
+                    5 = {}
+                    95 = { fromfromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_14 days = 10 } } } }
+                }
+                reroll_random = yes
+            }
+            if = {
+                limit = { has_global_flag = touhou_kamikakushi_extra_22 has_fleet_flag = spth_kamikakushi_invader_fleet }
+                random_list = {
+                    20 = {}
+                    80 = { fromfromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_22 days = 45 } } } }
+                }
+                reroll_random = yes
+            }
+            if = {
+                limit = { has_global_flag = touhou_kamikakushi_extra_24 has_fleet_flag = spth_kamikakushi_defence_fleet }
+                fromfromfrom = { every_owned_ship = { clear_shield = yes add_modifier = { modifier = touhou_kamikakushi_extra_24 days = 15 } } }
+            }
+            if = {
+                limit = { has_global_flag = touhou_kamikakushi_extra_33 }
+                every_owned_ship = {
+                    limit = { NOT = { has_ship_flag = spth_invincible } }
+                    set_timed_ship_flag = { flag = spth_invincible days = 3 }
                 }
             }
-            reroll_random = yes
+            if = {
+                limit = { has_global_flag = touhou_kamikakushi_extra_41 }
+                fromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_41 } } }
+            }
+            if = {
+                limit = { has_global_flag = touhou_kamikakushi_extra_42 }
+                fromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_42 days = 10 } } }
+            }
+            if = {
+                limit = { has_global_flag = touhou_kamikakushi_extra_43 }
+                fromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_43 days = 180 } } }
+            }
         }
     }
 }
@@ -805,6 +869,7 @@ country_event = {
             spth_kamikakushi_spawn_defence_fleet = yes
             spth_kamikakushi_spawn_defence_fleet = yes
             spth_kamikakushi_spawn_small_defence_fleet = yes
+            spth_kamikakushi_spawn_super_carrier_fleet = yes
             event_target:spth_kamikakushi_spawnpoint = {
                 planet_event = { id = touhou_crisis.111 days = 5 }
                 if = {
@@ -1259,6 +1324,7 @@ country_event = {
             spth_kamikakushi_spawn_gate = { spth_id = 2 }
             spth_kamikakushi_spawn_defence_fleet = yes
             spth_kamikakushi_spawn_small_defence_fleet = yes
+            spth_kamikakushi_spawn_super_carrier_fleet = yes
             event_target:spth_kamikakushi_spawnpoint = {
                 planet_event = { id = touhou_crisis.111 days = 5 }
             }
@@ -1295,6 +1361,7 @@ country_event = {
             spth_kamikakushi_spawn_gate = { spth_id = 3 }
             spth_kamikakushi_spawn_defence_fleet = yes
             spth_kamikakushi_spawn_small_defence_fleet = yes
+            spth_kamikakushi_spawn_super_carrier_fleet = yes
             event_target:spth_kamikakushi_spawnpoint = {
                 planet_event = { id = touhou_crisis.111 days = 5 }
             }

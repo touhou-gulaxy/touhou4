@@ -885,15 +885,49 @@ ship_event = {
     trigger = { NOT = { has_ship_flag = is_spth_space_shrine_station } }
     immediate = {
         if = {
-            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
-            change_variable = { which = spth_extra_life_used value = 1 }
-            remove_modifier = ship_spth_extra_life_lose
-            add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
-            ship_event = { id = spth_fleet.1105 days = 180 }
+            limit = {
+                exists = fromfrom
+                fromfrom = { OR = { has_fleet_flag = spth_kamikakushi_fleet has_fleet_flag = spth_kamikakushi_defence_fleet } }
+                OR = { has_global_flag = touhou_kamikakushi_extra_31 has_global_flag = touhou_kamikakushi_extra_32 }
+            }
+            if = {
+                limit = { has_global_flag = touhou_kamikakushi_extra_31 }
+                reroll_random = yes
+                random_list = {
+                    15 = {  }
+                    85 = {
+                        if = {
+                            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+                            change_variable = { which = spth_extra_life_used value = 1 }
+                            remove_modifier = ship_spth_extra_life_lose
+                            if = {
+                                limit = { has_global_flag = touhou_kamikakushi_extra_32 }
+                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 90 }
+                                ship_event = { id = spth_fleet.1105 days = 90 }
+                            } else = {
+                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+                                ship_event = { id = spth_fleet.1105 days = 180 }
+                            }
+                        }
+                        set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+                        add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+                        clear_variable = ship_spth_extra_life_reduce
+                    }
+                }
+                reroll_random = yes
+            }
+        } else = {
+            if = {
+                limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+                change_variable = { which = spth_extra_life_used value = 1 }
+                remove_modifier = ship_spth_extra_life_lose
+                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+                ship_event = { id = spth_fleet.1105 days = 180 }
+            }
+            set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+            add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+            clear_variable = ship_spth_extra_life_reduce
         }
-        set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
-        add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
-        clear_variable = ship_spth_extra_life_reduce
     }
 }
 ship_event = {

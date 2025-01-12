@@ -24,12 +24,23 @@ spth_invasion_jump_drive_planet_action = {
             prevprev = {
                 set_location = { target = prev distance = 300 angle = random }
                 every_owned_ship = { spth_create_jump_particle_effect = yes }
-                while = {
-                    limit = { any_owned_ship = { NOT = { has_ship_flag = ag_jump_drive_cooldown } } }
-                    random_owned_ship = {
-                        limit = { NOT = { has_ship_flag = ag_jump_drive_cooldown } }
-                        set_timed_ship_flag = { flag = ag_jump_drive_cooldown days = 200 }
-                        add_modifier = { modifier = "jump_drive_cooldown" days = 200 }
+                if = {
+                    limit = { NOT = { has_global_flag = touhou_kamikakushi_extra_12 } }
+                    while = {
+                        limit = { any_owned_ship = { NOT = { has_ship_flag = ag_jump_drive_cooldown } } }
+                        random_owned_ship = {
+                            limit = { NOT = { has_ship_flag = ag_jump_drive_cooldown } }
+                            set_timed_ship_flag = { flag = ag_jump_drive_cooldown days = 200 }
+                            add_modifier = { modifier = "jump_drive_cooldown" days = 200 }
+                        }
+                    }
+                } else = {
+                    while = {
+                        limit = { any_owned_ship = { NOT = { has_ship_flag = ag_jump_drive_cooldown } } }
+                        random_owned_ship = {
+                            limit = { NOT = { has_ship_flag = ag_jump_drive_cooldown } }
+                            set_timed_ship_flag = { flag = ag_jump_drive_cooldown days = 40 }
+                        }
                     }
                 }
                 auto_move_to_planet = { target = prev clear_auto_move_on_arrival = yes }

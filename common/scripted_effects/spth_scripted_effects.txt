@@ -309,6 +309,7 @@ spth_create_fleet = {
 			[[spth_kamikakushi_gate] while = { count = $spth_kamikakushi_gate$ create_ship = { name = NAME_spth_kamikakushi_gate design = NAME_spth_kamikakushi_gate } } ]
 			[[spth_kamikakushi_cruiser_1] while = { count = $spth_kamikakushi_cruiser_1$ create_ship = { name = random design = NAME_spth_kamikakushi_cruiser_1 } } ]
 			[[spth_kamikakushi_cruiser_2] while = { count = $spth_kamikakushi_cruiser_2$ create_ship = { name = random design = NAME_spth_kamikakushi_cruiser_2 } } ]
+			[[spth_kamikakushi_super_carrier] while = { count = $spth_kamikakushi_super_carrier$ create_ship = { name = NAME_spth_kamikakushi_super_carrier design = NAME_spth_kamikakushi_super_carrier_design } } ]
 
 			[[fleet_action] fleet_event = { id = $fleet_action$ } ]
 			[[fleet_action_delayed] fleet_event = { id = $fleet_action_delayed$ days = $DAYS$ random = $DAYS_RANDOM$ } ]
@@ -1008,6 +1009,28 @@ spth_kamikakushi_spawn_defence_fleet = {
 	}
 	spth_kamikakushi_add_fleet_counter = yes
 }
+spth_kamikakushi_spawn_super_carrier_fleet = {
+	optimize_memory
+	if = {
+		limit = { has_global_flag = touhou_kamikakushi_extra_11 }
+		spth_create_fleet = {
+			NAME = NAME_spth_kamikakushi_super_carrier_fleet
+			can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+			OWNER = event_target:spth_kamikakushi_country
+			location = event_target:spth_kamikakushi_spawnpoint
+			flag = spth_kamikakushi_fleet
+			flag2 = spth_kamikakushi_flagship_fleet
+			spth_kamikakushi_super_carrier = 1
+			spth_kamikakushi_invader_titan = 2
+			spth_kamikakushi_invader_bc_tlx = 10
+			spth_kamikakushi_invader_bc_tmp = 10
+			spth_kamikakushi_invader_bc_tor = 10
+			spth_kamikakushi_invader_bc_ylx = 10
+			spth_kamikakushi_cruiser_1 = 10
+		}
+		spth_kamikakushi_add_fleet_counter = yes
+	}
+}
 spth_kamikakushi_spawn_small_defence_fleet = {
 	optimize_memory
 	spth_create_fleet = {
@@ -1065,7 +1088,10 @@ spth_kamikakushi_spawn_fleets_detail = {
 		if = {
 			limit = {
 				event_target:spth_kamikakushi_country = {
-					count_owned_fleet = { limit = { has_fleet_flag = spth_kamikakushi_fleet } count <= 48 }
+					if = {
+						limit = { NOT = { has_global_flag = touhou_kamikakushi_extra_21 } }
+						count_owned_fleet = { limit = { has_fleet_flag = spth_kamikakushi_fleet } count <= 48 }
+					} else = { count_owned_fleet = { limit = { has_fleet_flag = spth_kamikakushi_fleet } count <= 60 } }
 				}
 			}
 			random_system = {
@@ -1109,5 +1135,84 @@ spth_kamikukushi_spawn_starbase = {
 				}
 			}
 		}
+	}
+}
+
+touhou_kamikakushi_extra_expand_page = {
+	optimize_memory
+	hidden_effect = {
+		remove_country_flag = touhou_kamikakushi_extra_1
+		remove_country_flag = touhou_kamikakushi_extra_2
+		remove_country_flag = touhou_kamikakushi_extra_3
+		remove_country_flag = touhou_kamikakushi_extra_4
+		set_country_flag = touhou_kamikakushi_extra_$spth_id$
+	}
+}
+touhou_kamikakushi_extra_page_1_off = {
+	optimize_memory
+	hidden_effect = {
+		remove_global_flag = touhou_kamikakushi_extra_11
+		remove_global_flag = touhou_kamikakushi_extra_12
+		remove_global_flag = touhou_kamikakushi_extra_13
+		remove_global_flag = touhou_kamikakushi_extra_14
+	}
+}
+touhou_kamikakushi_extra_page_2_off = {
+	optimize_memory
+	hidden_effect = {
+		remove_global_flag = touhou_kamikakushi_extra_21
+		remove_global_flag = touhou_kamikakushi_extra_22
+		remove_global_flag = touhou_kamikakushi_extra_23
+		remove_global_flag = touhou_kamikakushi_extra_24
+	}
+}
+touhou_kamikakushi_extra_page_3_off = {
+	optimize_memory
+	hidden_effect = {
+		remove_global_flag = touhou_kamikakushi_extra_31
+		remove_global_flag = touhou_kamikakushi_extra_32
+		remove_global_flag = touhou_kamikakushi_extra_33
+	}
+}
+touhou_kamikakushi_extra_page_4_off = {
+	optimize_memory
+	hidden_effect = {
+		remove_global_flag = touhou_kamikakushi_extra_41
+		remove_global_flag = touhou_kamikakushi_extra_42
+		remove_global_flag = touhou_kamikakushi_extra_43
+	}
+}
+touhou_kamikakushi_extra_page_1_on = {
+	optimize_memory
+	hidden_effect = {
+		set_global_flag = touhou_kamikakushi_extra_11
+		set_global_flag = touhou_kamikakushi_extra_12
+		set_global_flag = touhou_kamikakushi_extra_13
+		set_global_flag = touhou_kamikakushi_extra_14
+	}
+}
+touhou_kamikakushi_extra_page_2_on = {
+	optimize_memory
+	hidden_effect = {
+		set_global_flag = touhou_kamikakushi_extra_21
+		set_global_flag = touhou_kamikakushi_extra_22
+		set_global_flag = touhou_kamikakushi_extra_23
+		set_global_flag = touhou_kamikakushi_extra_24
+	}
+}
+touhou_kamikakushi_extra_page_3_on = {
+	optimize_memory
+	hidden_effect = {
+		set_global_flag = touhou_kamikakushi_extra_31
+		set_global_flag = touhou_kamikakushi_extra_32
+		set_global_flag = touhou_kamikakushi_extra_33
+	}
+}
+touhou_kamikakushi_extra_page_4_on = {
+	optimize_memory
+	hidden_effect = {
+		set_global_flag = touhou_kamikakushi_extra_41
+		set_global_flag = touhou_kamikakushi_extra_42
+		set_global_flag = touhou_kamikakushi_extra_43
 	}
 }
