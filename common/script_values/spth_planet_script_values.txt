@@ -430,3 +430,102 @@ spth_convert_rate_produce_add = {
 	add = value:spth_num_chip_slave|divide|20|
 	add = value:spth_convert_rate_produce_add_districts|district|$district$|
 }
+
+# 感谢涅托
+gensokyo_planet_drp_mult_genso = {
+	base = 0
+	add = 1
+	modifier = {
+		planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier }
+		add = planet.planet_weak_genso_job_produce_faith_modifier
+	}
+}
+gensokyo_planet_drp_factor_pops = {
+	base = 0
+	add = trigger:num_pops
+	mult = 0.01
+	add = 1
+}
+gensokyo_planet_drp_factor_faith = {
+	base = 1
+	add = planet.planet_faith_sum
+	mult = 0.1
+	square_root = yes
+	complex_trigger_modifier = {
+		potential = {
+			planet={
+				has_planetary_ascension_tier > 1
+				has_planetary_ascension_tier < 11
+			}
+		}
+		trigger_scope = planet
+		trigger =has_planetary_ascension_tier
+		mode = add
+		mult = 0.01
+	}
+	modifier = {
+		has_planetary_ascension_tier > 10
+		add = 1
+	}
+}
+gensokyo_planet_drp_factor = {
+	base = 0
+	add = value:gensokyo_planet_drp_factor_faith
+	divide = 100
+	mult = value:gensokyo_planet_drp_factor_pops
+	round = yes
+	abs = yes
+}
+gensokyo_planet_drp_mult = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger_scope = planet
+		trigger = num_districts
+		parameters = { type = $districts$ }
+		mode = add
+		mult = 0.1
+	}
+	complex_trigger_modifier = {
+		trigger_scope = planet
+		trigger = num_buildings
+		parameters = { type = $buildings|any$ }
+		mode = mult
+	}
+	add = modifier:planet_jobs_produces_mult
+	[[rss] add = modifier:planet_jobs_$rss$_produces_mult ]
+	[[category] add = modifier:planet_jobs_$category$_produces_mult ]
+	[[rss_category] add = modifier:planet_$rss_category$_produces_mult ]
+	add = modifier:planet_jobs_upkeep_mult
+	[[job]
+		complex_trigger_modifier = {
+			trigger_scope = planet
+			trigger = count_owned_pop
+			parameters = { limit = { has_job = $job$ } }
+			mode = mult
+			mult = $jobsup|0.15$
+		}
+	]
+	[[modifier]
+		complex_trigger_modifier = {
+			trigger = check_modifier_value
+			parameters = { modifier = $modifier$ }
+			mode = add
+			mult = -1
+		}
+	]
+	complex_trigger_modifier = {
+		trigger_scope = planet
+		trigger =has_planetary_ascension_tier
+		mode = add
+		mult = $planet_tier|10$
+		potential ={
+			has_planetary_ascension_tier > 0
+		}
+	}
+	modifier = {
+		planet = { is_variable_set = gensokyo_planet_drp_factor }
+		add = planet.gensokyo_planet_drp_factor
+	}
+	mult = value:gensokyo_planet_drp_mult_genso
+	mult = 0.5
+}
