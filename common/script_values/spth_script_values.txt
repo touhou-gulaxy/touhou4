@@ -421,3 +421,22 @@ yin_yang_orb_drp_mult = {
 	}
 	mult = value:yin_yang_orb_drp_count|active_factor|$active_factor$|
 }
+# 基础*(ship_weapon_damage+能量+灵力+修正)*(1+船体伤害)*(1+大小倍率计算)=final
+# 修正 = final/(1+大小倍率计算)/(1+船体伤害)/基础 - ship_weapon_damage-能量-灵力
+th_instant_kill_hull_damage = {
+	base = 0
+	add = 1
+	add = modifier:ship_hull_damage_mult
+	min = 1
+}
+th_instant_kill_value = {
+	base = 0
+	add = $final_dmg$
+	divide = 3
+	divide = $base_dmg$
+	divide = value:th_instant_kill_hull_damage
+	subtract = modifier:ship_weapon_damage
+	subtract = modifier:weapon_type_energy_weapon_damage_mult
+	subtract = modifier:weapon_type_lingli_weapon_damage_mult
+	abs = yes
+}
