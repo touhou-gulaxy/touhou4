@@ -1362,23 +1362,58 @@ country_event = {
     trigger = {
         is_touhou_country = yes
         fromfrom = {
-            exists = leader leader = { has_trait = leader_trait_tenshi }
-            NOT = { has_fleet_flag = has_tenshi_aura_effect }
+            exists = leader
+            OR = {
+                AND = {
+                    leader = { has_trait = leader_trait_tenshi }
+                    NOT = { has_fleet_flag = has_tenshi_aura_effect }
+                }
+                AND = {
+                    leader = { has_trait = leader_trait_alice }
+                    NOT = { prev = { has_country_flag = has_tenshi_aura_effect_cooldown } }
+                }
+            }
         }
     }
     immediate = {
         fromfrom = {
             reroll_random = yes
-            random_list = {
-                1 = { tenshi_init_aura_effect = { days = 2 } }
-                3 = { tenshi_init_aura_effect = { days = 3 } }
-                3 = { tenshi_init_aura_effect = { days = 4 } }
-                3 = { tenshi_init_aura_effect = { days = 5 } }
-                2 = { tenshi_init_aura_effect = { days = 6 } }
-                2 = { tenshi_init_aura_effect = { days = 7 } }
-                2 = { tenshi_init_aura_effect = { days = 8 } }
-                1 = { tenshi_init_aura_effect = { days = 9 } }
-                1 = { tenshi_init_aura_effect = { days = 10 } }
+            leader = {
+                switch = {
+                    trigger = has_trait
+                    leader_trait_tenshi = {
+                        prev = {
+                            random_list = {
+                                1 = { tenshi_init_aura_effect = { days = 2 } }
+                                3 = { tenshi_init_aura_effect = { days = 3 } }
+                                3 = { tenshi_init_aura_effect = { days = 4 } }
+                                3 = { tenshi_init_aura_effect = { days = 5 } }
+                                2 = { tenshi_init_aura_effect = { days = 6 } }
+                                2 = { tenshi_init_aura_effect = { days = 7 } }
+                                2 = { tenshi_init_aura_effect = { days = 8 } }
+                                1 = { tenshi_init_aura_effect = { days = 9 } }
+                                1 = { tenshi_init_aura_effect = { days = 10 } }
+                            }
+                        }
+                    }
+                    leader_trait_alice = {
+                        prevprev = {
+                            set_timed_country_flag = { flag = has_tenshi_aura_effect_cooldown days = 180 }
+                            save_event_target_as = alice_owner
+                        }
+                        prev = {
+                            save_event_target_as = alice_pos
+                            random_list = {
+                                1 = { alice_init_combat_effect = { days = 8 } }
+                                1 = { alice_init_combat_effect = { days = 10 } }
+                                1 = { alice_init_combat_effect = { days = 12 } }
+                                1 = { alice_init_combat_effect = { days = 14 } }
+                                1 = { alice_init_combat_effect = { days = 15 } }
+                            }
+                        }
+                    }
+                    default = {}
+                }
             }
             reroll_random = yes
         }
