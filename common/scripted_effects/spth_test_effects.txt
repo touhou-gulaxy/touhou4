@@ -1,0 +1,269 @@
+spth_test_ship_spawner_owner_check = {
+    optimize_memory
+    if = {
+        limit = {
+            check_variable = {
+                which = spth_test_ship_spawner_index_suffix
+                value < @spth_test_ship_spawner_index_suffix_min
+            }
+        }
+        set_variable = {
+            which = spth_test_ship_spawner_index_suffix
+            value = @spth_test_ship_spawner_index_suffix_max
+        }
+    }
+    if = {
+        limit = {
+            check_variable = {
+                which = spth_test_ship_spawner_index_suffix
+                value > @spth_test_ship_spawner_index_suffix_max
+            }
+        }
+        set_variable = {
+            which = spth_test_ship_spawner_index_suffix
+            value = @spth_test_ship_spawner_index_suffix_min
+        }
+    }
+}
+spth_test_ship_spawner_event_chain_check = {
+    optimize_memory
+    if = {
+        limit = {
+            check_variable = {
+                which = spth_test_ship_spawner_index_event_chain
+                value < @spth_test_ship_spawner_index_event_chain_min
+            }
+        }
+        set_variable = {
+            which = spth_test_ship_spawner_index_event_chain
+            value = @spth_test_ship_spawner_index_event_chain_max
+        }
+    }
+    if = {
+        limit = {
+            check_variable = {
+                which = spth_test_ship_spawner_index_event_chain
+                value > @spth_test_ship_spawner_index_event_chain_max
+            }
+        }
+        set_variable = {
+            which = spth_test_ship_spawner_index_event_chain
+            value = @spth_test_ship_spawner_index_event_chain_min
+        }
+    }
+}
+spth_test_ship_spawner_ship_class_check_item = {
+    optimize_memory
+    if = {
+        limit = {
+            check_variable = {
+                which = spth_test_ship_spawner_index_event_chain
+                value = @spth_test_ship_spawner_index_event_chain_$event_chain$
+            }
+        }
+        if = {
+            limit = {
+                check_variable = {
+                    which = spth_test_ship_spawner_index_ship_class
+                    value < @spth_test_ship_spawner_index_ship_class_min_$event_chain$
+                }
+            }
+            set_variable = {
+                which = spth_test_ship_spawner_index_ship_class
+                value = @spth_test_ship_spawner_index_ship_class_max_$event_chain$
+            }
+        }
+        if = {
+            limit = {
+                check_variable = {
+                    which = spth_test_ship_spawner_index_ship_class
+                    value > @spth_test_ship_spawner_index_ship_class_max_$event_chain$
+                }
+            }
+            set_variable = {
+                which = spth_test_ship_spawner_index_ship_class
+                value = @spth_test_ship_spawner_index_ship_class_min_$event_chain$
+            }
+        }
+    }
+}
+spth_test_ship_spawner_ship_class_check = {
+    optimize_memory
+    spth_test_ship_spawner_ship_class_check_item = { event_chain = kamikakushi }
+    spth_test_ship_spawner_ship_class_check_item = { event_chain = lunar }
+    spth_test_ship_spawner_ship_class_check_item = { event_chain = makai }
+}
+spth_test_ship_spawner_ship_sub_check = {
+    optimize_memory
+    if = {
+        inline_script = {
+            script = events/spth_test_ship_spawner_ship_sub_check_item
+            class = battlecruiser event_chain = kamikakushi
+        }
+    } else_if = {
+        inline_script = {
+            script = events/spth_test_ship_spawner_ship_sub_check_item
+            class = battlecruiser event_chain = makai
+        }
+    } else_if = {
+        inline_script = {
+            script = events/spth_test_ship_spawner_ship_sub_check_item
+            class = frigate event_chain = lunar
+        }
+    } else = { set_variable = { which = spth_test_ship_spawner_index_sub value = 0 } }
+}
+
+spth_test_create_fleet = {
+    optimize_memory
+    create_fleet = {
+        name = $NAME$
+        settings = {
+            can_change_composition = $can_change_composition|yes$
+            uses_naval_capacity = $uses_naval_capacity|no$
+            spawn_debris = $spawn_debris|no$
+            can_disband = $can_disband$
+            is_boss = $is_boss$
+        }
+        effect = {
+            set_owner = $OWNER$
+            set_location = { target = $location$ distance = $distance|0$ angle = random }
+            [[bombardment] set_fleet_bombardment_stance = $bombardment$ ]
+            [[flag] set_fleet_flag = $flag$ ]
+            [[flag2] set_fleet_flag = $flag2$ ]
+            set_fleet_flag = spth_test_flag
+
+            # makai ships
+            [[spth_kamikakushi_invader_titan] while = { count = $spth_kamikakushi_invader_titan$ create_ship = { name = random design = spth_kamikakushi_invader_titan_test } } ]
+            [[spth_kamikakushi_invader_bc_tor] while = { count = $spth_kamikakushi_invader_bc_tor$ create_ship = { name = random design = spth_kamikakushi_invader_bc_tor_test } } ]
+            [[spth_kamikakushi_invader_bc_tlx] while = { count = $spth_kamikakushi_invader_bc_tlx$ create_ship = { name = random design = spth_kamikakushi_invader_bc_tlx_test } } ]
+            [[spth_kamikakushi_invader_bc_tmp] while = { count = $spth_kamikakushi_invader_bc_tmp$ create_ship = { name = random design = spth_kamikakushi_invader_bc_tmp_test } } ]
+            [[spth_kamikakushi_invader_bc_ylx] while = { count = $spth_kamikakushi_invader_bc_ylx$ create_ship = { name = random design = spth_kamikakushi_invader_bc_ylx_test } } ]
+            [[spth_kamikakushi_invader_bc_yyk] while = { count = $spth_kamikakushi_invader_bc_yyk$ create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk_test } } ]
+            [[spth_kamikakushi_invader_bc_yyk_p] while = { count = $spth_kamikakushi_invader_bc_yyk_p$ create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk_p_test } } ]
+            [[spth_kamikakushi_invader_bc_yyk_g] while = { count = $spth_kamikakushi_invader_bc_yyk_g$ create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk_g_test } } ]
+            [[spth_makai_ship_core_0] while = { count = $spth_makai_ship_core_0$ create_ship = { name = NAME_spth_makai_ship_core_0 design = NAME_spth_makai_ship_core_0_test } } ]
+            [[spth_makai_ship_core_1] while = { count = $spth_makai_ship_core_1$ create_ship = { name = NAME_spth_makai_ship_core_1 design = NAME_spth_makai_ship_core_1_test } } ]
+            [[spth_kamikakushi_gate] while = { count = $spth_kamikakushi_gate$ create_ship = { name = NAME_spth_kamikakushi_gate design = NAME_spth_kamikakushi_gate_test } } ]
+            [[spth_kamikakushi_cruiser_1] while = { count = $spth_kamikakushi_cruiser_1$ create_ship = { name = random design = NAME_spth_kamikakushi_cruiser_1_test } } ]
+            [[spth_kamikakushi_cruiser_2] while = { count = $spth_kamikakushi_cruiser_2$ create_ship = { name = random design = NAME_spth_kamikakushi_cruiser_2_test } } ]
+            [[spth_kamikakushi_super_carrier] while = { count = $spth_kamikakushi_super_carrier$ create_ship = { name = NAME_spth_kamikakushi_super_carrier design = NAME_spth_kamikakushi_super_carrier_design_test } } ]
+            [[spth_makai_defence_system_titan] while = { count = $spth_makai_defence_system_titan$ create_ship = { name = random design = spth_makai_defence_system_titan_test } } ]
+            [[spth_makai_defence_system_yyk_t] while = { count = $spth_makai_defence_system_yyk_t$ create_ship = { name = random design = spth_makai_defence_system_yyk_t_test } } ]
+            [[spth_makai_defence_system_yyk_x] while = { count = $spth_makai_defence_system_yyk_x$ create_ship = { name = random design = spth_makai_defence_system_yyk_x_test } } ]
+            [[spth_makai_defence_system_bc_g] while = { count = $spth_makai_defence_system_bc_g$ create_ship = { name = random design = spth_makai_defence_system_bc_g_test } } ]
+            [[spth_makai_defence_system_bc_h] while = { count = $spth_makai_defence_system_bc_h$ create_ship = { name = random design = spth_makai_defence_system_bc_h_test } } ]
+            [[spth_makai_defence_system_bc_t] while = { count = $spth_makai_defence_system_bc_t$ create_ship = { name = random design = spth_makai_defence_system_bc_t_test } } ]
+            [[spth_makai_defence_system_cruiser] while = { count = $spth_makai_defence_system_cruiser$ create_ship = { name = random design = spth_makai_defence_system_cruiser_test } } ]
+            [[spth_makai_defence_system_carrier] while = { count = $spth_makai_defence_system_carrier$ create_ship = { name = NAME_spth_makai_defence_system_carrier design = spth_makai_defence_system_carrier_test } } ]
+
+            # lunar capital
+            [[NAME_lunar_capital_carrier_crisis] while = { count = $NAME_lunar_capital_carrier_crisis$ create_ship = { name = random design = NAME_lunar_capital_carrier_crisis_test } } ]
+            [[NAME_lunar_capital_battleship_crisis] while = { count = $NAME_lunar_capital_battleship_crisis$ create_ship = { name = random design = NAME_lunar_capital_battleship_crisis_test } } ]
+            [[NAME_lunar_capital_escort_crisis] while = { count = $NAME_lunar_capital_escort_crisis$ create_ship = { name = random design = NAME_lunar_capital_escort_crisis_test } } ]
+            [[NAME_lunar_capital_frigate_crisis] while = { count = $NAME_lunar_capital_frigate_crisis$ create_ship = { name = random design = NAME_lunar_capital_frigate_crisis_test } } ]
+            [[NAME_lunar_capital_frigate_s_crisis] while = { count = $NAME_lunar_capital_frigate_s_crisis$ create_ship = { name = random design = NAME_lunar_capital_frigate_s_crisis_test } } ]
+
+            [[fleet_action] fleet_event = { id = $fleet_action$ } ]
+            [[fleet_action_delayed] fleet_event = { id = $fleet_action_delayed$ days = $DAYS$ random = $DAYS_RANDOM$ } ]
+            [[modifier] add_modifier = { modifier = $modifier$ mult = $MUL$ days = $DURATION$ } ]
+            [[evt_target] save_event_target_as = $evt_target$ ]
+            spth_init_special_ship_flag = yes
+        }
+    }
+}
+spth_test_ship_spawner_create_fleet = {
+    optimize_memory
+    save_event_target_as = ship_spawner_owner
+    capital_scope = { save_event_target_as = ship_spawner_location }
+    if = {
+        limit = { spth_check_test_event_chain = { event_chain = kamikakushi } }
+        if = {
+            limit = { spth_check_test_ship_class = { event_chain = kamikakushi class = cruiser } }
+            if = {
+                limit = { spth_check_test_ship_suffix = { suffix = event } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_cruiser_1 }
+            } else = { inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_cruiser_2 } }
+        } else_if = {
+            limit = { spth_check_test_ship_class = { event_chain = kamikakushi class = battlecruiser } }
+            if = {
+                limit = { spth_check_test_ship_sub = { event_chain = kamikakushi class = battlecruiser sub = 0 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_invader_bc_yyk }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = kamikakushi class = battlecruiser sub = 1 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_invader_bc_yyk_g }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = kamikakushi class = battlecruiser sub = 2 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_invader_bc_yyk_p }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = kamikakushi class = battlecruiser sub = 3 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_invader_bc_ylx }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = kamikakushi class = battlecruiser sub = 4 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_invader_bc_tlx }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = kamikakushi class = battlecruiser sub = 5 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_invader_bc_tmp }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = kamikakushi class = battlecruiser sub = 6 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_invader_bc_tor }
+            }
+        } else_if = {
+            limit = { spth_check_test_ship_class = { event_chain = kamikakushi class = titan } }
+            inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_invader_titan }
+        } else_if = {
+            limit = { spth_check_test_ship_class = { event_chain = kamikakushi class = carrier } }
+            inline_script = { script = events/spth_test_create_fleet design = spth_kamikakushi_super_carrier }
+        }
+    } else_if = {
+        limit = { spth_check_test_event_chain = { event_chain = lunar } }
+        if = {
+            limit = { spth_check_test_ship_class = { event_chain = lunar class = frigate } }
+            if = {
+                limit = { spth_check_test_ship_sub = { event_chain = lunar class = frigate sub = 0 } }
+                inline_script = { script = events/spth_test_create_fleet design = NAME_lunar_capital_frigate_s_crisis }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = lunar class = frigate sub = 1 } }
+                inline_script = { script = events/spth_test_create_fleet design = NAME_lunar_capital_frigate_crisis }
+            }
+        } else_if = {
+            limit = { spth_check_test_ship_class = { event_chain = lunar class = cruiser } }
+            inline_script = { script = events/spth_test_create_fleet design = NAME_lunar_capital_escort_crisis }
+        } else_if = {
+            limit = { spth_check_test_ship_class = { event_chain = lunar class = battlecruiser } }
+            inline_script = { script = events/spth_test_create_fleet design = NAME_lunar_capital_battleship_crisis }
+        } else_if = {
+            limit = { spth_check_test_ship_class = { event_chain = lunar class = titan } }
+            inline_script = { script = events/spth_test_create_fleet design = NAME_lunar_capital_carrier_crisis }
+        }
+    } else_if = {
+        limit = { spth_check_test_event_chain = { event_chain = makai } }
+        if = {
+            limit = { spth_check_test_ship_class = { event_chain = makai class = cruiser } }
+            inline_script = { script = events/spth_test_create_fleet design = spth_makai_defence_system_cruiser }
+        } else_if = {
+            limit = { spth_check_test_ship_class = { event_chain = makai class = battlecruiser } }
+            if = {
+                limit = { spth_check_test_ship_sub = { event_chain = makai class = battlecruiser sub = 0 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_makai_defence_system_yyk_t }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = makai class = battlecruiser sub = 1 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_makai_defence_system_yyk_x }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = makai class = battlecruiser sub = 2 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_makai_defence_system_bc_t }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = makai class = battlecruiser sub = 3 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_makai_defence_system_bc_h }
+            } else_if = {
+                limit = { spth_check_test_ship_sub = { event_chain = makai class = battlecruiser sub = 4 } }
+                inline_script = { script = events/spth_test_create_fleet design = spth_makai_defence_system_bc_g }
+            }
+        } else_if = {
+            limit = { spth_check_test_ship_class = { event_chain = makai class = titan } }
+            inline_script = { script = events/spth_test_create_fleet design = spth_makai_defence_system_titan }
+        } else_if = {
+            limit = { spth_check_test_ship_class = { event_chain = makai class = carrier } }
+            inline_script = { script = events/spth_test_create_fleet design = spth_makai_defence_system_carrier }
+        }
+    }
+}
