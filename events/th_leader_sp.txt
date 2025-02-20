@@ -40,6 +40,84 @@ country_event = {
     }
 }
 
+# 召唤绯想天
+# this = planet
+# root = planet
+# from = fleet
+planet_event = {
+    id = th_leader_sp.200
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        from = {
+            exists = owner
+            owner = { NOT = { has_country_flag = has_tenshi_scarlet_weather_cooldown } }
+            any_owned_ship = { check_modifier_value = { modifier = ship_th_tenshi_allow value != 0 } }
+        }
+    }
+    immediate = {
+        solar_system = { save_event_target_as = tenshi_storm_location }
+        from.owner = {
+            set_timed_country_flag = { flag = has_tenshi_scarlet_weather_cooldown days = 360 }
+            country_event = {
+                id = th_leader_sp.201
+                scopes = { from = root.from fromfrom = event_target:tenshi_storm_location }
+            }
+        }
+    }
+}
+
+country_event = {
+    id = th_leader_sp.201
+    title = th_leader_sp.201.name
+    desc = th_leader_sp.201.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_leader_function_ui
+    custom_gui_option = spth_leader_function_button
+    picture_event_data = { room = hakuri_shrine_sun_room }
+    option = {
+        name = th_leader_sp.201.random
+        default_hide_option = yes
+        hidden_effect = {
+            reroll_random = yes
+            random_list = {
+                1 = { th_leader_sp_spawn_storm = { type = reimu } }
+                1 = { th_leader_sp_spawn_storm = { type = marisa } }
+                1 = { th_leader_sp_spawn_storm = { type = sakuya } }
+                1 = { th_leader_sp_spawn_storm = { type = alice } }
+                1 = { th_leader_sp_spawn_storm = { type = patchouli } }
+                1 = { th_leader_sp_spawn_storm = { type = remilia } }
+            }
+            reroll_random = yes
+        }
+    }
+    inline_script = { script = events/th_leader_sp_storm_option type = reimu }
+    inline_script = { script = events/th_leader_sp_storm_option type = marisa }
+    inline_script = { script = events/th_leader_sp_storm_option type = sakuya }
+    inline_script = { script = events/th_leader_sp_storm_option type = alice }
+    inline_script = { script = events/th_leader_sp_storm_option type = patchouli }
+    inline_script = { script = events/th_leader_sp_storm_option type = remilia }
+}
+
+country_event = {
+    id = th_leader_sp.202
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = th_leader_sp_202_fired }
+        spth_check_gensokyo_auth = yes
+        has_technology = tech_th_tenshi_aux
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { has_existing_ship_design = th_tenshi_beacon } }
+            create_ship_design = { design = th_tenshi_aux_ship }
+            add_ship_design = last_created_design
+        }
+    }
+}
+
 # 拥戴 俘获陆军 attacker
 # 开片了
 planet_event = {
