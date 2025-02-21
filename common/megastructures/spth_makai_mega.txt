@@ -123,3 +123,78 @@ spth_makai_wedge_1 = {
     dismantle_potential = { always = no }
     ai_weight = { weight = 1000 }
 }
+spth_makai_wedge_2 = {
+    portrait = GFX_spth_makai_wedge
+    entity = spth_precursor_capital_makai_wedge_entity
+    construction_entity = spth_precursor_capital_makai_wedge_entity
+    entity_offset = { x = 0 y = 0 }
+    show_in_outliner = no
+    show_galactic_map_icon = no
+    build_time = 5
+    resources = {
+        category = megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            influence = 100
+        }
+        produces = {
+            astral_threads = 10
+            physics_research = 400
+        }
+    }
+    country_modifier = {
+        country_resource_max_astral_threads_add = 2000
+    }
+    station_modifier = {
+        catapult_spread_base = 10
+        catapult_range_base = 1000
+        quantum_catapult_megastructure_bypass_windup_mult = -0.90
+    }
+    on_build_complete = {
+        from = { set_timed_country_flag = { flag = spth_makai_wedge_0_warp_used days = 180 }  }
+        spawn_megastructure = {
+            type = spth_makai_wedge_0
+            coords_from = fromfrom
+            owner = from
+            init_effect = {
+                save_global_event_target_as = makai_wedge_ruined_object
+                set_megastructure_flag = is_repaired_makai_wedge
+            }
+        }
+        remove_megastructure = fromfrom
+        if = {
+            limit = { from = { any_owned_ship = { is_ship_size = spth_makai_ship_core_0 } } }
+            from = { spth_precursor_unlock_makai_ship_core = yes }
+        } else = {
+            from = { save_event_target_as = spth_owner }
+            fromfrom.solar_system = {
+                spth_create_fleet = {
+                    NAME = NAME_spth_makai_ship_core_0
+                    can_disband = no is_boss = no
+                    OWNER = event_target:spth_owner
+                    location = prev
+                    spth_makai_ship_core_0 = 1
+                }
+            }
+            from = {
+                set_country_flag = spth_precursor_makai_ruined_ship_get
+                spth_precursor_unlock_makai_ship_core = yes
+            }
+        }
+    }
+    upgrade_from = { spth_makai_wedge_0 }
+    bypass_type = quantum_catapult
+    potential = { always = yes }
+    possible = {
+        from = {
+            custom_tooltip = {
+                fail_text = spth_makai_wedge_2_possible
+                has_country_flag = spth_precursor_makai_ruined_ship_get
+            }
+        }
+        NOT = { exists = event_target:spth_makai_ship_core_unlocked_player }
+    }
+    dismantle_potential = { always = no }
+    ai_weight = { weight = 1000 }
+}
