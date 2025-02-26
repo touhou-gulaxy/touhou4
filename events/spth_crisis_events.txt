@@ -276,7 +276,44 @@ country_event = {
                 }
                 if = {
                     limit = { has_global_flag = touhou_kamikakushi_extra_24 has_fleet_flag = spth_kamikakushi_defence_fleet }
-                    fromfromfrom = { every_owned_ship = { clear_shield = yes add_modifier = { modifier = touhou_kamikakushi_extra_24 days = 5 } } }
+                    fromfromfrom = {
+                        if = {
+                            limit = { NOT = { has_fleet_flag = touhou_kamikakushi_extra_24_recent } }
+                            set_timed_fleet_flag = { flag = touhou_kamikakushi_extra_24_recent days = 30 }
+                            random_list = {
+                                20 = {
+                                    modifier = {
+                                        add = 40
+                                        root.from = { is_touhou_player_faction = no }
+                                    }
+                                    every_owned_ship = {
+                                        clear_shield = yes
+                                        add_modifier = { modifier = touhou_kamikakushi_extra_24 days = 5 }
+                                        add_modifier = {
+                                            modifier = touhou_kamikakushi_extra_24_regen days = 20
+                                            mult = value:touhou_extra_export_value|modifier|modifier:ship_shield_regen_add_static|
+                                        }
+                                        add_modifier = {
+                                            modifier = touhou_kamikakushi_extra_24_add days = 15
+                                            mult = value:touhou_extra_export_value|modifier|modifier:ship_shield_add|
+                                        }
+                                        add_modifier = {
+                                            modifier = touhou_kamikakushi_extra_24_mult days = 10
+                                            mult = value:touhou_extra_export_value|modifier|modifier:ship_shield_mult|
+                                        }
+                                    }
+                                }
+                                80 = {
+                                    modifier = {
+                                        add = -40
+                                        root.from = { is_touhou_player_faction = no }
+                                    }
+                                    # nothing here
+                                }
+                            }
+                            reroll_random = yes
+                        }
+                    }
                 }
                 if = {
                     limit = { has_global_flag = touhou_kamikakushi_extra_33 }
@@ -286,8 +323,45 @@ country_event = {
                     }
                 }
                 if = {
-                    limit = { has_global_flag = touhou_kamikakushi_extra_41 }
-                    fromfromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_41 days = 360 } } }
+                    limit = { has_global_flag = touhou_kamikakushi_extra_41 fromfromfrom = { NOT = { has_fleet_flag = touhou_kamikakushi_extra_41_recent } } }
+                    fromfromfrom = {
+                        set_timed_fleet_flag = { flag = touhou_kamikakushi_extra_41_recent days = 360 }
+                        random_list = {
+                            25 = {
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = touhou_kamikakushi_extra_41
+                                        days = 360 mult = 0.5
+                                    }
+                                }
+                            }
+                            50 = {
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = touhou_kamikakushi_extra_41
+                                        days = 360 mult = 1
+                                    }
+                                }
+                            }
+                            20 = {
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = touhou_kamikakushi_extra_41
+                                        days = 360 mult = 1.5
+                                    }
+                                }
+                            }
+                            5 = {
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = touhou_kamikakushi_extra_41
+                                        days = 360 mult = 2
+                                    }
+                                }
+                            }
+                        }
+                        reroll_random = yes
+                    }
                     root.from = {
                         if = {
                             limit = { NOT = { has_country_flag = touhou_kamikakushi_extra_41_recent } }
