@@ -209,6 +209,137 @@ country_event = {
     }
 }
 
+system_event = {
+    id = th_leader_sp.205
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        any_system_planet = {
+           is_colony = yes exists = owner
+            owner = { is_touhou_country = yes }
+            exists = leader
+            leader = {
+                has_leader_flag = spth_sp_leader
+                has_trait = leader_trait_kaguya
+            }
+        }
+    }
+    immediate = {
+        every_system_planet = {
+            limit = {
+                is_colony = yes exists = owner
+                owner = { is_touhou_country = yes }
+                exists = leader
+                leader = {
+                    has_leader_flag = spth_sp_leader
+                    has_trait = leader_trait_kaguya
+                }
+            }
+            export_trigger_value_to_variable = {
+                trigger = planet_devastation
+                variable = th_leader_sp_devastation_storm_ori
+            }
+            planet_event = { id = th_leader_sp.206 days = 30 }
+        }
+    }
+}
+planet_event = {
+    id = th_leader_sp.206
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = {
+                is_colony = yes exists = owner
+                owner = { is_touhou_country = yes }
+                exists = leader
+                leader = {
+                    has_leader_flag = spth_sp_leader
+                    has_trait = leader_trait_kaguya
+                }
+                solar_system = { is_inside_storm = yes }
+            }
+            export_trigger_value_to_variable = {
+                trigger = planet_devastation
+                variable = th_leader_sp_devastation_storm_cur
+            }
+            subtract_variable = {
+                which = th_leader_sp_devastation_storm_cur
+                value = th_leader_sp_devastation_storm_ori
+            }
+            if = {
+                limit = { check_variable = { which = th_leader_sp_devastation_storm_cur value > 0 } }
+                set_planet_flag = spth_planet_damaged_in_storm
+                multiply_variable = { which = th_leader_sp_devastation_storm_cur value = -1 }
+                add_planet_devastation = th_leader_sp_devastation_storm_cur
+            } else = { clear_variable = th_leader_sp_devastation_storm_cur }
+            planet_event = { id = th_leader_sp.206 days = 30 }
+        } else = {
+            clear_variable = th_leader_sp_devastation_storm_ori
+            remove_planet_flag = spth_planet_damaged_in_storm
+        }
+    }
+}
+
+# 辉夜技能
+planet_event = {
+    id = th_leader_sp.207
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_orbital_bombardment = yes
+        NOT = { has_planet_flag = planet_kaguya_protect_cooldown }
+        check_modifier_value = { modifier = planet_kaguya_protect_duration value > 0 }
+    }
+    immediate = {
+        set_variable = { which = planet_kaguya_protect_time value = 1 }
+        if = {
+            limit = { check_modifier_value = { modifier = planet_kaguya_protect_duration value > 45 } }
+            add_planet_devastation = -100
+            planet_event = { id = th_leader_sp.208 days = 90 }
+        } else = {
+            add_planet_devastation = -100
+            planet_event = { id = th_leader_sp.208 days = 45 }
+        }
+        planet_event = { id =  th_leader_sp.209 days = 1 }
+    }
+}
+planet_event = {
+    id = th_leader_sp.208
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = { set_timed_planet_flag = { flag = planet_kaguya_protect_cooldown days = 360 } }
+}
+planet_event = {
+    id = th_leader_sp.209
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = {
+                has_orbital_bombardment = yes
+                check_modifier_value = { modifier = planet_kaguya_protect_duration value > 0 }
+                NOT = { has_planet_flag = planet_kaguya_protect_cooldown }
+            }
+            if = {
+                limit = {
+                    check_modifier_value = { modifier = planet_kaguya_protect_duration value < 90 }
+                    check_variable = { which = planet_kaguya_protect_time value >= 45 }
+                }
+                clear_variable = planet_kaguya_protect_time
+                remove_planet_flag = planet_kaguya_protect_90
+                remove_planet_flag = planet_kaguya_protect_45
+            } else = { planet_event = { id =  th_leader_sp.209 days = 1 } }
+            add_planet_devastation = -100
+            change_variable = { which = planet_kaguya_protect_time value = 1 }
+        } else = {
+            clear_variable = planet_kaguya_protect_time
+            remove_planet_flag = planet_kaguya_protect_90
+            remove_planet_flag = planet_kaguya_protect_45
+        }
+    }
+}
+
 # 拥戴 俘获陆军 attacker
 # 开片了
 planet_event = {
