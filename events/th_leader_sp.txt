@@ -119,6 +119,96 @@ country_event = {
     }
 }
 
+# 不死鸟的舍身击
+# this = ship
+# from = ship, disabler
+# fromfrom = fleet, victim fleet
+# fromfromfrom = fleet, disabler fleet
+# fromfromfromfrom = solar system, where disable triggered
+ship_event = {
+    id = th_leader_sp.203
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = leader
+        leader = {
+            has_leader_flag = spth_sp_leader
+            has_trait = leader_trait_mokou
+        }
+    }
+    immediate = {
+        from = { spth_reduce_shield = { percent = 0.5 factor = 0.5 } }
+        if = {
+            limit = { has_hp < 400000000 }
+            reduce_hp = value:touhou_mokou_reduce_value
+        }
+    }
+}
+
+# 不死鸟的舍身击 - 陆军复活与分裂
+country_event = {
+    id = th_leader_sp.204
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        from = {
+            is_touhou_army = yes
+            is_defensive_army = no
+            exists = leader
+            leader = {
+                has_leader_flag = spth_sp_leader
+                has_trait = leader_trait_mokou
+            }
+        }
+    }
+    immediate = {
+        if = {
+            limit = { from = { check_touhou_army_tier = { tier = 0 } } }
+            random_list = {
+                50 = {}
+                35 = {
+                    fromfromfrom = {
+                        random_list = {
+                            50 = { spth_mokou_create_army = { count = 1 type = danmaku_army } }
+                            30 = { spth_mokou_create_army = { count = 2 type = danmaku_army } }
+                            20 = { spth_mokou_create_army = { count = 3 type = danmaku_army } }
+                        }
+                        reroll_random = yes
+                    }
+                }
+                15 = {
+                    fromfromfrom = {
+                        random_list = {
+                            50 = { spth_mokou_create_army = { count = 1 type = psi_danmaku_army } }
+                            30 = { spth_mokou_create_army = { count = 2 type = psi_danmaku_army } }
+                            20 = { spth_mokou_create_army = { count = 3 type = psi_danmaku_army } }
+                        }
+                        reroll_random = yes
+                    }
+                }
+            }
+        } else_if = {
+            limit = { from = { check_touhou_army_tier = { tier = 1 } } }
+            random_list = {
+                50 = {}
+                50 = {
+                    fromfromfrom = {
+                        random_list = {
+                            50 = { spth_mokou_create_army = { count = 1 type = fairy_army } }
+                            30 = { spth_mokou_create_army = { count = 2 type = fairy_army } }
+                            20 = { spth_mokou_create_army = { count = 3 type = fairy_army } }
+                        }
+                        reroll_random = yes
+                    }
+                }
+            }
+        }
+        reroll_random = yes
+        add_resource = { sr_lingli = 25 sr_fuka = 5 }
+    }
+}
+
 # 拥戴 俘获陆军 attacker
 # 开片了
 planet_event = {
