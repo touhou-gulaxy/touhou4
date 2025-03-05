@@ -532,3 +532,88 @@ spth_auto_rw_build_ag_buildings = {
     [[ag_dark_matter_plant] while = { count = $ag_dark_matter_plant$ add_building = ag_dark_matter_plant }]
     [[ag_zro_refinery] while = { count = $ag_zro_refinery$ add_building = ag_zro_refinery }]
 }
+
+spth_astral_signal_set_planet = {
+    optimize_memory
+    if = {
+        limit = { capital_scope.solar_system = { any_fleet_in_system = { any_owned_ship = { is_ship_class = shipclass_science_ship } } } }
+        capital_scope.solar_system = {
+            random_fleet_in_system = {
+                limit = { any_owned_ship = { is_ship_class = shipclass_science_ship } }
+                save_event_target_as = spth_target_fleet
+            }
+        }
+    } else_if = {
+        limit = { any_owned_ship = { is_ship_class = shipclass_science_ship } }
+        random_owned_fleet = {
+            limit = { any_owned_ship = { is_ship_class = shipclass_science_ship } }
+            save_event_target_as = spth_target_fleet
+        }
+    }
+    random_system = {
+        limit = {
+            exists = space_owner
+            space_owner = { is_same_value = root }
+            NOT = { any_system_planet = { is_colony = yes } }
+            OR = {
+                NOT = { exists = event_target:spth_target_fleet }
+                AND = {
+                    exists = event_target:spth_target_fleet
+                    event_target:spth_target_fleet = { can_access_system = prev }
+                }
+            }
+        }
+        random_system_planet = {
+            set_planet_flag = has_touhou_astral_signals_@$country$
+            save_event_target_as = touhou_astral_signals_loc_$id$_@$country$
+        }
+    }
+    if = {
+        limit = { NOT = { exists = event_target:touhou_astral_signals_loc_$id$_@$country$ } }
+        random_system = {
+            limit = {
+                exists = space_owner
+                space_owner = { is_same_value = root }
+                NOT = { any_system_planet = { OR = { is_colony = yes has_planet_flag = has_touhou_astral_signals_@$country$ } } }
+            }
+            random_system_planet = { save_event_target_as = touhou_astral_signals_loc_$id$_@$country$ }
+        }
+        if = {
+            limit = { NOT = { exists = event_target:touhou_astral_signals_loc_$id$_@$country$ } }
+            random_system = {
+                limit = { NOT = { any_system_planet = { OR = { is_colony = yes has_planet_flag = has_touhou_astral_signals_@$country$ } } } }
+                random_system_planet = { save_event_target_as = touhou_astral_signals_loc_$id$_@$country$ }
+            }
+        }
+        if = {
+            limit = { NOT = { exists = event_target:touhou_astral_signals_loc_$id$_@$country$ } }
+            random_system = {
+                limit = { NOT = { any_system_planet = { has_planet_flag = has_touhou_astral_signals_@$country$ } } }
+                random_system_planet = { save_event_target_as = touhou_astral_signals_loc_$id$_@$country$ }
+            }
+        }
+    }
+}
+spth_astral_signal_set_real = {
+    optimize_memory
+    event_target:touhou_astral_signals_loc_$id$_@$country$ = { set_planet_flag = touhou_astral_signals_real_loc }
+}
+spth_astral_signal_set_project = {
+    optimize_memory
+    event_target:touhou_astral_signals_loc_$id$_@$country$ = {
+        enable_special_project = {
+            name = "spth_project_astral_signals_search"
+            location = this
+            owner = $country$
+        }
+    }
+}
+spth_astral_signal_abort_project = {
+    optimize_memory
+    event_target:touhou_astral_signals_loc_$id$_@$country$ = {
+        abort_special_project = {
+            type = spth_project_astral_signals_search
+            location = this
+        }
+    }
+}
