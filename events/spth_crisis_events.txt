@@ -1031,6 +1031,7 @@ country_event = {
         event_target:global_event_country = {
             country_event = { id = touhou_crisis.116 days = 390 }
             country_event = { id = touhou_crisis.117 days = 730 }
+            country_event = { id = touhou_crisis.130 }
         }
         country_event = { id = spth_makai_defender.1 }
     }
@@ -1809,6 +1810,44 @@ planet_event = {
     immediate = {
         save_event_target_as = spth_kamikakushi_spawnpoint
         spth_kamikakushi_spawn_super_carrier_fleet = yes
+    }
+}
+
+# for NYTO
+# 总算力x己方破译  /敌方加密  后x1%
+country_event = {
+    id = touhou_crisis.130
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        spth_has_nyto_mod = yes
+        spth_has_kamikakushi_crisis = yes
+        exists = event_target:spth_kamikakushi_country
+    }
+    immediate = {
+        # 兄弟你好香
+        if = {
+            limit = { NOT = { exists = event_target:spth_nyto_temp } }
+            random_playable_country = {
+                limit = { is_ai = no }
+                save_global_event_target_as = spth_nyto_temp
+            }
+            if = {
+                limit = { NOT = { exists = event_target:spth_nyto_temp } }
+                random_playable_country = { save_global_event_target_as = spth_nyto_temp }
+            }
+        }
+        event_target:spth_kamikakushi_country = {
+            add_modifier = {
+                modifier = touhou_crisis_nyto_encryption
+                mult = value:touhou_crisis_nyto_decryption
+            }
+            add_modifier = {
+                modifier = touhou_crisis_nyto_encryption_extra
+                mult = value:touhou_crisis_nyto_encryption
+            }
+        }
+        country_event = { id = touhou_crisis.130 days = 180 }
     }
 }
 
