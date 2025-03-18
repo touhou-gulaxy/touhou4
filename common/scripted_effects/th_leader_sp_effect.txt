@@ -601,3 +601,120 @@ spth_mokou_create_army = {
         }
     }
 }
+
+spth_kokoro_apply_face_effect = {
+    optimize_memory
+    add_modifier = { modifier = th_kokoro_face_$id$ days = $days$ }
+    [[enm]
+        event_target:kokoro_effect_enemy = {
+            add_modifier = { modifier = th_kokoro_face_$id$_enm days = $days$ }
+        }
+    ]
+}
+spth_kokoro_init_apply_random_face = {
+    optimize_memory
+    random_list = {
+        1 = { spth_kokoro_apply_face_effect = { id = 1 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 2 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 3 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 4 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 5 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 6 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 7 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 8 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 9 days = $days$ enm = yes } }
+    }
+}
+spth_kokoro_init_effect = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_fleet_flag = spth_kokoro_self_fired } }
+        set_fleet_flag = spth_kokoro_self_fired
+        if = {
+            limit = { solar_system = { any_fleet_in_system = { exists = leader leader = { has_trait = leader_trait_koishi } } } }
+            random_fleet_in_system = {
+                limit = { exists = leader leader = { has_trait = leader_trait_koishi } }
+                reroll_random = yes
+                random_list = {
+                    3 = {
+                        unassign_leader = this
+                        set_fleet_flag = spth_kokoro_koishi_bad_end
+                        prev = { set_fleet_flag = spth_kokoro_koishi_bad_end }
+                    }
+                    97 = {}
+                }
+                if = {
+                    limit = { NOT = { has_fleet_flag = spth_kokoro_koishi_bad_end } }
+                    reroll_random = yes spth_kokoro_init_apply_random_face = { days = 120 }
+                } else = { remove_fleet_flag = spth_kokoro_koishi_bad_end }
+            }
+            if = {
+                limit = { NOT = { has_fleet_flag = spth_kokoro_koishi_bad_end } }
+                reroll_random = yes spth_kokoro_init_apply_random_face = { days = 120 enm = yes }
+            }
+        } else = { spth_kokoro_init_apply_random_face = { days = 60 enm = yes } }
+        if = {
+            limit = { NOT = { has_fleet_flag = spth_kokoro_koishi_bad_end } }
+            fleet_event = { id = th_leader_sp.210 }
+        } else = {
+            unassign_leader = this
+            owner = { country_event = { id = th_leader_sp.213 scopes = { from = prev } } }
+            remove_fleet_flag = spth_kokoro_koishi_bad_end
+        }
+    }
+}
+spth_kokoro_apply_face_to_fleet = {
+    optimize_memory
+    set_variable = { which = spth_kokoro_apply_face_count value = $count$ }
+    while = {
+        count = $count$
+        reroll_random = yes
+        random_list = {
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 1 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 2 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 3 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 4 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 5 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 6 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 7 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 8 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 9 days = 12 }
+        }
+    }
+}
+spth_kokoro_apply_face = {
+    optimize_memory
+    spth_kokoro_apply_face_to_fleet = { count = $count$ }
+    reroll_random = yes
+    set_variable = { which = spth_kokoro_fleet_ship_count value = trigger:num_ships }
+    random_list = {
+        50 = { multiply_variable = { which = spth_kokoro_fleet_ship_count value = 0.05 } }
+        35 = { multiply_variable = { which = spth_kokoro_fleet_ship_count value = 0.10 } }
+        15 = { multiply_variable = { which = spth_kokoro_fleet_ship_count value = 0.15 } }
+    }
+    floor_variable = spth_kokoro_fleet_ship_count
+    every_owned_ship = {
+        limit = { prev = { check_variable = { which = spth_kokoro_fleet_ship_count value <= 0 } } }
+        set_timed_ship_flag = { flag = spth_has_kokoro_face_ship days = 10 }
+        # for checking
+        set_timed_ship_flag = { flag = spth_has_kokoro_face_ship_extend days = 12 }
+    }
+}
+spth_kokoro_duration_check = {
+    optimize_memory
+    if = {
+        limit = { has_fleet_flag = fleet_th_has_kokori_face_$id$ }
+        [[destoryed]
+            every_owned_ship = {
+                limit = { has_ship_flag = spth_has_kokoro_face_ship_extend }
+                spth_kokoro_apply_face_effect = { id = $id$ days = 10 }
+            }
+        ]
+        [[non_destoryed]
+            every_owned_ship = {
+                limit = { NOT = { has_ship_flag = spth_has_kokoro_face_ship_extend } }
+                spth_kokoro_apply_face_effect = { id = $id$ days = 10 }
+            }
+        ]
+    }
+}

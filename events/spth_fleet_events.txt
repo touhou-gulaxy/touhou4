@@ -1351,8 +1351,8 @@ country_event = {
 }
 
 # 天子
-# This = owner of fleet 1 (combatant)
-# From = owner of fleet 2 (destroyed)
+# This = owner of fleet 1
+# From = owner of fleet 2
 # FromFrom = fleet 1
 # FromFromFrom = fleet 2
 country_event = {
@@ -1365,16 +1365,20 @@ country_event = {
             exists = leader
             OR = {
                 AND = {
-                    leader = { has_trait = leader_trait_tenshi }
+                    check_modifier_value = { modifier = fleet_th_has_tenshi value != 0 }
                     NOT = { has_fleet_flag = has_tenshi_aura_effect }
                 }
                 AND = {
-                    leader = { has_trait = leader_trait_alice }
+                    check_modifier_value = { modifier = fleet_th_has_alice value != 0 }
                     NOT = { prev = { has_country_flag = has_alice_effect_cooldown } }
                 }
                 AND = {
-                    leader = { has_trait = leader_trait_reisen }
-                    NOT = { root.fromfromfrom = { has_country_flag = has_reisen_effect_fired } }
+                    check_modifier_value = { modifier = fleet_th_has_reisen value != 0 }
+                    NOT = { root.fromfromfrom = { has_fleet_flag = has_reisen_effect_fired } }
+                }
+                AND = {
+                    check_modifier_value = { modifier = fleet_th_has_kokoro value != 0 }
+                    NOT = { root.fromfromfrom = { has_fleet_flag = has_kokoro_effect_fired } }
                 }
             }
         }
@@ -1421,7 +1425,7 @@ country_event = {
                             random_list = {
                                 50 = {  }
                                 50 = {
-                                    set_timed_country_flag = { flag = has_reisen_effect_fired days = 180 }
+                                    set_timed_fleet_flag = { flag = has_reisen_effect_fired days = 180 }
                                     add_modifier = {
                                         modifier = th_reisen_modifier_range days = 180
                                         mult = value:touhou_extra_export_value|modifier|modifier:ship_weapon_range_mult|
@@ -1429,6 +1433,15 @@ country_event = {
                                     add_modifier = { modifier = th_reisen_modifier_other days = 180 }
                                 }
                             }
+                        }
+                    }
+                    leader_trait_kokoro = {
+                        prev = {
+                            root.fromfromfrom = {
+                                set_timed_fleet_flag = { flag = has_kokoro_effect_fired days = 180 }
+                                save_event_target_as = kokoro_effect_enemy
+                            }
+                            spth_kokoro_init_effect = yes
                         }
                     }
                     default = {}
