@@ -926,15 +926,35 @@ ship_event = {
             }
         } else = {
             if = {
-                limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
-                change_variable = { which = spth_extra_life_used value = 1 }
-                remove_modifier = ship_spth_extra_life_lose
-                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
-                ship_event = { id = spth_fleet.1105 days = 180 }
+                limit = { check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
+                reroll_random = yes
+                random_list = {
+                    20 = {  }
+                    80 = {
+                        if = {
+                            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+                            change_variable = { which = spth_extra_life_used value = 1 }
+                            remove_modifier = ship_spth_extra_life_lose
+                            add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+                            ship_event = { id = spth_fleet.1105 days = 180 }
+                        }
+                        set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+                        add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+                        clear_variable = ship_spth_extra_life_reduce
+                    }
+                }
+            } else = {
+                if = {
+                    limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+                    change_variable = { which = spth_extra_life_used value = 1 }
+                    remove_modifier = ship_spth_extra_life_lose
+                    add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+                    ship_event = { id = spth_fleet.1105 days = 180 }
+                }
+                set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+                add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+                clear_variable = ship_spth_extra_life_reduce
             }
-            set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
-            add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
-            clear_variable = ship_spth_extra_life_reduce
         }
     }
 }

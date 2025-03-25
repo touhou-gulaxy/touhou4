@@ -258,41 +258,62 @@ country_event = {
 	is_triggered_only = yes
 	trigger = {
 		has_authority = auth_gensokyo
-		has_country_flag = spth_pop_convert_enabled
+		OR = {
+			has_country_flag = spth_pop_convert_enabled
+			has_edict = spth_build_auto_ringworld
+		}
 	}
 	immediate = {
-		every_owned_planet = {
-			limit = { has_modifier = spth_planet_pop_convert }
-			set_variable = { which = to_be_converted_amount value = 0 }
-			export_trigger_value_to_variable = {
-				trigger = num_assigned_jobs
-				parameters = {
-					job = spth_to_be_converted
-				}
-				variable = to_be_converted_amount
-			}
-			if = {
-				limit = { check_variable = { which = to_be_converted_amount value >= 10 } }
-				set_variable = { which = to_be_converted_amount value = 10 }
-			}
-			while = {
-				count = to_be_converted_amount
-				create_pop = { species = root.owner_main_species }
-			}
-			while = {
-				count = to_be_converted_amount
-				random_owned_pop = {
-					limit = { has_job = spth_to_be_converted }
-					kill_pop = yes
-				}
-			}
-			spth_count_to_be_converted_pops = yes
-			if = {
+		if = {
+			limit = { has_country_flag = spth_pop_convert_enabled }
+			every_owned_planet = {
 				limit = { has_modifier = spth_planet_pop_convert }
-				remove_modifier = spth_planet_pop_convert
-				add_modifier = {
-					modifier = spth_planet_pop_convert
-					multiplier = spth_to_be_converted_pops_counter
+				set_variable = { which = to_be_converted_amount value = 0 }
+				export_trigger_value_to_variable = {
+					trigger = num_assigned_jobs
+					parameters = {
+						job = spth_to_be_converted
+					}
+					variable = to_be_converted_amount
+				}
+				if = {
+					limit = { check_variable = { which = to_be_converted_amount value >= 10 } }
+					set_variable = { which = to_be_converted_amount value = 10 }
+				}
+				while = {
+					count = to_be_converted_amount
+					create_pop = { species = root.owner_main_species }
+				}
+				while = {
+					count = to_be_converted_amount
+					random_owned_pop = {
+						limit = { has_job = spth_to_be_converted }
+						kill_pop = yes
+					}
+				}
+				spth_count_to_be_converted_pops = yes
+				if = {
+					limit = { has_modifier = spth_planet_pop_convert }
+					remove_modifier = spth_planet_pop_convert
+					add_modifier = {
+						modifier = spth_planet_pop_convert
+						multiplier = spth_to_be_converted_pops_counter
+					}
+				}
+			}
+		}
+		if = {
+			limit = { has_edict = spth_build_auto_ringworld }
+			if = {
+				limit = { has_origin = origin_spth_story_gensokyo }
+				every_system_within_border = {
+					limit = { spth_auto_ringworld_limit = yes }
+					spth_auto_ringworld_build_story = yes
+				}
+			} else = {
+				every_system_within_border = {
+					limit = { spth_auto_ringworld_limit = yes }
+					spth_auto_ringworld_build_common = yes
 				}
 			}
 		}
