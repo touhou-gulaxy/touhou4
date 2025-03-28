@@ -1741,6 +1741,173 @@ country_event = {
 	}
 }
 
+# gatekeeper
+country_event = {
+	id = toho.8090
+	hide_window = yes
+	mean_time_to_happen = { years = 6 }
+	trigger = { spth_check_gensokyo_auth = yes years_passed >= 25 }
+	immediate = {
+		reroll_random = yes
+		random_list = {
+			10 = {
+				modifier = { factor = 0 OR = { has_country_flag = toho_8100_fired NOT = { has_country_flag = th_terakoya_reset } } }
+				set_country_flag = toho_8100_fired
+				country_event = { id = toho.8100 days = 30 random = 30 }
+			}
+			10 = {
+				modifier = { factor = 0 has_country_flag = toho_8102_fired }
+				set_country_flag = toho_8102_fired
+				country_event = { id = toho.8102 days = 30 random = 30 }
+			}
+			30 = { log = "\\[This.GetName]无事发生QAQ" }
+		}
+	}
+}
+
+# 琪露诺
+country_event = {
+	id = toho.8100
+	title = toho.8100.name
+	desc = toho.8100.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_terakoya_3_room }
+	option = { name = toho.8100.a }
+	option = { name = toho.8100.b }
+	after = {
+		spth_effect_init_cirno_effect = yes
+		country_event = { id = toho.8101 days = 180 random = 180 }
+	}
+}
+country_event = {
+	id = toho.8101
+	title = toho.8101.name
+	desc = toho.8101.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_cirno_room }
+	option = { name = toho.8101.a }
+	option = { name = toho.8101.b }
+}
+
+# 秦心
+country_event = {
+	id = toho.8102
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		random_owned_planet = {
+			limit = { is_colony = yes has_fully_upgraded_capital = yes }
+			save_event_target_as = toho_kokoro_planet
+		}
+		if = {
+			limit = { NOT = { exists = event_target:toho_kokoro_planet } }
+			random_owned_planet = { limit = { is_colony = yes } save_event_target_as = toho_kokoro_planet }
+		}
+		if = {
+			limit = { exists = event_target:toho_kokoro_planet }
+			# 吗的你没有球？开摆了
+			event_target:toho_kokoro_planet = { set_planet_flag = toho_kokoro_planet_@root }
+			country_event = { id = toho.8103 scopes = { from = event_target:toho_kokoro_planet } }
+
+		}
+	}
+}
+country_event = {
+	id = toho.8103
+	title = toho.8103.name
+	desc = toho.8103.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th135_human_village_night_room }
+	option = { name = toho.8103.a }
+	after = {
+		from = { add_modifier = { modifier = touhou_kokoro_planet_modifier_1 } }
+		enable_special_project = {
+			name = touhou_kokoro_survey_project
+			location = from owner = this
+		}
+	}
+}
+country_event = {
+	id = toho.8104
+	title = toho.8104.name
+	desc = toho.8104.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th135_human_village_night_room }
+	option = { name = toho.8104.a }
+	after = {
+		country_event = {
+			id = toho.8105
+			days = 60 random = 60
+			scopes = {
+				from = from
+				fromfrom = fromfrom
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.8105
+	title = toho.8105.name
+	desc = toho.8105.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th135_human_village_night_alt_room }
+	option = { name = toho.8105.a }
+	after = {
+		from = {
+			remove_modifier = touhou_kokoro_planet_modifier_1
+			add_modifier = { modifier = touhou_kokoro_planet_modifier_2 }
+		}
+		country_event = {
+			id = toho.8106
+			days = 5 random = 5
+			scopes = {
+				from = from
+				fromfrom = fromfrom
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.8106
+	title = toho.8106.name
+	desc = toho.8106.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_kokoro_room }
+	option = { name = toho.8106.a }
+	after = { country_event = { id = toho.8107 days = 30 random = 30 } }
+}
+country_event = {
+	id = toho.8107
+	title = toho.8107.name
+	desc = toho.8107.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_kokoro_room }
+	option = { name = toho.8107.a }
+	immediate = { spth_effect_init_kokoro_effect = yes }
+	after = { from = { remove_modifier = touhou_kokoro_planet_modifier_2 } }
+}
+
 ########################################
 #                                      #
 #   巨像   #############################
