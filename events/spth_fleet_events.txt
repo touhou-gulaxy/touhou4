@@ -1410,27 +1410,7 @@ country_event = {
     is_triggered_only = yes
     trigger = {
         is_touhou_country = yes
-        fromfrom = {
-            exists = leader
-            OR = {
-                AND = {
-                    check_modifier_value = { modifier = fleet_th_has_tenshi value != 0 }
-                    NOT = { has_fleet_flag = has_tenshi_aura_effect }
-                }
-                AND = {
-                    check_modifier_value = { modifier = fleet_th_has_alice value != 0 }
-                    NOT = { prev = { has_country_flag = has_alice_effect_cooldown } }
-                }
-                AND = {
-                    check_modifier_value = { modifier = fleet_th_has_reisen value != 0 }
-                    NOT = { root.fromfromfrom = { has_fleet_flag = has_reisen_effect_fired } }
-                }
-                AND = {
-                    check_modifier_value = { modifier = fleet_th_has_kokoro value != 0 }
-                    NOT = { root.fromfromfrom = { has_fleet_flag = has_kokoro_effect_fired } }
-                }
-            }
-        }
+        spth_fleet_has_special_leader = yes
     }
     immediate = {
         fromfrom = {
@@ -1491,6 +1471,102 @@ country_event = {
                                 save_event_target_as = kokoro_effect_enemy
                             }
                             spth_kokoro_init_effect = yes
+                        }
+                    }
+                    leader_trait_koishi = {
+                        prev = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = has_koishi_effect_fired } }
+                                set_timed_fleet_flag = { flag = has_koishi_effect_fired days = 60 }
+                                random_list = {
+                                    25 = { root.fromfromfrom = { set_timed_fleet_flag = { flag = koishi_traction_fired days = 2 } } }
+                                    25 = {
+                                        add_modifier = { modifier = th_koishi_fleet_status_2 mult = value:th_koishi_status_2_value|modifier|ship_weapon_range_mult| days = 60 }
+                                        add_modifier = { modifier = th_koishi_fleet_status_2_fire_rate mult = value:th_koishi_status_2_value|modifier|weapon_type_lingli_weapon_fire_rate_mult| days = 60 }
+                                    }
+                                    25 = { set_timed_fleet_flag = { flag = koishi_skill_3_fired days = 60 } fleet_event = { id = th_leader_sp.214 } }
+                                    25 = {
+                                        add_modifier = { modifier = th_koishi_fleet_status_4 mult = value:th_koishi_status_4_value days = 60 }
+                                        root.fromfromfrom = { add_modifier = { modifier = th_koishi_fleet_status_4 mult = value:th_koishi_status_4_value days = 60 } }
+                                    }
+                                }
+                            }
+                        }
+                        root.fromfromfrom = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = has_koishi_enm_effect_fired } }
+                                set_timed_fleet_flag = { flag = has_koishi_enm_effect_fired days = 60 }
+                                if = {
+                                    limit = { has_fleet_flag = koishi_traction_fired }
+                                    reroll_random = yes
+                                    random_list = {
+                                        10 = { set_location = { target = root.fromfrom angle = random distance = 20 } }
+                                        10 = { set_location = { target = root.fromfrom angle = random distance = 40 } }
+                                        10 = { set_location = { target = root.fromfrom angle = random distance = 60 } }
+                                        10 = { set_location = { target = root.fromfrom angle = random distance = 80 } }
+                                        10 = { set_location = { target = root.fromfrom angle = random distance = 100 } }
+                                        10 = { set_location = { target = root.fromfrom angle = random distance = 120 } }
+                                    }
+                                }
+                                if = {
+                                    limit = { exists = leader }
+                                    reroll_random = yes
+                                    random_list = {
+                                        45 = {
+                                            modifier = { factor = 0.80 prev = { has_skill > 4 } }
+                                            modifier = { factor = 0.80 prev = { has_skill > 5 } }
+                                            modifier = { factor = 0.80 prev = { has_skill > 6 } }
+                                            modifier = { factor = 0.80 prev = { has_skill > 7 } }
+                                            modifier = { factor = 0.80 prev = { has_skill > 8 } }
+                                            modifier = { factor = 0.80 prev = { has_skill > 9 } }
+                                        }
+                                        5 = {
+                                            modifier = { factor = 0.84 leader = { has_skill > 2 } }
+                                            modifier = { factor = 0.84 leader = { has_skill > 3 } }
+                                            modifier = { factor = 0.84 leader = { has_skill > 4 } }
+                                            modifier = { factor = 0.84 leader = { has_skill > 5 } }
+                                            modifier = { factor = 0.84 leader = { has_skill > 6 } }
+                                            modifier = { factor = 0.84 leader = { has_skill > 7 } }
+                                            modifier = { factor = 0.84 leader = { has_skill > 8 } }
+                                            modifier = { factor = 0.84 leader = { has_skill > 9 } }
+                                            modifier = { factor = 10 root = { is_ai = no } root.from = { is_ai = yes } }
+                                            modifier = { factor = 0 root.from = { OR = { is_touhou_country = yes ag_is_ancient_country = yes } } }
+                                            modifier = {
+                                                factor = 0.5
+                                                leader = { OR = {
+                                                    has_trait_tier1or2 = { TRAIT = leader_trait_cautious }
+                                                    has_trait = leader_trait_foredoomed_to_a_rendezvous
+                                                    has_trait = leader_trait_dragonslayer
+                                                } }
+                                            }
+                                            th_spawn_explosion_particle = { color = pink size = extra }
+                                            th_spawn_explosion_particle = { color = green size = extra min_height = -10 max_height = 10 }
+                                            leader = { save_event_target_as = koishi_kill_target }
+                                            root.from = {
+                                                create_message = {
+                                                    type = "LEADER_DEATH"
+                                                    localization = "leader_trait_koishi_skill_msg"
+                                                    days = 30
+                                                    target = prev
+                                                    variable = { type = name localization = "TH_FLEET_NAME" scope = prev }
+                                                    variable = { type = name localization = "TH_LEADER_NAME" scope = event_target:koishi_kill_target }
+                                                }
+                                            }
+                                            root = {
+                                                create_message = {
+                                                    type = "spth_koishi_kill_leader"
+                                                    localization = "leader_trait_koishi_skill_msg_self"
+                                                    days = 30
+                                                    target = prev
+                                                    variable = { type = name localization = "TH_FLEET_NAME" scope = prev }
+                                                    variable = { type = name localization = "TH_LEADER_NAME" scope = event_target:koishi_kill_target }
+                                                }
+                                            }
+                                            event_target:koishi_kill_target = { th_kill_leader = yes }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     default = {}
