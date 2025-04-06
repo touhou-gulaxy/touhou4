@@ -1417,3 +1417,24 @@ spth_spawn_test_fleet = {
 		}
 	}
 }
+
+spth_set_crisis_sound = {
+	optimize_memory
+	if = {
+		limit = { NOT = { has_global_flag = close_touhou_crisis_music } }
+		set_crisis_sound = $sound$
+	}
+}
+spth_set_stage_crisis_sound = {
+	optimize_memory
+	if = {
+		limit = { has_global_flag = spth_kamikaushi_crisis_start }
+		if = {
+			limit = { NOT = { has_global_flag = spth_kamikaushi_crisis_ended } }
+			if = {
+				limit = { exists = event_target:defeat_kamikakushi_country }
+				spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_2 }
+			} else = { spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_1 } }
+		} else = { stop_crisis_sound = yes }
+	}
+}
