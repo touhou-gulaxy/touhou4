@@ -126,7 +126,7 @@ country_event = {
 		any_owned_planet = {
 			has_planet_flag = megastructure
 			has_planet_flag = is_spth_megastructure_planet
-			num_pops > @spth_megastructure_planet_max_pop
+			spth_pop_group_amount > @spth_megastructure_planet_max_pop
 		}
 	}
 	immediate = {
@@ -134,7 +134,7 @@ country_event = {
 			limit = {
 				has_planet_flag = megastructure
 				has_planet_flag = is_spth_megastructure_planet
-				num_pops > @spth_megastructure_planet_max_pop
+				spth_pop_group_amount > @spth_megastructure_planet_max_pop
 				is_colony = yes
 			}
 			planet_event = { id = spth_colony.201 }
@@ -148,15 +148,15 @@ planet_event = {
 	trigger = {
 		has_planet_flag = megastructure
 		has_planet_flag = is_spth_megastructure_planet
-		num_pops > @spth_megastructure_planet_max_pop
+		spth_pop_group_amount > @spth_megastructure_planet_max_pop
 	}
 	immediate = {
 		set_variable = { which = spth_megastructure_pop_count value = 0 }
-		export_trigger_value_to_variable = { trigger = num_pops variable = spth_megastructure_pop_count }
+		export_trigger_value_to_variable = { trigger = spth_pop_group_amount variable = spth_megastructure_pop_count }
 		change_variable = { which = spth_megastructure_pop_count value = @spth_megastructure_planet_pop_minus }
 		while = {
 			count = spth_megastructure_pop_count
-			random_owned_pop = { kill_single_pop = yes }
+			random_owned_pop_group = { kill_single_pop = yes }
 		}
 	}
 }
@@ -210,8 +210,8 @@ planet_event = {
 		check_modifier_value = { modifier = planet_convert_to_touhou value > 0 }
 		fromfrom = {
 			NOT = {
-				has_trait = trait_touhou
-				has_trait = trait_spth_do_not_convert
+				pop_group_has_trait = trait_touhou
+				pop_group_has_trait = trait_spth_do_not_convert
 			}
 		}
 	}
@@ -229,7 +229,7 @@ planet_event = {
 						random_owned_planet = { save_event_target_as = spth_temp_planet }
 					}
 				}
-				event_target:spth_temp_planet = { create_pop = { species = owner_main_species } }
+				event_target:spth_temp_planet = { create_pop_group = { species = owner_main_species } }
 				create_message = {
 					type = spth_pop_convert_cosmo
 					localization = spth_message_spth_pop_convert_cosmo_desc
@@ -270,9 +270,9 @@ country_event = {
 				limit = { has_modifier = spth_planet_pop_convert }
 				set_variable = { which = to_be_converted_amount value = 0 }
 				export_trigger_value_to_variable = {
-					trigger = num_assigned_jobs
+					trigger = count_owned_pops
 					parameters = {
-						job = spth_to_be_converted
+						limit = { has_living_standard = { type = spth_living_standards_assimilation } }
 					}
 					variable = to_be_converted_amount
 				}
@@ -282,16 +282,15 @@ country_event = {
 				}
 				while = {
 					count = to_be_converted_amount
-					create_pop = { species = root.owner_main_species }
+					create_pop_group = { species = root.owner_main_species }
 				}
 				while = {
 					count = to_be_converted_amount
-					random_owned_pop = {
-						limit = { has_job = spth_to_be_converted }
-						kill_pop = yes
+					random_owned_pop_group = {
+						limit = { has_living_standard = { type = spth_living_standards_assimilation } }
+						spth_kill_pop_group = yes
 					}
 				}
-				spth_count_to_be_converted_pops = yes
 				if = {
 					limit = { has_modifier = spth_planet_pop_convert }
 					remove_modifier = spth_planet_pop_convert

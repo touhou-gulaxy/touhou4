@@ -297,7 +297,7 @@ country_event = {
 			tech = tech_bio_reactor
 			message = no
 		}
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				is_same_species = root
 				NOT = {
@@ -456,7 +456,7 @@ country_event = {
 	show_sound = event_hm_zhys
 	is_triggered_only = yes
 	immediate = {
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				species = {
 					NOT = {
@@ -468,11 +468,11 @@ country_event = {
 				25 = {
 				}
 				75 = {
-					kill_pop = yes
+					spth_kill_pop_group = yes
 				}
 			}
 		}
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				species = {
 					NOR = {
@@ -483,7 +483,7 @@ country_event = {
 			}
 			change_species = owner_species
 		}
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				is_same_species = root
 				NOT = {
@@ -693,12 +693,12 @@ planet_event = {
 		random_list = {
 			75 = { while = {
 				count = 2
-				create_pop = { species = FromFrom }
+				create_pop_group = { species = FromFrom }
 			} }
 			20 = { }
 			5 = { while = {
 				count = 4 # 五 重 存 在
-				create_pop = { species = FromFrom }
+				create_pop_group = { species = FromFrom }
 			} }
 		}
 	}
@@ -846,13 +846,13 @@ country_event = {
 		every_owned_planet = {
 			limit = {
 				is_colony = yes
-				any_owned_pop = {
-					NOT = { has_trait = trait_touhou }
+				any_owned_pop_group = {
+					NOT = { pop_group_has_trait = trait_touhou }
 				}
 			}
 			set_variable = { which = touhou_convert_counter value = 0 }
-			every_owned_pop = {
-				limit = { NOT = { has_trait = trait_touhou } }
+			every_owned_pop_group = {
+				limit = { NOT = { pop_group_has_trait = trait_touhou } }
 				random_list = {
 					1 = { change_variable = { which = touhou_convert_counter value = 1 } }
 					9 = {  }
@@ -863,12 +863,12 @@ country_event = {
 				limit = { check_variable = { which = touhou_convert_counter value < 1 } }
 				set_variable = { which = touhou_convert_counter value = 1 }
 			}
-			while = { count = touhou_convert_counter create_pop = { species = root.owner_main_species } }
+			while = { count = touhou_convert_counter create_pop_group = { species = root.owner_main_species } }
 			clear_variable = touhou_convert_counter
 		}
-		every_owned_pop = {
-			limit = { NOT = { has_trait = trait_touhou } }
-			kill_pop = yes
+		every_owned_pop_group = {
+			limit = { NOT = { pop_group_has_trait = trait_touhou } }
+			spth_kill_pop_group = yes
 		}
 		hidden_effect = {
 			country_event = {
@@ -1922,7 +1922,7 @@ planet_event = {
 		save_event_target_as = kamikakushi_planet
 		set_variable = { which = kamikakushi_pop_num value = 0 }
 		export_trigger_value_to_variable = {
-			trigger = num_pops
+			trigger = spth_pop_group_amount
 			variable = kamikakushi_pop_num
 		}
 		from.owner = {
@@ -2113,7 +2113,7 @@ country_event = {
 				id = toho.9003
 			}
 			capital_scope = {
-				while = { count = kamikakushi_num create_pop = { species = owner_species } }
+				while = { count = kamikakushi_num create_pop_group = { species = owner_species } }
 				add_modifier = { modifier = th_people_emmigration days = 300 }
 			}
 		}
@@ -2146,7 +2146,7 @@ country_event = {
 				id = toho.9003
 			}
 			capital_scope = {
-				while = { count = kamikakushi_num_1 create_pop = { species = owner_species } }
+				while = { count = kamikakushi_num_1 create_pop_group = { species = owner_species } }
 				add_modifier = { modifier = th_people_emmigration days = 300 }
 			}
 		}
@@ -2456,7 +2456,7 @@ country_event = {
 			change_pc = pc_habitat
 			set_planet_size = 10
 			create_colony = { owner = event_target:spth_torifune_monster }
-			create_pop = { count = 1 species = event_target:spth_torifune_monster.owner_main_species }
+			create_pop_group = { count = 1 species = event_target:spth_torifune_monster.owner_main_species }
 			while = {
 				count = 16
 				create_army = {
@@ -2497,7 +2497,7 @@ country_event = {
 		fromfrom = {
 			remove_planet_flag = controlled_by_torifune_monster
 			set_planet_flag = spth_clear_torifune_monster
-			every_owned_pop = { change_species = root.owner_main_species }
+			every_owned_pop_group = { change_species = root.owner_main_species }
 			set_owner = root
 			reroll_deposits = yes
 			reroll_planet_modifiers = yes
@@ -2682,6 +2682,12 @@ planet_event = {
 	}
 	immediate = {
 		set_planet_flag = spth_story_ring_world_completed
+		add_district = district_spth_sp_produce
+		add_zone = {
+			district = district_spth_sp_produce
+			zone = spth_sp_produce
+			zone_slot = 1
+		}
 		switch = {
 			trigger = is_planet_class
 			pc_ringworld_th = {
