@@ -192,12 +192,15 @@ spth_super_carrier_instant_jump = {
 # Scope = ship (target), from = ship (shooter)
 spth_super_carrier_on_hit_effect = {
     optimize_memory
+    save_event_target_as = target
     set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_instant_kill_target days = 2 }
     create_ambient_object = {
         type = th_invisible_object
         location = this
         duration = 10
         entity_offset = 32
+        entity_offset_angle = 0
+        entity_offset_height = 0
         use_3d_location = yes
         effect = { save_event_target_as = target_d_32 }
     }
@@ -206,6 +209,8 @@ spth_super_carrier_on_hit_effect = {
         location = this
         duration = 10
         entity_offset = 48
+        entity_offset_angle = 0
+        entity_offset_height = 0
         use_3d_location = yes
         effect = { save_event_target_as = target_d_48 }
     }
@@ -217,7 +222,7 @@ spth_super_carrier_on_hit_effect = {
                     if = {
                         limit = {
                             compare_distance = {
-                                closer_object = event_target:shooter
+                                closer_object = event_target:target
                                 further_object = event_target:target_d_32
                             }
                         }
@@ -226,10 +231,11 @@ spth_super_carrier_on_hit_effect = {
                     if = {
                         limit = {
                             compare_distance = {
-                                closer_object = event_target:shooter
+                                closer_object = event_target:target
                                 further_object = event_target:target_d_48
                             }
                         }
+                        spth_reduce_shield = { factor = 0.2 percent = 0.2 }
                         add_modifier = { modifier = spth_super_carrier_damage_modifier days = 8 }
                     }
                 }
@@ -250,7 +256,6 @@ spth_super_carrier_on_hit_effect = {
                 can_change_composition = no
             }
             effect = {
-                set_event_locked = yes
                 set_owner = event_target:shooter.owner
                 create_ship = {
                     design = th_weapon_yuzhu_ultra_special_effect_instant_kill
