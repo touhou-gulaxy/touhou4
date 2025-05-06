@@ -189,6 +189,94 @@ spth_super_carrier_instant_jump = {
     fleet = { set_location = $target_system$ }
 }
 
+# Scope = ship (target), from = ship (shooter)
 spth_super_carrier_on_hit_effect = {
     optimize_memory
+    set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_instant_kill_target days = 2 }
+    create_ambient_object = {
+        type = th_invisible_object
+        location = this
+        duration = 10
+        entity_offset = 32
+        use_3d_location = yes
+        effect = { save_event_target_as = target_d_32 }
+    }
+    create_ambient_object = {
+        type = th_invisible_object
+        location = this
+        duration = 10
+        entity_offset = 48
+        use_3d_location = yes
+        effect = { save_event_target_as = target_d_48 }
+    }
+    from = {
+        save_event_target_as = shooter
+        fleet = {
+            every_combatant_fleet = {
+                every_owned_ship = {
+                    if = {
+                        limit = {
+                            compare_distance = {
+                                closer_object = event_target:shooter
+                                further_object = event_target:target_d_32
+                            }
+                        }
+                        set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_damage_target days = 3 }
+                    }
+                    if = {
+                        limit = {
+                            compare_distance = {
+                                closer_object = event_target:shooter
+                                further_object = event_target:target_d_48
+                            }
+                        }
+                        add_modifier = { modifier = spth_super_carrier_damage_modifier days = 8 }
+                    }
+                }
+            }
+        }
+    }
+    solar_system = {
+        create_fleet = {
+            name = th_weapon_yuzhu_ultra_instant_kill_aura
+            settings = {
+                can_upgrade = no
+                spawn_debris = no
+                can_change_leader = no
+                uses_naval_capacity = no
+                is_boss = yes
+                is_ultra_boss = yes
+                garrison = no
+                can_change_composition = no
+            }
+            effect = {
+                set_event_locked = yes
+                set_owner = event_target:shooter.owner
+                create_ship = {
+                    design = th_weapon_yuzhu_ultra_special_effect_instant_kill
+                    effect = {
+                        set_name = th_weapon_yuzhu_ultra_instant_kill_aura
+                        set_ship_flag = spth_invincible
+                        set_disable_at_health = 0.01
+                        ship_event = { id = Th_dynamic_battle_vict.47 days = 2 }
+                    }
+                }
+                create_ship = {
+                    design = th_weapon_yuzhu_ultra_special_effect_common
+                    effect = {
+                        set_name = th_weapon_yuzhu_ultra_damage_aura
+                        set_ship_flag = spth_invincible
+                        set_disable_at_health = 0.01
+                    }
+                }
+                set_location = {
+                    target = prevprev
+                    distance = 0
+                    angle = random
+                }
+                fleet_event = { id = spth_fleet.1006 days = 3 }
+            }
+        }
+    }
+    th_spawn_explosion_particle = { color = pink size = large }
 }
