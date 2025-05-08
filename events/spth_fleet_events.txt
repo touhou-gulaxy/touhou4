@@ -824,7 +824,7 @@ ship_event = {
     is_triggered_only = yes
     trigger = { has_touhou_disable = yes }
     immediate = {
-        spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 }
+        spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 sh_perc = 1.0 }
         if = {
             limit = { has_touhou_invincible = yes }
             set_disable_at_health = 0.01
@@ -837,7 +837,7 @@ ship_event = {
             change_variable = { which = spth_super_carrier_inv_counter value = 1 }
             owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
             if = {
-                limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 10 } }
+                limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 4 } }
                 set_disable_at_health = -1
                 fire_on_action = {
                     on_action = on_disable_touhou_supercarrier_ended
@@ -1486,8 +1486,8 @@ country_event = {
                                     }
                                     25 = { set_timed_fleet_flag = { flag = koishi_skill_3_fired days = 60 } fleet_event = { id = th_leader_sp.214 } }
                                     25 = {
-                                        add_modifier = { modifier = th_koishi_fleet_status_4 mult = value:th_koishi_status_4_value days = 60 }
-                                        root.fromfromfrom = { add_modifier = { modifier = th_koishi_fleet_status_4 mult = value:th_koishi_status_4_value days = 60 } }
+                                        add_modifier = { modifier = th_koishi_fleet_status_4 days = 60 }
+                                        root.fromfromfrom = { add_modifier = { modifier = th_koishi_fleet_status_4 days = 60 } }
                                     }
                                 }
                             }
@@ -1657,6 +1657,21 @@ country_event = {
         if = {
             limit = { is_variable_set = ship_toyohime_instant_kill_used }
             change_variable = { which = ship_toyohime_instant_kill_used value = 1 }
+        }
+    }
+}
+
+ship_event = {
+    id = spth_fleet.1208
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { is_ship_size = TH_super_carrier }
+    immediate = {
+        if = {
+            limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 4 } }
+            add_modifier = { modifier = spth_super_carrier_damage_modifier_disable days = 4 }
+        } else = {
+            add_modifier = { modifier = spth_super_carrier_damage_modifier_disable days = 2 }
         }
     }
 }
