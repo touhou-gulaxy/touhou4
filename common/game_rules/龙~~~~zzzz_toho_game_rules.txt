@@ -285,7 +285,10 @@ can_enter_system_by_jump = {
     }
 }
 
-#物种是否可以组装（来自小伞泛用规则兼容）
+###_[物种组装]
+#_|基础trgr|	原版智械/原版克隆|is_organic_species|
+#_|MOD物种|		wsg/莉莉/adf/swg/kc/DAL/微械/时空/久远/azl/azlr/GF/PTep/SC/thl/spth	/hiveDLC/wv/多彩/精灵	/EE
+# Checks if a pop can be assembled
 # This = Species
 # Root = Planet
 can_species_be_assembled = {
@@ -302,19 +305,30 @@ can_species_be_assembled = {
             has_active_tradition = tr_virtuality_finish
         }
     }
+    NOR = {
+        has_citizenship_type = {
+            type = citizenship_protected_drone
+            country = root.owner
+        }
+        has_citizenship_type = {
+            type = citizenship_symbiotic_drone
+            country = root.owner
+        }
+        has_citizenship_type = {
+            type = citizenship_exploited_drone
+            country = root.owner
+        }
+    }
     has_population_control = {
         type = no
         country = root.owner
     }
     ##_|基础条件|
     OR = {
-        #_|原版组装|	+azl/GF/wv/久远/时与空
+        #_|原版组装|	+azl/GF/wv/久远/时空
         AND = {
             is_robotic = yes	# 含|是wsg物种|
-            NOR = {
-                has_trait = trait_robot_mind_relic_core	# azl
-                has_trait = trait_reassembler			# 时与空
-            }
+            NOT = { has_trait = trait_robot_mind_relic_core }	# azl
             KZ_VOY_trgr_plnt_ASSEMBLY = yes	# 久远
 
             #	wv
@@ -380,7 +394,7 @@ can_species_be_assembled = {
                 }
             }
         }
-        #_|原版克隆|	+ECI/星海皇帝/thl	/wv
+        #_|原版克隆|	+ECI/星海皇帝/thl/spth	/wv
         AND = {
             is_organic_species = yes
             #_|v蜂群|	+ECI
@@ -407,7 +421,7 @@ can_species_be_assembled = {
                     any_owned_species = { is_exact_same_species = prevprev }
                 }
             }
-            #_|v克隆军|		+星海帝皇
+            #_|v克隆军|
             else_if = {
                 limit = {
                     OR = {
@@ -417,12 +431,7 @@ can_species_be_assembled = {
                 }
                 root = {
                     # Event 'clones.3' should cover this, but extra safety check.
-                    OR = {
-                        has_building = building_clone_army_clone_vat
-                        #	星海帝皇
-                        has_building = building_clone_guard_clone_vat
-                        has_building = building_clone_vats
-                    }
+                    check_modifier_value = { modifier = clone_soldiers_sustained value > 0 }
                     NOT = {
                         check_variable = {
                             which = clone_pops_missing
@@ -486,32 +495,41 @@ can_species_be_assembled = {
                     }
                 }
             }
-            #_|通用|=|存在克隆+特殊spcs|		+FW/星海帝皇/ECI/thl
+            #_|通用|=|存在克隆+特殊spcs|		+星海帝皇/ECI/thl
             else = {
-                root = {
-                    #	FW	|全能条件|
-                    check_modifier_value = { modifier = bonus_pop_growth value > 0 }
-                    #OR = {
-                    #	#	vanilla
-                    #	has_building = building_clone_vats	# |ap_engineered_evolution/tr_genetics_adopt|
-                    #	has_modifier = tiyanki_trophy
-                    #	owner = { has_modifier = syamelles_curse }
-                    #	AND = {
-                    #		has_building = building_posthumous_employment_center
-                    #		owner = { has_civic = civic_permanent_employment }
-                    #	}
-                    #	has_planet_flag = can_organic_assemble_flag #for mod compatibility
-                    #
-                    #	#	FW
-                    #	check_modifier_value = { modifier = bonus_pop_growth value > 0 }
-                    #	#	星海帝皇
-                    #	has_building = building_clone_guard_clone_vat
-                    #	#	ECI
-                    #	has_building = building_advanced_clone_vats
-                    #	#	thl
-                    #	THL_trgr_plnt_RULE_can_assembly_organic = yes
-                    #}
+                #_|相关修正|	fake_pop_growth_mod/bonus_pop_growth/clone_soldiers_sustained
+                OR = {
+                    check_modifier_value = { modifier = bonus_pop_growth	value > 0 }
+                    check_modifier_value = { modifier = fake_pop_growth_mod	value > 0 }
+                    check_modifier_value = { modifier = clone_soldiers_sustained	value > 0 }
                 }
+                #root = {
+                #	OR = {
+                #		#	vanilla
+                #		has_building = building_clone_vats	# |ap_engineered_evolution/tr_genetics_adopt|
+                #		has_modifier = tiyanki_trophy
+                #		owner = { has_modifier = syamelles_curse }
+                #		AND = {
+                #			has_building = building_posthumous_employment_center
+                #			owner = { has_civic = civic_permanent_employment }
+                #		}
+                #		AND = {
+                #			has_building = building_genomic_facility
+                #			exists = owner
+                #			owner = {
+                #				has_country_flag = cloning_unlock_level_1
+                #			}
+                #		}
+                #		has_planet_flag = can_organic_assemble_flag #for mod compatibility
+                #
+                #		#	星海帝皇
+                #		has_building = building_clone_guard_clone_vat
+                #		#	ECI
+                #		has_building = building_advanced_clone_vats
+                #		#	thl
+                #		THL_trgr_plnt_RULE_can_assembly_organic = yes
+                #	}
+                #}
             }
         }
         is_archetype = LILY						# 莉莉
@@ -526,10 +544,10 @@ can_species_be_assembled = {
         is_archetype = SHENHAI
         is_archetype = UNITED_FLEET
         is_archetype = NANITES_CROP
-        #   繁星录
-        is_archetype = TOUHOUGIRLS
         #	久远
         KZ_VOY_trgr_plnt_CLONE = yes
+        #	spth
+        is_archetype = TOUHOUGIRLS
         #	azl/azlr
         AND = {
             OR = {
@@ -538,7 +556,7 @@ can_species_be_assembled = {
             }
             root = {
                 check_modifier_value = {
-                    modifier = bonus_pop_growth
+                    modifier = planet_pop_assembly_organic_add
                     value > 0
                 }
             }
@@ -610,16 +628,16 @@ can_species_be_assembled = {
         }
     }
 
-    ##	微械
+    ##	微械	####################
     root.owner = { NOT = { has_modifier = modifier_ban_assemble } }
-    ##	hiveDLC
+    #	hiveDLC
     NAND = {
         has_trait = trait_machine_central
         root.owner = { has_valid_civic = civic_machine_replicators }
     }
     ##	精灵
     ELF_can_not_be_assembled_species = yes
-    ##	久远
+    #	久远
     if = {
         limit = {
             OR = {
@@ -629,6 +647,9 @@ can_species_be_assembled = {
         }
         KZ_VOY_trgr_plnt_CLONE = yes
     }
-    ##	rmaid
+    #	rmaid
     Maid_trigger_5_can_species_be_assembled = yes
+    #	时空
+    TIME_RULE_trgr_CAN_spcs_be_assembled = yes
+    better_ascension_traits_RULE_trgr_CAN_spcs_be_assembled = yes
 }
