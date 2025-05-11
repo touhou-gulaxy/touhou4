@@ -1,0 +1,54 @@
+title = $title$
+desc = {
+    trigger = { NOT = { has_country_flag = $selected_flag$ } }
+    text = $desc$
+}
+desc = {
+    trigger = { has_country_flag = $selected_flag$ }
+    text = $selected_desc$
+}
+is_triggered_only = yes
+trigger = { NOT = { has_country_flag = $show_ui_flag$ } }
+immediate = {
+    set_country_flag = $show_ui_flag$
+}
+after = {
+    remove_country_flag = $show_ui_flag$
+    if = {
+        limit = { has_country_flag = $close_ui_flag$ }
+        remove_country_flag = $close_ui_flag$
+        remove_country_flag = $selected_flag$
+        clear_global_event_target = $portrait_target$
+    } else = {
+        if = {
+            limit = { exists = event_target:$portrait_target$ }
+            event_target:$portrait_target$ = {
+                prev = {
+                    country_event = {
+                        id = $id$
+                        scopes = { from = prev }
+                    }
+                }
+            }
+        } else_if = {
+            limit = { exists = from }
+            country_event = {
+                id = $id$
+                scopes = { from = from }
+            }
+        } else = {
+            remove_country_flag = $selected_flag$
+            country_event = {
+                id = $id$
+                scopes = { from = ruler }
+            }
+        }
+    }
+}
+diplomatic = yes
+custom_gui = spth_leader_function_ui
+custom_gui_option = spth_leader_function_button
+picture_event_data = {
+    room = hakuri_shrine_night_room
+    portrait = from
+}

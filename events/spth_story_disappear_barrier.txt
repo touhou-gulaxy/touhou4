@@ -1,0 +1,659 @@
+namespace = disappear_barrier
+
+# 1~100: 开局事件
+# 200~500: 各种杂项事件
+# 501~600：巨构事件
+# 1000+: 主事件链
+
+# 初始化
+country_event = {
+    id = disappear_barrier.1
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_authority = auth_gensokyo
+        has_origin = origin_spth_story_gensokyo
+    }
+    immediate = {
+        # destroy sol system
+        random_system = {
+            limit = { has_star_flag = sol_system }
+            every_system_planet = {
+                if = {
+                    limit = { is_colony = yes }
+                    destroy_colony = yes
+                    spth_planet_kill_all_pop = yes
+                    change_pc = pc_shrouded
+                    reroll_planet = yes
+                } else = {
+                    random_list = {
+                        1 = { change_pc = pc_shielded }
+                        1 = { change_pc = pc_nuked }
+                        1 = { change_pc = pc_black_hole }
+                        1 = { change_pc = pc_ai }
+                        1 = { change_pc = pc_shattered }
+                        1 = { change_pc = pc_shattered_2 }
+                    }
+                }
+                reroll_random = yes
+            }
+            star = {
+                change_pc = pc_rift_star
+            }
+        }
+        # 幻想乡 - 添加部分幻想乡地块以及一些原版地块
+        event_target:spth_story_sol_system_earth = {
+            add_building = building_spth_cloner
+            remove_building = building_research_lab_1
+            add_building = building_spth_research_base_1
+            add_building = building_spth_common_foundry
+            add_building = building_spth_common_factory
+            spth_effect_establish_barrier = yes
+            add_modifier = {
+                modifier = spth_story_worse_env
+                multiplier = trigger:spth_pop_group_amount
+            }
+            add_deposit = d_false_heaven_shield
+            add_deposit = d_sunshine_flower_field
+            add_deposit = d_renli
+            add_deposit = d_zhulin
+            add_deposit = d_pearl_river_agglomerate
+            add_deposit = d_mesopotamian_urban_corridor
+            add_deposit = d_saharan_irrigation_project
+            while = { count = 2 remove_district = district_farming }
+            while = { count = 2 remove_district = district_mining }
+            while = { count = 2 remove_district = district_generator }
+            while = { count = 3 add_district = district_spth_generic_factory }
+            while = { count = 2 add_district = district_spth_sp_produce }
+        }
+        unlock_council_slots = 1
+        give_technology = { tech = "tech_worker_0" message = no }
+        give_technology = { tech = "tech_th_weapon_mofashu" message = no }
+        save_global_event_target_as = spth_disappear_barrier_player
+        country_event = { id = disappear_barrier.2 days = 1 }
+        country_event = { id = disappear_barrier.3 days = 15 random = 15 }
+    }
+}
+
+country_event = {
+    id = disappear_barrier.2
+    title = disappear_barrier.2
+    desc = disappear_barrier.2.desc
+    picture = GFX_evt_mc_hakurei_shrine
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = mc_hakuri_shrine_room }
+    option = {
+        name = disappear_barrier.2.a
+        default_hide_option = yes
+        event_target:spth_story_sol_system_earth = {
+            enable_special_project = {
+                name = spth_repair_gensokyo_env
+                owner = prev
+                location = this
+            }
+        }
+    }
+    after = {
+        country_event = { id = disappear_barrier.7 days = 120 random = 60 }
+    }
+}
+country_event = {
+    id = disappear_barrier.3
+    title = disappear_barrier.3
+    desc = disappear_barrier.3.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_cold_barren_planet_room }
+    option = {
+        name = disappear_barrier.3.a
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = disappear_barrier.4
+    title = disappear_barrier.4
+    desc = disappear_barrier.4.desc
+    picture = GFX_evt_emergency_workers
+    show_sound = event_red_alert
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_emergency_workers_room }
+    option = {
+        name = disappear_barrier.4.a
+        custom_tooltip = disappear_barrier.4.better_tooltip
+        event_target:spth_story_sol_system_earth = {
+            enable_special_project = {
+                name = spth_repair_gensokyo_env
+                owner = prev
+                location = this
+            }
+        }
+    }
+    option = {
+        name = disappear_barrier.4.b
+        custom_tooltip = disappear_barrier.4.worst_tooltip
+    }
+}
+country_event = {
+    id = disappear_barrier.5
+    title = disappear_barrier.5
+    desc = disappear_barrier.5.desc
+    picture = GFX_evt_hakurei_shrine_in_night
+    show_sound = event_celebration
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = hakuri_shrine_night_room }
+    immediate = {
+        event_target:spth_story_sol_system_earth = {
+            remove_modifier = spth_story_worse_env
+        }
+    }
+    option = {
+        name = disappear_barrier.5.a
+        default_hide_option = yes
+    }
+    after = {
+        hidden_effect = {
+            country_event = { id = th_arc.3 days = 1080 random = 720 }
+        }
+        country_event = { id = disappear_barrier.6 days = 90 random = 90 }
+    }
+}
+country_event = {
+    id = disappear_barrier.6
+    title = disappear_barrier.6
+    desc = disappear_barrier.6.desc
+    picture = GFX_evt_engineering_research
+    show_sound = event_activating_unknown_technology
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_engineering_research_room }
+    option = {
+        name = disappear_barrier.6.a
+        default_hide_option = yes
+    }
+    option = {
+        name = disappear_barrier.6.b
+    }
+    after = { give_technology = { tech = tech_spth_story_science_ship } }
+}
+country_event = {
+    id = disappear_barrier.7
+    title = disappear_barrier.7
+    desc = disappear_barrier.7.desc
+    picture = GFX_evt_engineering_research
+    show_sound = event_wind_ruins
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = koishi_near_scarlet_mansion_room }
+    option = {
+        name = disappear_barrier.6.a
+        default_hide_option = yes
+    }
+    after = { begin_event_chain = { event_chain = spth_event_chain_past_legacy target = root } }
+}
+planet_event = {
+    id = disappear_barrier.12
+    title = disappear_barrier.12
+    desc = disappear_barrier.12.desc
+    picture = GFX_evt_colony_settlement
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_colony_settlement_room }
+    trigger = {
+        owner = { has_origin = origin_spth_story_gensokyo }
+        has_planet_flag = spth_story_sol_system_lunar_capital
+    }
+    immediate = {
+    }
+    option = {
+        name = disappear_barrier.12.a
+    }
+}
+country_event = {
+    id = disappear_barrier.13
+    title = disappear_barrier.13
+    desc = disappear_barrier.13.desc
+    picture = GFX_evt_torifune_in_sol
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = torifune_in_sol_room }
+    trigger = {
+        has_origin = origin_spth_story_gensokyo
+        NOT = { has_country_flag = triggered_tech_th_shield_jiejie1_story }
+        has_technology = tech_th_shield_jiejie1
+    }
+    immediate = {
+        set_country_flag = triggered_tech_th_shield_jiejie1_story
+    }
+    option = {
+        name = disappear_barrier.13.a
+    }
+}
+country_event = {
+    id = disappear_barrier.14
+    title = disappear_barrier.14
+    desc = disappear_barrier.14.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = hifu_room }
+    trigger = {
+        has_origin = origin_spth_story_gensokyo
+    }
+    option = {
+        name = disappear_barrier.14.a
+    }
+}
+
+# 月度检测，模拟幻想乡的四季变化
+country_event = {
+    id = disappear_barrier.200
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        OR = {
+            has_global_flag = spth_allow_non_disappear_barrier_story
+            has_origin = origin_spth_story_gensokyo
+        }
+        OR = {
+            # 剧情线&非剧情线 地球四季变化
+            exists = event_target:spth_story_sol_system_earth
+            # 地球化改造星球
+            AND = {
+                has_country_flag = enable_spth_earth_transform
+                any_owned_planet = { has_planet_flag = has_spth_earth_transform }
+            }
+        }
+    }
+    immediate = {
+        if = {
+            limit = { exists = event_target:spth_story_sol_system_earth }
+            event_target:spth_story_sol_system_earth = {
+                planet_event = { id = disappear_barrier.201 }
+            }
+        }
+        every_owned_planet = {
+            limit = { has_planet_flag = has_spth_earth_transform }
+            planet_event = { id = disappear_barrier.201 }
+        }
+    }
+}
+planet_event = {
+    id = disappear_barrier.201
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = owner
+        owner = { has_authority = auth_gensokyo }
+    }
+    immediate = {
+        spth_planet_season_effect = { season = spring }
+        spth_planet_season_effect = { season = summer }
+        spth_planet_season_effect = { season = autumn }
+        spth_planet_season_effect = { season = winter }
+    }
+}
+
+# 香霖堂触发
+event = {
+    id = disappear_barrier.202
+    hide_window = yes
+    is_triggered_only = yes
+    fire_only_once = yes
+    trigger = {
+        any_country = { is_ai = no has_authority = auth_gensokyo }
+    }
+    immediate = {
+        random_country = {
+            limit = { is_ai = no has_authority = auth_gensokyo }
+            spth_spawn_enclave_system = { type = curator }
+            every_playable_country = {
+                limit = { is_ai = no has_authority = auth_gensokyo NOT = { is_same_value = prev } }
+                country_event = { id = disappear_barrier.204 days = 30 random = 30 }
+            }
+        }
+    }
+}
+# A fleet has entered a system | See also: on_fleet_auto_move_arrival
+# Scope = Fleet
+# From = System
+fleet_event = {
+    id = disappear_barrier.203
+    title = disappear_barrier.203
+    desc = disappear_barrier.203.desc
+    picture = GFX_evt_satellite_in_orbit
+    show_sound = event_yellow_alert
+    location = from
+    is_triggered_only = yes
+    trigger = {
+        exists = owner
+        from = { has_star_flag = spth_enclave_curator_system }
+        owner = { NOT = { has_country_flag = disappear_barrier_203_fired } }
+    }
+    immediate = { owner = { set_country_flag = disappear_barrier_203_fired } }
+    option = { name = disappear_barrier.203.a }
+    option = { name = disappear_barrier.203.b }
+}
+country_event = {
+    id = disappear_barrier.204
+    title = disappear_barrier.204
+    desc = disappear_barrier.204.desc
+    picture = GFX_evt_satellite_in_orbit
+    show_sound = event_yellow_alert
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = disappear_barrier_204_fired } }
+    immediate = { owner = { set_country_flag = disappear_barrier_204_fired } }
+    option = { name = disappear_barrier.204.a }
+    option = { name = disappear_barrier.204.b }
+}
+
+# 香霖堂 custom_diplomacy
+# Triggers when trying to open the diplomacy view for countries with custom diplomacy.
+# Country scope
+# This = target country (player)
+# From = source country
+country_event = {
+    id = disappear_barrier.205
+    title = NAME_spth_curator
+    desc = {
+        trigger = {
+            event_target:spth_enclave_curator_country = {
+                NOT = { is_hostile_to = root }
+                trust = { who = root value < 25 }
+            }
+        }
+        text = disappear_barrier.205.desc
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_enclave_diplomacy_ui
+    custom_gui_option = spth_enclave_diplomacy_button
+    location = event_target:spth_enclave_curator_system_star
+    picture_event_data = {
+        room = kourindou_room
+        portrait = spth_curator_por
+    }
+    trigger = {
+        from = { is_country_type = spth_enclave has_country_flag = spth_enclave_curator_country }
+        has_authority = auth_gensokyo
+    }
+    option = {
+        name = disappear_barrier.205.a
+    }
+    option = {
+        name = disappear_barrier.205.b
+    }
+    option = {
+        name = disappear_barrier.205.c
+    }
+    option = {
+        name = disappear_barrier.205.d
+        allow = { always = no }
+    }
+    option = {
+        name = disappear_barrier.205.exit
+    }
+}
+
+# 年检，剧情线敌人入侵
+country_event = {
+    id = disappear_barrier.206
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = event_target:spth_story_sol_system_earth
+        event_target:spth_story_sol_system_earth = {
+            is_colony = yes
+            has_modifier = spth_story_worse_env
+        }
+    }
+    immediate = {
+        country_event = { id = disappear_barrier.207 }
+    }
+}
+country_event = {
+    id = disappear_barrier.207
+    title = disappear_barrier.207
+    desc = disappear_barrier.207.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_emergency_workers_room }
+    fire_only_once = yes
+    location = event_target:spth_story_sol_system_earth
+    option = { name = disappear_barrier.207.a }
+    after = {
+
+    }
+}
+country_event = {
+    id = disappear_barrier.208
+    title = disappear_barrier.208
+    desc = disappear_barrier.208.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_emergency_workers_room }
+    location = event_target:spth_story_sol_system_earth
+    immediate = {
+    }
+    option = { name = disappear_barrier.208.a }
+}
+
+# 主事件链
+country_event = {
+    id = disappear_barrier.1000
+    title = disappear_barrier.1000.name
+    desc = disappear_barrier.1000.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_travel_room }
+    mean_time_to_happen = { years = 3 }
+    trigger = {
+        has_country_flag = spth_past_legacy_begin
+        NOT = { has_country_flag = disappear_barrier_1000_fired }
+    }
+    immediate = {
+        set_country_flag = disappear_barrier_1000_fired
+    }
+    option = {
+        name = disappear_barrier.1000.a
+        default_hide_option = yes
+        start_situation = {
+            type = disappear_barrier_locate_lunar_system_1
+            target = root
+        }
+    }
+}
+situation_event = {
+    id = disappear_barrier.1001
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        switch = {
+            trigger = current_stage
+            stage_1 = {
+                if = {
+                    limit = { current_situation_approach = "disappear_barrier_locate_lunar_system_1_approach_positive" }
+
+                }
+            }
+            stage_2 = {
+
+            }
+            stage_3 = {
+
+            }
+        }
+    }
+}
+situation_event = {
+    id = disappear_barrier.1002
+    title = disappear_barrier.1002.name
+    desc = disappear_barrier.1002.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_nebula_stars_room }
+    location = event_target:disappear_barrier_1002_reaction_system
+    immediate = {
+        owner = {
+            random_system = {
+                limit = { spth_can_spawn_story_lunar_capital_system = yes }
+                save_global_event_target_as = disappear_barrier_1002_reaction_system
+            }
+            if = {
+                limit = { NOT = { exists = event_target:disappear_barrier_1002_reaction_system } }
+                random_system_within_border = {
+                    save_global_event_target_as = disappear_barrier_1002_reaction_system
+                }
+            }
+        }
+    }
+    option = {
+        name = disappear_barrier.1002.a
+        default_hide_option = yes
+    }
+}
+situation_event = {
+    id = disappear_barrier.1003
+    title = disappear_barrier.1003.name
+    desc = disappear_barrier.1003.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_nebula_room }
+    option = {
+        name = disappear_barrier.1003.a
+        default_hide_option = yes
+    }
+}
+situation_event = {
+    id = disappear_barrier.1004
+    title = disappear_barrier.1004.name
+    desc = disappear_barrier.1004.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_in_orbit_room }
+    option = {
+        name = disappear_barrier.1004.a
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = disappear_barrier.1005
+    title = disappear_barrier.1005.name
+    desc = disappear_barrier.1005.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_travel_room }
+    option = {
+        name = disappear_barrier.1005.a
+        default_hide_option = yes
+    }
+    after = {
+        event_target:disappear_barrier_1002_reaction_system = {
+            set_spawn_system_batch = begin
+            spawn_system = {
+                initializer = spth_story_lunar_capital_union_system
+                hyperlane = no
+                effect = {
+                    add_hyperlane = {
+                        from = this
+                        to = prev
+                    }
+                }
+            }
+            set_spawn_system_batch = end
+        }
+        clear_global_event_target = disappear_barrier_1002_reaction_system
+        add_event_chain_counter = {
+            event_chain = spth_event_chain_past_legacy
+            counter = spth_past_legacy_ruins_find
+            amount = 1
+        }
+        create_point_of_interest = {
+            event_chain = spth_event_chain_past_legacy
+            id = spth_story_lunar_capital_union_system
+            name = spth_lunar_union_system
+            location = event_target:spth_story_lunar_capital_union_system
+            desc = spth_lunar_union_system_desc
+        }
+    }
+}
+fleet_event = {
+    id = disappear_barrier.1006
+    title = disappear_barrier.1006.name
+    desc = disappear_barrier.1006.desc
+    is_triggered_only = yes
+    trigger = {
+        exists = owner
+        from = { has_star_flag = spth_story_lunar_capital_union_system }
+        owner = { NOT = { has_country_flag = disappear_barrier_1006_fired } }
+    }
+    immediate = {
+        owner = { set_country_flag = disappear_barrier_1006_fired }
+        from = {
+            random_system_planet = {
+                limit = { has_planet_flag = spth_story_lunar_capital_union_system_moon }
+                save_event_target_as = target_1006
+            }
+        }
+    }
+    location = event_target:target_1006
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_satellite_in_orbit_room }
+    option = {
+        name = disappear_barrier.1006.a
+        default_hide_option = yes
+    }
+    after = {
+        event_target:target_1006 = {
+            create_archaeological_site = site_lunar_capital_union_shattered_planet
+        }
+    }
+}
+country_event = {
+    id = disappear_barrier.1007
+    title = disappear_barrier.1007.name
+    desc = disappear_barrier.1007.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_evil_room }
+    option = {
+        name = disappear_barrier.1007.a
+        default_hide_option = yes
+    }
+}

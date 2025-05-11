@@ -1,4 +1,4 @@
-﻿@th_triumph_duration = 1800
+@th_triumph_duration = 1800
 @th_activation_cost = 100
 ##博物志
 r_th_latency = {
@@ -44,6 +44,76 @@ r_th_latency = {
 		}
 	}
 	# Possible check for activation
+}
+r_th_yin_yang_orb = {
+	activation_duration = 3600
+	portrait = "GFX_relic_th_cannonball"
+	sound = "relic_activation_khans_throne"
+	score = 2000
+	resources = {
+		category = relics
+		cost = { influence = 10 }
+		produces = {
+			sr_lingli = 1
+			mult = value:yin_yang_orb_drp_mult|active_factor|2|
+		}
+		produces = {
+			sr_fuka = 1
+			mult = value:yin_yang_orb_drp_mult|active_factor|1.25|
+		}
+	}
+	possible = {
+		custom_tooltip = {
+			fail_text = "requires_relic_no_cooldown"
+			NOT = { has_modifier = relic_activation_cooldown }
+		}
+		is_ai = no
+	}
+	ai_weight = {
+		weight = 100
+	}
+	can_be_stolen = no
+	active_effect = {
+		custom_tooltip = r_th_yin_yang_orb_tooltip
+		add_modifier = {
+			modifier = "relic_activation_cooldown"
+			days = 1800
+		}
+		hidden_effect = {
+			set_variable = { which = r_th_yin_yang_orb_var value = modifier:weapon_type_kinetic_weapon_damage_mult }
+			if = {
+				limit = { check_variable = { which = r_th_yin_yang_orb_var value < modifier:weapon_type_energy_weapon_damage_mult } }
+				set_variable = { which = r_th_yin_yang_orb_var value = modifier:weapon_type_energy_weapon_damage_mult }
+			}
+			reroll_random = yes
+			random_list = {
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.050 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.055 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.060 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.065 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.070 } }
+				1 = { multiply_variable = { which = r_th_yin_yang_orb_var value = 0.075 } }
+			}
+			if = {
+				limit = { has_modifier = r_th_yin_yang_orb }
+				remove_modifier = r_th_yin_yang_orb
+			}
+			add_modifier = {
+				modifier = r_th_yin_yang_orb
+				days = 1800
+				mult = r_th_yin_yang_orb_var
+			}
+			if = {
+				limit = { NOT = { is_variable_set = yin_yang_orb_active_count } }
+				set_variable = { which = yin_yang_orb_active_count value = 0 }
+			}
+			change_variable = { which = yin_yang_orb_active_count value = 1 }
+			# set_timed_country_flag = {
+			# 	flag = th_yin_yang_orb_cooldown
+			# 	days = 3600
+			# }
+		}
+	}
 }
 
 ########阴阳玉

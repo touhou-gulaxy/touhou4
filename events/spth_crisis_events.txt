@@ -1,0 +1,1923 @@
+namespace = touhou_crisis
+
+country_event = {
+    id = touhou_crisis.1
+    title = touhou_crisis.1.name
+    desc = touhou_crisis.1.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = {
+        room = th_arc_mifeng_room
+        portrait = spth_por_yukari_1
+    }
+    is_triggered_only = yes
+    trigger = {
+        has_authority = auth_gensokyo
+        NOT = { has_country_flag = touhou_crisis_1_fired }
+        is_multiplayer = no
+    }
+    option = {
+        name = touhou_crisis.1.exit
+        default_hide_option = yes
+        hidden_effect = { set_country_flag = touhou_crisis_1_close }
+    }
+    option = {
+        name = touhou_crisis.1.a
+        custom_tooltip = gensokyo_start.1145.easy.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 1 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 }
+            }
+        }
+    }
+    option = {
+        name = touhou_crisis.1.b
+        custom_tooltip = gensokyo_start.1145.normal.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 2 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 2 }
+            }
+        }
+    }
+    option = {
+        name = touhou_crisis.1.c
+        custom_tooltip = gensokyo_start.1145.hard.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 3 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 3 }
+            }
+        }
+    }
+    option = {
+        name = touhou_crisis.1.d
+        custom_tooltip = gensokyo_start.1145.lunatic.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 4 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 4 }
+            }
+        }
+    }
+    option = {
+        name = touhou_crisis.1.e
+        custom_tooltip = gensokyo_start.1145.phantasm.tooltip
+        trigger = { NOT = { has_global_flag = spth_lunar_capital_crisis_phantasm } }
+        hidden_effect = { set_global_flag = spth_lunar_capital_crisis_phantasm }
+    }
+    option = {
+        name = touhou_crisis.1.f
+        custom_tooltip = gensokyo_start.1145.phantasm.tooltip
+        trigger = { has_global_flag = spth_lunar_capital_crisis_phantasm }
+        hidden_effect = { remove_global_flag = spth_lunar_capital_crisis_phantasm }
+    }
+    option = {
+        name = touhou_crisis.1.g
+        custom_tooltip = gensokyo_start.1145.easy.tooltip
+        allow = {
+            custom_tooltip = {
+                fail_text = gensokyo_start.1145.is_this_diff
+                event_target:global_event_country = {
+                    check_variable = { which = spth_lunar_capital_crisis_difficulty value != 8 }
+                }
+            }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                set_variable = { which = spth_lunar_capital_crisis_difficulty value = 8 }
+            }
+        }
+    }
+    after = {
+        hidden_effect = {
+            remove_country_flag = touhou_crisis_1_fired
+            if = {
+                limit = { has_country_flag = touhou_crisis_1_close }
+                remove_country_flag = touhou_crisis_1_close
+            } else = { country_event = { id = touhou_crisis.1 } }
+        }
+    }
+}
+
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = touhou_crisis.10
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_crisis_faction = yes
+        fromfrom = {
+            is_ship_size = spth_kamikakushi_cruiser
+            exists = fleet fleet = { num_ships > 0 }
+        }
+    }
+    immediate = {
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value <= 8 } } }
+            fromfrom.fleet = {
+                while = {
+                    count = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+                    reroll_random = yes
+                    random_list = {
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_tlx effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_tmp effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_tor effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_ylx effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk_p effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk_g effect = { spth_refresh_ship_extra_life = yes } } }
+                    }
+                }
+            }
+        } else = {
+            fromfrom.fleet = {
+                while = {
+                    count = 8
+                    reroll_random = yes
+                    random_list = {
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_tlx effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_tmp effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_tor effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_ylx effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk_p effect = { spth_refresh_ship_extra_life = yes } } }
+                        10 = { create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk_g effect = { spth_refresh_ship_extra_life = yes } } }
+                    }
+                }
+            }
+        }
+    }
+}
+
+# 压制矩阵效果
+country_event = {
+    id = touhou_crisis.11
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        fromfrom = {
+            OR = {
+                AND = {
+                    NOT = { has_fleet_flag = inv_fire_only_once_temple }
+                    any_owned_ship = { is_ship_size = spth_kamikakushi_cruiser }
+                }
+                has_global_flag = touhou_kamikakushi_extra_14
+                has_global_flag = touhou_kamikakushi_extra_22
+                has_global_flag = touhou_kamikakushi_extra_23
+                has_global_flag = touhou_kamikakushi_extra_24
+                has_global_flag = touhou_kamikakushi_extra_33
+                has_global_flag = touhou_kamikakushi_extra_41
+                has_global_flag = touhou_kamikakushi_extra_42
+                has_global_flag = touhou_kamikakushi_extra_43
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            if = {
+                limit = {
+                    NOT = { has_fleet_flag = inv_fire_only_once_temple }
+                    any_owned_ship = { is_ship_size = spth_kamikakushi_cruiser }
+                }
+                set_timed_fleet_flag = { flag = inv_fire_only_once_temple days = 10 }
+                every_owned_ship = {
+                    limit = { is_ship_size = spth_kamikakushi_cruiser }
+                    reroll_random = yes
+                    random_list = {
+                        60 = { set_timed_ship_flag = { flag = spth_invincible days = 3 } }
+                        30 = { set_timed_ship_flag = { flag = spth_invincible days = 4 } }
+                        10 = { set_timed_ship_flag = { flag = spth_invincible days = 5 } }
+                    }
+                }
+                reroll_random = yes
+            }
+            if = {
+                limit = { prev = { is_touhou_crisis_faction = yes } root.from = { is_touhou_crisis_faction = no } }
+                if = {
+                    limit = { has_global_flag = touhou_kamikakushi_extra_13 NOT = { has_fleet_flag = spth_spawn_random_support_fleet_recent } }
+                    solar_system = { save_event_target_as = spth_kamikakushi_spawnpoint }
+                    set_timed_fleet_flag = { flag = spth_spawn_random_support_fleet_recent days = 120 }
+                    random_list = {
+                        25 = { spth_kamikakushi_spawn_random_support_fleet = yes }
+                        75 = {  }
+                    }
+                    reroll_random = yes
+                }
+                if = {
+                    limit = { has_global_flag = touhou_kamikakushi_extra_23 NOT = { has_fleet_flag = touhou_kamikakushi_extra_23_recent } }
+                    set_timed_fleet_flag = { flag = touhou_kamikakushi_extra_23_recent days = 30 }
+                    fromfromfrom = {
+                        random_owned_ship = {
+                            prevprev = {
+                                set_variable = { which = touhou_kamikakushi_extra_23_fire_rate value = prev.modifier:weapon_type_energy_weapon_fire_rate_mult }
+                                set_variable = { which = touhou_kamikakushi_extra_23_damage value = prev.modifier:weapon_type_energy_weapon_damage_mult }
+                            }
+                        }
+                    }
+                    multiply_variable = { which = touhou_kamikakushi_extra_23_fire_rate value = 0.1 }
+                    multiply_variable = { which = touhou_kamikakushi_extra_23_damage value = 0.1 }
+                    add_modifier = { modifier = touhou_kamikakushi_extra_23_1 mult = touhou_kamikakushi_extra_23_damage days = 30 }
+                    add_modifier = { modifier = touhou_kamikakushi_extra_23_2 mult = touhou_kamikakushi_extra_23_fire_rate days = 30 }
+                    clear_variable = touhou_kamikakushi_extra_23_fire_rate
+                    clear_variable = touhou_kamikakushi_extra_23_damage
+                    reroll_random = yes
+                }
+                if = {
+                    limit = { has_global_flag = touhou_kamikakushi_extra_14 fromfromfrom = { NOT = { has_fleet_flag = touhou_kamikakushi_extra_14_fired } } }
+                    fromfromfrom = { set_timed_fleet_flag = { flag = touhou_kamikakushi_extra_14_fired days = 30 } }
+                    random_list = {
+                        5 = { fromfromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_14 days = 5 } } } }
+                        95 = {}
+                    }
+                    reroll_random = yes
+                }
+                if = {
+                    limit = { has_global_flag = touhou_kamikakushi_extra_22 has_fleet_flag = spth_kamikakushi_invader_fleet }
+                    random_list = {
+                        20 = {}
+                        80 = { fromfromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_22 days = 45 } } } }
+                    }
+                    reroll_random = yes
+                }
+                if = {
+                    limit = { has_global_flag = touhou_kamikakushi_extra_24 has_fleet_flag = spth_kamikakushi_defence_fleet }
+                    fromfromfrom = {
+                        if = {
+                            limit = { NOT = { has_fleet_flag = touhou_kamikakushi_extra_24_recent } }
+                            set_timed_fleet_flag = { flag = touhou_kamikakushi_extra_24_recent days = 30 }
+                            random_list = {
+                                20 = {
+                                    modifier = {
+                                        add = 40
+                                        root.from = { is_touhou_player_faction = no }
+                                    }
+                                    every_owned_ship = {
+                                        clear_shield = yes
+                                        add_modifier = { modifier = touhou_kamikakushi_extra_24 days = 5 }
+                                        add_modifier = {
+                                            modifier = touhou_kamikakushi_extra_24_regen days = 20
+                                            mult = value:touhou_extra_export_value|modifier|modifier:ship_shield_regen_add_static|
+                                        }
+                                        add_modifier = {
+                                            modifier = touhou_kamikakushi_extra_24_add days = 15
+                                            mult = value:touhou_extra_export_value|modifier|modifier:ship_shield_add|
+                                        }
+                                        add_modifier = {
+                                            modifier = touhou_kamikakushi_extra_24_mult days = 10
+                                            mult = value:touhou_extra_export_value|modifier|modifier:ship_shield_mult|
+                                        }
+                                    }
+                                }
+                                80 = {
+                                    modifier = {
+                                        add = -40
+                                        root.from = { is_touhou_player_faction = no }
+                                    }
+                                    # nothing here
+                                }
+                            }
+                            reroll_random = yes
+                        }
+                    }
+                }
+                if = {
+                    limit = { has_global_flag = touhou_kamikakushi_extra_33 }
+                    every_owned_ship = {
+                        limit = { NOT = { has_ship_flag = spth_invincible } }
+                        add_modifier = { modifier = spth_kamikakushi_inv_modifier days = 3 }
+                        set_timed_ship_flag = { flag = spth_invincible days = 3 }
+                    }
+                }
+                if = {
+                    limit = { has_global_flag = touhou_kamikakushi_extra_41 fromfromfrom = { NOT = { has_fleet_flag = touhou_kamikakushi_extra_41_recent } } }
+                    fromfromfrom = {
+                        set_timed_fleet_flag = { flag = touhou_kamikakushi_extra_41_recent days = 360 }
+                        random_list = {
+                            25 = {
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = touhou_kamikakushi_extra_41
+                                        days = 360 mult = 0.5
+                                    }
+                                }
+                            }
+                            50 = {
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = touhou_kamikakushi_extra_41
+                                        days = 360 mult = 1
+                                    }
+                                }
+                            }
+                            20 = {
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = touhou_kamikakushi_extra_41
+                                        days = 360 mult = 1.5
+                                    }
+                                }
+                            }
+                            5 = {
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = touhou_kamikakushi_extra_41
+                                        days = 360 mult = 2
+                                    }
+                                }
+                            }
+                        }
+                        reroll_random = yes
+                    }
+                    root.from = {
+                        if = {
+                            limit = { NOT = { has_country_flag = touhou_kamikakushi_extra_41_recent } }
+                            set_timed_country_flag = { flag = touhou_kamikakushi_extra_41_recent days = 60 }
+                            spth_kamikakushi_stole_resource_perc = { resource = alloys prec = 0.1 }
+                            spth_kamikakushi_stole_resource_perc = { resource = food prec = 0.05 }
+                            spth_kamikakushi_stole_resource_perc = { resource = energy prec = 0.02 }
+                            spth_kamikakushi_stole_resource_perc = { resource = minerals prec = 0.01 }
+                        }
+                    }
+                }
+                if = {
+                    limit = { has_global_flag = touhou_kamikakushi_extra_42 }
+                    fromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_42 days = 5 } } }
+                }
+                if = {
+                    limit = { has_global_flag = touhou_kamikakushi_extra_43 }
+                    fromfrom = { every_owned_ship = { add_modifier = { modifier = touhou_kamikakushi_extra_43 days = 180 } } }
+                }
+            }
+        }
+    }
+}
+
+# 天灾寻路
+fleet_event = {
+    id = touhou_crisis.12
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+    }
+    immediate = { spth_invasion_fleet_action = { ID = touhou_crisis TYPE = spth_kamikaushi OWNER = spth_kamikakushi_country } }
+}
+
+# kamikakushi crisis bombed a planet
+# This = Planet
+# From = Bombarder country
+planet_event = {
+    id = touhou_crisis.13
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_orbital_bombardment = yes
+        planet_devastation >= 90
+        from = { is_country_type = spth_kamikakushi_country }
+    }
+    immediate = {
+        owner = {
+            country_event = {
+                id = touhou_crisis.14
+                scopes = { from = root fromfrom = event_target:spth_kamikakushi_country }
+            }
+        }
+        set_variable = { which = touhou_crisis_13_districts_count value = trigger:num_districts }
+        reroll_random = yes
+        random_list = {
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.1 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.2 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.3 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.4 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.5 } }
+        }
+        reroll_random = yes
+        floor_variable = touhou_crisis_13_districts_count
+        while = { count = touhou_crisis_13_districts_count add_deposit = d_ruined_district }
+        clear_variable = touhou_crisis_13_districts_count
+        add_deposit = d_ruined_building_blocker
+        add_deposit = d_ruined_building_blocker
+        spth_planet_kill_all_pop = yes
+        destroy_colony = yes
+        if = {
+            limit = { is_ringworld = yes }
+            spawn_ringworld_cracker_effect = yes
+            change_pc = pc_ringworld_habitable_damaged
+            set_planet_entity = { entity = ringworld_habitable_damaged_entity }
+        } else_if = {
+            limit = { spth_is_habitat = yes }
+            spth_spawn_habitat_cracker_effect = yes
+        } else_if = {
+            limit = { has_modifier = "holy_planet" }
+            change_pc = pc_shattered
+            remove_modifier = "holy_planet"
+        }
+        every_country = {
+            limit = {
+                NOT = { is_same_value = event_target:spth_kamikakushi_country }
+                has_event_chain = spth_kamikakushi_crisis_invasion
+            }
+            add_event_chain_counter = {
+                event_chain = "spth_kamikakushi_crisis_invasion"
+                counter = "spth_kamikakushi_planet_destroyed"
+                amount = 1
+            }
+        }
+        solar_system = {
+            if = {
+                limit = {
+                    count_system_colony = { count = 0 }
+                    NOT = { is_star_class = sc_spth_void }
+                }
+                observer_event = { id = touhou_crisis.206 }
+                every_country = {
+                    limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+                    add_event_chain_counter = {
+                        event_chain = spth_kamikakushi_crisis_invasion
+                        counter = spth_kamikakushi_system_destroyed
+                        amount = 1
+                    }
+                    country_event = { id = touhou_crisis.20 scopes = { from = prev fromfrom = root.from } }
+                }
+                create_ambient_object = { type = "star_explosion" play_animation_once = yes location = this }
+                last_created_ambient_object = { set_location = { target = prev.star distance = 0 angle = random } }
+                set_star_class = sc_spth_void
+                star = {
+                    if = {
+                        limit = { NOT = { is_planet_class = pc_spth_void } }
+                        change_pc = pc_spth_void
+                        set_variable = { which = spth_void_star_original_size value = trigger:planet_size }
+                        set_planet_flag = spth_void_star_flag
+                        set_planet_size = 1
+                    }
+                }
+                solar_system = { system_event = { id = touhou_crisis.126 days = 2 } }
+            }
+            every_fleet_in_system = {
+                limit = {
+                    exists = owner
+                    owner = { is_touhou_crisis_faction = yes }
+                    has_fleet_flag = spth_kamikakushi_fleet
+                    OR = {
+                        AND = { exists = orbit orbit = { is_same_value = root } }
+                        AND = {
+                            is_fleet_idle = yes
+                            NAND = {
+                                exists = orbit
+                                orbit = {
+                                    NOT = { is_star = yes }
+                                    exists = owner
+                                    owner = { is_hostile = event_target:spth_kamikakushi_country }
+                                }
+                            }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = touhou_crisis.12 days = 5 random = 15 }
+            }
+        }
+    }
+}
+country_event = {
+    id = touhou_crisis.14
+    title = touhou_crisis.14
+    desc = touhou_crisis.14.desc
+    is_triggered_only = yes
+    location = from
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_nuclear_explosion_room }
+    show_sound = event_super_explosion
+    option = { name = touhou_crisis.14.a ai_chance = { weight = 100 } }
+    option = { name = touhou_crisis.14.b }
+}
+
+# the gate gains invincible for 30 days
+country_event = {
+    id = touhou_crisis.15
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_crisis_faction = yes
+        fromfrom = {
+            has_fleet_flag = spth_kamikakushi_gate
+            NOT = { any_owned_ship = { has_ship_flag = spth_invincible } }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            every_owned_ship = {
+                set_timed_ship_flag = { flag = spth_invincible days = 30 }
+                add_modifier = { modifier = spth_kamikakushi_gate_modifier days = 30 }
+            }
+        }
+    }
+}
+
+# 天灾舰队计数器
+country_event = {
+    id = touhou_crisis.16
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        from = { is_touhou_crisis_faction = yes }
+        fromfromfrom = { has_fleet_flag = spth_kamikakushi_fleet NOT = { has_fleet_flag = spth_kamikakushi_support_fleet } }
+    }
+    immediate = {
+        fromfromfrom = {
+            if = {
+                limit = { NOT = { has_fleet_flag = spth_destory_counter_fire_only_once } }
+                set_timed_fleet_flag = { flag = spth_destory_counter_fire_only_once days = 1 }
+                if = {
+                    limit = { root.from = { is_country_type = spth_kamikakushi_country } }
+                    every_country = {
+                        limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+                        add_event_chain_counter = {
+                            event_chain = spth_kamikakushi_crisis_invasion
+                            counter = spth_kamikakushi_fleet_counter
+                            amount = -1
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+# 天灾被击杀计数器
+country_event = {
+    id = touhou_crisis.17
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_crisis_faction = yes
+    }
+    immediate = {
+        if = {
+            limit = { is_country_type = spth_kamikakushi_country }
+            from = {
+                add_event_chain_counter = {
+                    event_chain = spth_kamikakushi_crisis_invasion
+                    counter = spth_kamikakushi_ships_killed_by_us
+                    amount = 1
+                }
+            }
+            every_country = {
+                limit = {
+                    has_event_chain = spth_kamikakushi_crisis_invasion
+                    NOT = { is_same_value = from }
+                }
+                add_event_chain_counter = {
+                    event_chain = spth_kamikakushi_crisis_invasion
+                    counter = spth_kamikakushi_ships_killed_by_other
+                    amount = 1
+                }
+            }
+        }
+    }
+}
+# 天灾击杀计数器
+country_event = {
+    id = touhou_crisis.18
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_crisis_faction = yes
+        from = { is_touhou_crisis_faction = no }
+    }
+    immediate = {
+        every_country = {
+            limit = {
+                has_event_chain = spth_kamikakushi_crisis_invasion
+                is_touhou_crisis_faction = no
+            }
+            add_event_chain_counter = {
+                event_chain = spth_kamikakushi_crisis_invasion
+                counter = spth_kamikakushi_victim
+                amount = 1
+            }
+        }
+    }
+}
+
+# 隙间之里刷舰队
+country_event = {
+    id = touhou_crisis.19
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+    }
+    immediate = {
+        set_variable = { which = spth_kamikakushi_spawn_interval value = 0 }
+        spth_kamikakushi_spawn_fleets_detail = { spth_id = 1 }
+        spth_kamikakushi_spawn_fleets_detail = { spth_id = 2 }
+        spth_kamikakushi_spawn_fleets_detail = { spth_id = 3 }
+        if = {
+            limit = { check_variable = { which = spth_kamikakushi_spawn_interval value >= 3 } }
+            country_event = { id = touhou_crisis.19 days = 270 random = 60 }
+        } else_if = {
+            limit = { check_variable = { which = spth_kamikakushi_spawn_interval value = 2 } }
+            country_event = { id = touhou_crisis.19 days = 330 random = 60 }
+        } else_if = {
+            limit = { check_variable = { which = spth_kamikakushi_spawn_interval value = 1 } }
+            country_event = { id = touhou_crisis.19 days = 390 random = 60 }
+        } else = {
+            # last armies
+            spth_kamikakushi_spawn_fleets_detail = { spth_id = 1 }
+            spth_kamikakushi_spawn_fleets_detail = { spth_id = 2 }
+            spth_kamikakushi_spawn_fleets_detail = { spth_id = 3 }
+        }
+    }
+}
+
+country_event = {
+    id = touhou_crisis.20
+    title = touhou_crisis.20.name
+    desc = touhou_crisis.20.desc
+    is_triggered_only = yes
+    location = from
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_large_explosion_room }
+    show_sound = event_super_explosion
+    option = { name = touhou_crisis.20.a ai_chance = { weight = 100 } }
+}
+
+# fuck habitat station
+ship_event = {
+    id = touhou_crisis.21
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_ship_class = shipclass_habitat_station
+        from = { exists = owner owner = { is_touhou_crisis_faction = yes } }
+    }
+    immediate = {
+        if = {
+            limit = { exists = orbit }
+            orbit = { remove_planet_flag = has_megastructure save_event_target_as = target_planet }
+        }
+        solar_system = { random_system_planet = {
+            limit = { has_planet_flag = habitat }
+            every_deposit = { limit = { has_deposit_flag = planet@event_target:target_planet } remove_deposit = yes }
+        } }
+        destroy_ship = this
+        create_ambient_object = {
+            location = this
+            type = habitat_cracker_object
+            duration = 5
+            use_3d_location = yes
+            base_angle_towards = star
+            entity_face_object = star
+            entity_offset = { min = 0 max = 0 }
+            entity_scale_to_size = yes scale = 0.10
+        }
+    }
+}
+
+# 隙间侵军
+# flags:
+# country:
+#   touhou_crisis_102_refuse 拒绝
+#   touhou_crisis_102_accept 接受
+#   touhou_crisis_102_wait 等待
+#   touhou_crisis_102_has_chosen 已经做出选择
+#   has_open_spth_kamikakushi_diplomacy 开启隙间之里外交界面
+# global:
+#   spth_kamikaushi_repaired_wedge 修复主楔
+#   spth_kamikaushi_crisis_intro 引入天灾
+#   spth_kamikaushi_crisis_start 天灾开始
+#   spth_kamikaushi_crisis_ended 天灾结束
+# star:
+#   spth_kamikaushi_crisis_gate_1 第一传送门
+#   spth_kamikaushi_crisis_gate_2 第二传送门
+#   spth_kamikaushi_crisis_gate_3 第三传送门
+#   spth_kamikaushi_crisis_base 军事基地
+
+# 年检 魔界引入
+event = {
+    id = touhou_crisis.100
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_global_flag = touhou_crisis_101_fired }
+        exists = event_target:spth_precursor_capital_makai_system
+        event_target:spth_precursor_capital_makai_system = {
+            any_megastructure = {
+                OR = {
+                    is_megastructure_type = spth_makai_wedge_0
+                    is_megastructure_type = spth_makai_wedge_1
+                }
+                exists = owner
+                owner = { is_same_value = event_target:spth_makai_repair_country }
+            }
+        }
+    }
+    immediate = {
+        event_target:global_event_country = {
+            if = {
+                limit = { NOT = { is_variable_set = touhou_crisis_100_counter } }
+                set_variable = { which = touhou_crisis_100_counter value = 0 }
+            }
+            if = {
+                limit = { NOT = { has_global_flag = spth_kamikaushi_repaired_wedge } }
+                set_global_flag = spth_kamikaushi_repaired_wedge
+            }
+            reroll_random = yes
+            random_list = {
+                10 = {
+                    modifier = { add = 10 check_variable = { which = touhou_crisis_100_counter value > 1 } }
+                    modifier = { add = 20 check_variable = { which = touhou_crisis_100_counter value > 3 } }
+                    modifier = { add = 30 check_variable = { which = touhou_crisis_100_counter value > 5 } }
+                    modifier = { add = 40 check_variable = { which = touhou_crisis_100_counter value > 7 } }
+                    event_target:spth_precursor_capital_makai_system.owner = {
+                        set_country_flag = spth_kamikaushi_repaired_wedge_country
+                        set_global_flag = touhou_crisis_101_fired
+                        country_event = { id = touhou_crisis.101 }
+                    }
+                }
+                90 = {
+                    modifier = { add = -10 check_variable = { which = touhou_crisis_100_counter value > 1 } }
+                    modifier = { add = -20 check_variable = { which = touhou_crisis_100_counter value > 3 } }
+                    modifier = { add = -30 check_variable = { which = touhou_crisis_100_counter value > 5 } }
+                    modifier = { add = -40 check_variable = { which = touhou_crisis_100_counter value > 7 } }
+                    change_variable = { which = touhou_crisis_100_counter value = 1 }
+                }
+            }
+            reroll_random = yes
+        }
+    }
+}
+country_event = {
+    id = touhou_crisis.101
+    title = touhou_crisis.101.name
+    desc = touhou_crisis.101.desc
+    is_triggered_only = yes
+    trigger = { has_global_flag = spth_kamikaushi_repaired_wedge }
+    location = event_target:makai_wedge_ruined_object
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mysterious_signal_room }
+    option = {
+        name = touhou_crisis.101.a
+        country_event = { id = touhou_crisis.102 days = 15 random = 15 }
+    }
+}
+
+country_event = {
+    id = touhou_crisis.102
+    title = touhou_crisis.102.name
+    desc = touhou_crisis.102.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    force_open = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    diplomatic_title = touhou_crisis.102.dipo
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = spth_kamikakushi_por_1
+    }
+    option = {
+        name = touhou_crisis.102.a
+        is_dialog_only = yes
+        response_text = touhou_crisis.102.a.response
+    }
+    option = {
+        name = touhou_crisis.102.who
+        is_dialog_only = yes
+        response_text = touhou_crisis.102.who.response
+    }
+    option = {
+        name = touhou_crisis.102.b
+        is_dialog_only = yes
+        response_text = touhou_crisis.102.b.response
+    }
+    option = {
+        name = touhou_crisis.102.c
+        is_dialog_only = yes
+        response_text = touhou_crisis.102.c.response
+    }
+    option = {
+        name = touhou_crisis.102.d
+        custom_tooltip = touhou_crisis.102.d.tooltip
+        response_text = touhou_crisis.102.d.response
+        hidden_effect = { spth_kamikaushi_refused = yes }
+    }
+    option = {
+        name = touhou_crisis.102.e
+        trigger = { NOT = { has_country_flag = touhou_crisis_102_refuse } }
+        custom_tooltip = touhou_crisis.102.e.tooltip
+        response_text = touhou_crisis.102.e.response
+        hidden_effect = { spth_kamikakushi_destroy_wedge = yes }
+    }
+    option = {
+        name = touhou_crisis.102.f
+        trigger = { NOT = { has_country_flag = touhou_crisis_102_refuse } }
+        custom_tooltip = touhou_crisis.102.f.tooltip
+        response_text = touhou_crisis.102.f.response
+        hidden_effect = {
+            set_country_flag = touhou_crisis_102_wait
+        }
+        country_event = { id = touhou_crisis.109 days = 1800 }
+    }
+    after = {
+        hidden_effect = {
+            if = {
+                limit = {
+                    OR = {
+                        has_country_flag = touhou_crisis_102_wait
+                        has_country_flag = touhou_crisis_102_accept
+                    }
+                }
+                spth_spawn_kamikakushi_diplomacy = yes
+            }
+        }
+    }
+}
+country_event = {
+    id = touhou_crisis.103
+    title = touhou_crisis.103.name
+    desc = touhou_crisis.103.desc
+    is_triggered_only = yes
+    location = event_target:makai_wedge_ruined_object
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_large_explosion_room }
+    option = {
+        name = touhou_crisis.103.a
+    }
+}
+country_event = {
+    id = touhou_crisis.104
+    title = touhou_crisis.104.name
+    desc = touhou_crisis.104.desc
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = touhou_crisis_102_has_chosen } }
+    diplomatic = yes
+    force_open = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    diplomatic_title = touhou_crisis.102.dipo
+    immediate = { set_country_flag = has_open_spth_kamikakushi_diplomacy }
+    after = { hidden_effect = { remove_country_flag = has_open_spth_kamikakushi_diplomacy } }
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = spth_kamikakushi_por_1
+    }
+    option = {
+        name = touhou_crisis.104.a
+        response_text = touhou_crisis.104.a.response
+        hidden_effect = { spth_kamikaushi_refused = yes }
+    }
+    option = {
+        name = touhou_crisis.104.b
+        response_text = touhou_crisis.104.b.response
+        custom_tooltip = touhou_crisis.102.e.tooltip
+        hidden_effect = { spth_kamikakushi_destroy_wedge = yes }
+    }
+}
+
+country_event = {
+    id = touhou_crisis.105
+    title = touhou_crisis.105.name
+    desc = touhou_crisis.105.desc
+    is_triggered_only = yes
+    location = capital_scope
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_travel_room }
+    option = {
+        name = TH_WORYING
+        country_event = { id = touhou_crisis.106 days = 360 }
+    }
+}
+country_event = {
+    id = touhou_crisis.106
+    title = touhou_crisis.106.name
+    desc = touhou_crisis.106.desc
+    is_triggered_only = yes
+    location = capital_scope
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_atmospheric_entry_room }
+    immediate = { observer_event = { id = touhou_crisis.202 } }
+    option = {
+        name = TH_BE_CAREFULE
+        country_event = { id = touhou_crisis.107 days = 720 random = 360 }
+    }
+}
+country_event = {
+    id = touhou_crisis.107
+    title = touhou_crisis.107.name
+    desc = touhou_crisis.107.desc
+    is_triggered_only = yes
+    location = capital_scope
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mercenary_fleet_room }
+    option = {
+        name = TH_PREPARE_WAR
+        country_event = { id = touhou_crisis.1 }
+        country_event = { id = touhou_crisis.108 days = 60 random = 30 }
+    }
+}
+country_event = {
+    id = touhou_crisis.108
+    title = touhou_crisis.108.name
+    desc = touhou_crisis.108.desc
+    is_triggered_only = yes
+    location = event_target:last_kamikakushi_invade_system.star
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_evil_room }
+    show_sound = event_red_alert
+    immediate = {
+        observer_event = { id = touhou_crisis.203 }
+        spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_1 }
+        set_global_flag = spth_kamikaushi_crisis_start
+        set_update_modifiers_batch = begin
+        spth_spawn_kamikakushi_country = yes
+        set_update_modifiers_batch = end
+        spth_spawn_kamikakushi_invade_system = { initializer = spth_kamikaushi_crisis_gate_1 }
+        every_country = {
+            limit = {
+                is_touhou_crisis_faction = no
+                NOT = { has_event_chain = spth_kamikakushi_crisis_invasion }
+            }
+            begin_event_chain = {
+                event_chain = spth_kamikakushi_crisis_invasion
+                target = this
+            }
+            if = {
+                limit = { NOT = { is_same_value = prev } }
+                country_event = {
+                    id = touhou_crisis.115
+                    scopes = {
+                        from = prev
+                        fromfrom = event_target:last_kamikakushi_invade_system.star
+                    }
+                }
+            }
+        }
+        event_target:last_kamikakushi_invade_system = {
+            random_system_planet = {
+                limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+                save_event_target_as = spth_kamikakushi_spawnpoint
+            }
+            spth_kamikukushi_spawn_starbase = yes
+            spth_kamikakushi_spawn_gate = { spth_id = 1 }
+            spth_kamikakushi_spawn_defence_fleet = yes
+            spth_kamikakushi_spawn_defence_fleet = yes
+            spth_kamikakushi_spawn_small_defence_fleet = yes
+            spth_kamikakushi_spawn_super_carrier_fleet = yes
+            spth_kamikakushi_spawn_main_fleet = { id = 1 }
+            event_target:spth_kamikakushi_spawnpoint = {
+                planet_event = { id = touhou_crisis.111 days = 5 }
+                if = {
+                    limit = { has_global_flag = spth_lunar_capital_crisis_phantasm }
+                    planet_event = { id = touhou_crisis.111 days = 60 random = 30 }
+                }
+            }
+        }
+        event_target:global_event_country = {
+            country_event = { id = touhou_crisis.116 days = 390 }
+            country_event = { id = touhou_crisis.117 days = 730 }
+            country_event = { id = touhou_crisis.130 }
+        }
+        country_event = { id = spth_makai_defender.1 }
+    }
+    option = {
+        name = TH_ACKNOWLEDGED
+    }
+}
+
+# 5年检测自循环
+country_event = {
+    id = touhou_crisis.109
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = touhou_crisis_102_wait
+        NOT = { has_country_flag = touhou_crisis_102_accept }
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { has_country_flag = has_open_spth_kamikakushi_diplomacy } }
+            country_event = { id = touhou_crisis.104 }
+        } else = { country_event = { id = touhou_crisis.109 days = 30 } }
+    }
+}
+# 联系隙间之里
+# Country scope
+# This = target country (player)
+# From = source country
+country_event = {
+    id = touhou_crisis.110
+    title = touhou_crisis.110.name
+    desc = {
+        text = touhou_crisis.110.desc
+        trigger = {
+            has_country_flag = touhou_crisis_102_wait
+            NOT = { has_country_flag = touhou_crisis_102_accept }
+        }
+    }
+    desc = {
+        text = touhou_crisis.110.accept.desc
+        trigger = {
+            has_country_flag = touhou_crisis_102_accept
+        }
+    }
+    desc = {
+        text = touhou_crisis.110.refuse.desc
+        trigger = {
+            has_country_flag = touhou_crisis_102_refuse
+        }
+    }
+    is_triggered_only = yes
+    trigger = {
+        from = { is_same_value = event_target:spth_kamikakushi_diplomacy }
+        NOT = { has_country_flag = has_open_spth_kamikakushi_diplomacy }
+        has_country_flag = spth_kamikaushi_repaired_wedge_country
+    }
+    immediate = { set_country_flag = has_open_spth_kamikakushi_diplomacy }
+    after = { hidden_effect = { remove_country_flag = has_open_spth_kamikakushi_diplomacy } }
+    diplomatic = yes
+    force_open = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    diplomatic_title = touhou_crisis.102.dipo
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = spth_kamikakushi_por_1
+    }
+    # negotiate
+    option = {
+        name = touhou_crisis.110.a
+        response_text = touhou_crisis.110.a.response
+        custom_tooltip = touhou_crisis.110.a.tooltip
+        trigger = {
+            has_country_flag = touhou_crisis_102_wait
+            NOT = { has_country_flag = touhou_crisis_102_accept }
+        }
+        hidden_effect = { spth_kamikakushi_destroy_wedge = yes }
+    }
+    option = {
+        name = touhou_crisis.110.b
+        response_text = touhou_crisis.110.b.response
+        custom_tooltip = touhou_crisis.110.b.tooltip
+        trigger = {
+            is_pacifist = yes
+            has_country_flag = touhou_crisis_102_wait
+            NOT = { has_country_flag = touhou_crisis_102_accept }
+        }
+        hidden_effect = { spth_kamikaushi_refused = yes }
+    }
+    option = {
+        name = touhou_crisis.110.c
+        response_text = touhou_crisis.110.c.response
+        custom_tooltip = touhou_crisis.110.c.tooltip
+        trigger = {
+            is_pacifist = no
+            has_country_flag = touhou_crisis_102_wait
+            NOT = { has_country_flag = touhou_crisis_102_accept }
+        }
+        hidden_effect = { spth_kamikaushi_refused = yes }
+    }
+    # accept, not finished
+    # records
+    option = {
+        name = touhou_crisis.110.a.accept
+        trigger = {
+            has_country_flag = touhou_crisis_102_accept
+            NOT = { has_country_flag = touhou_crisis_110_premit }
+        }
+        is_dialog_only = yes
+        response_text = touhou_crisis.110.a.accept.response
+        hidden_effect = { set_country_flag = touhou_crisis_110_premit }
+    }
+    option = {
+        name = touhou_crisis.110.record_1
+        trigger = { has_country_flag = touhou_crisis_110_premit }
+        response_text = touhou_crisis.110.record_1.response
+        is_dialog_only = yes
+    }
+    option = {
+        name = touhou_crisis.110.record_2
+        trigger = { has_country_flag = touhou_crisis_110_premit }
+        response_text = touhou_crisis.110.record_2.response
+        is_dialog_only = yes
+    }
+    option = {
+        name = touhou_crisis.110.record_3
+        trigger = { has_country_flag = touhou_crisis_110_premit }
+        response_text = touhou_crisis.110.record_3.response
+        is_dialog_only = yes
+    }
+    # resources
+    option = {
+        name = touhou_crisis.110.accept_1
+        trigger = { has_country_flag = touhou_crisis_102_accept }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_crisis.110.resource_cooldown
+                NOT = { has_country_flag = touhou_crisis_110_res_cd }
+            }
+        }
+        response_text = touhou_crisis.110.accept_1.response
+        is_dialog_only = yes
+        hidden_effect = { set_timed_country_flag = { flag = touhou_crisis_110_res_cd days = 360 } }
+        add_monthly_resource_mult_if_produced = { RESOURCE = energy VALUE = 3 }
+        add_monthly_resource_mult_if_produced = { RESOURCE = minerals VALUE = 3 }
+        add_monthly_resource_mult_if_produced = { RESOURCE = food VALUE = 3 }
+    }
+    option = {
+        name = touhou_crisis.110.accept_2
+        trigger = { has_country_flag = touhou_crisis_102_accept }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_crisis.110.resource_cooldown
+                NOT = { has_country_flag = touhou_crisis_110_res_cd }
+            }
+        }
+        response_text = touhou_crisis.110.accept_2.response
+        is_dialog_only = yes
+        hidden_effect = { set_timed_country_flag = { flag = touhou_crisis_110_res_cd days = 360 } }
+        add_monthly_resource_mult_if_produced = { RESOURCE = alloys VALUE = 3 }
+        add_monthly_resource_mult_if_produced = { RESOURCE = consumer_goods VALUE = 3 }
+    }
+    option = {
+        name = touhou_crisis.110.accept_3
+        trigger = { has_country_flag = touhou_crisis_102_accept }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_crisis.110.resource_cooldown
+                NOT = { has_country_flag = touhou_crisis_110_res_cd }
+            }
+        }
+        response_text = touhou_crisis.110.accept_3.response
+        is_dialog_only = yes
+        hidden_effect = { set_timed_country_flag = { flag = touhou_crisis_110_res_cd days = 360 } }
+        add_monthly_resource_mult_if_produced = { RESOURCE = volatile_motes VALUE = 3 }
+        add_monthly_resource_mult_if_produced = { RESOURCE = exotic_gases VALUE = 3 }
+        add_monthly_resource_mult_if_produced = { RESOURCE = rare_crystals VALUE = 3 }
+    }
+    option = {
+        name = touhou_crisis.110.accept_4
+        trigger = { has_country_flag = touhou_crisis_102_accept }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_crisis.110.resource_cooldown
+                NOT = { has_country_flag = touhou_crisis_110_res_cd }
+            }
+        }
+        response_text = touhou_crisis.110.accept_4.response
+        is_dialog_only = yes
+        hidden_effect = { set_timed_country_flag = { flag = touhou_crisis_110_res_cd days = 360 } }
+        add_monthly_resource_mult_if_produced = { RESOURCE = nanites VALUE = 3 }
+        add_monthly_resource_mult_if_produced = { RESOURCE = sr_dark_matter VALUE = 3 }
+        add_monthly_resource_mult_if_produced = { RESOURCE = sr_living_metal VALUE = 3 }
+        add_monthly_resource_mult_if_produced = { RESOURCE = sr_zro VALUE = 3 }
+    }
+    option = {
+        name = touhou_crisis.110.accept_5
+        trigger = { has_country_flag = touhou_crisis_102_accept }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_crisis.110.resource_cooldown
+                NOT = { has_country_flag = touhou_crisis_110_res_cd }
+            }
+        }
+        response_text = touhou_crisis.110.accept_5.response
+        is_dialog_only = yes
+        hidden_effect = { set_timed_country_flag = { flag = touhou_crisis_110_res_cd days = 360 } }
+        add_monthly_resource_mult_if_produced = { RESOURCE = sr_lingli VALUE = 3 }
+        add_monthly_resource_mult_if_produced = { RESOURCE = sr_fuka VALUE = 3 }
+    }
+    # fleets
+    option = {
+        name = touhou_crisis.110.accept_6
+        trigger = { has_country_flag = touhou_crisis_102_accept }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_crisis.110.fleet_cooldown
+                NOT = { has_country_flag = touhou_crisis_110_mil_cd }
+            }
+        }
+        response_text = touhou_crisis.110.accept_6.response
+        is_dialog_only = yes
+        hidden_effect = { set_timed_country_flag = { flag = touhou_crisis_110_mil_cd days = 540 } }
+        spth_create_fleet = {
+            NAME = NAME_spth_curator_defence_fleet
+            uses_naval_capacity = no
+            can_disband = yes is_boss = no
+            OWNER = root location = root.solar_system
+            flag = spth_kamikakushi_gift_fleet
+            bombardment = spth_kamikakushi
+            spth_kamikakushi_cruiser_2 = 80
+        }
+    }
+    option = {
+        name = touhou_crisis.110.accept_7
+        trigger = { has_country_flag = touhou_crisis_102_accept }
+        response_text = touhou_crisis.110.accept_7.response
+        is_dialog_only = yes
+    }
+    # exit for not fight
+    option = {
+        name = touhou_crisis.110.exit
+        response_text = touhou_crisis.110.exit.response
+        trigger = { NOT = { has_country_flag = touhou_crisis_102_refuse } }
+    }
+    # 戰
+    option = {
+        name = touhou_crisis.110.a.refuse
+        response_text = touhou_crisis.110.a.refuse.response
+        trigger = { has_country_flag = touhou_crisis_102_refuse }
+    }
+}
+
+#Invasion fleet arrived.
+planet_event = {
+    id = touhou_crisis.111
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+    }
+    immediate = {
+        # E/N刷6队，4+2
+        # H刷8队，6+2
+        # L刷10队，6+4
+        # OD刷12队，8+4
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_invader_fleet = yes
+        spth_kamikakushi_spawn_invader_fleet = yes
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 3 } } }
+            spth_kamikakushi_spawn_preview_fleet = yes
+            spth_kamikakushi_spawn_preview_fleet = yes
+        }
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 4 } } }
+            spth_kamikakushi_spawn_invader_fleet = yes
+            spth_kamikakushi_spawn_invader_fleet = yes
+        }
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 8 } } }
+            spth_kamikakushi_spawn_preview_fleet = yes
+            spth_kamikakushi_spawn_preview_fleet = yes
+        }
+        event_target:spth_kamikakushi_country = {
+            every_owned_fleet = {
+                limit = { has_fleet_flag = spth_kamikakushi_fleet is_fleet_idle = yes }
+                fleet_event = { id = touhou_crisis.12 days = 1 random = 2  }
+            }
+        }
+    }
+}
+#Invasion fleet action on orbit planet.
+country_event = {
+    id = touhou_crisis.112
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        is_touhou_crisis_faction = yes
+        from = { has_fleet_flag = spth_kamikakushi_fleet }
+        fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
+    }
+    immediate = {
+        from = {
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = touhou_crisis.12 days = 3 random = 2 }
+        }
+    }
+}
+#Invasion fleet action on win a space battle.
+country_event = {
+    id = touhou_crisis.113
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        is_touhou_crisis_faction = yes
+        fromfrom = { fleet = { has_fleet_flag = spth_kamikakushi_fleet } }
+        fromfromfrom = {
+            OR = {
+                is_ship_class = shipclass_starbase
+                is_ship_class = shipclass_military
+            }
+        }
+    }
+    after = {
+        fromfrom = {
+            solar_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        owner = { is_touhou_crisis_faction = yes }
+                        has_fleet_flag = spth_kamikakushi_fleet
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = touhou_crisis.12 days = 3 random = 2 }
+                }
+            }
+        }
+    }
+}
+#Check every month to prevent bugs.
+event = {
+    id = touhou_crisis.114
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        exists = event_target:spth_kamikakushi_country
+        event_target:spth_kamikakushi_country = {
+            any_owned_fleet = {
+                exists = this
+                is_fleet_idle = yes
+                has_fleet_flag = spth_kamikakushi_fleet
+                NAND = {
+                    exists = orbit
+                    orbit = {
+                        NOT = { is_star = yes }
+                        exists = owner
+                        owner = { is_hostile = event_target:spth_kamikakushi_country }
+                        exists = controller
+                        controller = { is_hostile = event_target:spth_kamikakushi_country }
+                    }
+                }
+            }
+        }
+    }
+    immediate = {
+        event_target:spth_kamikakushi_country = {
+            every_owned_fleet = {
+                limit = {
+                    exists = this
+                    is_fleet_idle = yes
+                    has_fleet_flag = spth_kamikakushi_fleet
+                    NAND = {
+                        exists = orbit
+                        orbit = {
+                            NOT = { is_star = yes }
+                            exists = owner
+                            owner = { is_hostile = event_target:spth_kamikakushi_country }
+                            exists = controller
+                            controller = { is_hostile = event_target:spth_kamikakushi_country }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = touhou_crisis.12 days = 3 random = 2 }
+            }
+        }
+    }
+}
+
+country_event = {
+    id = touhou_crisis.115
+    title = touhou_crisis.115.name
+    desc = touhou_crisis.115.desc
+    is_triggered_only = yes
+    location = fromfrom
+    force_open = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_evil_room }
+    show_sound = event_red_alert
+    option = {
+        name = TH_ACKNOWLEDGED
+    }
+}
+
+country_event = {
+    id = touhou_crisis.116
+    title = touhou_crisis.116.name
+    desc = touhou_crisis.116.desc
+    is_triggered_only = yes
+    location = event_target:last_kamikakushi_invade_system.star
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_federation_fleet_room }
+    show_sound = event_red_alert
+    immediate = {
+        observer_event = { id = touhou_crisis.204 }
+        spth_spawn_kamikakushi_invade_system = { initializer = spth_kamikaushi_crisis_gate_2 }
+        event_target:last_kamikakushi_invade_system = {
+            random_system_planet = {
+                limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+                save_event_target_as = spth_kamikakushi_spawnpoint
+            }
+            spth_kamikukushi_spawn_starbase = yes
+            spth_kamikakushi_spawn_gate = { spth_id = 2 }
+            spth_kamikakushi_spawn_defence_fleet = yes
+            spth_kamikakushi_spawn_small_defence_fleet = yes
+            spth_kamikakushi_spawn_super_carrier_fleet = yes
+            spth_kamikakushi_spawn_main_fleet = { id = 2 }
+            event_target:spth_kamikakushi_spawnpoint = {
+                planet_event = { id = touhou_crisis.111 days = 5 }
+            }
+        }
+        every_country = {
+            limit = { NOT = { is_same_value = prev } has_event_chain = spth_kamikakushi_crisis_invasion }
+            country_event = { id = touhou_crisis.123 }
+        }
+    }
+    option = {
+        name = touhou_crisis.116.a
+    }
+}
+country_event = {
+    id = touhou_crisis.117
+    title = touhou_crisis.117.name
+    desc = touhou_crisis.117.desc
+    is_triggered_only = yes
+    location = event_target:last_kamikakushi_invade_system.star
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_federation_fleet_room }
+    show_sound = event_red_alert
+    immediate = {
+        observer_event = { id = touhou_crisis.204 }
+        spth_spawn_kamikakushi_invade_system = { initializer = spth_kamikaushi_crisis_gate_3 }
+        event_target:last_kamikakushi_invade_system = {
+            random_system_planet = {
+                limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+                save_event_target_as = spth_kamikakushi_spawnpoint
+            }
+            spth_kamikukushi_spawn_starbase = yes
+            spth_kamikakushi_spawn_gate = { spth_id = 3 }
+            spth_kamikakushi_spawn_defence_fleet = yes
+            spth_kamikakushi_spawn_small_defence_fleet = yes
+            spth_kamikakushi_spawn_super_carrier_fleet = yes
+            spth_kamikakushi_spawn_main_fleet = { id = 3 }
+            event_target:spth_kamikakushi_spawnpoint = {
+                planet_event = { id = touhou_crisis.111 days = 5 }
+            }
+        }
+        every_country = {
+            limit = { NOT = { is_same_value = prev } has_event_chain = spth_kamikakushi_crisis_invasion }
+            country_event = { id = touhou_crisis.124 }
+        }
+    }
+    option = {
+        name = touhou_crisis.117.a
+    }
+}
+country_event = {
+    id = touhou_crisis.118
+    title = touhou_crisis.118.name
+    desc = touhou_crisis.118.desc
+    is_triggered_only = yes
+    trigger = {
+        from = { is_touhou_crisis_faction = yes }
+        fromfromfrom = { is_ship_size = spth_kamikakushi_gate }
+    }
+    location = fromfromfrom.solar_system
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_large_explosion_room }
+    show_sound = event_celebration
+    immediate = {
+        observer_event = { id = touhou_crisis.205 }
+        event_target:global_event_country = {
+            if = {
+                limit = { NOT = { is_variable_set = spth_kamikakushi_gate_destroyed } }
+                set_variable = { which = spth_kamikakushi_gate_destroyed value = 0 }
+            }
+            change_variable = { which = spth_kamikakushi_gate_destroyed value = 1 }
+        }
+        fromfromfrom.solar_system = {
+            create_ambient_object = {
+                type = "star_explosion"
+                play_animation_once = yes
+                location = this
+            }
+            last_created_ambient_object = {
+                set_location = { target = prev.star distance = 0 angle = random }
+            }
+            switch = {
+                trigger = has_star_flag
+                spth_kamikaushi_crisis_gate_1 = {
+                    random_system_planet = {
+                        limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+                        save_event_target_as = spth_kamikakushi_spawnpoint
+                        planet_event = { id = touhou_crisis.122 days = 30 random = 30 }
+                    }
+                    set_global_flag = spth_kamikakushi_gate_1_destroyed
+                    every_country = {
+                        limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+                        remove_point_of_interest = spth_kamikakushi_crisis_invasion_gate_1
+                    }
+                }
+                spth_kamikaushi_crisis_gate_2 = {
+                    set_global_flag = spth_kamikakushi_gate_2_destroyed
+                    every_country = {
+                        limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+                        remove_point_of_interest = spth_kamikakushi_crisis_invasion_gate_2
+                    }
+                }
+                spth_kamikaushi_crisis_gate_3 = {
+                    set_global_flag = spth_kamikakushi_gate_3_destroyed
+                    every_country = {
+                        limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+                        remove_point_of_interest = spth_kamikakushi_crisis_invasion_gate_3
+                    }
+                }
+            }
+        }
+        every_country = {
+            limit = {
+                has_event_chain = spth_kamikakushi_crisis_invasion
+                NOT = { is_same_value = root }
+            }
+            add_event_chain_counter = {
+                event_chain = spth_kamikakushi_crisis_invasion
+                counter = spth_kamikakushi_gate_counter
+                amount = -1
+            }
+            country_event = { id = touhou_crisis.119 }
+        }
+    }
+    option = {
+        name = touhou_crisis.118.a
+    }
+    after = {
+        add_event_chain_counter = {
+            event_chain = spth_kamikakushi_crisis_invasion
+            counter = spth_kamikakushi_gate_counter
+            amount = -1
+        }
+        hidden_effect = {
+            if = {
+                limit = { event_target:global_event_country = { check_variable = { which = spth_kamikakushi_gate_destroyed value >= 3 } } }
+                country_event = { id = touhou_crisis.120 }
+            }
+        }
+    }
+}
+country_event = {
+    id = touhou_crisis.119
+    title = touhou_crisis.119.name
+    desc = touhou_crisis.119.desc
+    is_triggered_only = yes
+    location = from
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_large_explosion_room }
+    show_sound = event_celebration
+    option = {
+        name = touhou_crisis.119.a
+    }
+}
+
+country_event = {
+    id = touhou_crisis.120
+    title = touhou_crisis.120.name
+    desc = touhou_crisis.120.desc
+    is_triggered_only = yes
+    location = from
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_small_space_battle_room }
+    show_sound = event_celebration
+    immediate = {
+        set_country_flag = defeat_kamikakushi_country
+        save_global_event_target_as = defeat_kamikakushi_country
+        spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_2 }
+        country_event = { id = spth_makai_defender.101 }
+    }
+    option = {
+        name = touhou_crisis.120.a
+        every_country = {
+            limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+            enable_special_project = {
+                name = spth_kamikakushi_crisis_gate_reverse
+                owner = this
+                location = capital_scope
+            }
+        }
+    }
+}
+country_event = {
+    id = touhou_crisis.121
+    title = touhou_crisis.121.name
+    desc = touhou_crisis.121.desc
+    is_triggered_only = yes
+    location = from
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_from_surface_room }
+    show_sound = event_celebration
+    option = {
+        name = touhou_crisis.121.a
+        end_event_chain = spth_kamikakushi_crisis_invasion
+        tooltip = { give_technology = { tech = tech_spth_kamikakushi_cruiser message = yes } }
+        hidden_effect = {
+            if = {
+                limit = { has_authority = auth_gensokyo }
+                give_technology = { tech = tech_spth_kamikakushi_cruiser message = yes }
+                if = {
+                    limit = { NOT = { has_existing_ship_design = spth_kamikakushi_cruiser } }
+                    create_ship_design = { design = NAME_spth_kamikakushi_cruiser_2 }
+                    add_ship_design = last_created_design
+                }
+                if = {
+                    limit = { NOT = { has_existing_ship_design = spth_kamikakushi_titan } }
+                    create_ship_design = { design = spth_kamikakushi_invader_titan_1 }
+                    add_ship_design = last_created_design
+                }
+            }
+        }
+    }
+}
+
+#Invasion fleet arrived lesser when gate destroyed.
+planet_event = {
+    id = touhou_crisis.122
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+    }
+    immediate = {
+        # E/N刷3队，2+1
+        # H刷4队，3+1
+        # L刷5队，3+2
+        # OD刷6队，4+2
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_preview_fleet = yes
+        spth_kamikakushi_spawn_invader_fleet = yes
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 3 } } }
+            spth_kamikakushi_spawn_preview_fleet = yes
+        }
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 4 } } }
+            spth_kamikakushi_spawn_invader_fleet = yes
+        }
+        if = {
+            limit = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 8 } } }
+            spth_kamikakushi_spawn_preview_fleet = yes
+        }
+        event_target:spth_kamikakushi_country = {
+            every_owned_fleet = {
+                limit = { has_fleet_flag = spth_kamikakushi_fleet is_fleet_idle = yes }
+                fleet_event = { id = touhou_crisis.12 days = 1 random = 2  }
+            }
+        }
+    }
+}
+
+country_event = {
+    id = touhou_crisis.123
+    title = touhou_crisis.116.name
+    desc = touhou_crisis.116.desc
+    is_triggered_only = yes
+    location = event_target:last_kamikakushi_invade_system.star
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_federation_fleet_room }
+    show_sound = event_red_alert
+    option = {
+        name = touhou_crisis.116.a
+    }
+}
+country_event = {
+    id = touhou_crisis.124
+    title = touhou_crisis.117.name
+    desc = touhou_crisis.117.desc
+    is_triggered_only = yes
+    location = event_target:last_kamikakushi_invade_system.star
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_federation_fleet_room }
+    show_sound = event_red_alert
+    option = {
+        name = touhou_crisis.117.a
+    }
+}
+
+starbase_event = {
+    id = touhou_crisis.125
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        from.owner = { is_country_type = ag_zeta_crisis_country }
+        NOT = { solar_system = { any_system_planet = { is_colony = yes } } }
+    }
+    immediate = { solar_system = { system_event = { id = touhou_crisis.126 days = 2 } } }
+}
+system_event = {
+    id = touhou_crisis.126
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = { spth_kamikukushi_spawn_starbase = yes }
+}
+fleet_event = {
+    id = touhou_crisis.127
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_fleet_flag = spth_kamikakushi_preview_fleet
+        from = {
+            NOT = { exists = starbase }
+            count_system_colony = { count = 0 }
+        }
+    }
+    immediate = { solar_system = { system_event = { id = touhou_crisis.126 days = 2 } } }
+}
+# 一年后重新部署超级航母
+planet_event = {
+    id = touhou_crisis.128
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+    }
+    immediate = {
+        save_event_target_as = spth_kamikakushi_spawnpoint
+        spth_kamikakushi_spawn_super_carrier_fleet = yes
+    }
+}
+
+# for NYTO
+# 总算力x己方破译  /敌方加密  后x1%
+country_event = {
+    id = touhou_crisis.130
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        spth_has_nyto_mod = yes
+        spth_has_kamikakushi_crisis = yes
+        exists = event_target:spth_kamikakushi_country
+    }
+    immediate = {
+        # 兄弟你好香
+        if = {
+            limit = { NOT = { exists = event_target:spth_nyto_temp } }
+            random_playable_country = {
+                limit = { is_ai = no }
+                save_global_event_target_as = spth_nyto_temp
+            }
+            if = {
+                limit = { NOT = { exists = event_target:spth_nyto_temp } }
+                random_playable_country = { save_global_event_target_as = spth_nyto_temp }
+            }
+        }
+        event_target:spth_kamikakushi_country = {
+            add_modifier = {
+                modifier = touhou_crisis_nyto_encryption
+                mult = value:touhou_crisis_nyto_decryption
+            }
+            add_modifier = {
+                modifier = touhou_crisis_nyto_encryption_extra
+                mult = value:touhou_crisis_nyto_encryption
+            }
+            # add_modifier = {
+            #     modifier = touhou_crisis_nyto_decryption
+            # }
+        }
+        country_event = { id = touhou_crisis.130 days = 180 }
+    }
+}
+
+# observer events
+observer_event = {
+    inline_script = {
+        script = events/spth_ob_one_option_events
+        id = touhou_crisis.200
+        room = spth_large_explosion_room
+        option_name = TH_SO_INTERESTRING
+    }
+}
+observer_event = {
+    inline_script = {
+        script = events/spth_ob_one_option_events
+        id = touhou_crisis.201
+        room = spth_ship_travel_room
+        option_name = TH_SO_INTERESTRING
+    }
+}
+observer_event = {
+    inline_script = {
+        script = events/spth_ob_one_option_events
+        id = touhou_crisis.202
+        room = spth_atmospheric_entry_room
+        option_name = TH_SO_INTERESTRING
+    }
+}
+observer_event = {
+    inline_script = {
+        script = events/spth_ob_one_option_events
+        id = touhou_crisis.203
+        room = spth_fleet_evil_room
+        option_name = TH_SO_INTERESTRING
+    }
+}
+observer_event = {
+    inline_script = {
+        script = events/spth_ob_one_option_events
+        id = touhou_crisis.204
+        room = spth_fleet_evil_room
+        option_name = TH_SO_INTERESTRING
+    }
+}
+observer_event = {
+    inline_script = {
+        script = events/spth_ob_one_option_events
+        id = touhou_crisis.205
+        room = spth_large_explosion_room
+        option_name = TH_SO_INTERESTRING
+    }
+}
+observer_event = {
+    inline_script = {
+        script = events/spth_ob_one_option_events
+        id = touhou_crisis.206
+        room = spth_nuclear_explosion_room
+        option_name = TH_SO_INTERESTRING
+    }
+}

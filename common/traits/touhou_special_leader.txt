@@ -75,11 +75,25 @@ leader_trait_sp_leader = {
     #self_modifier = {
 	#	leaders_upkeep_mult = -2.00
     #}
+	custom_subtitle = leader_trait_sp_leader_subtitle
 	custom_tooltip_with_modifiers = leader_trait_spacebender_effect
+	triggered_self_modifier = {
+		potential = { spth_has_ag_mod = yes }
+		custom_tooltip = leader_trait_sp_leader_ag_tooltip
+	}
+	triggered_fleet_modifier = {
+		potential = { always = yes }
+		custom_tooltip = leader_trait_sp_leader_anti_cap_tooltip
+		ship_spth_anti_capture = 1
+		# ship_spth_anti_steal = 1
+	}
     sorting_priority = 10200
 	leader_class = all
 	initial = no
 	randomized = no
+	on_gained_effect = {
+		set_leader_flag = should_not_have_upkeep
+	}
 }
 
 ###科学家
@@ -169,6 +183,7 @@ leader_trait_akyuu = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/aqiu.dds"
 	councilor_modifier = {
+		category_spirit_power_research_speed_mult = 1
 		category_psionics_research_speed_mult = 0.5
 		category_new_worlds_research_speed_mult = 0.5
 		category_statecraft_research_speed_mult = 0.5
@@ -206,6 +221,70 @@ leader_trait_rin = {
 	}
 }
 
+leader_trait_eirin = {
+	leader_trait_type = destiny
+	triggered_self_modifier = {
+		potential = { spth_has_ag_mod = yes }
+		leader_scientists_physics_research_produces_add = 15
+		leader_scientists_society_research_produces_add = 20
+		leader_scientists_engineering_research_produces_add = 15
+		leader_scientists_ag_ancient_knowledge_produces_add = 0.0015
+		mult = trigger:has_total_skill
+	}
+	councilor_modifier = {
+		all_technology_research_speed = 0.20
+		category_spirit_power_research_speed_mult = 0.25
+	}
+	triggered_councilor_modifier = {
+		potential = { spth_has_ag_mod = yes }
+		category_ag_ancient_tech_category_research_speed_mult = 0.02
+		ag_ancient_archive_physics_research_produces_add = 10
+		ag_ancient_archive_society_research_produces_add = 10
+		ag_ancient_archive_engineering_research_produces_add = 10
+		ag_ancient_archive_ag_ancient_knowledge_produces_add = 0.00015
+		mult = trigger:has_total_skill
+	}
+	leader_class = { scientist }
+	custom_tooltip_with_modifiers = leader_trait_eirin_skill
+	initial = no
+	randomized = no
+}
+
+leader_trait_cirno = {
+	leader_trait_type = destiny
+	modifier = {
+		ship_anomaly_generation_chance_mult = 1
+		ship_anomaly_research_speed_mult = 1
+		ship_anomaly_fail_risk = -1
+		ship_astral_rift_clues_add = 2
+		ship_astral_rift_speed_mult = 0.25
+	}
+	councilor_modifier = {
+		all_technology_research_speed = -1
+		category_spirit_power_research_speed_mult = 2
+	}
+	leader_class = { scientist }
+	initial = no
+	randomized = no
+}
+leader_trait_cirno_baka = {
+	leader_trait_type = destiny
+	planet_modifier = {
+		building_time_mult = 0.4
+		planet_buildings_cost_mult = 1
+		planet_decision_enact_speed_mult = 1.2
+	}
+	sector_modifier = {
+		building_time_mult = 0.2
+		planet_buildings_cost_mult = 0.5
+		planet_decision_enact_speed_mult = 0.6
+	}
+	leader_class = { scientist }
+	initial = no
+	randomized = no
+}
+
+
 ####领袖
 leader_trait_ruler_spth_AI_ruler = {
     leader_trait_type = destiny
@@ -228,11 +307,20 @@ leader_trait_remilia = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/dxj.dds"
 	councilor_modifier = {
-		starbase_shipyard_build_speed_mult = 1
-		starbase_upgrade_speed_mult = 1
-		planet_jobs_produces_mult = 0.2
 		edicts_cost_mult = -0.2
 		edict_length_mult = 0.2
+	}
+	triggered_councilor_modifier = {
+		potential = { NOT = { has_leader_flag = not_th_start_ruler } }
+		planet_jobs_produces_mult = 0.2
+		starbase_shipyard_build_speed_mult = 1
+		starbase_upgrade_speed_mult = 1
+	}
+	triggered_councilor_modifier = {
+		potential = { has_leader_flag = not_th_start_ruler }
+		planet_jobs_produces_mult = 0.1
+		starbase_shipyard_build_speed_mult = 0.5
+		starbase_upgrade_speed_mult = 0.5
 	}
 	leader_potential_add = {
 		is_ruler = yes
@@ -248,11 +336,18 @@ leader_trait_yuyuko1 = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/uuz1.dds"
 	councilor_modifier = {
-		planet_jobs_produces_mult = 0.1
 		planet_jobs_unity_produces_mult = 0.1
+		planet_jobs_food_produces_mult = -0.2
+	}
+	triggered_councilor_modifier = {
+		potential = { NOT = { has_leader_flag = not_th_start_ruler } }
 		leader_skill_levels = 4
 		species_leader_exp_gain = 1
-		planet_jobs_food_produces_mult = -0.2
+		planet_jobs_produces_mult = 0.1
+	}
+	triggered_councilor_modifier = {
+		potential = { has_leader_flag = not_th_start_ruler }
+		planet_jobs_produces_mult = 0.05
 	}
 	leader_potential_add = {
 		is_ruler = yes
@@ -268,11 +363,19 @@ leader_trait_yuyuko = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/uuz.dds"
 	councilor_modifier = {
-		pop_growth_speed = 0.1
 		ship_colonizer_cost_mult = -0.5
-		planet_colony_development_speed_mult = 0.5
 		armies_upkeep_mult = -0.1
+	}
+	triggered_councilor_modifier = {
+		potential = { NOT = { has_leader_flag = not_th_start_ruler } }
+		logistic_growth_mult = 0.1
+		planet_colony_development_speed_mult = 0.5
 		ships_upkeep_mult = -0.1
+	}
+	triggered_councilor_modifier = {
+		potential = { has_leader_flag = not_th_start_ruler }
+		logistic_growth_mult = 0.05
+		planet_colony_development_speed_mult = 0.25
 	}
 	leader_potential_add = {
 		is_ruler = yes
@@ -288,11 +391,20 @@ leader_trait_sanae = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/zaomiao.dds"
 	councilor_modifier = {
-		megastructure_build_speed_mult = 1.5
 		country_megastructure_build_cap_add = 2
+	}
+	triggered_councilor_modifier = {
+		potential = { NOT = { has_leader_flag = not_th_start_ruler } }
 		leader_skill_levels = 4
+		megastructure_build_speed_mult = 1.5
 		starbase_outpost_cost_mult = -0.15
 		country_starbase_influence_cost_mult = -0.15
+	}
+	triggered_councilor_modifier = {
+		potential = { has_leader_flag = not_th_start_ruler }
+		megastructure_build_speed_mult = 0.75
+		starbase_outpost_cost_mult = -0.05
+		country_starbase_influence_cost_mult = -0.05
 	}
 	leader_potential_add = {
 		is_ruler = yes
@@ -308,10 +420,13 @@ leader_trait_xrs = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/xrs.dds"
 	councilor_modifier = {
-		all_technology_research_speed = 0.1
 		pop_happiness = 0.1
-		pop_growth_speed = 0.1
+		logistic_growth_mult = 0.1
 		planet_jobs_consumer_goods_produces_mult = 0.1
+	}
+	triggered_councilor_modifier = {
+		potential = { NOT = { has_leader_flag = not_th_start_ruler } }
+		all_technology_research_speed = 0.1
 	}
 	leader_potential_add = {
 		is_ruler = yes
@@ -326,11 +441,18 @@ leader_trait_xrs = {
 leader_trait_reimu = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/reimu.dds"
-	councilor_modifier = {
+	triggered_councilor_modifier = {
+		potential = { NOT = { has_leader_flag = not_th_start_ruler } }
 		command_limit_add = 200
 		country_naval_cap_mult = 0.2
 		ship_fire_rate_mult = 0.2
 		leader_skill_levels = 2
+	}
+	triggered_councilor_modifier = {
+		potential = { has_leader_flag = not_th_start_ruler }
+		command_limit_add = 100
+		country_naval_cap_mult = 0.1
+		ship_fire_rate_mult = 0.1
 	}
 	leader_potential_add = {
 		is_ruler = yes
@@ -346,9 +468,17 @@ leader_trait_boli = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/boli.dds"
 	councilor_modifier = {
-		pop_happiness = 0.1
 		planet_jobs_unity_produces_mult = 0.1
+	}
+	triggered_councilor_modifier = {
+		potential = { NOT = { has_leader_flag = not_th_start_ruler } }
+		pop_happiness = 0.1
 		ship_shield_mult = 1.5
+	}
+	triggered_councilor_modifier = {
+		potential = { has_leader_flag = not_th_start_ruler }
+		pop_happiness = 0.05
+		ship_shield_mult = 0.55
 	}
 	leader_potential_add = {
 		is_ruler = yes
@@ -364,11 +494,20 @@ leader_trait_satori = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/jue1.dds"
 	councilor_modifier = {
+		logistic_growth_mult = -0.1
+		pop_happiness = -0.2
+	}
+	triggered_councilor_modifier = {
+		potential = { NOT = { has_leader_flag = not_th_start_ruler } }
 		planet_stability_add = 50
 		planet_crime_mult = -1
 		ship_evasion_mult = 0.5
-		pop_growth_speed = -0.1
-		pop_happiness = -0.2
+	}
+	triggered_councilor_modifier = {
+		potential = { has_leader_flag = not_th_start_ruler }
+		planet_stability_add = 25
+		planet_crime_mult = -0.5
+		ship_evasion_mult = 0.25
 	}
 	leader_potential_add = {
 		is_ruler = yes
@@ -383,11 +522,18 @@ leader_trait_satori = {
 leader_trait_dld = {
     leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/dld.dds"
-	councilor_modifier = {
+	triggered_councilor_modifier = {
+		potential = { NOT = { has_leader_flag = not_th_start_ruler } }
 		pop_environment_tolerance = 0.2
 		planet_jobs_produces_mult = 0.3
 		planet_jobs_slave_produces_mult = 1
 		country_naval_cap_mult = 0.4
+	}
+	triggered_councilor_modifier = {
+		potential = { has_leader_flag = not_th_start_ruler }
+		planet_jobs_produces_mult = 0.15
+		planet_jobs_slave_produces_mult = 0.5
+		country_naval_cap_mult = 0.2
 	}
 	leader_potential_add = {
 		is_ruler = yes
@@ -403,7 +549,7 @@ leader_trait_dld = {
 leader_trait_flandre = {
 	leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/exj.dds"
-	modifier = {
+	fleet_modifier = {
 		ship_armor_mult = -0.75
 		ship_shield_mult = -0.75
 		ship_hull_mult = -0.6
@@ -491,6 +637,11 @@ leader_trait_marisa = {
 		ship_evasion_mult = -0.5
 		ship_speed_mult = 0.2
 	}
+	triggered_fleet_modifier = {
+		potential = { exists = owner }
+		weapon_type_spark_weapon_damage_mult = 0.02
+		mult = owner.modifier:weapon_type_energy_weapon_damage_mult
+	}
 	leader_class = {
 		commander
 	}
@@ -552,11 +703,128 @@ leader_trait_koishi = {
 	modifier = {
 		ship_disengage_chance_mult = 1
 		ship_weapon_damage = 0.25
-		ship_evasion_add = 0.5
+		ship_evasion_mult = 0.5
+		ship_cloaking_strength_add = 10
+		mod_ship_naval_cap_usage_mult = -0.80
+		ship_th_koishi_skill = 1
+	}
+	fleet_modifier = {
+		fleet_th_koishi_skill = 1
 	}
 	leader_class = {
 		commander
 	}
+	custom_tooltip_with_modifiers = leader_trait_koishi_skill
+	initial = no
+	randomized = no
+}
+
+leader_trait_tenshi = {
+	leader_trait_type = destiny
+	icon = "gfx/interface/icons/traits/tenshi.dds"
+	modifier = {
+		ship_armor_reduction = -0.25
+		ship_armor_mult = 0.5
+	}
+	triggered_modifier = {
+		custom_tooltip = leader_trait_tenshi_tt_1
+		show_only_custom_tooltip = no
+		ship_accuracy_add = 0.5
+		ship_tracking_add = 1
+		mult = trigger:has_total_skill
+	}
+	triggered_fleet_modifier = {
+		potential = { always = yes }
+		fleet_th_has_tenshi = 1
+		custom_tooltip = leader_trait_tenshi_tt_2
+	}
+	triggered_fleet_modifier = {
+		potential = {
+			exists = solar_system exists = leader
+			solar_system = { OR = { has_star_flag = storm_system has_star_flag = scarlet_weather_storm_system } }
+		}
+		weapon_type_lingli_weapon_fire_rate_mult = 0.1
+		weapon_type_lingli_weapon_damage_mult = 0.1
+		mult = leader.trigger:has_total_skill
+	}
+	leader_class = { commander }
+	initial = no
+	randomized = no
+}
+
+leader_trait_alice = {
+	leader_trait_type = destiny
+	modifier = {
+		command_limit_add = 20
+		ship_weapon_range_mult = 0.25
+		weapon_type_strike_craft_speed_mult = 0.5
+	}
+	triggered_fleet_modifier = {
+		fleet_th_has_alice = 1
+		ship_evasion_add = 1
+		weapon_type_strike_craft_weapon_damage_mult = 0.2
+		weapon_type_strike_craft_weapon_fire_rate_mult = 0.2
+		mult = leader.trigger:has_total_skill
+	}
+	councilor_modifier = {
+		command_limit_add = 20
+		command_limit_mult = 0.15
+	}
+	leader_class = { commander }
+	custom_tooltip_with_modifiers = leader_trait_alice_effect
+	initial = no
+	randomized = no
+}
+
+leader_trait_mokou = {
+	leader_trait_type = destiny
+	modifier = {
+		ship_armor_mult = 1.00
+		ship_orbital_bombardment_mult = 0.5
+		mod_ship_naval_cap_usage_mult = -0.15
+		ship_th_mokou_skill = 0.1
+	}
+	fleet_modifier = {
+		ship_spth_armor_efficiency = 1.00
+	}
+	army_modifier = {
+		army_damage_taken_mult = -0.25
+	}
+	leader_class = { commander }
+	custom_tooltip_with_modifiers = leader_trait_mokou_skill
+	initial = no
+	randomized = no
+}
+
+leader_trait_reisen = {
+	leader_trait_type = destiny
+	modifier = {
+		ship_cloaking_strength_add = 5
+		ship_cloaking_detection_add = 5
+		ship_evasion_add = 5
+		ship_weapon_range_mult = 0.5
+	}
+	fleet_modifier = {
+		fleet_th_has_reisen = 1
+	}
+	leader_class = { commander }
+	custom_tooltip_with_modifiers = leader_trait_reisen_skill
+	initial = no
+	randomized = no
+}
+
+leader_trait_kokoro = {
+	leader_trait_type = destiny
+	modifier = {
+		ship_th_has_hope_face = 1
+		leader_commanders_influence_produces_add = 1
+		mod_ship_naval_cap_usage_mult = -0.15
+	}
+	fleet_modifier = {
+		fleet_th_has_kokoro = 1
+	}
+	leader_class = { commander }
+	custom_tooltip_with_modifiers = leader_trait_kokoro_skill
 	initial = no
 	randomized = no
 }
@@ -649,6 +917,12 @@ leader_trait_aya = {
 		planet_army_build_speed_mult = 0.25
 		starbase_shipyard_build_speed_mult = 1
 	}
+	sector_modifier = {
+		planet_building_build_speed_mult = 0.5
+		planet_clear_blocker_time_mult = -0.25
+		planet_army_build_speed_mult = 0.125
+		starbase_shipyard_build_speed_mult = 0.5
+	}
 	leader_class = {
 		official
 	}
@@ -661,8 +935,13 @@ leader_trait_hatate = {
 	icon = "gfx/interface/icons/traits/jhtg.dds"
 	modifier = {
 		planet_crime_mult = -1
+		planet_jobs_produces_mult = 0.10
+		logistic_growth_mult = 0.33
+	}
+	sector_modifier = {
+		planet_crime_mult = -0.5
 		planet_jobs_produces_mult = 0.05
-		pop_growth_speed = 0.33
+		logistic_growth_mult = 0.165
 	}
 	leader_class = {
 		official
@@ -675,8 +954,12 @@ leader_trait_tgjz = {
 	leader_trait_type = destiny
 	icon = "gfx/interface/icons/traits/tgjz.dds"
 	modifier = {
-		planet_jobs_society_research_produces_mult = 0.05
+		planet_jobs_society_research_produces_mult = 0.10
 		planet_stability_add = 15
+	}
+	sector_modifier = {
+		planet_jobs_society_research_produces_mult = 0.05
+		planet_stability_add = 7.5
 	}
 	leader_class = {
 		official
@@ -697,6 +980,15 @@ leader_trait_ran = {
 		planet_jobs_slave_produces_mult = 0.1
 		planet_stability_add = 20
 	}
+	sector_modifier = {
+		planet_building_build_speed_mult = 0.15
+		planet_jobs_produces_mult = 0.05
+		planet_jobs_engineering_research_produces_mult = 0.05
+		planet_jobs_physics_research_produces_mult = 0.05
+		planet_jobs_society_research_produces_mult = 0.05
+		planet_jobs_slave_produces_mult = 0.05
+		planet_stability_add = 10
+	}
 	leader_class = {
 		official
 	}
@@ -712,6 +1004,12 @@ leader_trait_sakuya = {
 		deposit_blockers_cost_mult = -0.25
 		planet_clear_blocker_time_mult = -0.5
 		planet_jobs_unity_produces_mult = 0.15
+	}
+	sector_modifier = {
+		planet_building_build_speed_mult = 0.5
+		deposit_blockers_cost_mult = -0.125
+		planet_clear_blocker_time_mult = -0.25
+		planet_jobs_unity_produces_mult = 0.075
 	}
 	leader_class = {
 		official
@@ -730,6 +1028,13 @@ leader_trait_youki = {
 		starbase_shipyard_build_speed_mult = 1
 		starbase_shipyard_build_cost_mult = -0.1
 		planet_crime_add = -50
+	}
+	sector_modifier = {
+		planet_army_build_speed_mult = 0.2
+		armies_cost_mult = -0.2
+		army_defense_health_mult = 0.5
+		starbase_shipyard_build_speed_mult = 0.5
+		planet_crime_add = -25
 	}
 	leader_class = {
 		official
@@ -750,6 +1055,15 @@ leader_trait_keine = {
 		planet_jobs_society_research_produces_mult = 0.33
 		planet_jobs_produces_mult = 0.05
 	}
+	sector_modifier = {
+		planet_stability_add = 15
+		planet_building_build_speed_mult = 0.25
+		planet_buildings_cost_mult = -0.125
+		planet_jobs_engineering_research_produces_mult = 0.167
+		planet_jobs_physics_research_produces_mult = 0.167
+		planet_jobs_society_research_produces_mult = 0.167
+		planet_jobs_produces_mult = 0.025
+	}
 	leader_class = {
 		official
 	}
@@ -766,9 +1080,37 @@ leader_trait_parsee = {
 		planet_crime_mult = 1
 		planet_stability_add = -20
 	}
+	sector_modifier = {
+		planet_jobs_produces_mult = 0.15
+		planet_jobs_slave_produces_mult = 0.25
+		planet_crime_mult = 0.5
+		planet_stability_add = -10
+	}
 	leader_class = {
 		official
 	}
+	initial = no
+	randomized = no
+}
+
+leader_trait_kaguya = {
+	leader_trait_type = destiny
+	modifier = {
+		empire_size_pops_mult = -0.4
+		planet_buildings_upkeep_mult = -0.5
+		planet_districts_upkeep_mult = -0.5
+		starbase_shipyard_build_speed_mult = -0.4
+		planet_kaguya_protect_duration = 90
+	}
+	sector_modifier = {
+		empire_size_pops_mult = -0.2
+		planet_buildings_upkeep_mult = -0.25
+		planet_districts_upkeep_mult = -0.25
+		starbase_shipyard_build_speed_mult = -0.2
+		planet_kaguya_protect_duration = 45
+	}
+	leader_class = { official }
+	custom_tooltip_with_modifiers = leader_trait_kaguya_skill
 	initial = no
 	randomized = no
 }

@@ -1,29 +1,33 @@
 namespace = gensokyo_start
-###开局科技
+### 标准开局科技
 country_event = {
 	id = gensokyo_start.0
 	hide_window = yes
 	is_triggered_only = yes
-	
+
 	trigger = {
 		has_authority = auth_gensokyo
+		NOR = {
+			has_origin = origin_spth_story_gensokyo
+			has_origin = origin_gensokyo_city
+		}
 	}
 
 	immediate = {
+		add_research_option = tech_spth_spirit_power_beginning
 		give_technology = { tech = "tech_th_weapon_mofashu" message = no }
-		if = {
-			limit = {
-				has_civic = civic_scarlet_devil
-			}
-			give_technology = { tech = "tech_worker_0" message = no }
-			give_technology = { tech = "tech_specialist_0" message = no }
-		}
-		else_if = {
-			limit = {
-				has_civic = civic_gensokyo
-			}
-            unlock_council_slots = 1
-			give_technology = { tech = "tech_worker_0" message = no }
+		capital_scope = {
+			while = { count = 4 create_pop_group = { species = owner.founder_species } }
+			spth_effect_establish_barrier = yes
+			add_building = building_spth_cloner
+			remove_building = building_commercial_zone
+			while = { count = 3 remove_district = district_city }
+			while = { count = 2 remove_district = district_farming }
+			while = { count = 2 remove_district = district_mining }
+			while = { count = 2 remove_district = district_generator }
+			while = { count = 4 add_district = district_spth_human_village }
+			while = { count = 3 add_district = district_spth_generic_factory }
+			while = { count = 2 add_district = district_spth_sp_produce }
 		}
 	}
 }
@@ -32,7 +36,7 @@ country_event = {
 	id = gensokyo_start.1
 	hide_window = yes
 	is_triggered_only = yes
-	
+
 	trigger = {
 		has_authority = auth_gensokyo
 		has_country_flag = origin_gensokyo_city_flag
@@ -41,19 +45,23 @@ country_event = {
 	immediate = {
 		random_owned_planet = {
 			limit = {
-				is_planet_class = pc_gensokyo_city
+				is_planet_class = pc_gensokyo_planet
 			}
 			remove_all_districts = yes
 			clear_blockers = yes
 			clear_deposits = yes
-			add_deposit = d_hakurajinjia
-			add_deposit = d_mosen
-			add_deposit = d_yokai_mountain
-			add_deposit = d_renli
-			add_deposit = d_zhulin
-			add_deposit = d_th_underway
+			spth_effect_establish_barrier = yes
+			add_deposit = d_spirit_power_spring
 			add_district = district_gensokyo_renli
-			add_district = district_gensokyo_jinja
+			add_district = district_gensokyo_mosen
+			add_district = district_gensokyo_yaoguai
+			add_district = district_gensokyo_kyuuto
+			add_district = district_gensokyo_genbu_ravine
+			add_district = district_gensokyo_misty_lake
+			# add_deposit = d_spth_gp_military_command
+			# add_deposit = d_spth_gp_scout
+			# add_deposit = d_spth_gp_journalist
+			# add_deposit = d_spth_gp_nuclear_hell
 			save_event_target_as = new_pc_gensokyo_city
 			if = {
 				limit = {
@@ -97,44 +105,39 @@ country_event = {
 	id = gensokyo_start.2
 	hide_window = yes
 	is_triggered_only = yes
-	
+
 	trigger = {
 		has_authority = auth_gensokyo
 	}
 
 	immediate = {
-		if = {
-			limit = { has_origin = origin_th_hm_default}
-			every_owned_planet = {
-				add_building = building_hmgfb_1
-				if = {
-					limit = {
-						owner = {
-							is_ai = yes
-							NOT = {
-								has_global_flag = spth_AI_NOT_plus
-							}
-						}
-					}
-					remove_building = building_bureaucratic_1
-					add_building = building_hmgfb_2
-					set_planet_flag = hm_num_2
-				}
-			}
-			set_country_flag = th_hm_default_origin
-		}
+		# if = {
+		# 	limit = { has_origin = origin_th_hm_default}
+		# 	every_owned_planet = {
+		# 		add_building = building_hmgfb_1
+		# 		if = {
+		# 			limit = {
+		# 				owner = {
+		# 					is_ai = yes
+		# 					NOT = {
+		# 						has_global_flag = spth_AI_NOT_plus
+		# 					}
+		# 				}
+		# 			}
+		# 			remove_building = building_bureaucratic_1
+		# 			add_building = building_hmgfb_2
+		# 			set_planet_flag = hm_num_2
+		# 		}
+		# 	}
+		# 	set_country_flag = th_hm_default_origin
+		# }
 		if = {
 			limit = { has_origin = origin_gensokyo_resource}
-			
-			give_technology = { tech = "tech_gensokyo_building_1" message = no }
-			give_technology = { tech = "tech_gensokyo_building_2" message = no }
-			give_technology = { tech = "tech_gensokyo_building_3" message = no }
-			give_technology = { tech = "tech_gensokyo_building_4" message = no }
-			give_technology = { tech = "tech_th_lingli_storage" message = no }
+
 			add_resource = {
-				sr_lingli = 100000
-				sr_fuka = 100000
-				alloys = 10000
+				sr_lingli = 3000
+				sr_fuka = 2000
+				alloys = 4000
 				consumer_goods = 10000
 				energy = 5000
 				minerals = 5000
@@ -150,57 +153,60 @@ country_event = {
 							}
 						}
 					}
+					add_building = building_spth_research_base_1
+					add_building = building_spth_common_foundry
+					add_building = building_spth_common_factory
+					add_building = building_spth_cloner
 					remove_building = building_bureaucratic_1
-					remove_building = building_research_lab_1
-					remove_building = building_foundry_1
-					add_building = building_hmg_1
-					add_building = building_slm_1
-					add_building = building_bl_1
-					add_building = building_suwa_1
+					add_building = building_spth_tavern
 				}
+				add_building = building_spth_common_foundry
+				add_building = building_spth_mining_centre
+				remove_building = building_research_lab_1
+				add_building = building_spth_research_base_1
 				add_modifier = {
 					modifier = spth_gsk_start_grow
 					years = 10
 				}
 			}
 		}
-		if = {
-			limit = { has_origin = origin_th_hm_trad}
-			add_tradition = tr_supremacy_adopt
-			add_tradition = tr_supremacy_fleet_logistical_corps
-			add_tradition = tr_supremacy_master_shipwrights
-			add_tradition = tr_supremacy_war_games
-			add_tradition = tr_supremacy_overwhelming_force
-			add_tradition = tr_supremacy_great_game
-
-			add_tradition = tr_expansion_adopt
-			add_tradition = tr_expansion_colonization_fever
-			add_tradition = tr_expansion_a_new_life
-			add_tradition = tr_expansion_courier_network
-			add_tradition = tr_expansion_reach_for_the_stars
-			add_tradition = tr_expansion_galactic_ambition
-			
-			capital_scope = {
-				add_modifier = {
-					modifier = spth_hm_start_grow
-					years = 25
-				}
-				if = {
-					limit = { 
-						owner = {
-							is_ai = yes
-							NOT = {
-								has_global_flag = spth_AI_NOT_plus
-							}
-						}
-					}
-					remove_building = building_bureaucratic_1
-					add_building = building_hmgfb_2
-					add_building = building_hmgfb_1
-					set_planet_flag = hm_num_2
-				}
-			}
-		}
+		# if = {
+		# 	limit = { has_origin = origin_th_hm_trad}
+		# 	add_tradition = tr_supremacy_adopt
+		# 	add_tradition = tr_supremacy_fleet_logistical_corps
+		# 	add_tradition = tr_supremacy_master_shipwrights
+		# 	add_tradition = tr_supremacy_war_games
+		# 	add_tradition = tr_supremacy_overwhelming_force
+		# 	add_tradition = tr_supremacy_great_game
+		#
+		# 	add_tradition = tr_expansion_adopt
+		# 	add_tradition = tr_expansion_colonization_fever
+		# 	add_tradition = tr_expansion_a_new_life
+		# 	add_tradition = tr_expansion_courier_network
+		# 	add_tradition = tr_expansion_reach_for_the_stars
+		# 	add_tradition = tr_expansion_galactic_ambition
+		#
+		# 	capital_scope = {
+		# 		add_modifier = {
+		# 			modifier = spth_hm_start_grow
+		# 			years = 25
+		# 		}
+		# 		if = {
+		# 			limit = {
+		# 				owner = {
+		# 					is_ai = yes
+		# 					NOT = {
+		# 						has_global_flag = spth_AI_NOT_plus
+		# 					}
+		# 				}
+		# 			}
+		# 			remove_building = building_bureaucratic_1
+		# 			add_building = building_hmgfb_2
+		# 			add_building = building_hmgfb_1
+		# 			set_planet_flag = hm_num_2
+		# 		}
+		# 	}
+		# }
 	}
 }
 ### AI增强开关
@@ -210,6 +216,10 @@ country_event = {
 	desc = gensokyo_start.3.desc
 	picture = GFX_evt_th_alice
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_th_alice_room }
 	trigger = {
 		is_ai = no
 	}
@@ -226,6 +236,7 @@ country_event = {
 				id = gensokyo_start.3
 			}
 			set_global_flag = spth_AI_NOT_plus
+			set_global_flag = spth_allow_non_disappear_barrier_story
 		}
 	}
 	option = {
@@ -239,6 +250,7 @@ country_event = {
 				id = gensokyo_start.3
 			}
 			remove_global_flag = spth_AI_NOT_plus
+			remove_global_flag = spth_allow_non_disappear_barrier_story
 		}
 	}
 	# option = {
@@ -256,7 +268,18 @@ country_event = {
 	# }
 	option = {
 		name = th_pop.0.a
-
+		# hidden_effect = {
+		# 	if = {
+		# 		limit = {
+		# 			OR = {
+		# 				any_country = { has_origin = origin_spth_story_gensokyo }
+		# 				is_multiplayer = yes
+		# 			}
+		# 		}
+		# 		remove_global_flag = spth_allow_non_disappear_barrier_story
+		# 	}
+		# 	country_event = { id = gensokyo_start.6 }
+		# }
 	}
 }
 ### 用来检测触发gensokyo_start.3
@@ -282,11 +305,1694 @@ country_event = {
 }
 
 # 生成一个用来临时存储要生成的领袖以及一个备用基底物种的国家
-event = { 
+event = {
     id = gensokyo_start.5
 	hide_window = yes
 	is_triggered_only = yes
     immediate = {
         spth_effect_init_container_country_effect = yes
     }
+}
+
+country_event = {
+	id = gensokyo_start.6
+	title = gensokyo_start.6.name
+	desc = gensokyo_start.6.desc
+	picture = GFX_evt_hakurei_shrine_in_night
+	auto_select = no
+	is_triggered_only = yes
+	trigger = {
+		NOT = { has_origin = origin_spth_story_gensokyo }
+		has_global_flag = spth_allow_non_disappear_barrier_story
+	}
+	option = {
+		name = gensokyo_start.6.a
+		country_event = { id = gensokyo_start.7 days = 30 random = 30 }
+	}
+	option = {
+		name = gensokyo_start.6.b
+		hidden_effect = {
+			remove_global_flag = spth_allow_non_disappear_barrier_story
+		}
+	}
+}
+# 非起源主事件链触发
+# 设定上为剧情玩家离开宇宙之后
+# 母星周围刷出除了地球都被护盾屏蔽的剧情太阳系
+# 殖民、挖完秘封坟，给玩家灵力产出建筑，告诉玩家需要进一步研究
+# 接触幻想乡AI后买科技/挖完坟15年+解锁超级护盾/幻想乡国家研究完灵力护盾后，
+# 准许研究灵力护盾特殊项目，解锁月之都和鸟船
+# 挖修改过的月都和鸟船坟，遗存记录显示和秘封有关，之后进入主事件链
+# 最终天灾需要修改，变为看守通往第四面墙之外秘密的计算机AI。
+country_event = {
+	id = gensokyo_start.7
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_global_flag = spth_allow_non_disappear_barrier_story
+	}
+	immediate = {
+		set_spawn_system_batch = begin
+		capital_star.solar_system = {
+			spawn_system = {
+				initializer = spth_story_sol_system_gensokyo
+				hyperlane = no
+				min_orientation_angle = 0
+				max_orientation_angle = 360
+				max_distance = 16
+				min_distance = 64
+			}
+			last_created_system = {
+				add_hyperlane = {
+					from = this
+					to = prev
+				}
+				set_star_flag = non_origin_spth_story_sol_system
+				event_target:spth_story_sol_system_lunar_capital = {
+					change_pc = pc_shielded
+				}
+			}
+		}
+		set_spawn_system_batch = end
+	}
+}
+
+# 用来放mod说明和更新公告的开局事件
+country_event = {
+	id = gensokyo_start.100
+	title = gensokyo_start.100.name
+	desc = gensokyo_start.100.desc
+	picture = GFX_evt_th_alice
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		is_ai = no
+	}
+	option = {
+		name = gensokyo_start.100.a
+	}
+	option = {
+		name = gensokyo_start.100.b
+		country_event = { id = gensokyo_start.101 }
+	}
+}
+country_event = {
+	id = gensokyo_start.101
+	title = gensokyo_start.101.name
+	desc = gensokyo_start.101.desc
+	picture = GFX_evt_th_alice
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		is_ai = no
+	}
+	option = {
+		name = gensokyo_start.101.a
+		hidden_effect = {
+			country_event = { id = gensokyo_start.100 }
+		}
+	}
+}
+
+country_event = {
+	id = gensokyo_start.1144
+	title = gensokyo_start.1144.name
+	desc = gensokyo_start.1144.desc
+	trigger = {
+		NOT = { any_playable_country = { is_ai = no has_authority = auth_gensokyo } }
+	}
+	is_triggered_only = yes
+	is_advisor_event = yes
+	option = {
+		name = gensokyo_start.1144.a
+		set_global_flag = enable_touhou_mod_menu
+		country_event = { id = spth_precursor.1001 days = 7200 }
+	}
+	option = {
+		name = gensokyo_start.1144.b
+		remove_global_flag = enable_touhou_mod_menu
+	}
+}
+
+country_event = {
+	id = gensokyo_start.1145
+	title = gensokyo_start.1145
+	desc = gensokyo_start.1145.desc
+	is_triggered_only = yes
+	immediate = {
+		if = {
+			limit = { NOT = { has_global_flag = gensokyo_start_1144_fired } }
+			set_global_flag = gensokyo_start_1144_fired
+			random_playable_country = {
+				limit = { is_ai = no NOT = { has_authority = auth_gensokyo } }
+				country_event = { id = gensokyo_start.1144 }
+			}
+		}
+		if = {
+			limit = { NOT = { has_country_flag = spth_settings_first_fired } }
+			set_country_flag = spth_settings_first_fired
+		}
+		if = {
+			limit = { NOT = { event_target:global_event_country = { is_variable_set = spth_lunar_capital_crisis_difficulty } } }
+			event_target:global_event_country = { set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 } }
+		}
+	}
+	diplomatic = yes
+	custom_gui = spth_mod_settings_ui
+	custom_gui_option = spth_mod_settings_exit_button
+	picture_event_data = { room = th_mod_settings_room }
+	option = {
+		name = gensokyo_start.1145.exit
+		default_hide_option = yes
+		hidden_effect = {
+			remove_country_flag = enable_spth_cheat
+			set_variable = { which = spth_debug_click_count value = 0 }
+		}
+	}
+}
+country_event = {
+	id = gensokyo_start.1146
+	title = gensokyo_start.1145
+	desc = gensokyo_start.1145.desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = has_show_spth_qq_qrcode } }
+	immediate = { set_country_flag = has_show_spth_qq_qrcode }
+	diplomatic = yes
+	custom_gui = spth_qq_qrcode_ui
+	custom_gui_option = spth_qq_qrcode_exit_button
+	picture_event_data = { room = hiff_story_shrine_room }
+	option = {
+		name = gensokyo_start.1146.exit
+		default_hide_option = yes
+	}
+	after = { remove_country_flag = has_show_spth_qq_qrcode }
+}
+
+country_event = {
+	id = gensokyo_start.1147
+	title = gensokyo_start.1147
+	desc = gensokyo_start.1147.desc
+	is_triggered_only = yes
+	trigger = {
+		NOT = { has_country_flag = has_show_spth_leader_function_page }
+	}
+	immediate = {
+		set_country_flag = has_show_spth_leader_function_page
+	}
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = aqiu1
+	}
+	option = {
+		name = gensokyo_start.1147.query
+		hidden_effect = {
+			set_country_flag = can_close_spth_leader_function_page
+			set_country_flag = spth_leader_lists_display_got
+			random_owned_leader = {
+				limit = { spth_is_start_ruler_leader = yes }
+				save_event_target_as = spth_leader_lists_from
+			}
+			if = {
+				limit = { exists = event_target:spth_leader_lists_from }
+				event_target:spth_leader_lists_from = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1153
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { exists = ruler }
+				ruler = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1153
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else = {
+				random_owned_leader = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1153
+							scopes = { from = prev }
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1147.a
+		tooltip = { country_event = { id = gensokyo_start.1148 } }
+		hidden_effect = {
+			set_country_flag = can_close_spth_leader_function_page
+			if = {
+				limit = { exists = ruler }
+				country_event = {
+					id = gensokyo_start.1148
+					scopes = { from = ruler }
+				}
+			} else_if = {
+				limit = { any_owned_leader = { spth_is_start_ruler_leader = yes } }
+				random_owned_leader = {
+					limit = { spth_is_start_ruler_leader = yes }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1148
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { spth_is_touhou_gensokyo_leader = yes } }
+				random_owned_leader = {
+					limit = { spth_is_touhou_gensokyo_leader = yes }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1148
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { species = { is_species_class = THSC } } }
+				random_owned_leader = {
+					limit = { species = { is_species_class = THSC } }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1148
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else = {
+				random_owned_leader = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1148
+							scopes = { from = prev }
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1147.b
+		custom_tooltip = gensokyo_start.1147.gugu
+	}
+	option = {
+		name = gensokyo_start.1147.c
+		hidden_effect = {
+			set_country_flag = can_close_spth_leader_function_page
+			if = {
+				limit = { exists = ruler }
+				country_event = {
+					id = gensokyo_start.1150
+					scopes = { from = ruler }
+				}
+			} else_if = {
+				limit = { any_owned_leader = { spth_is_start_ruler_leader = yes } }
+				random_owned_leader = {
+					limit = { spth_is_start_ruler_leader = yes }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1150
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { spth_is_touhou_gensokyo_leader = yes } }
+				random_owned_leader = {
+					limit = { spth_is_touhou_gensokyo_leader = yes }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1150
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { species = { is_species_class = THSC } } }
+				random_owned_leader = {
+					limit = { species = { is_species_class = THSC } }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1150
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else = {
+				random_owned_leader = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1150
+							scopes = { from = prev }
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1147.d
+		custom_tooltip = gensokyo_start.1147.gugu
+		hidden_effect = {
+			set_country_flag = can_close_spth_leader_function_page
+			country_event = { id = gensokyo_start.1149 }
+		}
+	}
+	option = {
+		name = gensokyo_start.1147.f
+		allow = { has_paragon_dlc = yes }
+		hidden_effect = {
+			set_country_flag = can_close_spth_leader_function_page
+			if = {
+				limit = { exists = ruler }
+				country_event = {
+					id = gensokyo_start.1152
+					scopes = { from = ruler }
+				}
+			} else_if = {
+				limit = { any_owned_leader = { spth_is_start_ruler_leader = yes } }
+				random_owned_leader = {
+					limit = { spth_is_start_ruler_leader = yes }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1152
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { spth_is_touhou_gensokyo_leader = yes } }
+				random_owned_leader = {
+					limit = { spth_is_touhou_gensokyo_leader = yes }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1152
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { species = { is_species_class = THSC } } }
+				random_owned_leader = {
+					limit = { species = { is_species_class = THSC } }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1152
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else = {
+				random_owned_leader = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1152
+							scopes = { from = prev }
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1147.e
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1147.e.fail
+				any_owned_leader = { spth_is_start_ruler_leader = yes }
+			}
+		}
+		hidden_effect = {
+			random_owned_leader = {
+				limit = {
+					spth_is_start_ruler_leader = yes
+					is_ruler = no
+				}
+				prev = { set_leader = prev }
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1147.g
+		hidden_effect = {
+			set_country_flag = can_close_spth_leader_function_page
+			if = {
+				limit = { exists = ruler }
+				country_event = {
+					id = gensokyo_start.1157
+					scopes = { from = ruler }
+				}
+			} else_if = {
+				limit = { any_owned_leader = { spth_is_start_ruler_leader = yes } }
+				random_owned_leader = {
+					limit = { spth_is_start_ruler_leader = yes }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1157
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { spth_is_touhou_gensokyo_leader = yes } }
+				random_owned_leader = {
+					limit = { spth_is_touhou_gensokyo_leader = yes }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1157
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else_if = {
+				limit = { any_owned_leader = { species = { is_species_class = THSC } } }
+				random_owned_leader = {
+					limit = { species = { is_species_class = THSC } }
+					prev = {
+						country_event = {
+							id = gensokyo_start.1157
+							scopes = { from = prev }
+						}
+					}
+				}
+			} else = {
+				random_owned_leader = {
+					prev = {
+						country_event = {
+							id = gensokyo_start.1157
+							scopes = { from = prev }
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1147.exit
+		default_hide_option = yes
+		hidden_effect = { set_country_flag = can_close_spth_leader_function_page }
+	}
+	after = {
+		remove_country_flag = has_show_spth_leader_function_page
+		hidden_effect = {
+			if = {
+				limit = { has_country_flag = can_close_spth_leader_function_page }
+				remove_country_flag = can_close_spth_leader_function_page
+			} else = {
+				country_event = { id = gensokyo_start.1147 }
+			}
+		}
+	}
+}
+# 东方领袖经验灌输ui
+# this = country
+# from = leader
+# from为作为初始肖像的领袖，以及展示选中领袖的基本信息。
+# call方式：
+# ruler = {
+# 	prev = {
+# 		country_event = {
+# 			id = gensokyo_start.1148
+# 			scopes = { from = prev }
+# 		}
+# 	}
+# }
+country_event = {
+	id = gensokyo_start.1148
+	title = gensokyo_start.1147
+	desc = {
+		trigger = { NOT = { has_country_flag = spth_upgrade_has_select_leader } }
+		text = gensokyo_start.1148.desc
+	}
+	desc = {
+		trigger = { has_country_flag = spth_upgrade_has_select_leader }
+		text = gensokyo_start.1148.desc.selected
+	}
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = has_show_spth_leader_function_upgrade } }
+	immediate = {
+		set_country_flag = has_show_spth_leader_function_upgrade
+	}
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = from
+	}
+	option = {
+		name = gensokyo_start.1148.select
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.fail
+				has_country_flag = spth_upgrade_has_select_leader
+			}
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.lack_res
+				resource_stockpile_compare = { resource = sr_lingli value >= from.value:spth_upgrade_leader_cost_lingli }
+				resource_stockpile_compare = { resource = sr_fuka value >= from.value:spth_upgrade_leader_cost_fuka }
+			}
+		}
+		add_resource = { sr_lingli = -1 multiplier = from.value:spth_upgrade_leader_cost_lingli }
+		add_resource = { sr_fuka = -1 multiplier = from.value:spth_upgrade_leader_cost_fuka }
+		if = {
+			limit = { exists = from }
+			from = { add_experience = 200 }
+		}
+	}
+	inline_script = { script = events/spth_leader_select_leaders name = upgrade }
+	inline_script = {
+		script = events/spth_leader_select_last_options
+		close_ui_flag = can_close_spth_leader_function_upgrade
+		return_id = gensokyo_start.1147
+	}
+	after = {
+		hidden_effect = {
+			remove_country_flag = has_show_spth_leader_function_upgrade
+			if = {
+				limit = { has_country_flag = can_close_spth_leader_function_upgrade }
+				remove_country_flag = can_close_spth_leader_function_upgrade
+				remove_country_flag = spth_upgrade_has_select_leader
+				clear_global_event_target = spth_leader_function_portrait@root
+			} else = {
+				if = {
+					limit = { exists = event_target:spth_leader_function_portrait@root }
+					event_target:spth_leader_function_portrait@root = {
+						prev = {
+							country_event = {
+								id = gensokyo_start.1148
+								scopes = { from = prev }
+							}
+						}
+					}
+				} else_if = {
+					limit = { exists = from }
+					country_event = {
+						id = gensokyo_start.1148
+						scopes = { from = from }
+					}
+				} else = {
+					remove_country_flag = spth_upgrade_has_select_leader
+					country_event = {
+						id = gensokyo_start.1148
+						scopes = { from = ruler }
+					}
+				}
+			}
+		}
+	}
+}
+country_event = {
+	id = gensokyo_start.1149
+	title = gensokyo_start.1147
+	desc = gensokyo_start.1149.desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = has_show_spth_leader_function_respawn } }
+	immediate = { set_country_flag = has_show_spth_leader_function_respawn }
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = hakuri_shrine_night_room portrait = aqiu }
+	inline_script = { script = events/spth_leader_select_leaders name = respawn }
+	option = {
+		name = gensokyo_start.1149.exit
+		hidden_effect = { set_country_flag = can_close_spth_leader_function_respawn }
+	}
+	after = {
+		hidden_effect = {
+			remove_country_flag = has_show_spth_leader_function_respawn
+			if = {
+				limit = { has_country_flag = can_close_spth_leader_function_respawn }
+				remove_country_flag = can_close_spth_leader_function_respawn
+			} else = { country_event = { id = gensokyo_start.1149 } }
+		}
+	}
+}
+country_event = {
+	id = gensokyo_start.1150
+	inline_script = {
+		script = events/spth_leader_select_base
+		id = gensokyo_start.1150
+		title = gensokyo_start.1147
+		desc = gensokyo_start.1150.desc
+		selected_desc = gensokyo_start.1150.desc.selected
+		show_ui_flag = has_show_spth_leader_function_clear_negative
+		close_ui_flag = can_close_spth_leader_function_clear_negative
+		selected_flag = spth_clear_negative_has_select_leader
+		portrait_target = spth_leader_function_clear_portrait@root
+	}
+	option = {
+		name = gensokyo_start.1150.all
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.lack_res
+				resource_stockpile_compare = { resource = sr_lingli value >= 180 mult = value:spth_leader_negative_traits_count }
+				resource_stockpile_compare = { resource = sr_fuka value >= 90 mult = value:spth_leader_negative_traits_count }
+			}
+			any_owned_leader = { num_leader_traits = { negative = yes value > 0 } }
+		}
+		add_resource = { sr_lingli = -180 sr_fuka = -90 mult = value:spth_leader_negative_traits_count }
+		every_owned_leader = {
+			limit = { num_leader_traits = { negative = yes value > 0 } }
+			remove_all_negative_traits = yes
+		}
+	}
+	option = {
+		name = gensokyo_start.1150.a
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.fail
+				has_country_flag = spth_clear_negative_has_select_leader
+			}
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.lack_res
+				resource_stockpile_compare = { resource = sr_lingli value >= 120 }
+				resource_stockpile_compare = { resource = sr_fuka value >= 60 }
+			}
+			from = { num_leader_traits = { negative = yes value > 0 } }
+		}
+		add_resource = { sr_lingli = -120 sr_fuka = -60 }
+		if = {
+			limit = { exists = from }
+			from = { remove_all_negative_traits = yes }
+		}
+	}
+	option = {
+		name = gensokyo_start.1150.b
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.fail
+				has_country_flag = spth_clear_negative_has_select_leader
+			}
+			custom_tooltip = {
+				fail_text = gensokyo_start.1150.select.fail
+				exists = from
+				from = { NOT = { has_leader_flag = spth_auto_clear_negative_traits } }
+			}
+		}
+		hidden_effect = {
+			from = {
+				set_leader_flag = immune_to_negative_traits
+				set_leader_flag = spth_auto_clear_negative_traits
+				add_trait = spth_auto_clear_negative_traits
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1150.c
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.fail
+				has_country_flag = spth_clear_negative_has_select_leader
+			}
+			custom_tooltip = {
+				fail_text = gensokyo_start.1150.select.succ
+				exists = from
+				from = { has_leader_flag = spth_auto_clear_negative_traits }
+			}
+		}
+		hidden_effect = {
+			from = {
+				remove_leader_flag = immune_to_negative_traits
+				remove_leader_flag = spth_auto_clear_negative_traits
+				remove_trait = spth_auto_clear_negative_traits
+			}
+		}
+	}
+	inline_script = { script = events/spth_leader_select_leaders name = clear }
+	inline_script = {
+		script = events/spth_leader_select_last_options
+		close_ui_flag = can_close_spth_leader_function_clear_negative
+		return_id = gensokyo_start.1147
+ 	}
+}
+country_event = {
+	id = gensokyo_start.1152
+	inline_script = {
+		script = events/spth_leader_select_base
+		id = gensokyo_start.1152
+		title = gensokyo_start.1147
+		desc = gensokyo_start.1152.desc
+		selected_desc = gensokyo_start.1152.desc.selected
+		show_ui_flag = has_show_spth_leader_function_destiny
+		close_ui_flag = can_close_spth_leader_function_destiny
+		selected_flag = spth_select_destiny_has_select_leader
+		portrait_target = spth_leader_function_destiny_portrait@root
+	}
+	option = {
+		name = gensokyo_start.1161.select
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.fail
+				has_country_flag = spth_select_destiny_has_select_leader
+			}
+			from = {
+				custom_tooltip = {
+					fail_text = gensokyo_start.1152.fail.8
+					spth_can_select_second_destiny_trait = yes
+				}
+				custom_tooltip = {
+					fail_text = gensokyo_start.1152.fail
+					NOT = { has_leader_flag = has_select_spth_second_destiny }
+				}
+			}
+		}
+		if = {
+			limit = { exists = from }
+			hidden_effect = {
+				set_country_flag = can_close_spth_leader_function_destiny
+			}
+			country_event = { id = gensokyo_start.1161 scopes = { from = from } }
+		}
+	}
+	inline_script = { script = events/spth_leader_select_leaders name = destiny }
+	inline_script = {
+		script = events/spth_leader_select_last_options
+		close_ui_flag = can_close_spth_leader_function_destiny
+		return_id = gensokyo_start.1147
+	}
+}
+# from = 开局选择的统治者，找不到则为ruler
+country_event = {
+	id = gensokyo_start.1153
+	title = gensokyo_start.1147
+	desc = gensokyo_start.1153.desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = has_show_spth_leader_lists } }
+	immediate = {
+		set_country_flag = has_show_spth_leader_lists
+		if = {
+			limit = {
+				NOR = {
+					has_country_flag = spth_leader_lists_display_got
+					has_country_flag = spth_leader_lists_display_not_got
+					has_country_flag = spth_leader_lists_display_all
+					has_country_flag = spth_leader_lists_display_all_divide
+				}
+			}
+			set_country_flag = spth_leader_lists_display_got
+		}
+	}
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = from
+	}
+	# 已获得 = spth_leader_lists_display_got
+	# 未获得 = spth_leader_lists_display_not_got
+	# 全部 = spth_leader_lists_display_all
+	# 分列 = spth_leader_lists_display_all_divide
+	# 颜色 = spth_leader_lists_display_color
+	option = {
+		name = gensokyo_start.1153.a
+		allow = { NOT = { has_country_flag = spth_leader_lists_display_got } }
+		hidden_effect = {
+			remove_country_flag = spth_leader_lists_display_got
+			remove_country_flag = spth_leader_lists_display_not_got
+			remove_country_flag = spth_leader_lists_display_all
+			remove_country_flag = spth_leader_lists_display_all_divide
+			set_country_flag = spth_leader_lists_display_got
+		}
+	}
+	option = {
+		name = gensokyo_start.1153.b
+		allow = { NOT = { has_country_flag = spth_leader_lists_display_not_got } }
+		hidden_effect = {
+			remove_country_flag = spth_leader_lists_display_got
+			remove_country_flag = spth_leader_lists_display_not_got
+			remove_country_flag = spth_leader_lists_display_all
+			remove_country_flag = spth_leader_lists_display_all_divide
+			set_country_flag = spth_leader_lists_display_not_got
+		}
+	}
+	option = {
+		name = gensokyo_start.1153.c
+		allow = { NOT = { has_country_flag = spth_leader_lists_display_all } }
+		hidden_effect = {
+			remove_country_flag = spth_leader_lists_display_got
+			remove_country_flag = spth_leader_lists_display_not_got
+			remove_country_flag = spth_leader_lists_display_all
+			remove_country_flag = spth_leader_lists_display_all_divide
+			set_country_flag = spth_leader_lists_display_all
+		}
+	}
+	option = {
+		name = gensokyo_start.1153.d
+		allow = { NOT = { has_country_flag = spth_leader_lists_display_all_divide } }
+		hidden_effect = {
+			remove_country_flag = spth_leader_lists_display_got
+			remove_country_flag = spth_leader_lists_display_not_got
+			remove_country_flag = spth_leader_lists_display_all
+			remove_country_flag = spth_leader_lists_display_all_divide
+			set_country_flag = spth_leader_lists_display_all_divide
+		}
+	}
+	option = {
+		name = gensokyo_start.1147.color
+		hidden_effect = {
+			if = {
+				limit = { has_country_flag = spth_leader_lists_display_color }
+				remove_country_flag = spth_leader_lists_display_color
+			} else = { set_country_flag = spth_leader_lists_display_color }
+		}
+	}
+	# 统治者阵列
+	option = {
+		name = gensokyo_start.1153.ruler
+		tooltip = { country_event = { id = gensokyo_start.1154 } }
+		hidden_effect = {
+			random_owned_leader = {
+				limit = { spth_is_start_ruler_leader = yes }
+				save_event_target_as = spth_leader_lists_from
+			}
+			if = {
+				limit = { exists = event_target:spth_leader_lists_from }
+				event_target:spth_leader_lists_from = { prev = { country_event = { id = gensokyo_start.1154 scopes = { from = prev } } } }
+			} else_if = {
+				limit = { exists = ruler }
+				ruler = { prev = { country_event = { id = gensokyo_start.1154 scopes = { from = prev } } } }
+			} else = { country_event = { id = gensokyo_start.1154 scopes = { from = owner_main_species } } }
+			set_country_flag = can_close_spth_leader_lists
+		}
+	}
+	# 普通阵列
+	inline_script = { script = events/spth_leader_display_options name = common }
+	# 分列阵列
+	option = {
+		name = gensokyo_start.1153.got
+		trigger = { has_country_flag = spth_leader_lists_display_all_divide }
+	}
+	inline_script = { script = events/spth_leader_display_options name = divide_got }
+	option = {
+		name = gensokyo_start.1153.not_got
+		trigger = { has_country_flag = spth_leader_lists_display_all_divide }
+	}
+	inline_script = { script = events/spth_leader_display_options name = divide_not_got }
+	inline_script = {
+		script = events/spth_leader_select_last_options
+		close_ui_flag = can_close_spth_leader_lists
+		return_id = gensokyo_start.1147
+	}
+	after = {
+		hidden_effect = {
+			remove_country_flag = has_show_spth_leader_lists
+			if = {
+				limit = { has_country_flag = can_close_spth_leader_lists }
+				remove_country_flag = can_close_spth_leader_lists
+				remove_country_flag = spth_leader_lists_display_got
+				remove_country_flag = spth_leader_lists_display_not_got
+				remove_country_flag = spth_leader_lists_display_all
+				remove_country_flag = spth_leader_lists_display_all_divide
+				remove_country_flag = spth_leader_lists_display_color
+			} else = { country_event = { id = gensokyo_start.1153 scopes = { from = from } } }
+			if = {
+				limit = { has_country_flag = triggered_gensokyo_start_1155 }
+				remove_country_flag = triggered_gensokyo_start_1155
+				if = {
+					limit = { any_owned_leader = { has_leader_flag = is_gensokyo_start_1155_leader } }
+					random_owned_leader = {
+						limit = { has_leader_flag = is_gensokyo_start_1155_leader }
+						prev = { country_event = { id = gensokyo_start.1155 scopes = { from = prev } } }
+					}
+				} else = { country_event = { id = gensokyo_start.1155 scopes = { from = owner_main_species } } }
+			}
+		}
+	}
+}
+country_event = {
+	id = gensokyo_start.1154
+	title = gensokyo_start.1147
+	desc = {
+		trigger = {
+			from = {
+				is_scope_type = leader
+				spth_is_start_ruler_leader = yes
+			}
+		}
+		text = gensokyo_start.1154.desc
+	}
+	desc = {
+		trigger = {
+			from = {
+				OR = {
+					AND = {
+						is_scope_type = leader
+						spth_is_start_ruler_leader = no
+					}
+					is_scope_type = species
+				}
+			}
+		}
+		text = gensokyo_start.1154.desc.no_select
+	}
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = has_show_spth_leader_ruler_lists } }
+	immediate = {
+		set_country_flag = has_show_spth_leader_ruler_lists
+	}
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = from
+	}
+	inline_script = { script = events/spth_leader_display_ruler id = reimu }
+	inline_script = { script = events/spth_leader_display_ruler id = remilia }
+	inline_script = { script = events/spth_leader_display_ruler id = yuyuko }
+	inline_script = { script = events/spth_leader_display_ruler id = sanae }
+	inline_script = { script = events/spth_leader_display_ruler id = satori }
+	inline_script = {
+		script = events/spth_leader_select_last_options
+		close_ui_flag = can_close_spth_leader_ruler_lists
+		return_id = gensokyo_start.1153
+	}
+	after = {
+		hidden_effect = {
+			remove_country_flag = has_show_spth_leader_ruler_lists
+			if = {
+				limit = { has_country_flag = can_close_spth_leader_ruler_lists }
+				remove_country_flag = can_close_spth_leader_ruler_lists
+			} else = {
+				country_event = {
+					id = gensokyo_start.1154
+					scopes = { from = from }
+				}
+			}
+			if = {
+				limit = { has_country_flag = triggered_gensokyo_start_1155 }
+				remove_country_flag = triggered_gensokyo_start_1155
+				country_event = { id = gensokyo_start.1155 scopes = { from = from } }
+			}
+		}
+	}
+}
+
+# from = leader if exists, or country.
+country_event = {
+	id = gensokyo_start.1155
+	title = gensokyo_start.1147
+	desc = gensokyo_start.1155.desc
+	location = capital_scope
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = from.species
+	}
+	immediate = {
+		every_owned_leader = {
+			limit = { has_leader_flag = is_gensokyo_start_1155_leader }
+			remove_leader_flag = is_gensokyo_start_1155_leader
+		}
+	}
+	option = {
+		name = gensokyo_start.1150.return
+		default_hide_option = yes
+		country_event = { id = gensokyo_start.1153 }
+	}
+	option = {
+		name = gensokyo_start.1150.exit
+	}
+}
+
+
+country_event = {
+	id = gensokyo_start.1157
+	inline_script = {
+		script = events/spth_leader_select_base
+		id = gensokyo_start.1157
+		title = gensokyo_start.1147
+		desc = gensokyo_start.1157.desc
+		selected_desc = gensokyo_start.1157.desc.selected
+		show_ui_flag = has_show_spth_leader_function_change_portrait
+		close_ui_flag = can_close_spth_leader_function_change_portrait
+		selected_flag = spth_change_portrait_has_select_leader
+		portrait_target = spth_leader_function_change_portrait_portrait@root
+	}
+	option = {
+		name = gensokyo_start.1157.a
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1148.select.fail
+				has_country_flag = spth_change_portrait_has_select_leader
+			}
+		}
+		if = {
+			limit = { exists = from }
+			from = { change_leader_portrait = from.species }
+		}
+	}
+	inline_script = { script = events/spth_leader_change_portrait }
+	inline_script = { script = events/spth_leader_select_leaders name = portrait }
+	inline_script = {
+		script = events/spth_leader_select_last_options
+		close_ui_flag = can_close_spth_leader_function_change_portrait
+		return_id = gensokyo_start.1147
+	}
+}
+
+# A leader leveled up.
+# Scope = Country
+# From = Leader
+country_event = {
+	id = gensokyo_start.1160
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_paragon_dlc = yes
+		from = {
+			spth_can_select_second_destiny_trait = yes
+			NOT = {
+				has_leader_flag = has_select_spth_second_destiny
+				# 升级时只能触发一次
+				has_leader_flag = reached_on_action_select_spth_second_destiny
+			}
+		}
+		NOT = { has_country_flag = has_show_spth_leader_destiny_select_@from }
+	}
+	immediate = {
+		from = {
+			set_leader_flag = reached_on_action_select_spth_second_destiny
+			if = {
+				limit = { spth_has_original_select_destiny_trait = yes }
+				set_leader_flag = has_select_spth_second_destiny
+			}
+		}
+		country_event = { id = gensokyo_start.1161 scopes = { from = from } }
+	}
+}
+country_event = {
+	id = gensokyo_start.1161
+	title = gensokyo_start.1161
+	desc = gensokyo_start.1161.desc
+	is_triggered_only = yes
+	trigger = {
+		from = {
+			spth_can_select_second_destiny_trait = yes
+			NOT = { has_leader_flag = has_select_spth_second_destiny }
+		}
+		NOT = { has_country_flag = has_show_spth_leader_destiny_select_@from }
+		# has_paragon_dlc = yes
+	}
+	immediate = {
+		set_country_flag = has_show_spth_leader_destiny_select_@from
+	}
+	diplomatic = yes
+	force_open = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = from
+	}
+	option = {
+		name = gensokyo_start.1161.select
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1161.select.fail
+				NOT = { from = { has_leader_flag = has_select_spth_leader_destiny_select } }
+			}
+		}
+		hidden_effect = {
+			from = {
+				remove_leader_flag = has_select_spth_leader_destiny_select
+				switch = {
+					trigger = has_leader_flag
+					# scientists
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_surveyor }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_midas_touch }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_collective_wisdom }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_knowledge_for_the_masses }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_robotist }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_great_researcher }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_xeno_cataloger }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_frontier_adventurer }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_brilliant_shipwright }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_truth_seeker }
+					# commanders
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_master_gunner }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_military_overseer }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_armorer }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_destiny_engineer }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_guerilla_tactics }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_survivalist }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_maven_of_war }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_peacekeeper }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_taskmaster }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_fortress_cracker }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_chainbreaker }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_honored_warmaster }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_academia_recruiter }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_supreme_warrior }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_bellicose }
+					# officials
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_efficient }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_arbiter }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_utopian_idealist }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_mediator }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_shroud_preacher }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_master_diplomat }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_supreme_organizer }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_galvanizer }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_diplo_weight }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_supporting_voter }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_spymaster }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_totalitarian }
+					# generic
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_educator }
+					inline_script = { script = events/spth_leader_second_destiny_select trait = leader_trait_master_bureaucrat }
+					default = {}
+				}
+			}
+			set_country_flag = can_close_spth_leader_destiny_select_@from
+		}
+	}
+	option = {
+		name = gensokyo_start.1161.exit
+		# default_hide_option = yes
+		hidden_effect = {
+			set_country_flag = can_close_spth_leader_destiny_select_@from
+			from = { set_leader_flag = spth_leader_destiny_select_not_now }
+			country_event = { id = gensokyo_start.1147 }
+		}
+	}
+	# scientists
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_surveyor class = scientist }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_midas_touch class = scientist }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_collective_wisdom class = scientist }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_knowledge_for_the_masses class = scientist }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_robotist class = scientist }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_great_researcher class = scientist }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_xeno_cataloger class = scientist }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_frontier_adventurer class = scientist }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_brilliant_shipwright class = scientist }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_truth_seeker class = scientist }
+	# commanders
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_master_gunner class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_military_overseer class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_armorer class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_destiny_engineer class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_guerilla_tactics class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_survivalist class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_maven_of_war class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_peacekeeper class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_taskmaster class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_fortress_cracker class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_chainbreaker class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_honored_warmaster class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_academia_recruiter class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_supreme_warrior class = commander }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_bellicose class = commander }
+	# officials
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_efficient class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_arbiter class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_utopian_idealist class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_mediator class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_shroud_preacher class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_master_diplomat class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_supreme_organizer class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_galvanizer class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_diplo_weight class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_supporting_voter class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_spymaster class = official }
+	inline_script = { script = events/spth_leader_second_destiny_option trait = leader_trait_totalitarian class = official }
+	# generic
+	option = {
+		name = leader_trait_educator
+		allow = {
+			NOT = { has_trait = leader_trait_educator }
+			custom_tooltip = {
+				fail_text = gensokyo_start.1161.fail
+				from = {
+					spth_leader_select_destiny_cond_leader_trait_educator = yes
+				}
+			}
+		}
+		tooltip = { from = { add_trait = leader_trait_educator } }
+		from = { set_leader_flag = spth_leader_destiny_leader_trait_educator }
+	}
+	option = {
+		name = leader_trait_master_bureaucrat
+		allow = {
+			NOT = { has_trait = leader_trait_master_bureaucrat }
+			custom_tooltip = {
+				fail_text = gensokyo_start.1161.fail
+				from = {
+					spth_leader_select_destiny_cond_leader_trait_master_bureaucrat = yes
+				}
+			}
+		}
+		tooltip = { from = { add_trait = leader_trait_master_bureaucrat } }
+		from = { set_leader_flag = spth_leader_destiny_leader_trait_master_bureaucrat }
+	}
+	after = {
+		hidden_effect = {
+			remove_country_flag = has_show_spth_leader_destiny_select_@from
+			if = {
+				limit = { has_country_flag = can_close_spth_leader_destiny_select_@from }
+				remove_country_flag = can_close_spth_leader_destiny_select_@from
+				from = {
+					spth_leader_second_destiny_select_clear_all_flags = yes
+					if = {
+						limit = { has_leader_flag = spth_leader_destiny_select_not_now }
+						remove_leader_flag = spth_leader_destiny_select_not_now
+					} else = {
+						set_leader_flag = has_select_spth_second_destiny
+					}
+				}
+			} else = {
+				country_event = { id = gensokyo_start.1161 scopes = { from = from } }
+			}
+		}
+	}
+}
+
+country_event = {
+	id = gensokyo_start.1170
+	title = gensokyo_start.1170.name
+	desc = {
+        trigger = { NOT = { has_country_flag = spth_selected_queried_concept } }
+        text = gensokyo_start.1170.desc_no_select
+    }
+	inline_script = { script = events/spth_concept_query_desc_items }
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = has_show_spth_concept_display_page } }
+	immediate = { set_country_flag = has_show_spth_concept_display_page }
+	diplomatic = yes
+	custom_gui = spth_intel_record_ui
+	custom_gui_option = spth_intel_record_button
+	picture_event_data = { room = th_yuyuko_1_room }
+	inline_script = { script = events/spth_concept_query_option spth_id = a spth_type = basic }
+	inline_script = { script = events/spth_concept_query_option spth_id = b spth_type = relic }
+	inline_script = { script = events/spth_concept_query_option spth_id = c spth_type = precursor }
+	inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_a spth_type = basic }
+	inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_b spth_type = basic }
+	inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_c spth_type = tech }
+	inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_d spth_type = tech }
+	inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_e spth_type = tech }
+	inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_f spth_type = basic }
+	inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_g spth_type = basic }
+	inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_h spth_type = basic }
+	inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_i spth_type = basic }
+	inline_script = { script = events/spth_concept_query_option spth_id = d spth_type = tech }
+	inline_script = { script = events/spth_concept_query_option spth_id = e spth_type = basic }
+	inline_script = { script = events/spth_concept_query_option spth_id = f spth_type = tech }
+	inline_script = { script = events/spth_concept_query_option spth_id = g spth_type = tech }
+	inline_script = { script = events/spth_concept_query_option spth_id = h spth_type = tech }
+	inline_script = { script = events/spth_concept_query_option spth_id = i spth_type = basic }
+	inline_script = { script = events/spth_concept_query_option spth_id = j spth_type = relic }
+	inline_script = { script = events/spth_concept_query_option spth_id = k spth_type = basic }
+	inline_script = { script = events/spth_concept_query_option spth_id = l spth_type = tech }
+	inline_script = { script = events/spth_concept_query_option spth_id = m spth_type = tech }
+	# inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_j spth_type = tech }
+	# inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_k }
+	# inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_l }
+	# inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_m }
+	# inline_script = { script = events/spth_ag_concept_query_option spth_id = ag_n }
+	option = {
+		name = gensokyo_start.1170.exit
+		default_hide_option = yes
+		hidden_effect = { set_country_flag = can_close_spth_concept_display_page }
+	}
+	after = {
+		remove_country_flag = has_show_spth_concept_display_page
+		if = {
+			limit = { has_country_flag = can_close_spth_concept_display_page }
+			remove_country_flag = can_close_spth_concept_display_page
+			spth_clear_concept_query_flags = yes
+		} else = {
+			country_event = { id = gensokyo_start.1170 }
+		}
+	}
+}
+
+country_event = {
+	id = gensokyo_start.1250
+	title = gensokyo_start.1250
+	desc = gensokyo_start.1250.desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = has_show_spth_other_settings_page } }
+	immediate = { set_country_flag = has_show_spth_other_settings_page }
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = {
+		room = koishi_near_scarlet_mansion_room
+		# portrait = touhousp_mg223
+	}
+	option = {
+		name = gensokyo_start.1250.a
+		allow = { is_multiplayer = no is_ai = no }
+		country_event = { id = spth_fleet.1008 }
+		hidden_effect = { set_country_flag = can_close_spth_other_settings_page }
+	}
+	option = {
+		name = gensokyo_start.1250.b
+		allow = { hidden_trigger = { NOT = { has_country_flag = disable_spth_supercarrier_system } } }
+		hidden_effect = { set_country_flag = disable_spth_supercarrier_system }
+	}
+	option = {
+		name = gensokyo_start.1250.c
+		allow = { hidden_trigger = { has_country_flag = disable_spth_supercarrier_system } }
+		hidden_effect = { remove_country_flag = disable_spth_supercarrier_system }
+	}
+	option = {
+		name = gensokyo_start.1250.d
+		allow = { hidden_trigger = { NOT = { has_country_flag = close_space_shrine_shipyard } } }
+		hidden_effect = {
+			set_country_flag = close_space_shrine_shipyard
+			spth_refresh_space_shrine_yard = yes
+		}
+	}
+	option = {
+		name = gensokyo_start.1250.e
+		allow = { hidden_trigger = { has_country_flag = close_space_shrine_shipyard } }
+		hidden_effect = {
+			remove_country_flag = close_space_shrine_shipyard
+			spth_refresh_space_shrine_yard = yes
+		}
+	}
+	option = {
+		name = gensokyo_start.1250.f
+		allow = { hidden_trigger = { NOT = { has_country_flag = close_space_shrine_convert } } }
+		hidden_effect = {
+			set_country_flag = close_space_shrine_convert
+		}
+	}
+	option = {
+		name = gensokyo_start.1250.g
+		allow = { hidden_trigger = { has_country_flag = close_space_shrine_convert } }
+		hidden_effect = {
+			remove_country_flag = close_space_shrine_convert
+		}
+	}
+	option = {
+		name = gensokyo_start.1250.h
+		allow = { hidden_trigger = { NOT = { has_global_flag = close_touhou_crisis_music } } }
+		hidden_effect = {
+			set_global_flag = close_touhou_crisis_music
+			stop_crisis_sound = yes
+		}
+	}
+	option = {
+		name = gensokyo_start.1250.i
+		allow = { hidden_trigger = { has_global_flag = close_touhou_crisis_music } }
+		hidden_effect = {
+			remove_global_flag = close_touhou_crisis_music
+			spth_set_stage_crisis_sound = yes
+		}
+	}
+	option = {
+		name = gensokyo_start.1250.exit
+		default_hide_option = yes
+		hidden_effect = { set_country_flag = can_close_spth_other_settings_page }
+	}
+	after = {
+		remove_country_flag = has_show_spth_other_settings_page
+		if = {
+			limit = { has_country_flag = can_close_spth_other_settings_page }
+			remove_country_flag = can_close_spth_other_settings_page
+		} else = {
+			country_event = { id = gensokyo_start.1250 }
+		}
+	}
+}
+country_event = {
+	id = gensokyo_start.1251
+	title = gensokyo_start.1251
+	desc = gensokyo_start.1251.desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = gensokyo_start_1251_opened } }
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = th_yukari_1_room }
+	immediate = { set_country_flag = gensokyo_start_1251_opened }
+	after = {
+		hidden_effect = {
+			remove_country_flag = gensokyo_start_1251_opened
+			if = {
+				limit = { has_country_flag = gensokyo_start_1251_exit }
+				remove_country_flag = gensokyo_start_1251_exit
+			} else = { country_event = { id = gensokyo_start.1251 } }
+		}
+	}
+	option = {
+		name = gensokyo_start.1251.overdrive
+		custom_tooltip = gensokyo_start.1251.overdrive.tt
+		allow = {
+			custom_tooltip = {
+				fail_text = gensokyo_start.1145.is_this_diff
+				event_target:global_event_country = {
+					check_variable = { which = spth_lunar_capital_crisis_difficulty value != 8 }
+				}
+			}
+		}
+		hidden_effect = {
+			event_target:global_event_country = {
+				set_variable = { which = spth_lunar_capital_crisis_difficulty value = 8 }
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1251.plus1
+		custom_tooltip = gensokyo_start.1251.plus1.tt
+		hidden_effect = {
+			event_target:global_event_country = {
+				change_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 }
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1251.minus1
+		custom_tooltip = gensokyo_start.1251.minus1.tt
+		allow = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 1 } } }
+		hidden_effect = {
+			event_target:global_event_country = {
+				change_variable = { which = spth_lunar_capital_crisis_difficulty value = -1 }
+				if = {
+					limit = { check_variable = { which = spth_lunar_capital_crisis_difficulty value < 1 } }
+					set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 }
+				}
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1251.a
+		country_event = { id = gensokyo_start.1254 }
+	}
+	option = {
+		name = gensokyo_start.1251.b
+		allow = { always = no }
+	}
+	option = {
+		name = gensokyo_start.1251.c
+		allow = { always = no }
+	}
+	option = {
+		name = gensokyo_start.1251.d
+		add_resource = { sr_lingli = 114514 }
+	}
+	option = {
+		name = gensokyo_start.1251.e
+		add_resource = { sr_fuka = 114514 }
+	}
+	option = {
+		name = gensokyo_start.1251.f
+		trigger = { NOT = { has_modifier = touhou_cheat_modifier } }
+		add_modifier = { modifier = touhou_cheat_modifier }
+	}
+	option = {
+		name = gensokyo_start.1251.f_alt
+		trigger = { has_modifier = touhou_cheat_modifier }
+		remove_modifier = touhou_cheat_modifier
+	}
+	option = {
+		name = gensokyo_start.1251.g
+		allow = { NOT = { exists = event_target:spth_precursor_capital_makai_system } }
+		set_global_flag = spth_precursor_capital_makai_spawned
+		set_spawn_system_batch = begin
+		random_system_within_border = {
+			spawn_system = {
+				initializer = spth_precursor_capital_makai
+				hyperlane = no
+				effect = {
+					add_hyperlane = {
+						from = this
+						to = prev
+					}
+				}
+			}
+		}
+		set_spawn_system_batch = end
+		if = {
+			limit = { NOT = { has_event_chain = touhou_makai_chain } }
+			begin_event_chain = { event_chain = touhou_makai_chain target = this }
+		}
+		create_point_of_interest = {
+			id = spth_precursor_capital_makai.poi
+			name = spth_precursor_capital_makai.poi
+			desc = spth_precursor_capital_makai.poi.desc
+			event_chain = touhou_makai_chain
+			location = event_target:spth_precursor_capital_makai_system
+		}
+		every_playable_country = {
+			limit = { NOT = { is_same_value = prev } }
+			if = {
+				limit = { has_special_project = spth_precursor_capital_makai_discover }
+				abort_special_project = {
+					type = spth_precursor_capital_makai_discover
+					location = capital_scope
+				}
+			}
+			country_event = {
+				id = spth_precursor.116
+				days = 30
+				random = 30
+				scopes = { from = prev }
+			}
+		}
+	}
+	option = {
+		name = gensokyo_start.1251.h
+		allow = { exists = event_target:spth_precursor_capital_makai_system }
+		spth_spawn_kamikakushi_guard = { debug_spawn_flag = yes }
+	}
+	option = {
+		name = gensokyo_start.1251.i
+		allow = { NOT = { has_global_flag = spth_kamikaushi_crisis_start } }
+		country_event = { id = touhou_crisis.108 }
+	}
+	option = {
+		name = gensokyo_start.1251.j
+		allow = { NOT = { has_global_flag = spth_makai_defender_must_success } }
+		hidden_effect = { set_global_flag = spth_makai_defender_must_success }
+	}
+	option = {
+		name = gensokyo_start.1251.exit
+		default_hide_option = yes
+		hidden_effect = { set_country_flag = gensokyo_start_1251_exit }
+	}
+}
+
+country_event = {
+	id = gensokyo_start.1252
+	title = touhou_extra
+	desc = touhou_extra_desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = gensokyo_start_1252_opened } }
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = th_yukari_1_room }
+	immediate = { set_country_flag = gensokyo_start_1252_opened }
+	after = { hidden_effect = { remove_country_flag = gensokyo_start_1252_opened } }
+	option = {
+		name = gensokyo_start.1251.exit
+		default_hide_option = yes
+		hidden_effect = { set_country_flag = gensokyo_start_1252_exit }
+	}
+	option = {
+		name = touhou_kamikakushi_extra
+		country_event = { id =gensokyo_start.1253 }
+	}
+}
+country_event = {
+	id = gensokyo_start.1253
+	title = touhou_kamikakushi_extra
+	desc = touhou_kamikakushi_extra_desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = gensokyo_start_1253_opened } }
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = th_yukari_1_room }
+	immediate = { set_country_flag = gensokyo_start_1253_opened }
+	after = {
+		hidden_effect = {
+			remove_country_flag = gensokyo_start_1253_opened
+			if = {
+				limit = { has_country_flag = gensokyo_start_1253_exit }
+				remove_country_flag = gensokyo_start_1253_exit
+			} else = { country_event = { id = gensokyo_start.1253 } }
+		}
+	}
+	option = {
+		name = gensokyo_start.1251.exit
+		default_hide_option = yes
+		hidden_effect = { set_country_flag = gensokyo_start_1253_exit }
+	}
+	option = {
+		name = touhou_kamikakushi_extra_all_open
+		touhou_kamikakushi_extra_page_1_on = yes
+		touhou_kamikakushi_extra_page_2_on = yes
+		touhou_kamikakushi_extra_page_3_on = yes
+		touhou_kamikakushi_extra_page_4_on = yes
+	}
+	option = {
+		name = touhou_kamikakushi_extra_all_close
+		touhou_kamikakushi_extra_page_1_off = yes
+		touhou_kamikakushi_extra_page_2_off = yes
+		touhou_kamikakushi_extra_page_3_off = yes
+		touhou_kamikakushi_extra_page_4_off = yes
+	}
+	inline_script = { script = events/touhou_kamikakushi_extra_page page_id = 1 }
+	inline_script = { script = events/touhou_kamikakushi_extra_page_item page_id = 1 item_id = 4 }
+	inline_script = { script = events/touhou_kamikakushi_extra_page page_id = 2 }
+	inline_script = { script = events/touhou_kamikakushi_extra_page_item page_id = 2 item_id = 4 }
+	inline_script = { script = events/touhou_kamikakushi_extra_page page_id = 3 }
+	inline_script = { script = events/touhou_kamikakushi_extra_page_item page_id = 3 item_id = 4 }
+	inline_script = { script = events/touhou_kamikakushi_extra_page page_id = 4 }
+}
+
+country_event = {
+	id = gensokyo_start.1254
+	title = gensokyo_start.1251.a
+	desc = BUTTON_TEXT_NULL
+	show_sound = event_alien_signal
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = "spth_test_ship_spawner_window"
+	custom_gui_option = "spth_test_ship_spawner_option"
+	picture_event_data = { room = th_mod_settings_room }
+	trigger = { is_ai = no NOT = { has_country_flag = spth_test_ship_spawner_window_opened } }
+	immediate = {
+		set_country_flag = spth_test_ship_spawner_window
+		if = { limit = { NOT = { is_variable_set = spth_test_ship_spawner_index_num_ships } } set_variable = { which = spth_test_ship_spawner_index_num_ships value = 1 } }
+		if = { limit = { NOT = { is_variable_set = spth_test_ship_spawner_index_event_chain } } set_variable = { which = spth_test_ship_spawner_index_event_chain value = 0 } }
+		if = { limit = { NOT = { is_variable_set = spth_test_ship_spawner_index_ship_class } } set_variable = { which = spth_test_ship_spawner_index_ship_class value = 0 } }
+		if = { limit = { NOT = { is_variable_set = spth_test_ship_spawner_index_suffix } } set_variable = { which = spth_test_ship_spawner_index_suffix value = 0 } }
+		if = { limit = { NOT = { is_variable_set = spth_test_ship_spawner_index_sub } } set_variable = { which = spth_test_ship_spawner_index_sub value = 0 } }
+		spth_test_ship_spawner_event_chain_check = yes
+		spth_test_ship_spawner_ship_class_check = yes
+		spth_test_ship_spawner_ship_sub_check = yes
+	}
+	option = {
+		name = spth_test_ship_spawner_confirm
+		is_dialog_only = yes
+		response_text = BUTTON_TEXT_NULL
+		hidden_effect = { spth_test_ship_spawner_create_fleet = yes }
+	}
+	option = {
+		name = gensokyo_start.1149.exit
+		default_hide_option = yes
+		remove_country_flag = spth_test_ship_spawner_window_opened
+	}
 }

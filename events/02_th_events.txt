@@ -297,7 +297,7 @@ country_event = {
 			tech = tech_bio_reactor
 			message = no
 		}
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				is_same_species = root
 				NOT = {
@@ -456,7 +456,7 @@ country_event = {
 	show_sound = event_hm_zhys
 	is_triggered_only = yes
 	immediate = {
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				species = {
 					NOT = {
@@ -468,11 +468,11 @@ country_event = {
 				25 = {
 				}
 				75 = {
-					kill_pop = yes
+					spth_kill_pop_group = yes
 				}
 			}
 		}
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				species = {
 					NOR = {
@@ -483,7 +483,7 @@ country_event = {
 			}
 			change_species = owner_species
 		}
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				is_same_species = root
 				NOT = {
@@ -615,7 +615,7 @@ country_event = { # 领袖生成时随机添加领袖种族特质
 	immediate = {
 		from = {
 			if = {
-				limit = { NOT = { has_leader_flag = spth_sp_leader } }
+				limit = { spth_is_touhou_gensokyo_leader = no }
 				set_leader_flag = own_th_leader_trait
 				random_list = {
 					20 = {
@@ -652,7 +652,7 @@ leader_event = { # 删除特殊领袖在上一个事件中获得的特质
 	is_triggered_only = yes
 
 	trigger = {
-		has_leader_flag = spth_sp_leader
+		spth_is_touhou_gensokyo_leader = yes
 	}
 	immediate = {
 		remove_trait = leader_trait_th_witch
@@ -693,12 +693,12 @@ planet_event = {
 		random_list = {
 			75 = { while = {
 				count = 2
-				create_pop = { species = FromFrom }
+				create_pop_group = { species = FromFrom }
 			} }
 			20 = { }
 			5 = { while = {
 				count = 4 # 五 重 存 在
-				create_pop = { species = FromFrom }
+				create_pop_group = { species = FromFrom }
 			} }
 		}
 	}
@@ -738,6 +738,10 @@ country_event = {
 	desc = toho.491.desc
 	picture = GFX_evt_touhou
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = touhou_room }
 	option = {
 		name = "toho.491.a"
 		custom_tooltip = toho.491.a.response
@@ -839,31 +843,32 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		every_owned_pop = {
+		every_owned_planet = {
 			limit = {
-				species = {
-					NOT = {
-						has_trait = trait_touhou
-					}
+				is_colony = yes
+				any_owned_pop_group = {
+					NOT = { pop_group_has_trait = trait_touhou }
 				}
 			}
-			random_list = {
-				10 = {
+			set_variable = { which = touhou_convert_counter value = 0 }
+			every_owned_pop_group = {
+				limit = { NOT = { pop_group_has_trait = trait_touhou } }
+				random_list = {
+					1 = { change_variable = { which = touhou_convert_counter value = 1 } }
+					9 = {  }
 				}
-				90 = {
-					kill_pop = yes
-				}
+				reroll_random = yes
 			}
+			if = {
+				limit = { check_variable = { which = touhou_convert_counter value < 1 } }
+				set_variable = { which = touhou_convert_counter value = 1 }
+			}
+			while = { count = touhou_convert_counter create_pop_group = { species = root.owner_main_species } }
+			clear_variable = touhou_convert_counter
 		}
-		every_owned_pop = {
-			limit = {
-				species = {
-					NOT = {
-						has_trait = trait_touhou
-					}
-				}
-			}
-			change_species = owner_species
+		every_owned_pop_group = {
+			limit = { NOT = { pop_group_has_trait = trait_touhou } }
+			spth_kill_pop_group = yes
 		}
 		hidden_effect = {
 			country_event = {
@@ -880,6 +885,26 @@ country_event = { # 红魔馆势力
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
+		set_country_flag = toho_select_ruler_scarlet
+		set_variable = { which = spth_gal_portrait_character value = @spth_gal_portrait_remilia }
+		set_variable_to_random_value = { which = spth_gal_remilia_talk min = 0 max = 4 }
+		if = {
+			limit = {
+				NOT = { exists = event_target:spth_gal_country_remilia }
+			}
+			create_country = {
+				name = NAME_spth_gal_remilia
+				type = spth_gal_remilia
+				flag = root
+				species = root
+				effect = {
+					save_global_event_target_as = spth_gal_country_remilia
+					set_country_flag = protected_from_queen_storm
+				}
+			}
+		}
+		# establish_communications_no_message = event_target:spth_gal_country_remilia
+		# country_event = { id = spth_leader_gal.200 }
         spth_effect_init_container_country_effect = yes
 		spth_effect_init_meirin_effect = yes
 		spth_effect_init_patchouli_effect = yes
@@ -906,6 +931,24 @@ country_event = { # 白玉楼势力
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
+		set_country_flag = toho_select_ruler_yuyuko
+		set_variable = { which = spth_gal_portrait_character value = @spth_gal_portrait_yuyuko }
+		set_variable_to_random_value = { which = spth_gal_yuyuko_talk min = 0 max = 4 }
+		if = {
+			limit = { NOT = { exists = event_target:spth_gal_country_yuyuko } }
+			create_country = {
+				name = NAME_spth_gal_yuyuko
+				type = spth_gal_yuyuko
+				flag = root
+				species = root
+				effect = {
+					save_global_event_target_as = spth_gal_country_yuyuko
+					set_country_flag = protected_from_queen_storm
+				}
+			}
+		}
+		# establish_communications_no_message = event_target:spth_gal_country_yuyuko
+		# country_event = { id = spth_leader_gal.100 }
         spth_effect_init_yuyuko_effect = yes
         spth_effect_init_letty_effect = yes
         spth_effect_init_youmu_effect = yes
@@ -925,6 +968,7 @@ country_event = { # 妖怪之山势力
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
+		set_country_flag = toho_select_ruler_sanae
         spth_effect_init_sanae_effect = yes
         spth_effect_init_nitori_effect = yes
         spth_effect_init_momiji_effect = yes
@@ -944,6 +988,7 @@ country_event = { # 地灵殿势力
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
+		set_country_flag = toho_select_ruler_satori
         spth_effect_init_satori_effect = yes
         spth_effect_init_yuugi_effect = yes
         spth_effect_init_parsee_effect = yes
@@ -962,14 +1007,16 @@ country_event = { # 博丽神社势力
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
+		set_country_flag = toho_select_ruler_reimu
         spth_effect_init_reimu_effect = yes
         spth_effect_init_akyuu_effect = yes
         spth_effect_init_keine_effect = yes
         spth_effect_init_marisa_effect = yes
         spth_effect_init_kasen_effect = yes
+		spth_effect_init_suika_effect = yes
         change_variable = {
             which = spth_card_current_leader
-            value = 4
+            value = 5
         }
 	}
 }
@@ -984,7 +1031,7 @@ country_event = {
 	trigger = {
 		has_authority = auth_gensokyo
 		From = {
-			has_leader_flag = spth_sp_leader
+			spth_is_touhou_gensokyo_leader = yes
             NOT = {
                 has_leader_flag = flag_fight_koakuma
             }
@@ -1021,6 +1068,14 @@ country_event = {
 				flag_marisa = { root = { spth_effect_init_marisa_effect = yes } }
 				flag_kasen = { root = { spth_effect_init_kasen_effect = yes } }
 				flag_suika = { root = { spth_effect_init_suika_effect = yes } }
+				flag_tenshi = { root = { spth_effect_init_tenshi_effect = yes } }
+				flag_alice = { root = { spth_effect_init_alice_effect = yes } }
+				flag_mokou = { root = { spth_effect_init_mokou_effect = yes } }
+				flag_reisen = { root = { spth_effect_init_reisen_effect = yes } }
+				flag_kokoro = { root = { spth_effect_init_kokoro_effect = yes } }
+				flag_cirno = { root = { spth_effect_init_cirno_effect = yes } }
+				flag_eirin = { root = { spth_effect_init_eirin_effect = yes } }
+				flag_kaguya = { root = { spth_effect_init_kaguya_effect = yes } }
 				flag_remilia = {
                     root = {
                         spth_effect_init_remilia_effect = yes
@@ -1076,6 +1131,10 @@ country_event = {
 	picture = GFX_evt_touhou
 	show_sound = event_th_biu
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = touhou_room }
 	option = {
 		name = "toho.1011.a"
 		add_resource = {
@@ -1095,6 +1154,10 @@ country_event = {
 	desc = toho.8001.desc
 	picture = GFX_evt_th_terakoya_1
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_terakoya_1_room }
 
 	trigger = {
 		has_authority = auth_gensokyo
@@ -1162,6 +1225,10 @@ country_event = {
 	desc = th_event.8002.desc
 	picture = GFX_evt_th_terakoya_4
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_terakoya_4_room }
 	trigger = {
 		has_authority = auth_gensokyo
 	}
@@ -1194,6 +1261,10 @@ country_event = {
 	title = th_event.8003.name
 	desc = th_event.8003.desc
 	picture = GFX_evt_th_terakoya_4
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_terakoya_4_room }
 	is_triggered_only = yes
 	trigger = {
 		has_authority = auth_gensokyo
@@ -1228,6 +1299,10 @@ country_event = {
 	desc = th_event.8004.desc
 	picture = GFX_evt_th_terakoya_4
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_terakoya_4_room }
 	trigger = {
 		has_authority = auth_gensokyo
 	}
@@ -1261,6 +1336,10 @@ country_event = {
 	desc = th_event.8005.desc
 	picture = GFX_evt_th_terakoya_4
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_terakoya_4_room }
 	trigger = {
 		has_authority = auth_gensokyo
 	}
@@ -1294,6 +1373,10 @@ country_event = {
 	desc = th_event.8006.desc
 	picture = GFX_evt_th_terakoya_4
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_terakoya_4_room }
 	trigger = {
 		has_authority = auth_gensokyo
 	}
@@ -1327,6 +1410,10 @@ country_event = {
 	desc = toho.8007.desc
 	picture = GFX_evt_th_terakoya_3
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_terakoya_3_room }
 	trigger = {
 		check_variable = {
 			which = th_textbook_edict_num
@@ -1366,6 +1453,466 @@ country_event = {
 	}
 }
 
+# fumo fumo!
+event = {
+	id = toho.8008
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { NOT = { has_global_flag = toho_8008_fired } }
+	immediate = {
+		random_playable_country = {
+			limit = { is_ai = no spth_check_gensokyo_auth = yes }
+			if = {
+				limit = {
+					any_country = {
+						is_ai = yes is_country_type = default
+						spth_check_gensokyo_auth = no
+						has_communications = prev
+						opinion_level = { who = prev level >= good }
+					}
+				}
+				set_global_flag = toho_8008_fired
+				random_country = {
+					limit = {
+						is_ai = yes is_country_type = default
+						spth_check_gensokyo_auth = no
+						has_communications = prev
+						opinion_level = { who = prev level >= good }
+					}
+					save_global_event_target_as = toho_8008_target
+				}
+				country_event = {
+					id = toho.8009
+					scopes = {
+						from = event_target:toho_8008_target
+						fromfrom = event_target:toho_8008_target.capital_scope
+					}
+				}
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.8009
+	title = toho.8009.name
+	desc = toho.8009.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	location = fromfrom
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = fumofumo_room }
+	option = {
+		name = toho.8009.a
+		add_monthly_resource_mult = {
+			resource = unity
+			value = @tier4unityreward
+			min = @tier4unitymin
+			max = @tier4unitymax
+		}
+		add_modifier = { modifier = cute_fumo }
+		hidden_effect = { country_event = { id = toho.8010 days = 120 random = 60 } }
+		default_hide_option = yes
+	}
+	option = {
+		name = toho.8009.b
+		add_modifier = { modifier = fumo_fumo }
+		hidden_effect = { country_event = { id = toho.8010 days = 120 random = 60 } }
+	}
+	option = {
+		name = toho.8009.c
+		add_resource = { influence = 200 }
+		from = {
+			add_opinion_modifier = {
+				who = root
+				modifier = opinion_not_cute_fumo
+			}
+		}
+	}
+	option = {
+		name = toho.8009.d
+		add_monthly_resource_mult = {
+			resource = unity
+			value = @tier5unityreward
+			min = @tier5unitymin
+			max = @tier5unitymax
+		}
+		from = {
+			add_opinion_modifier = {
+				who = root
+				modifier = opinion_not_cute_fumo
+			}
+		}
+	}
+	option = {
+		name = toho.8009.e
+		add_modifier = { modifier = fumo_tax }
+	}
+}
+country_event = {
+	id = toho.8010
+	title = toho.8010.name
+	desc = toho.8010.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	location = fromfrom
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_diplomatic_visit_room }
+	option = {
+		name = toho.8010.a
+		default_hide_option = yes
+		add_opinion_modifier = {
+			who = event_target:toho_8008_target
+			modifier = opinion_fumo_gift
+		}
+		event_target:toho_8008_target = {
+			add_opinion_modifier = {
+				who = prev
+				modifier = opinion_fumo_gift
+			}
+		}
+	}
+	after = { hidden_effect = { country_event = { id = toho.8011 days = 180 random = 90 } } }
+}
+country_event = {
+	id = toho.8011
+	title = toho.8011.name
+	desc = toho.8011.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	location = fromfrom
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_assembly_fight_room }
+	option = { name = toho.8011.a default_hide_option = yes }
+	after = { hidden_effect = { country_event = { id = toho.8012 days = 180 random = 90 } } }
+}
+country_event = {
+	id = toho.8012
+	title = toho.8012.name
+	desc = toho.8012.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	location = fromfrom
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_voting_room }
+	option = { name = toho.8012.a default_hide_option = yes }
+	after = { hidden_effect = { country_event = { id = toho.8013 days = 180 random = 90 } } }
+}
+country_event = {
+	id = toho.8013
+	title = toho.8013.name
+	desc = toho.8013.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	location = fromfrom
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_partition_room }
+	option = { name = toho.8013.a default_hide_option = yes custom_tooltip = toho.8013.a.tooltip }
+	after = { set_country_flag = fumo_deploy }
+}
+
+country_event = {
+	id = toho.8020
+	hide_window = yes
+	mean_time_to_happen = { years = 5 }
+	trigger = {
+		NOT = { has_country_flag = touhou_eientei_start }
+		spth_check_gensokyo_auth = { CIVIC = civic_moon_science }
+		years_passed >= 20 has_relic = r_th_latency
+	}
+	immediate = {
+		set_country_flag = touhou_eientei_start
+		country_event = { id = toho.8021 days = 180 random = 180 }
+	}
+}
+country_event = {
+	id = toho.8021
+	title = toho.8021.name
+	desc = toho.8021.desc
+	is_triggered_only = yes
+	trigger = {
+		has_country_flag = touhou_eientei_start
+		spth_check_gensokyo_auth = { CIVIC = civic_moon_science }
+	}
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ship_in_orbit_room }
+	option = {
+		name = toho.8021.a
+		default_hide_option = yes
+		begin_event_chain = {
+			event_chain = touhou_astral_signals
+			target = this
+		}
+		country_event = { id = toho.8022 days = 90 }
+	}
+	option = {
+		name = toho.8021.b
+		custom_tooltip = toho.8021.b.tt
+	}
+}
+country_event = {
+	id = toho.8022
+	title = toho.8022.name
+	desc = toho.8022.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_mysterious_signal_room }
+	immediate = {
+		save_event_target_as = spth_temp_country
+		spth_astral_signal_set_planet = { id = 1 }
+		spth_astral_signal_set_planet = { id = 2 }
+		spth_astral_signal_set_planet = { id = 3 }
+		spth_astral_signal_set_planet = { id = 4 }
+		spth_astral_signal_set_planet = { id = 5 }
+		spth_astral_signal_set_planet = { id = 6 }
+		spth_astral_signal_set_planet = { id = 7 }
+		reroll_random = yes
+		random_list = {
+			1 = { spth_astral_signal_set_real = { id = 1 } }
+			1 = { spth_astral_signal_set_real = { id = 2 } }
+			1 = { spth_astral_signal_set_real = { id = 3 } }
+			1 = { spth_astral_signal_set_real = { id = 4 } }
+			1 = { spth_astral_signal_set_real = { id = 5 } }
+			1 = { spth_astral_signal_set_real = { id = 6 } }
+			1 = { spth_astral_signal_set_real = { id = 7 } }
+		}
+		reroll_random = yes
+	}
+	option = {
+		name = toho.8022.a
+		spth_astral_signal_set_project = { id = 1 }
+		spth_astral_signal_set_project = { id = 2 }
+		spth_astral_signal_set_project = { id = 3 }
+		spth_astral_signal_set_project = { id = 4 }
+		spth_astral_signal_set_project = { id = 5 }
+		spth_astral_signal_set_project = { id = 6 }
+		spth_astral_signal_set_project = { id = 7 }
+	}
+}
+country_event = {
+	id = toho.8023
+	title = toho.8023.name
+	desc = toho.8023.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hiff_in_city_ruin_2_room }
+	immediate = {
+		save_event_target_as = spth_temp_country
+		spth_astral_signal_abort_project = { id = 1 }
+		spth_astral_signal_abort_project = { id = 2 }
+		spth_astral_signal_abort_project = { id = 3 }
+		spth_astral_signal_abort_project = { id = 4 }
+		spth_astral_signal_abort_project = { id = 5 }
+		spth_astral_signal_abort_project = { id = 6 }
+		spth_astral_signal_abort_project = { id = 7 }
+	}
+	option = {
+		name = toho.8023.a
+		end_event_chain = touhou_astral_signals
+		from.solar_system = {
+			random_system_planet = {
+				limit = { has_planet_flag = touhou_astral_signals_real_loc }
+				create_archaeological_site = site_touhou_astral_signals
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.8024
+	title = toho.8024.name
+	desc = toho.8024.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ship_in_orbit_room }
+	option = {
+		name = toho.8024.a
+	}
+}
+
+# gatekeeper
+country_event = {
+	id = toho.8090
+	hide_window = yes
+	mean_time_to_happen = { years = 6 }
+	trigger = { spth_check_gensokyo_auth = yes years_passed >= 25 }
+	immediate = {
+		reroll_random = yes
+		random_list = {
+			10 = {
+				modifier = { factor = 0 OR = { has_country_flag = toho_8100_fired NOT = { has_country_flag = th_terakoya_reset } } }
+				set_country_flag = toho_8100_fired
+				country_event = { id = toho.8100 days = 30 random = 30 }
+			}
+			10 = {
+				modifier = { factor = 0 has_country_flag = toho_8102_fired }
+				set_country_flag = toho_8102_fired
+				country_event = { id = toho.8102 days = 30 random = 30 }
+			}
+			30 = { log = "\\[This.GetName]无事发生QAQ" }
+		}
+	}
+}
+
+# 琪露诺
+country_event = {
+	id = toho.8100
+	title = toho.8100.name
+	desc = toho.8100.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_terakoya_3_room }
+	option = { name = toho.8100.a }
+	option = { name = toho.8100.b }
+	after = {
+		spth_effect_init_cirno_effect = yes
+		country_event = { id = toho.8101 days = 180 random = 180 }
+	}
+}
+country_event = {
+	id = toho.8101
+	title = toho.8101.name
+	desc = toho.8101.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_cirno_room }
+	option = { name = toho.8101.a }
+	option = { name = toho.8101.b }
+}
+
+# 秦心
+country_event = {
+	id = toho.8102
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		random_owned_planet = {
+			limit = { is_colony = yes has_fully_upgraded_capital = yes }
+			save_event_target_as = toho_kokoro_planet
+		}
+		if = {
+			limit = { NOT = { exists = event_target:toho_kokoro_planet } }
+			random_owned_planet = { limit = { is_colony = yes } save_event_target_as = toho_kokoro_planet }
+		}
+		if = {
+			limit = { exists = event_target:toho_kokoro_planet }
+			# 吗的你没有球？开摆了
+			event_target:toho_kokoro_planet = { set_planet_flag = toho_kokoro_planet_@root }
+			country_event = { id = toho.8103 scopes = { from = event_target:toho_kokoro_planet } }
+
+		}
+	}
+}
+country_event = {
+	id = toho.8103
+	title = toho.8103.name
+	desc = toho.8103.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th135_human_village_night_room }
+	option = { name = toho.8103.a }
+	after = {
+		from = {
+			add_modifier = { modifier = touhou_kokoro_planet_modifier_1 }
+			save_global_event_target_as = toho_8103_target_@root
+		}
+		enable_special_project = {
+			name = touhou_kokoro_survey_project
+			location = from owner = this
+		}
+	}
+}
+country_event = {
+	id = toho.8104
+	title = toho.8104.name
+	desc = toho.8104.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th135_human_village_night_room }
+	option = { name = toho.8104.a }
+	after = {
+		country_event = {
+			id = toho.8105
+			days = 60 random = 60
+			scopes = {
+				from = event_target:toho_8103_target_@root
+				fromfrom = fromfrom
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.8105
+	title = toho.8105.name
+	desc = toho.8105.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th135_human_village_night_alt_room }
+	option = { name = toho.8105.a }
+	after = {
+		from = {
+			remove_modifier = touhou_kokoro_planet_modifier_1
+			add_modifier = { modifier = touhou_kokoro_planet_modifier_2 }
+		}
+		country_event = {
+			id = toho.8106
+			days = 5 random = 5
+			scopes = {
+				from = event_target:toho_8103_target_@root
+				fromfrom = fromfrom
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.8106
+	title = toho.8106.name
+	desc = toho.8106.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_kokoro_room }
+	option = { name = toho.8106.a }
+	after = { country_event = { id = toho.8107 days = 30 random = 30 } }
+}
+country_event = {
+	id = toho.8107
+	title = toho.8107.name
+	desc = toho.8107.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_kokoro_room }
+	option = { name = toho.8107.a }
+	immediate = { spth_effect_init_kokoro_effect = yes }
+	after = {
+		event_target:toho_8103_target_@root = { remove_modifier = touhou_kokoro_planet_modifier_2 }
+		clear_global_event_target = toho_8103_target_@root
+	}
+}
 
 ########################################
 #                                      #
@@ -1379,47 +1926,27 @@ planet_event = {
 
 	immediate = {
 		save_event_target_as = kamikakushi_planet
-		every_owned_pop = {
-			set_pop_flag = kamikakushi_pop
+		set_variable = { which = kamikakushi_pop_num value = 0 }
+		export_trigger_value_to_variable = {
+			trigger = spth_pop_group_amount
+			variable = kamikakushi_pop_num
 		}
 		from.owner = {
 			set_variable = {
 				which = kamikakushi_num
-				value = 0
+				value = root.kamikakushi_pop_num
 			}
-		}
-		while = {
-			limit = {
-				any_owned_pop = {
-					has_pop_flag = kamikakushi_pop
-				}
-			}
-			random_owned_pop = {
-				limit = {
-					has_pop_flag = kamikakushi_pop
-				}
-				kill_pop = yes
-			}
-		    from.owner = {
-				change_variable = {
-					which = kamikakushi_num
-					value = 1
-				}
-			}
-		}
-		from.owner = {
 			divide_variable = {
 				which = kamikakushi_num
 				value = 5
 			}
-		}
-		from.owner = {
 			set_variable = {
 				which = kamikakushi_num_1
 				value = kamikakushi_num
 			}
 		}
-		
+		clear_variable = kamikakushi_pop_num
+		spth_planet_kill_all_pop = yes
 
 		hidden_effect = {
 			if = {
@@ -1570,6 +2097,10 @@ country_event = {
 	desc = toho.9001.desc
 	picture = "GFX_evt_kamikakushi"
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = kamikakushi_room }
 
 	option = {
 		name = toho.9001.aa
@@ -1587,22 +2118,9 @@ country_event = {
 			country_event = {
 				id = toho.9003
 			}
-			while = {
-				count = kamikakushi_num_1
-				# random_owned_planet = {
-				# 	create_pop = {
-				# 		species = owner_species
-				# 	}
-				# }
-				capital_scope = {
-					create_pop = {
-						species = owner_species
-					}
-					add_modifier = {
-						modifier = th_people_emmigration
-						days = 300
-					}
-				}
+			capital_scope = {
+				while = { count = kamikakushi_num create_pop_group = { species = owner_species } }
+				add_modifier = { modifier = th_people_emmigration days = 300 }
 			}
 		}
 	}
@@ -1614,6 +2132,10 @@ country_event = {
 	desc = toho.9002.desc
 	picture = "GFX_evt_kamikakushi"
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = kamikakushi_room }
 
 	option = {
 		name = toho.9002.aa
@@ -1629,22 +2151,9 @@ country_event = {
 			country_event = {
 				id = toho.9003
 			}
-			while = {
-				count = kamikakushi_num_1
-				# random_owned_planet = {
-				# 	create_pop = {
-				# 		species = owner_species
-				# 	}
-				# }
-				capital_scope = {
-					create_pop = {
-						species = owner_species
-					}
-					add_modifier = {
-						modifier = th_people_emmigration
-						days = 300
-					}
-				}
+			capital_scope = {
+				while = { count = kamikakushi_num_1 create_pop_group = { species = owner_species } }
+				add_modifier = { modifier = th_people_emmigration days = 300 }
 			}
 		}
 	}
@@ -1658,19 +2167,1075 @@ country_event = {
 	immediate = {
 		clear_variable = kamikakushi_num
 		clear_variable = kamikakushi_num_1
-		save_global_event_target_as = kamikakushi_planet
-		country_event = {
-			id = toho.9004
+		#save_global_event_target_as = kamikakushi_planet
+		#country_event = {
+		#	id = toho.9004
+		#}
+	}
+}
+
+#country_event = {
+#	id = toho.9004
+#	is_triggered_only = yes
+#	hide_window = yes
+#
+#	immediate = {
+#		clear_global_event_target = kamikakushi_planet
+#	}
+#}
+
+# special project completed.
+# This - ship conducted the project
+# From - Project creation location
+ship_event = {
+	id = toho.2000
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = { from = {
+		switch = {
+			trigger = is_scope_type
+			planet = {
+				switch = {
+					trigger = has_planet_flag
+					spth_story_sol_system_lunar_capital = {
+						spth_special_project_research_moon_barrier = yes
+					}
+					spth_story_sol_system_torifune = {
+						spth_special_project_torifune_shield = yes
+					}
+				}
+			}
+			starbase = {
+
+			}
+			country = {
+
+			}
+			default = {
+
+			}
+		}
+	} }
+}
+
+# lunar capital events
+# this = country
+country_event = {
+	id = toho.3000
+	title = toho.3000
+	desc = toho.3000.desc
+	picture = GFX_evt_hifuu_in_city_ruin
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hiff_in_city_ruin_room }
+	option = {
+		name = toho.3000.a
+		default_hide_option = yes
+		event_target:spth_story_sol_system_lunar_capital = {
+			create_archaeological_site = site_lunar_capital_moon
+		}
+	}
+}
+country_event = {
+	id = toho.3001
+	title = toho.3001
+	desc = {
+		text = toho.3001.desc.a
+		trigger = { has_country_flag = spth_repair_moon_barrier }
+	}
+	desc = {
+		text = toho.3001.desc.b
+		trigger = { has_country_flag = spth_break_moon_barrier }
+	}
+	show_sound = survey_complete
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hiff_in_city_ruin_room }
+	option = {
+		name = toho.3001.a
+		custom_tooltip = toho.3001.tooltip
+		country_event = { id = toho.3002 days = 30 random = 60 }
+	}
+}
+country_event = {
+	id = toho.3002
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		set_country_flag = spth_moon_barrier_finished
+		if = {
+			limit = { has_event_chain = spth_event_chain_past_legacy }
+			add_event_chain_counter = {
+				event_chain = spth_event_chain_past_legacy
+				counter = spth_past_legacy_ruins_find
+				amount = 1
+			}
+			create_point_of_interest = {
+				id = spth_past_legacy_poi.1
+				name = spth_past_legacy_poi.1
+				desc = spth_past_legacy_poi.1.desc
+				event_chain = spth_event_chain_past_legacy
+				location = event_target:spth_story_sol_system_lunar_capital
+			}
+		}
+		switch = {
+			trigger = has_country_flag
+			spth_break_moon_barrier = {
+				event_target:spth_story_sol_system_lunar_capital = {
+					set_planet_entity = {
+						entity = city_planet_01_entity
+						graphical_culture = owner
+					}
+					create_ambient_object = {
+						type = "th_gensokyo_mofazhen_object"
+						entity_offset_height = { min = -35 max = -40 }
+						location = this
+					}
+					last_created_ambient_object = {
+						set_location = { target = prev }
+					}
+					set_planet_flag = spth_fixed_lunar
+					set_planet_flag = spth_lunar_break_barrier
+					remove_modifier = spth_lunar_double
+					add_modifier = { modifier = spth_lunar_break_barrier }
+					add_modifier = { modifier = paradise_made }
+					create_message = {
+						type = spth_break_lunar_barrier
+						localization = spth_message_break_lunar_barrier_desc
+						days = 32
+						target = this
+					}
+				}
+			}
+			spth_repair_moon_barrier = {
+				event_target:spth_story_sol_system_lunar_capital = {
+					create_ambient_object = {
+						type = "th_gensokyo_mofazhen_object"
+						entity_offset_height = { min = -35 max = -40 }
+						location = this
+					}
+					last_created_ambient_object = {
+						set_location = { target = prev }
+					}
+					set_planet_flag = spth_fixed_lunar
+					set_planet_flag = spth_lunar_repair_barrier
+					remove_modifier = spth_lunar_double
+					add_modifier = { modifier = spth_lunar_repair_barrier }
+					add_modifier = { modifier = paradise_planet }
+					create_message = {
+						type = spth_repair_lunar_barrier
+						localization = spth_message_repair_lunar_barrier_desc
+						days = 32
+						target = this
+					}
+				}
+			}
 		}
 	}
 }
 
+# 研究灵力结界护盾后触发
+# 奖励
+#  强化版护盾与装甲
+#  开始事件链：失落的历史
 country_event = {
-	id = toho.9004
+	id = toho.3003
+	title = toho.3003
+	desc = toho.3003.desc
+	picture = GFX_evt_astral_rift_tropical_habitat
 	is_triggered_only = yes
-	hide_window = yes
-
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_astral_rift_tropical_habitat_room }
+	trigger = {
+		has_origin = origin_spth_story_gensokyo
+		NOT = { has_country_flag = triggered_torifune_habitat_story }
+		has_technology = tech_th_shield_jiejie2
+	}
 	immediate = {
-		clear_global_event_target = kamikakushi_planet
+		set_country_flag = triggered_torifune_habitat_story
+	}
+	show_sound = event_wind_ruins
+	location = root
+	option = {
+		name = toho.3003.a
+		default_hide_option = yes
+		enable_special_project = {
+			name = spth_disable_habitat_shield_0
+			location = event_target:spth_story_sol_system_torifune
+		}
+	}
+}
+country_event = {
+	id = toho.3004
+	title = toho.3004
+	desc = toho.3004.desc
+	picture = GFX_evt_habitat
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_habitat_room }
+	show_sound = event_alien_signal
+	option = {
+		name = toho.3004.a
+		default_hide_option = yes
+		root.owner = {
+			enable_special_project = {
+				name = spth_disable_habitat_shield_1
+				location = this.capital_scope
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.3005
+	title = toho.3005
+	desc = toho.3005.desc
+	picture = GFX_evt_habitat
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_habitat_room }
+	option = {
+		name = toho.3005.a
+		default_hide_option = yes
+		enable_special_project = {
+			name = spth_disable_habitat_shield_0
+			location = event_target:spth_story_sol_system_torifune
+		}
+	}
+}
+country_event = {
+	id = toho.3006
+	title = toho.3006
+	desc = toho.3006.desc
+	picture = GFX_evt_torifune_in_sol
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = torifune_in_sol_room }
+	option = {
+		name = toho.3006.a
+		default_hide_option = yes
+		hidden_effect = {
+			set_variable = { which = spth_disable_habitat_shield_retry value = 0 }
+		}
+		enable_special_project = {
+			name = spth_disable_habitat_shield_2
+			location = event_target:spth_story_sol_system_torifune
+		}
+	}
+}
+country_event = {
+	id = toho.3007
+	title = toho.3007
+	desc = toho.3007.desc
+	picture = GFX_evt_torifune_in_sol
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = torifune_in_sol_room }
+	immediate = {
+		create_country = {
+			name = NAME_torifune_monster
+			type = spth_country_type_container
+			name_list = root
+			flag = root
+			species = root
+			effect = {
+				save_global_event_target_as = spth_torifune_monster
+				set_country_flag = spth_torifune_monster_flag
+				set_country_flag = protected_from_queen_storm
+			}
+		}
+		establish_communications_no_message = event_target:spth_torifune_monster
+		event_target:spth_story_sol_system_torifune = {
+			change_pc = pc_habitat
+			set_planet_size = 10
+			create_colony = { owner = event_target:spth_torifune_monster }
+			create_pop_group = { species = event_target:spth_torifune_monster.owner_main_species }
+			while = {
+				count = 16
+				create_army = {
+					owner = event_target:spth_torifune_monster
+					type = fairy_army
+				}
+			}
+			set_planet_flag = controlled_by_torifune_monster
+		}
+	}
+	option = {
+		name = toho.3007.a
+	}
+}
+# This = country, lead attacker
+# From = country, planet owner
+# FromFrom = planet
+country_event = {
+	id = toho.3008
+	title = toho.3008
+	desc = toho.3008.desc
+	picture = GFX_evt_th_arc_mifeng
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_arc_mifeng_room }
+	trigger = {
+		from = {
+			has_country_flag = spth_torifune_monster_flag
+		}
+		fromfrom = {
+			has_planet_flag = spth_story_sol_system_torifune
+			has_planet_flag = controlled_by_torifune_monster
+		}
+	}
+	immediate = {
+		fromfrom = {
+			remove_planet_flag = controlled_by_torifune_monster
+			set_planet_flag = spth_clear_torifune_monster
+			every_owned_pop_group = { change_species = root.owner_main_species }
+			set_owner = root
+			reroll_deposits = yes
+			reroll_planet_modifiers = yes
+			add_deposit = d_spth_torifune_ruin
+			add_deposit = d_spth_torifune_ruin
+			add_deposit = d_spth_torifune_ruin
+			add_deposit = d_spth_torifune_ruin
+			add_deposit = d_spth_torifune_ruin_1
+		}
+		event_target:spth_torifune_monster = { destroy_country = yes }
+	}
+	option = {
+		name = toho.3008.a
+	}
+}
+country_event = {
+	id = toho.3009
+	title = toho.3009
+	desc = toho.3009.desc
+	picture = GFX_evt_relic_world_building
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_relic_world_building_room }
+	option = {
+		name = toho.3009.a
+		default_hide_option = yes
+		random_list = {
+			5 = {
+				add_resource = { consumer_goods = 3200 }
+				add_resource = { sr_lingli = 3200 }
+				add_resource = { sr_fuka = 1600 }
+			}
+			4 = {
+				add_resource = { consumer_goods = 6400 }
+				add_resource = { sr_lingli = 6400 }
+				add_resource = { sr_fuka = 3200 }
+			}
+			1 = {
+				add_resource = { consumer_goods = 12800 }
+				add_resource = { sr_lingli = 12800 }
+				add_resource = { sr_fuka = 6400 }
+			}
+			5 = {
+				add_resource = { energy = 3200 }
+				add_resource = { minerals = 3200 }
+				add_resource = { food = 1600 }
+			}
+			4 = {
+				add_resource = { energy = 6400 }
+				add_resource = { minerals = 6400 }
+				add_resource = { food = 3200 }
+				add_resource = { alloys = 3200 }
+			}
+			1 = {
+				add_resource = { energy = 12800 }
+				add_resource = { minerals = 12800 }
+				add_resource = { food = 6400 }
+				add_resource = { alloys = 6400 }
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.3010
+	title = toho.3010
+	desc = toho.3010.desc
+	picture = GFX_evt_relic_world_building
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_relic_world_building_room }
+	option = {
+		name = toho.3009.a
+		default_hide_option = yes
+		event_target:spth_story_sol_system_torifune = {
+			add_building = building_spth_torifune_shrine
+		}
+	}
+	option = {
+		name = toho.3010.b
+	}
+}
+country_event = {
+	id = toho.3011
+	title = toho.3011
+	desc = toho.3011.desc
+	picture = GFX_evt_habitat
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_habitat_room }
+	option = {
+		name = toho.3011.a
+		default_hide_option = yes
+		hidden_effect = {
+			event_target:spth_story_sol_system_torifune = {
+				set_planet_flag = can_unlock_torifune_arc
+			}
+		}
+	}
+}
+# 通用，引入主事件链
+country_event = {
+	id = toho.3012
+	title = toho.3012
+	desc = toho.3012.desc
+	picture = GFX_evt_torii_in_torifune
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = torifune_in_sol_room }
+	show_sound = event_wind_ruins
+	option = {
+		name = toho.3012.a
+		add_research_option = tech_th_armor_spiritual_power_story
+		add_tech_progress = {
+			tech = tech_th_armor_spiritual_power_story
+			progress = 0.4
+		}
+		add_research_option = tech_th_shield_barrier_story
+		add_tech_progress = {
+			tech = tech_th_shield_barrier_story
+			progress = 0.4
+		}
+		hidden_effect = {
+			set_country_flag = spth_past_legacy_begin
+			set_country_flag = spth_past_legacy_barrier_shield
+			add_event_chain_counter = {
+				event_chain = spth_event_chain_past_legacy
+				counter = spth_past_legacy_ruins_find
+				amount = 1
+			}
+			if = {
+				limit = {
+					has_country_flag = spth_moon_barrier_finished
+					NOT = { has_point_of_interest = { poi = spth_past_legacy_poi.1 } }
+				}
+				add_event_chain_counter = {
+					event_chain = spth_event_chain_past_legacy
+					counter = spth_past_legacy_ruins_find
+					amount = 1
+				}
+				create_point_of_interest = {
+					id = spth_past_legacy_poi.1
+					name = spth_past_legacy_poi.1
+					desc = spth_past_legacy_poi.1.desc
+					event_chain = spth_event_chain_past_legacy
+					location = event_target:spth_story_sol_system_lunar_capital
+				}
+			}
+			create_point_of_interest = {
+				id = spth_past_legacy_poi.2
+				name = spth_past_legacy_poi.2
+				desc = spth_past_legacy_poi.2.desc
+				event_chain = spth_event_chain_past_legacy
+				location = event_target:spth_story_sol_system_lunar_capital
+			}
+		}
+	}
+	option = {
+		name = toho.3012.b
+		add_research_option = tech_th_armor_spiritual_power_story
+		add_research_option = tech_th_shield_barrier_story
+		hidden_effect = {
+			set_country_flag = spth_past_legacy_interrupet
+		}
+	}
+}
+planet_event = {
+	id = toho.3013
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		# owner = { has_origin = origin_spth_story_gensokyo }
+		has_planet_flag = spth_story_ring_world_has_colony
+		NOT = { has_planet_flag = spth_story_ring_world_completed }
+	}
+	immediate = {
+		set_planet_flag = spth_story_ring_world_completed
+		add_district = district_spth_sp_produce
+		add_zone = {
+			district = district_spth_sp_produce
+			zone = spth_sp_produce_zone
+			zone_slot = 1
+		}
+		switch = {
+			trigger = is_planet_class
+			pc_ringworld_th = {
+				planet_event = { id = toho.3015 }
+			}
+			pc_ringworld_habitable = {
+				planet_event = { id = toho.3014 }
+			}
+		}
+	}
+}
+planet_event = {
+	id = toho.3014
+	title = toho.3014
+	desc = toho.3014.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	force_open = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = halo_09_background_art_room }
+	immediate = {
+		set_variable = { which = spth_auto_rw_free_district_slots value = trigger:free_district_slots }
+		set_variable = { which = spth_auto_rw_free_building_slots value = trigger:free_building_slots }
+	}
+	option = {
+		name = toho.3014.a
+		custom_tooltip = toho.3014.a.tooltip
+		spth_auto_rw_base = { col_type = col_spth_spiritual_power }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_spellcard_workshop = 1
+			building_spth_tavern = 4
+		}
+	}
+	option = {
+		name = toho.3014.b
+		custom_tooltip = toho.3014.b.tooltip
+		spth_auto_rw_build_districts = { district_rw_city = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = { building_spth_refine = 6 }
+	}
+	option = {
+		name = toho.3014.c
+		custom_tooltip = toho.3014.c.tooltip
+		spth_auto_rw_base = { col_type = col_spth_basis_city }
+		spth_auto_rw_build_districts = { district_rw_farming = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_common_farm = 5
+		}
+	}
+	option = {
+		name = toho.3014.d
+		custom_tooltip = toho.3014.d.tooltip
+		spth_auto_rw_base = { col_type = col_spth_basis }
+		spth_auto_rw_build_districts = { district_rw_generator = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_power_station = 5
+		}
+	}
+	option = {
+		name = toho.3014.e
+		custom_tooltip = toho.3014.e.tooltip
+		spth_auto_rw_base = { col_type = col_spth_research }
+		spth_auto_rw_build_districts = { district_rw_science = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_research_base_2 = 1
+			building_spth_research_base_1 = 4
+		}
+	}
+	option = {
+		name = toho.3014.f
+		custom_tooltip = toho.3014.f.tooltip
+		spth_auto_rw_base = { col_type = col_spth_factory }
+		spth_auto_rw_build_districts = { district_rw_industrial = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_common_foundry = 2
+			building_spth_common_factory = 2
+		}
+	}
+	option = {
+		name = toho.3014.g
+		custom_tooltip = toho.3014.g.tooltip
+		spth_auto_rw_build_districts = { district_rw_commercial = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_tavern = 5
+		}
+	}
+	# SRA
+	option = {
+		name = toho.3014.SRA
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { custom_tooltip = toho.3014.ag.why_not always = no }
+	}
+	option = {
+		name = toho.3014.SRA.alloys
+		custom_tooltip = toho.3014.SRA.alloys.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { owner = { spth_has_StellarRegulator_Array_civic = yes } }
+		spth_auto_rw_build_SRA_districts = { count = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_SRA_buildings = { building_SRA_RE_alloys = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.SRA.factory
+		custom_tooltip = toho.3014.SRA.factory.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { owner = { spth_has_StellarRegulator_Array_civic = yes } }
+		spth_auto_rw_build_SRA_districts = { count = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_SRA_buildings = { building_SRA_RE_factory = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.SRA.research
+		custom_tooltip = toho.3014.SRA.research.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { owner = { spth_has_StellarRegulator_Array_civic = yes } }
+		spth_auto_rw_build_SRA_districts = { count = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_SRA_buildings = { building_SRA_RE_research = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.SRA.power
+		custom_tooltip = toho.3014.SRA.power.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { owner = { spth_has_StellarRegulator_Array_civic = yes } }
+		spth_auto_rw_build_SRA_districts = { count = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_SRA_buildings = { building_SRA_RE_foundry = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.SRA.world_machine
+		custom_tooltip = toho.3014.SRA.world_machine.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = {
+			owner = { spth_has_StellarRegulator_Array_civic = yes }
+			custom_tooltip = {
+				fail_text = toho.3014.SRA.world_machine.fail
+				OR = {
+					owner = { has_ascension_perk = ap_SRA_world_machine }
+					has_global_flag = SRA_AI_world_machine
+				}
+			}
+			NOT = { has_building = building_SRA_world_machine }
+		}
+		select_decision = { name = decision_SRA_world_machine }
+	}
+	# ag
+	option = {
+		name = toho.3014.ag
+		trigger = { spth_has_ag_mod = yes }
+		allow = { custom_tooltip = toho.3014.ag.why_not always = no }
+	}
+	option = {
+		name = toho.3014.ag.living_metal
+		trigger = { spth_has_ag_mod = yes }
+		allow = { spth_has_ag_colony_type_trigger = { ag_tech = tech_ag_living_metal_forge } }
+		custom_tooltip = toho.3014.ag.living_metal.tooltip
+		spth_auto_rw_base = { col_type = col_ag_ringworld_living_metal_alt }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_ag_buildings = { ag_sr_production_center = yes ag_living_metal_forge = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.ag.nanites
+		trigger = { spth_has_ag_mod = yes }
+		allow = { spth_has_ag_colony_type_trigger = { ag_tech = tech_ag_nanites_assembly_plant } }
+		custom_tooltip = toho.3014.ag.nanites.tooltip
+		spth_auto_rw_base = { col_type = col_ag_ringworld_nanites_alt }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_ag_buildings = { ag_sr_production_center = yes ag_nanites_assembly_plant = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.ag.dark_matter
+		trigger = { spth_has_ag_mod = yes }
+		allow = { spth_has_ag_colony_type_trigger = { ag_tech = tech_ag_dark_matter_plant } }
+		custom_tooltip = toho.3014.ag.dark_matter.tooltip
+		spth_auto_rw_base = { col_type = col_ag_ringworld_dark_matter_alt }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_ag_buildings = { ag_sr_production_center = yes ag_dark_matter_plant = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.ag.zro
+		trigger = { spth_has_ag_mod = yes }
+		allow = { spth_has_ag_colony_type_trigger = { ag_tech = tech_ag_zro_refinery } }
+		custom_tooltip = toho.3014.ag.zro.tooltip
+		spth_auto_rw_base = { col_type = col_ag_ringworld_zro_alt }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_ag_buildings = { ag_sr_production_center = yes ag_zro_refinery = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.exit
+	}
+	after = {
+		hidden_effect = {
+			clear_variable = spth_auto_rw_free_district_slots
+			clear_variable = spth_auto_rw_free_building_slots
+		}
+	}
+}
+planet_event = {
+	id = toho.3015
+	title = toho.3015
+	desc = toho.3015.desc
+	is_triggered_only = yes
+	trigger = { owner = { has_origin = origin_spth_story_gensokyo } }
+	diplomatic = yes
+	force_open = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = halo_09_background_art_room }
+	immediate = {
+		set_variable = { which = spth_auto_rw_free_district_slots value = trigger:free_district_slots }
+		set_variable = { which = spth_auto_rw_free_building_slots value = trigger:free_building_slots }
+	}
+	option = {
+		name = toho.3015.a
+		custom_tooltip = toho.3015.a.tooltip
+		spth_auto_rw_base = { col_type = col_spth_basis_city }
+		spth_auto_rw_build_districts = { district_gensokyo_jinja = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_power_station = 5
+		}
+	}
+	option = {
+		name = toho.3015.b
+		custom_tooltip = toho.3015.b.tooltip
+		spth_auto_rw_base = { col_type = col_spth_basis_city }
+		spth_auto_rw_build_districts = { district_gensokyo_jinja = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_mining_centre = 5
+		}
+	}
+	option = {
+		name = toho.3015.c
+		custom_tooltip = toho.3015.c.tooltip
+		spth_auto_rw_base = { col_type = col_spth_basis_city }
+		spth_auto_rw_build_districts = { district_gensokyo_renli = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_common_farm = 5
+		}
+	}
+	option = {
+		name = toho.3015.d
+		custom_tooltip = toho.3015.d.tooltip
+		spth_auto_rw_base = { col_type = col_spth_factory_city }
+		spth_auto_rw_build_districts = { district_gensokyo_jiqiao = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_common_factory = 5
+		}
+	}
+	option = {
+		name = toho.3015.e
+		custom_tooltip = toho.3015.e.tooltip
+		spth_auto_rw_base = { col_type = col_spth_foundry_city }
+		spth_auto_rw_build_districts = { district_gensokyo_jiqiao = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_common_foundry = 5
+		}
+	}
+	option = {
+		name = toho.3015.f
+		custom_tooltip = toho.3015.f.tooltip
+		spth_auto_rw_base = { col_type = col_spth_research_city }
+		spth_auto_rw_build_districts = { district_gensokyo_tushu = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_research_base_2 = 1
+			building_spth_research_base_1 = 4
+		}
+	}
+	option = {
+		name = toho.3015.g
+		custom_tooltip = toho.3015.g.tooltip
+		spth_auto_rw_base = { col_type = col_spth_refine_city }
+		spth_auto_rw_build_districts = { district_gensokyo_renli = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_refine = 5
+		}
+	}
+	option = {
+		name = toho.3015.h
+		custom_tooltip = toho.3015.h.tooltip
+		spth_auto_rw_base = { col_type = col_spth_spellcard }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_spellcard_workshop = 1
+		}
+	}
+	option = {
+		name = toho.3015.i
+		custom_tooltip = toho.3015.i.tooltip
+		spth_auto_rw_base = { col_type = col_spth_spiritual_power }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_buildings = {
+			building_spth_housing = 1
+			building_spth_spellcard_workshop = 1
+		}
+	}
+	# SRA
+	option = {
+		name = toho.3014.SRA
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { custom_tooltip = toho.3014.ag.why_not always = no }
+	}
+	option = {
+		name = toho.3014.SRA.alloys
+		custom_tooltip = toho.3014.SRA.alloys.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { owner = { spth_has_StellarRegulator_Array_civic = yes } }
+		spth_auto_rw_build_SRA_districts = { count = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_SRA_buildings = { building_SRA_RE_alloys = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.SRA.factory
+		custom_tooltip = toho.3014.SRA.factory.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { owner = { spth_has_StellarRegulator_Array_civic = yes } }
+		spth_auto_rw_build_SRA_districts = { count = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_SRA_buildings = { building_SRA_RE_factory = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.SRA.research
+		custom_tooltip = toho.3014.SRA.research.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { owner = { spth_has_StellarRegulator_Array_civic = yes } }
+		spth_auto_rw_build_SRA_districts = { count = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_SRA_buildings = { building_SRA_RE_research = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.SRA.power
+		custom_tooltip = toho.3014.SRA.power.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = { owner = { spth_has_StellarRegulator_Array_civic = yes } }
+		spth_auto_rw_build_SRA_districts = { count = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_SRA_buildings = { building_SRA_RE_foundry = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.SRA.world_machine
+		custom_tooltip = toho.3014.SRA.world_machine.tooltip
+		trigger = { spth_has_StellarRegulator_Array_mod = yes }
+		allow = {
+			owner = { spth_has_StellarRegulator_Array_civic = yes }
+			custom_tooltip = {
+				fail_text = toho.3014.SRA.world_machine.fail
+				OR = {
+					owner = { has_ascension_perk = ap_SRA_world_machine }
+					has_global_flag = SRA_AI_world_machine
+				}
+			}
+			NOT = { has_building = building_SRA_world_machine }
+		}
+		select_decision = { name = decision_SRA_world_machine }
+	}
+	# ag
+	option = {
+		name = toho.3014.ag
+		trigger = { spth_has_ag_mod = yes }
+		allow = { custom_tooltip = toho.3014.ag.why_not always = no }
+	}
+	option = {
+		name = toho.3014.ag.living_metal
+		trigger = { spth_has_ag_mod = yes }
+		allow = { spth_has_ag_colony_type_trigger = { ag_tech = tech_ag_living_metal_forge } }
+		custom_tooltip = toho.3014.ag.living_metal.tooltip
+		spth_auto_rw_base = { col_type = col_ag_ringworld_living_metal_alt }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_ag_buildings = { ag_sr_production_center = yes ag_living_metal_forge = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.ag.nanites
+		trigger = { spth_has_ag_mod = yes }
+		allow = { spth_has_ag_colony_type_trigger = { ag_tech = tech_ag_nanites_assembly_plant } }
+		custom_tooltip = toho.3014.ag.nanites.tooltip
+		spth_auto_rw_base = { col_type = col_ag_ringworld_nanites_alt }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_ag_buildings = { ag_sr_production_center = yes ag_nanites_assembly_plant = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.ag.dark_matter
+		trigger = { spth_has_ag_mod = yes }
+		allow = { spth_has_ag_colony_type_trigger = { ag_tech = tech_ag_dark_matter_plant } }
+		custom_tooltip = toho.3014.ag.dark_matter.tooltip
+		spth_auto_rw_base = { col_type = col_ag_ringworld_dark_matter_alt }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_ag_buildings = { ag_sr_production_center = yes ag_dark_matter_plant = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.ag.zro
+		trigger = { spth_has_ag_mod = yes }
+		allow = { spth_has_ag_colony_type_trigger = { ag_tech = tech_ag_zro_refinery } }
+		custom_tooltip = toho.3014.ag.zro.tooltip
+		spth_auto_rw_base = { col_type = col_ag_ringworld_zro_alt }
+		spth_auto_rw_build_districts = { district_spth_sp_produce = spth_auto_rw_free_district_slots }
+		spth_auto_rw_build_ag_buildings = { ag_sr_production_center = yes ag_zro_refinery = spth_auto_rw_free_building_slots }
+	}
+	option = {
+		name = toho.3014.exit
+	}
+	after = {
+		hidden_effect = {
+			clear_variable = spth_auto_rw_free_district_slots
+			clear_variable = spth_auto_rw_free_building_slots
+		}
+	}
+}
+
+# 各种建造通知事件
+country_event = {
+	id = toho.4001
+	title = spth_mega.4001.name
+	desc = spth_mega.4001.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = spth_megastructure_construction_room }
+	option = { name = spth_mega_option_ok_1 default_hide_option = yes }
+	option = { name = spth_mega_option_ok_2 }
+}
+country_event = {
+	id = toho.4002
+	title = spth_mega.4002.name
+	desc = spth_mega.4002.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = spth_megastructure_construction_room }
+	option = { name = spth_mega_option_celebrate_1 default_hide_option = yes }
+	option = { name = spth_mega_option_celebrate_2 }
+	option = { name = spth_mega_option_great_1 }
+	option = { name = spth_mega_option_great_2 }
+}
+country_event = {
+	id = toho.4003
+	title = spth_mega.4003.name
+	desc = spth_mega.4003.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = spth_megastructure_construction_room }
+	option = { name = spth_mega_option_other_ok_1 default_hide_option = yes }
+	option = { name = spth_mega_option_other_ok_2 }
+}
+country_event = {
+	id = toho.4004
+	title = spth_mega.4004.name
+	desc = spth_mega.4004.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = spth_megastructure_construction_room }
+	option = { name = spth_mega_option_suprise_1 default_hide_option = yes }
+	option = { name = spth_mega_option_suprise_2 }
+	option = { name = spth_mega_option_suprise_3 }
+	option = { name = spth_mega_option_suprise_4 }
+}
+country_event = {
+	id = toho.4005
+	title = spth_test_text
+	desc = spth_test_lines
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_intel_record_ui
+	custom_gui_option = spth_intel_record_button
+	picture_event_data = { room = test_large_room }
+	option = { name = spth_test_text default_hide_option = yes }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+	option = { name = spth_test_text }
+}
+
+country_event = {
+	id = toho.5000
+	title = BUTTON_TEXT_NULL
+	desc = BUTTON_TEXT_NULL
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_offical_comics_ui
+	custom_gui_option = spth_offical_comics_button
+	immediate = {
+		if = {
+			limit = { NOT = { is_variable_set = spth_offical_comics_page } }
+			set_variable = { which = spth_offical_comics_page value = 0 }
+		}
+		if = {
+			limit = { NOT = { is_variable_set = spth_offical_comics_page_max } }
+			set_variable = { which = spth_offical_comics_page_max value = 29 }
+		}
+	}
+	option = {
+		name = toho.5000.prev
+		hidden_effect = {
+			if = {
+				limit = { check_variable = { which = spth_offical_comics_page value > 0 } }
+				change_variable = { which = spth_offical_comics_page value = -1 }
+			}
+		}
+		country_event = { id = toho.5000 }
+	}
+	option = {
+		name = toho.5000.next
+		hidden_effect = {
+			if = {
+				limit = { check_variable = { which = spth_offical_comics_page value < spth_offical_comics_page_max } }
+				change_variable = { which = spth_offical_comics_page value = 1 }
+			}
+		}
+		country_event = { id = toho.5000 }
+	}
+	option = {
+		name = gensokyo_start.1147.exit
+		default_hide_option = yes
 	}
 }

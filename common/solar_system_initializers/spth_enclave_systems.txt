@@ -1,0 +1,219 @@
+spth_enclave_curator_system = {
+    class = sc_spth_void
+    usage = misc_system_init
+    prevent_anomalies = yes
+    flags = {
+        spth_enclave_system
+        spth_enclave_curator_system
+        ag_no_jump_in_system
+        cannot_be_hit_by_aow_starfall_spear
+    }
+    asteroid_belt = {
+        type = crystal_asteroid_belt
+        radius = 250
+    }
+    max_instances = 1
+    planet = {
+        count = 1
+        class = pc_spth_void
+        orbit_angle = 0
+        orbit_distance = 0
+        size = 1
+        has_ring = no
+        flags = { spth_enclave_curator_system_star }
+        init_effect = {
+            clear_deposits = yes
+            prevent_anomaly = yes
+            save_global_event_target_as = spth_enclave_curator_system_star
+            add_deposit = d_physics_25
+            add_modifier = { modifier = spth_curator_star_modifier }
+        }
+    }
+    change_orbit = 200
+    planet = {
+        name = NAME_spth_story_asteroid_0
+        class = "pc_asteroid"
+        orbit_distance = 0
+        orbit_angle = 0
+        size = 6
+        has_ring = no
+        flags = { spth_enclave_curator_defender_pos }
+        init_effect = {
+            add_deposit = d_minerals_10
+            random_list = {
+                10 = { add_deposit = d_minerals_1 }
+                10 = { add_deposit = d_minerals_3 }
+                10 = { add_deposit = d_minerals_5 }
+                10 = { add_deposit = d_minerals_7 }
+                5 = { add_deposit = d_minerals_9 }
+                5 = { add_deposit = d_minerals_10 }
+            }
+        }
+    }
+    planet = {
+        name = NAME_spth_story_asteroid_1
+        class = "pc_rare_crystal_asteroid"
+        orbit_distance = 0
+        orbit_angle = 120
+        size = 6
+        has_ring = no
+        flags = { spth_enclave_curator_defender_pos }
+        init_effect = {
+            add_deposit = d_energy_10
+            random_list = {
+                10 = { add_deposit = d_energy_1 }
+                10 = { add_deposit = d_energy_3 }
+                10 = { add_deposit = d_energy_5 }
+                10 = { add_deposit = d_energy_7 }
+                5 = { add_deposit = d_energy_9 }
+                5 = { add_deposit = d_energy_10 }
+            }
+        }
+    }
+    planet = {
+        name = NAME_spth_story_asteroid_2
+        class = "pc_crystal_asteroid"
+        orbit_distance = 0
+        orbit_angle = 120
+        size = 6
+        has_ring = no
+        flags = { spth_enclave_curator_defender_pos }
+        init_effect = {
+            add_deposit = d_dark_matter_deposit_10
+            random_list = {
+                10 = { add_deposit = d_dark_matter_deposit_1 }
+                10 = { add_deposit = d_dark_matter_deposit_2 }
+                10 = { add_deposit = d_dark_matter_deposit_3 }
+                10 = { add_deposit = d_dark_matter_deposit_10 }
+            }
+        }
+    }
+
+    init_effect = {
+        set_global_flag = created_spth_enclave_curator
+        if = {
+            limit = { NOT = { exists = event_target:spth_enclave_curator_country } }
+            create_species = {
+                name = THSC
+                class = THSC
+                portrait = spth_curator_por
+                traits = {
+                    ideal_planet_class = pc_gensokyo_planet
+                    trait = trait_touhou
+                    trait = random_traits
+                }
+            }
+            last_created_species = {
+                save_event_target_as = spth_enclave_curator_species
+                set_species_flag = spth_enclave_curator_species
+            }
+            create_country = {
+                name = NAME_spth_curator
+                adjective = NAME_spth_curator
+                name_list = touhouchs
+                authority = auth_gensokyo
+                type = spth_enclave
+                civics = {
+                    civic = civic_gensokyo
+                    civic = civic_ancient_preservers
+                }
+                origin = "origin_default"
+                species = event_target:spth_enclave_curator_species
+                flag = {
+                    icon = {
+                        category="touhousp"
+                        file = "flag_th7.dds"
+                    }
+                    background = {
+                        category = "backgrounds"
+                        file = "00_solid.dds"
+                    }
+                    colors = {
+                        "white"
+                        "black"
+                        "black"
+                        "null"
+                    }
+                }
+                ethos = {
+                    ethic = ethic_fanatic_spiritualist
+                    ethic = ethic_pacifist
+                }
+                ignore_initial_colony_error = yes
+            }
+            last_created_country = {
+                every_playable_country = {
+                    limit = { NOT = { is_same_value = prev } }
+                    establish_communications_no_message = prev
+                    if = {
+                        limit = { has_authority = auth_gensokyo }
+                        prev = {
+                            add_opinion_modifier = {
+                                modifier = opinion_enclave_gensokyo
+                                who = prev
+                            }
+                        }
+                    } else = {
+                        prev = {
+                            add_opinion_modifier = {
+                                modifier = opinion_enclave_non_gensokyo
+                                who = prev
+                            }
+                        }
+                    }
+                }
+                set_country_flag = spth_enclave_curator_country
+                set_graphical_culture = strg_01
+                save_global_event_target_as = spth_enclave_curator_country
+                create_fleet = {
+                    name = NAME_spth_curator_capital
+                    settings = { spawn_debris = no garrison = yes }
+                    effect = {
+                        set_owner = prev
+                        create_ship = {
+                            name = NAME_spth_curator
+                            design = spth_curator_capital
+                            effect = {
+                                set_ship_flag = is_spth_space_shrine_station
+                                set_disable_at_health = 0.01
+                                save_global_event_target_as = player_space_shrine_@prevprev
+                                add_modifier = { modifier = ship_spth_extra_life_modify mult = 15 }
+                            }
+                        }
+                        set_fleet_flag = is_spth_space_shrine_station
+                        set_location = { target = prevprev.star angle = random distance = 0 }
+                        save_event_target_as = CustomCapital
+                        prev = {
+                            set_custom_capital_location = event_target:CustomCapital
+                        }
+                    }
+                }
+                prev = {
+                    every_system_planet = {
+                        limit = { has_planet_flag = spth_enclave_curator_defender_pos }
+                        spth_create_fleet = {
+                            NAME = NAME_spth_curator_defence_fleet
+                            can_disband = no is_boss = yes
+                            OWNER = event_target:spth_enclave_curator_country
+                            location = prev
+                            flag = spth_enclave_curator_defence_fleet
+                            bombardment = spth_kamikakushi
+                            spth_curator_defence_bc_tor = 5
+                            spth_curator_defence_bc_tlx = 10
+                            spth_curator_defence_bc_tmp = 10
+                            spth_curator_defence_bc_ylx = 10
+                        }
+                    }
+                }
+                create_leader = {
+                    name = NAME_spth_curator_leader
+                    species = this
+                    class = scientist
+                    skill = 5
+                    skip_background_generation = yes
+                }
+                set_leader = last_created_leader
+            }
+        }
+    }
+}

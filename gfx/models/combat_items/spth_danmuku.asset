@@ -1,0 +1,548 @@
+entity = {
+    name = "spth_test_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "root" particle = "fantasia_bullet_1_idle_particle" keep_particle = yes }
+    }
+    scale = 0.5
+}
+entity = {
+    name = "spth_bullet_large_hit_entity"
+    cull_radius = 1.0
+
+    state = { name = "explode_med_hp" state_time = 5.0 looping = no
+        event = { time = 0.0 particle = "Sealing_Circle_hit_effect" sound = { soundeffect = adv_kinectic_hit } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_adv_kinectic_hit" } }
+    }
+    default_state = "explode_med_hp"
+    scale = 1.0
+}
+entity = {
+    name = "spth_bullet_medium_hit_entity"
+    cull_radius = 1.0
+
+    state = { name = "explode_med_hp" state_time = 5.0 looping = no
+        event = { time = 0.0 particle = "Sealing_Circle_hit_effect" sound = { soundeffect = adv_kinectic_hit } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_adv_kinectic_hit" } }
+    }
+    default_state = "explode_med_hp"
+    scale = 0.67
+}
+entity = {
+    name = "spth_bullet_small_hit_entity"
+    cull_radius = 1.0
+
+    state = { name = "explode_med_hp" state_time = 5.0 looping = no
+        event = { time = 0.0 particle = "Sealing_Circle_hit_effect" sound = { soundeffect = adv_kinectic_hit } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_adv_kinectic_hit" } }
+    }
+    default_state = "explode_med_hp"
+    scale = 0.33
+}
+
+# 我去 冰
+entity = {
+    name = "spth_Ice_barrier_mofazhen"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_Ice_barrier_large_effect" keep_particle = yes }
+        event = { time = 0 node = "danmuku_prev" particle = "spth_mofazhen" keep_particle = yes }
+    }
+    state = {
+        name = "moving" state_time = 4.0
+        event = { trigger_once = yes sound = { soundeffect = "moving_out_battleship" } }
+    }
+    state = {
+        name = "death" state_time = 4.0
+        event = { time = 0.0 node = "danmuku_root" particle = "avian_01_large_ship_explosion_particle" }
+        event = { time = 0.0 node = "danmuku_root" particle = "ship_burn_particle" }
+        event = { trigger_once = yes sound = { soundeffect = "station_explosion_large" } }
+    }
+    locator = { name = "danmuku_root" rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_prev" rotation = { 0 -90 0 } position = { 0 0 -2 } }
+    scale = 3.2
+}
+entity = {
+    name = "spth_Ice_barrier_mofazhen_core"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = { name = "idle" state_time = 5 }
+    state = {
+        name = "moving" state_time = 4.0
+        event = { trigger_once = yes sound = { soundeffect = "moving_out_battleship" } }
+    }
+    state = {
+        name = "death" state_time = 4.0
+        event = { time = 0.0 node = "gun_01" particle = "avian_01_large_ship_explosion_particle" }
+        event = { time = 0.0 node = "gun_01" particle = "ship_burn_particle" }
+        event = { trigger_once = yes sound = { soundeffect = "station_explosion_large" } }
+    }
+    locator = { name = "gun_01" position = { 0 0 -2 } }
+    scale = 3.2
+}
+
+# 实体模型炮弹
+entity = {
+    name = "spth_gungnir_muzzle_flash_entity"
+
+    default_state = "attack"
+    get_state_from_parent = no
+    state = {
+        name = "attack" looping = no state_time = 7.0
+        event = { time = 0 particle = "sato2_Gungnir_shockwave_effect" keep_particle = yes }
+
+        event = { trigger_once = yes sound = { soundeffect = titan_laser_fire_01 } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_titan_laser_fire_01" } }
+
+        event = { trigger_once = yes sound = { soundeffect = "titan_laser_fire_02" } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_titan_laser_fire_02" } }
+
+        event = { trigger_once = yes sound = { soundeffect = "titan_laser_fire_03" } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_titan_laser_fire_03" } }
+    }
+}
+entity = {
+    name = "spth_gungnir_windup_entity"
+
+    default_state = "attack"
+    get_state_from_parent = no
+    state = {
+        name = "attack" next_state = "attack_2" looping = no state_time = 0.8
+        event = { trigger_once = yes sound = { soundeffect = "titan_laser_windup_02" } }
+        event = { time = 0 particle = "sato2_Gungnir_chargewave_effect" keep_particle = yes }
+    }
+    state = {
+        name = "attack_2" next_state = "attack_3" looping = no state_time = 0.6
+        # event = { trigger_once = yes sound = { soundeffect = "titan_laser_windup_02" } }
+        event = { time = 0 particle = "sato2_Gungnir_chargewave_effect" keep_particle = yes }
+    }
+    state = {
+        name = "attack_3" looping = no state_time = 0.4
+        event = { trigger_once = yes sound = { soundeffect = "titan_laser_windup_01" } }
+        event = { time = 0 particle = "sato2_Gungnir_chargewave_effect" keep_particle = yes }
+    }
+}
+entity = {
+    name = "spth_gungnir_bullet"
+    cull_radius = 1
+    pdxmesh = "spth_gungnir_bullet_mesh"
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "gungnir_tail" particle = "spth_gungnier_idle_drops" keep_particle = yes sound = { soundeffect = plasma_fire } }
+        event = { time = 0 node = "gungnir_tail_1" particle = "spth_gungnier_idle_drops" keep_particle = yes }
+        event = { time = 0 node = "gungnir_tail_2" particle = "spth_gungnier_idle_drops" keep_particle = yes }
+        event = { time = 0 node = "gungnir_tail_3" particle = "spth_gungnier_idle_drops" keep_particle = yes }
+        event = { time = 0 node = "gungnir_tail_4" particle = "spth_gungnier_idle_drops" keep_particle = yes }
+        event = { trigger_once = yes sound = { soundeffect = distance_plasma_fire } }
+    }
+    locator = { name = "gungnir_tail" position = { 0 0 1.50 } }
+    locator = { name = "gungnir_tail_1" position = { 0.10 0.10 2.00 } }
+    locator = { name = "gungnir_tail_2" position = { 0.10 -0.10 2.00 } }
+    locator = { name = "gungnir_tail_3" position = { -0.10 0.10 2.00 } }
+    locator = { name = "gungnir_tail_4" position = { -0.10 -0.10 2.00 } }
+    scale = 8.0
+}
+entity = {
+    name = "spth_yuzhu_muzzle_flash_entity"
+
+    default_state = "attack"
+    get_state_from_parent = no
+    state = {
+        name = "attack" looping = no state_time = 7.0
+        event = { time = 0 particle = "Purification_demon_muzzle_effect" keep_particle = yes }
+
+        event = { trigger_once = yes sound = { soundeffect = titan_laser_fire_01 } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_titan_laser_fire_01" } }
+
+        event = { trigger_once = yes sound = { soundeffect = "titan_laser_fire_02" } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_titan_laser_fire_02" } }
+
+        event = { trigger_once = yes sound = { soundeffect = "titan_laser_fire_03" } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_titan_laser_fire_03" } }
+    }
+}
+entity = {
+    name = "spth_yuzhu_windup_entity"
+
+    default_state = "attack"
+    get_state_from_parent = no
+    state = {
+        name = "attack" next_state = "attack_2" looping = no state_time = 0.8
+        event = { trigger_once = yes sound = { soundeffect = "titan_laser_windup_02" } }
+        event = { time = 0 particle = "Purification_demon_windup_2_effect" keep_particle = yes }
+    }
+    state = {
+        name = "attack_2" next_state = "attack_3" looping = no state_time = 0.6
+        # event = { trigger_once = yes sound = { soundeffect = "titan_laser_windup_02" } }
+        event = { time = 0 particle = "Purification_demon_windup_2_effect" keep_particle = yes }
+    }
+    state = {
+        name = "attack_3" looping = no state_time = 0.4
+        event = { trigger_once = yes sound = { soundeffect = "titan_laser_windup_01" } }
+        event = { time = 0 particle = "Purification_demon_windup_2_effect" keep_particle = yes }
+    }
+}
+entity = {
+    name = "spth_yuzhu_bullet"
+    cull_radius = 1
+    pdxmesh = "spth_yuzhu_bullet_mesh"
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "gungnir_tail" particle = "spth_yuzhu_idle_drops" keep_particle = yes sound = { soundeffect = adv_kinectic_fire } }
+        event = { time = 0 node = "gungnir_tail_1" particle = "spth_yuzhu_idle_drops" keep_particle = yes }
+        event = { time = 0 node = "gungnir_tail_2" particle = "spth_yuzhu_idle_drops" keep_particle = yes }
+        event = { time = 0 node = "gungnir_tail_3" particle = "spth_yuzhu_idle_drops" keep_particle = yes }
+        event = { time = 0 node = "gungnir_tail_4" particle = "spth_yuzhu_idle_drops" keep_particle = yes }
+        event = { trigger_once = yes sound = { soundeffect = distance_adv_kinectic_fire } }
+    }
+    locator = { name = "gungnir_tail" position = { 0 0 3.50 } }
+    locator = { name = "gungnir_tail_1" position = { 0.25 0.25 4.00 } }
+    locator = { name = "gungnir_tail_2" position = { 0.25 -0.25 4.00 } }
+    locator = { name = "gungnir_tail_3" position = { -0.25 0.25 4.00 } }
+    locator = { name = "gungnir_tail_4" position = { -0.25 -0.25 4.00 } }
+    scale = 7.0
+}
+entity = {
+    name = "spth_barrage_star_bullet"
+    cull_radius = 1.0
+    pdxmesh = "spth_barrage_star_bullet_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 sound = { soundeffect = laser_fire } }
+        event = { trigger_once = yes sound = { soundeffect = distance_laser_fire } }
+    }
+    scale = 3.3
+}
+entity = {
+    name = "spth_kaigo_bullet"
+    cull_radius = 1
+    pdxmesh = "spth_kaigo_bullet_mesh"
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        # event = { time = 0 node = "gungnir_tail" particle = "spth_gungnier_idle_drops" keep_particle = yes sound = { soundeffect = adv_kinectic_fire } }
+        event = { trigger_once = yes sound = { soundeffect = distance_adv_kinectic_fire } }
+    }
+    # locator = { name = "gungnir_tail" position = { 0 0 1.30 } }
+    scale = 20.0
+}
+entity = {
+    name = "spth_zfz_cycle_bullet"
+    cull_radius = 1
+    pdxmesh = "spth_zfz_cycle_bullet_mesh"
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 sound = { soundeffect = adv_kinectic_fire } }
+        event = { trigger_once = yes sound = { soundeffect = distance_adv_kinectic_fire } }
+    }
+    scale = 12.0
+}
+entity = {
+    name = "spth_reimu_fantasia_muzzle_flash_entity"
+
+    default_state = "attack"
+    get_state_from_parent = no
+    state = {
+        name = "attack" looping = no state_time = 7.0
+        event = { time = 0 particle = "Magic_Circle_THC3_charge_effect" keep_particle = yes }
+
+        event = { trigger_once = yes sound = { soundeffect = plasma_fire } }
+        event = { trigger_once = yes sound = { soundeffect = "distance_plasma_fire" } }
+    }
+}
+entity = {
+    name = "spth_reimu_fantasia_1_bullets"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_fantasia_bullet_10_FN_effect" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_2" particle = "spth_fantasia_bullet_10A_FN_effect" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_3" particle = "spth_fantasia_bullet_10B_FN_effect" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 -3.2 0 } }
+    locator = { name = "danmuku_root_2" position = { 2.4 1.6 0 } }
+    locator = { name = "danmuku_root_3" position = { -2.4 1.6 0 } }
+    scale = 1.4
+}
+entity = {
+    name = "spth_reimu_fantasia_2_bullets"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_fantasia_bullet_10A_FN_effect" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_2" particle = "spth_fantasia_bullet_10B_FN_effect" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_3" particle = "spth_fantasia_bullet_10_FN_effect" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 -3.2 0 } }
+    locator = { name = "danmuku_root_2" position = { 2.4 1.6 0 } }
+    locator = { name = "danmuku_root_3" position = { -2.4 1.6 0 } }
+    scale = 1.4
+}
+entity = {
+    name = "spth_reimu_fantasia_3_bullets"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_fantasia_bullet_10_FN_effect" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_2" particle = "spth_fantasia_bullet_10B_FN_effect" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_3" particle = "spth_fantasia_bullet_10A_FN_effect" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 -3.2 0 } }
+    locator = { name = "danmuku_root_2" position = { 2.4 1.6 0 } }
+    locator = { name = "danmuku_root_3" position = { -2.4 1.6 0 } }
+    scale = 1.4
+}
+entity = {
+    name = "spth_reimu_fantasia_4_bullets"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_fantasia_bullet_10B_FN_effect" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_2" particle = "spth_fantasia_bullet_10A_FN_effect" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_3" particle = "spth_fantasia_bullet_10_FN_effect" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 -3.2 0 } }
+    locator = { name = "danmuku_root_2" position = { 2.4 1.6 0 } }
+    locator = { name = "danmuku_root_3" position = { -2.4 1.6 0 } }
+    scale = 1.4
+}
+
+# 纯粒子
+entity = {
+    name = "spth_blue_butterfly_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "Resurrection_Butterfly_blue_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" rotation = { 0 -90 0 } }
+    scale = 1.0
+}
+entity = {
+    name = "spth_blue_3_butterflys_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "Resurrection_Butterfly_blue_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_1" particle = "Resurrection_Butterfly_blue_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_2" particle = "Resurrection_Butterfly_blue_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 0 -4 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_1" position = { -6 0 4 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_2" position = { 6 0 4 } rotation = { 0 -90 0 } }
+    scale = 1.25
+}
+entity = {
+    name = "spth_orange_3_butterflys_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "Resurrection_Butterfly_orange_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_1" particle = "Resurrection_Butterfly_orange_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_2" particle = "Resurrection_Butterfly_orange_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 0 -4 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_1" position = { -6 0 4 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_2" position = { 6 0 4 } rotation = { 0 -90 0 } }
+    scale = 1.25
+}
+entity = {
+    name = "spth_pink_3_butterflys_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "Resurrection_Butterfly_pink_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_1" particle = "Resurrection_Butterfly_pink_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_2" particle = "Resurrection_Butterfly_pink_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 0 -4 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_1" position = { -6 0 4 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_2" position = { 6 0 4 } rotation = { 0 -90 0 } }
+    scale = 1.25
+}
+entity = {
+    name = "spth_extra_butterflys_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "Resurrection_Butterfly_pink_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_1" particle = "Resurrection_Butterfly_blue_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_2" particle = "Resurrection_Butterfly_orange_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_3" particle = "Resurrection_Butterfly_blue_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_4" particle = "Resurrection_Butterfly_pink_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_5" particle = "Resurrection_Butterfly_orange_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_6" particle = "Resurrection_Butterfly_pink_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_7" particle = "Resurrection_Butterfly_pink_particle" keep_particle = yes }
+        event = { time = 0 node = "danmuku_root_8" particle = "Resurrection_Butterfly_pink_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 -2.5 -4 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_1" position = { -6 -2.5 4 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_2" position = { 6 -2.5 4 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_3" position = { 0 2.5 -6 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_4" position = { -6 2.5 2 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_5" position = { 6 2.5 2 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_6" position = { 0 0 -2 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_7" position = { -6 0 6 } rotation = { 0 -90 0 } }
+    locator = { name = "danmuku_root_8" position = { 6 0 6 } rotation = { 0 -90 0 } }
+    scale = 1.25
+}
+entity = {
+    name = "spth_losing_hometown_red_laser_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_losing_hometown_red_laser_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 0 20 } rotation = { -90 0 0 } }
+    scale = 1.0
+}
+entity = {
+    name = "spth_losing_hometown_pink_laser_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_losing_hometown_pink_laser_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 0 20 } rotation = { -90 0 0 } }
+    scale = 1.0
+}
+entity = {
+    name = "spth_kometubu_bullet_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_kometubu_bullet_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 0 20 } rotation = { -90 0 0 } }
+    scale = 0.1
+}
+entity = {
+    name = "spth_linear_modeling_laser_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_linear_modeling_laser_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" position = { 0 0 20 } rotation = { -90 0 0 } }
+    scale = 1.0
+}
+# 我草千万别用这个
+entity = {
+    name = "spth_nuclear_fusion_bullet_danmuku"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_nuclear_fusion_bullet_idle_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" rotation = { 0 0 0 } }
+    scale = 0.5
+}
+entity = {
+    name = "spth_kedama"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "kedama_idle_particle" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" rotation = { 0 0 0 } }
+    scale = 0.5
+}
+entity = {
+    name = "spth_fantasia_bullet_10_FN"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_fantasia_bullet_10_FN_effect" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" rotation = { 0 0 0 } }
+    scale = 1.0
+}
+entity = {
+    name = "spth_fantasia_bullet_10A_FN"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_fantasia_bullet_10A_FN_effect" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" rotation = { 0 0 0 } }
+    scale = 1.0
+}
+entity = {
+    name = "spth_fantasia_bullet_10B_FN"
+    cull_radius = 1.0
+    pdxmesh = "locator_mesh"
+
+    default_state = "idle"
+    state = {
+        name = "idle" looping = yes
+        event = { time = 0 node = "danmuku_root" particle = "spth_fantasia_bullet_10B_FN_effect" keep_particle = yes }
+    }
+    locator = { name = "danmuku_root" rotation = { 0 0 0 } }
+    scale = 1.0
+}

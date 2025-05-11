@@ -1,0 +1,434 @@
+namespace = spth_colony
+
+@spth_megastructure_planet_max_pop = 5
+@spth_megastructure_planet_pop_minus = -5
+
+# monthly update current barrier capacity and faith strength as planet variables (and more monthly refreshes)
+country_event = {
+	id = spth_colony.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { has_authority = auth_gensokyo }
+	immediate = {
+		every_owned_planet = {
+			limit = {
+				OR = {
+					has_modifier = spth_planet_pop_convert
+					has_deposit = d_hakurei_barrier
+					NOT = { is_variable_set = spth_planet_reactor_upkeep_mult }
+				}
+			}
+			if = {
+				limit = { count_deposit = { limit = { is_deposit_type = d_hakurei_barrier } count > 1 } }
+				random_deposit = {
+					limit = { is_deposit_type = d_hakurei_barrier }
+					set_deposit_flag = spth_not_remove_temp
+				}
+				every_deposit = {
+					limit = { is_deposit_type = d_hakurei_barrier NOT = { has_deposit_flag = spth_not_remove_temp } }
+					remove_deposit = yes
+				}
+			}
+			if = {
+				limit = { has_deposit = d_hakurei_barrier }
+				spth_effect_refresh_barrier_and_faith = yes
+			}
+			if = {
+				limit = { NOT = { is_variable_set = spth_planet_reactor_upkeep_mult } }
+				set_variable = { which = spth_planet_reactor_upkeep_mult value = 100 }
+			}
+			spth_count_to_be_converted_pops = yes
+			if = {
+				limit = { has_modifier = spth_planet_pop_convert }
+				remove_modifier = spth_planet_pop_convert
+				add_modifier = {
+					modifier = spth_planet_pop_convert
+					multiplier = spth_to_be_converted_pops_counter
+				}
+			}
+		}
+		if = {
+			limit = { has_edict = spth_planet_dicisions_convert }
+			every_owned_planet = {
+				limit = { NOT = { has_modifier = spth_planet_pop_convert } }
+				select_decision = { name = decision_gensokyo_pop_convert_activate }
+			}
+		}
+		if = {
+			limit = { has_edict = spth_planet_dicisions_sp }
+			every_owned_planet = {
+				if = {
+					limit = { NOT = { has_deposit = d_hakurei_barrier } }
+					select_decision = { name = decision_establish_barrier }
+				}
+			}
+		}
+	}
+}
+
+# update current barrier capacity as a planet variable when the save is loaded
+event = {
+	id = spth_colony.2
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		every_country = {
+			limit = { has_authority = auth_gensokyo }
+			country_event = { id = spth_colony.1 }
+			if = {
+				limit = { NOT = { has_country_flag = spth_dont_setting_pop_on_load } }
+				country_event = { id = gensokyo_start.1145 }
+			}
+		}
+	}
+}
+
+# monthly update current barrier capacity as a planet variable
+planet_event = {
+	id = spth_colony.100
+	hide_window = yes
+	is_triggered_only = yes
+
+	trigger = {
+		exists = owner
+		owner = { has_authority = auth_gensokyo }
+		OR = {
+			has_modifier = spth_planet_pop_convert
+			has_deposit = d_hakurei_barrier
+		}
+	}
+	
+	immediate = {
+		if = {
+			limit = { has_deposit = d_hakurei_barrier }
+			set_variable = {
+				which = planet_genso_job_buff_modifier
+				value = value:planet_genso_job_buff_modifier
+			}
+		}
+		spth_count_to_be_converted_pops = yes
+		if = {
+			limit = { has_modifier = spth_planet_pop_convert }
+			remove_modifier = spth_planet_pop_convert
+			add_modifier = {
+				modifier = spth_planet_pop_convert
+				multiplier = spth_to_be_converted_pops_counter
+			}
+		}
+	}
+}
+
+country_event = {
+	id = spth_colony.200
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		any_owned_planet = {
+			has_planet_flag = megastructure
+			has_planet_flag = is_spth_megastructure_planet
+			spth_pop_group_amount > @spth_megastructure_planet_max_pop
+		}
+	}
+	immediate = {
+		every_owned_planet = {
+			limit = {
+				has_planet_flag = megastructure
+				has_planet_flag = is_spth_megastructure_planet
+				spth_pop_group_amount > @spth_megastructure_planet_max_pop
+				is_colony = yes
+			}
+			planet_event = { id = spth_colony.201 }
+		}
+	}
+}
+planet_event = {
+	id = spth_colony.201
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_planet_flag = megastructure
+		has_planet_flag = is_spth_megastructure_planet
+		spth_pop_group_amount > @spth_megastructure_planet_max_pop
+	}
+	immediate = {
+		set_variable = { which = spth_megastructure_pop_count value = 0 }
+		export_trigger_value_to_variable = { trigger = spth_pop_group_amount variable = spth_megastructure_pop_count }
+		change_variable = { which = spth_megastructure_pop_count value = @spth_megastructure_planet_pop_minus }
+		while = {
+			count = spth_megastructure_pop_count
+			random_owned_pop_group = { kill_single_pop = yes }
+		}
+	}
+}
+
+planet_event = {
+	id = spth_colony.210
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		owner = {
+			OR = {
+				has_edict = spth_planet_dicisions_convert
+				has_edict = spth_planet_dicisions_sp
+			}
+		}
+	}
+	immediate = {
+		if = {
+			limit = {
+				owner = { has_edict = spth_planet_dicisions_convert }
+				NOT = { has_modifier = spth_planet_pop_convert }
+			}
+			select_decision = {
+				name = decision_gensokyo_pop_convert_activate
+			}
+		}
+		if = {
+			limit = { owner = { has_edict = spth_planet_dicisions_sp } }
+			if = {
+				limit = { NOT = { has_deposit = d_hakurei_barrier } }
+				select_decision = {
+					name = decision_establish_barrier
+				}
+			}
+		}
+	}
+}
+
+# 突触机烧外星朋友后人口转化
+# A pop has finished purging
+# This = Planet scope
+# From = Country
+# FromFrom = Pop
+planet_event = {
+	id = spth_colony.220
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		from = { has_authority = auth_gensokyo }
+		is_planet_class = pc_cosmogenesis_world
+		check_modifier_value = { modifier = planet_convert_to_touhou value > 0 }
+		fromfrom = {
+			NOT = {
+				pop_group_has_trait = trait_touhou
+				pop_group_has_trait = trait_spth_do_not_convert
+			}
+		}
+	}
+	immediate = {
+		random_list = {
+			0 = {
+				modifier = { add = modifier:planet_convert_to_touhou }
+				from = {
+					random_owned_planet = {
+						limit = { NOT = { has_planet_flag = is_spth_megastructure_planet } free_jobs > 0 }
+						save_event_target_as = spth_temp_planet
+					}
+					if = {
+						limit = { NOT = { exists = event_target:spth_temp_planet } }
+						random_owned_planet = { save_event_target_as = spth_temp_planet }
+					}
+				}
+				event_target:spth_temp_planet = { create_pop_group = { species = owner_main_species } }
+				create_message = {
+					type = spth_pop_convert_cosmo
+					localization = spth_message_spth_pop_convert_cosmo_desc
+					variable = {
+						type = name
+						localization = PLANET_NAME
+						scope = this
+					}
+					variable = {
+						type = name
+						localization = NEW_PLANET_NAME
+						scope = event_target:spth_temp_planet
+					}
+					days = 30
+				}
+			}
+			100 = { modifier = { subtract = modifier:planet_convert_to_touhou } }
+		}
+		reroll_random = yes
+	}
+}
+
+country_event = {
+	id = spth_colony.3
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_authority = auth_gensokyo
+		OR = {
+			has_country_flag = spth_pop_convert_enabled
+			has_edict = spth_build_auto_ringworld
+		}
+	}
+	immediate = {
+		if = {
+			limit = { has_country_flag = spth_pop_convert_enabled }
+			every_owned_planet = {
+				limit = { has_modifier = spth_planet_pop_convert }
+				set_variable = { which = to_be_converted_amount value = 0 }
+				export_trigger_value_to_variable = {
+					trigger = count_owned_pop_group
+					parameters = { limit = { has_living_standard = { type = spth_living_standards_assimilation } } }
+					variable = to_be_converted_amount
+				}
+				if = {
+					limit = { check_variable = { which = to_be_converted_amount value >= 10 } }
+					set_variable = { which = to_be_converted_amount value = 10 }
+				}
+				while = {
+					count = to_be_converted_amount
+					create_pop_group = { species = root.owner_main_species }
+				}
+				while = {
+					count = to_be_converted_amount
+					random_owned_pop_group = {
+						limit = { has_living_standard = { type = spth_living_standards_assimilation } }
+						spth_kill_pop_group = yes
+					}
+				}
+				if = {
+					limit = { has_modifier = spth_planet_pop_convert }
+					remove_modifier = spth_planet_pop_convert
+					add_modifier = {
+						modifier = spth_planet_pop_convert
+						multiplier = spth_to_be_converted_pops_counter
+					}
+				}
+			}
+		}
+		if = {
+			limit = { has_edict = spth_build_auto_ringworld }
+			if = {
+				limit = { has_origin = origin_spth_story_gensokyo }
+				every_system_within_border = {
+					limit = { spth_auto_ringworld_limit = yes }
+					spth_auto_ringworld_build_story = yes
+				}
+			} else = {
+				every_system_within_border = {
+					limit = { spth_auto_ringworld_limit = yes }
+					spth_auto_ringworld_build_common = yes
+				}
+			}
+		}
+	}
+}
+
+planet_event = {
+	id = spth_colony.1000
+	title = spth_colony.1000
+	desc = spth_colony.1000.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hakuri_shrine_night_room }
+	is_triggered_only = yes
+	option = {
+		name = spth_colony.1000.a
+		hidden_effect = {
+			remove_planet_flag = spth_torifune_shrine_research_mode_soc
+			remove_planet_flag = spth_torifune_shrine_research_mode_eng
+			set_planet_flag = spth_torifune_shrine_research_mode_phy
+			planet_event = { id = spth_colony.1000 }
+		}
+	}
+	option = {
+		name = spth_colony.1000.b
+		hidden_effect = {
+			remove_planet_flag = spth_torifune_shrine_research_mode_soc
+			set_planet_flag = spth_torifune_shrine_research_mode_eng
+			remove_planet_flag = spth_torifune_shrine_research_mode_phy
+			planet_event = { id = spth_colony.1000 }
+		}
+	}
+	option = {
+		name = spth_colony.1000.c
+		hidden_effect = {
+			set_planet_flag = spth_torifune_shrine_research_mode_soc
+			remove_planet_flag = spth_torifune_shrine_research_mode_eng
+			remove_planet_flag = spth_torifune_shrine_research_mode_phy
+			planet_event = { id = spth_colony.1000 }
+		}
+	}
+	option = {
+		name = spth_colony.1000.exit
+		default_hide_option = yes
+	}
+}
+
+planet_event = {
+	id = spth_colony.11
+	title = spth_colony.11
+	desc = spth_colony.11.desc
+	picture = GFX_evt_hakurei_shrine_in_night
+	is_triggered_only = yes
+	trigger = { NOT = { has_planet_flag = has_open_spth_reactor_adjust_ui } }
+	diplomatic = yes
+	custom_gui = spiritual_power_reactor_ui
+	custom_gui_option = spiritual_power_reactor_button
+	picture_event_data = { room = mc_hakuri_shrine_room }
+	immediate = {
+		set_planet_flag = has_open_spth_reactor_adjust_ui
+		if = {
+			limit = { NOT = { is_variable_set = spth_planet_reactor_upkeep_mult } }
+			set_variable = { which = spth_planet_reactor_upkeep_mult value = 100 }
+		}
+		set_variable = { which = spth_planet_reactor_display_produce value = value:spth_planet_reactor_procude_mult }
+	}
+	after = {
+		hidden_effect = {
+			clear_variable = spth_planet_reactor_display_produce
+			remove_planet_flag = has_open_spth_reactor_adjust_ui
+		}
+		if = {
+			limit = { has_planet_flag = close_spth_planet_reactor_ui }
+			remove_planet_flag = close_spth_planet_reactor_ui
+			owner = { remove_country_flag = has_open_gui_spth_colony_11 }
+		} else = { planet_event = { id = spth_colony.11 } }
+	}
+	option = {
+		name = spth_colony.11.a
+		custom_tooltip = spth_colony.11.tooltip
+		hidden_effect = {
+			remove_planet_flag = spth_planet_reactor_use_food
+			remove_planet_flag = spth_planet_reactor_use_minerals
+			remove_planet_flag = spth_planet_reactor_use_consumer_goods
+		}
+	}
+	option = {
+		name = spth_colony.11.b
+		custom_tooltip = spth_colony.11.tooltip
+		hidden_effect = {
+			set_planet_flag = spth_planet_reactor_use_food
+			remove_planet_flag = spth_planet_reactor_use_minerals
+			remove_planet_flag = spth_planet_reactor_use_consumer_goods
+		}
+	}
+	option = {
+		name = spth_colony.11.c
+		custom_tooltip = spth_colony.11.tooltip
+		hidden_effect = {
+			remove_planet_flag = spth_planet_reactor_use_food
+			set_planet_flag = spth_planet_reactor_use_minerals
+			remove_planet_flag = spth_planet_reactor_use_consumer_goods
+		}
+	}
+	option = {
+		name = spth_colony.11.d
+		custom_tooltip = spth_colony.11.tooltip
+		hidden_effect = {
+			remove_planet_flag = spth_planet_reactor_use_food
+			remove_planet_flag = spth_planet_reactor_use_minerals
+			set_planet_flag = spth_planet_reactor_use_consumer_goods
+		}
+	}
+	option = {
+		name = spth_colony.11.exit
+		custom_tooltip = spth_colony.11.tooltip
+		default_hide_option = yes
+		hidden_effect = { set_planet_flag = close_spth_planet_reactor_ui }
+	}
+}

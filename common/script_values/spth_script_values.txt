@@ -1,0 +1,495 @@
+ship_spth_shield_efficiency_count = {
+	base = 0
+	add = modifier:ship_spth_shield_efficiency
+	min = 0
+}
+ship_spth_armor_efficiency_count = {
+	base = 0
+	add = modifier:ship_spth_armor_efficiency
+	min = 0
+}
+ship_spth_shield_efficiency_value = {
+	base = 0
+	add = modifier:ship_spth_shield_efficiency
+	mult = 2
+}
+ship_spth_armor_efficiency_value = {
+	base = 0
+	add = modifier:ship_spth_armor_efficiency
+	mult = 2
+}
+spth_shield_damage_debuff_value = {
+	base = 0
+	add = modifier:ship_shield_damage_mult
+	add = spth_shield_damage_debuff
+}
+spth_armor_damage_debuff_value = {
+	base = 0
+	add = modifier:ship_armor_damage_mult
+	add = spth_armor_damage_debuff
+}
+spth_months_passed = {
+	base = 0
+	add = trigger:days_passed
+	divide = 30
+	floor = yes
+}
+spth_current_month = {
+	base = 0
+	add = value:spth_months_passed
+	modulo = 12
+	add = 1
+}
+spth_current_day = {
+	base = 1
+	add = trigger:days_passed
+	modulo = 30
+}
+spth_current_year = {
+	base = 2200
+	add = trigger:years_passed
+}
+spth_leader_level = {
+	base = 0
+	add = trigger:has_total_skill
+	min = 0
+}
+spth_leader_experience = {
+	base = 0
+	add = trigger:has_experience
+	min = 0
+}
+spth_upgrade_leader_cost_lingli = {
+	base = 50
+	multiply = trigger:has_total_skill
+	add = 350
+}
+spth_upgrade_leader_cost_fuka = {
+	base = 10
+	multiply = trigger:has_total_skill
+	add = 30
+}
+spth_ship_death_sakura_point = {
+	base = 0
+	add = modifier:ship_spth_story_crisis_titan_energy_weapon_counter
+	square_root = yes
+	add = 1
+	multiply = 0.5
+}
+
+spth_story_crisis_titan_generic_damage = {
+	base = 0
+	add = modifier:weapon_type_lingli_weapon_damage_mult
+	add = modifier:weapon_type_white_fog_random_weapon_damage_mult
+	min = 0
+}
+spth_story_crisis_titan_generic_fire_rate = {
+	base = 0
+	add = modifier:weapon_type_lingli_weapon_fire_rate_mult
+	add = modifier:weapon_type_white_fog_random_weapon_fire_rate_mult
+	min = 0
+}
+
+spth_story_crisis_extra_energy_damage = {
+	base = 0
+	add = modifier:weapon_type_energy_weapon_damage_mult
+	multiply = 1.44
+	add = spth_story_crisis_extra_energy_var
+	add = value:spth_story_crisis_extra_energy_damage_ex
+	min = 0
+}
+spth_story_crisis_extra_energy_fire_rate_base = {
+	base = 0
+	add = modifier:weapon_type_kinetic_weapon_fire_rate_mult
+	multiply = 0.20
+	modifier = {
+		multiply = 0.8
+		check_variable_arithmetic = {
+			which = value:spth_months_passed
+			value <= 6
+		}
+	}
+	min = 0
+}
+spth_story_crisis_extra_energy_fire_rate = {
+	base = 0
+	add = value:spth_story_crisis_extra_energy_fire_rate_base
+	max = 7
+}
+spth_story_crisis_extra_energy_damage_ex = {
+	base = 0
+	add = value:spth_story_crisis_extra_energy_fire_rate_base
+	subtract = 7
+	min = 0
+}
+
+spth_story_crisis_extra_kinetic_damage = {
+	base = 0
+	add = modifier:weapon_type_kinetic_weapon_damage_mult
+	multiply = 1.44
+	add = spth_story_crisis_extra_kinetic_var
+	add = value:spth_story_crisis_extra_kinetic_damage_ex
+	min = 0
+}
+spth_story_crisis_extra_kinetic_fire_rate_base = {
+	base = 0
+	add = modifier:weapon_type_energy_weapon_fire_rate_mult
+	multiply = 0.20
+	modifier = {
+		multiply = 0.8
+		check_variable_arithmetic = {
+			which = value:spth_months_passed
+			value >= 7
+		}
+	}
+	min = 0
+}
+spth_story_crisis_extra_kinetic_fire_rate = {
+	base = 0
+	add = value:spth_story_crisis_extra_kinetic_fire_rate_base
+	max = 7
+}
+# max(0, 能量伤害*倍率-7)
+spth_story_crisis_extra_kinetic_damage_ex = {
+	base = 0
+	add = value:spth_story_crisis_extra_kinetic_fire_rate_base
+	subtract = 7
+	min = 0
+}
+
+leader_trait_th_skill_producer_1_factor = {
+	base = 0
+	modifier = {
+		exists = fleet
+		add = fleet.trigger:num_ships
+	}
+	modifier = {
+		exists = planet
+		add = planet.trigger:num_armies
+	}
+	min = 0
+}
+
+spth_p_max_ex_factor = {
+	base = 0
+	add = spth_number_p
+	divide = 16
+	add = 1
+}
+spth_super_carrier_computer_inv_used = {
+	base = 0
+	add = spth_super_carrier_inv_counter
+}
+spth_super_carrier_computer_inv_rest = {
+	base = 10
+	subtract = spth_super_carrier_inv_counter
+}
+spth_super_carrier_computer_cooldown = {
+	base = 0
+	add = spth_super_carrier_combat_days
+	modulo = 45
+	subtract = 45
+	abs = yes
+}
+
+spth_get_ship_size = {
+	base = 0
+	add = trigger:ship_size_multiplier
+	# in case some idiot fill an negative or zero value into ship_size_multiplier
+	abs = yes
+	min = 0
+}
+spth_get_ship_size_square_root = {
+	base = 0
+	add = trigger:ship_size_multiplier
+	# in case some idiot fill an negative value or zero into ship_size_multiplier
+	abs = yes
+	square_root = yes
+	min = 0
+}
+spth_reduce_shield_value = {
+	base = 0
+	add = trigger:has_shield_hp
+	mult = $percent$
+	divide = 100
+	floor = yes
+	min = 0
+	max = value:spth_reduce_shield_value_max|subtract|$subtract$|factor|$factor$|
+}
+spth_reduce_shield_value_max = {
+	base = 0
+	add = trigger:has_shield_hp
+	subtract = $subtract$
+	mult = $factor$
+	floor = yes
+	min = 0
+}
+yukari_kamikakushi_chance_base = {
+	base = 100
+	subtract = value:spth_get_ship_size_square_root
+	min = 0
+	max = 100
+}
+yukari_kamikakushi_chance_reduce = {
+	base = 0
+	add = value:spth_get_ship_size_square_root
+	min = 0
+	max = 100
+}
+yukari_kamikakushi_hardening_reduce_value = {
+	base = 0
+	add = value:spth_get_ship_size
+	multiply = 0.02
+	min = 0
+}
+yukari_kamikakushi_reduce_value = {
+	base = 0
+	add = value:spth_get_ship_size
+	square_root = yes
+	multiply = 0.05
+	min = 0.05
+	max = 0.75
+}
+
+spth_supercarrier_inv_counter = {
+	base = 10
+	modifier = {
+		event_target:is_spth_boss = {
+			is_variable_set = spth_super_carrier_inv_counter
+		}
+		subtract = event_target:is_spth_boss.spth_super_carrier_inv_counter
+	}
+	max = 10
+	min = 0
+}
+spth_is_boss_limt_hp = {
+	base = 0
+	add = event_target:is_spth_boss.trigger:has_hp
+	# multiply = value:spth_supercarrier_inv_counter
+}
+
+ship_spth_extra_life_power_down = {
+	base = 0
+	add = modifier:ship_spth_extra_life_power_down
+	min = -0.9
+	max = 0
+}
+ship_spth_extra_life_power_down_value = {
+	base = 0
+	# +100% damage, down = 0.1(10%) -> reduce_value = 0.1*100% = 10%
+	modifier = {
+		check_modifier_value = { modifier = ship_weapon_damage value > 0 }
+		add = modifier:ship_weapon_damage
+		multiply = value:ship_spth_extra_life_power_down
+	}
+	# +0% damage, down = 0.1 -> reduce_value = down = 10%
+	# -50% damage, down = 0.1 -> reduce_value = down = 10%
+	# if damage + 0.9 < down, do nothing.
+	modifier = {
+		check_modifier_value = { modifier = ship_weapon_damage value <= 0 }
+		check_variable_arithmetic = {
+			which = modifier:ship_weapon_damage add = 0.9
+			value >= value:ship_spth_extra_life_power_down
+		}
+		add = value:ship_spth_extra_life_power_down
+	}
+}
+
+spth_space_shrine_extra_life_rest = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger_scope = event_target:player_space_shrine_@this
+		trigger = check_modifier_value
+		parameters = { modifier = ship_spth_extra_life }
+		mode = add
+	}
+}
+spth_resource_stockpile = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = resource_stockpile_compare
+		trigger_scope = this
+		parameters = { resource = $spth_resource$ }
+		mode = add
+	}
+}
+spth_tr_spiritual_power_finish_factor = {
+	base = 0
+	add = 0.1
+	modifier = { add = 0.15 has_ascension_perk = ap_toho3 }
+	modifier = { add = 0.2 has_ascension_perk = ap_toho4 }
+	modifier = { add = 0.2 has_ascension_perk = ap_spth_gensokyo_planet }
+	modifier = { add = 0.25 has_technology = tech_th_shrine_mega }
+	modifier = { mult = value:spth_resource_stockpile|spth_resource|astral_threads| resource_stockpile_compare = { resource = astral_threads value <= 400 } }
+	modifier = { mult = value:spth_tr_spiritual_power_finish_factor_1 resource_stockpile_compare = { resource = astral_threads value > 400 } }
+	modifier = { add = value:spth_tr_spiritual_power_finish_factor_2 has_relic = r_th_latency resource_stockpile_compare = { resource = minor_artifacts value <= 1600 } }
+	modifier = { add = value:spth_tr_spiritual_power_finish_factor_3 has_relic = r_th_latency resource_stockpile_compare = { resource = minor_artifacts value > 1600 } }
+}
+spth_tr_spiritual_power_finish_factor_1 = {
+	base = 0
+	add = value:spth_resource_stockpile|spth_resource|astral_threads|
+	subtract = 400
+	min = 0
+	square_root = yes
+	add = 400
+}
+spth_tr_spiritual_power_finish_factor_2 = {
+	base = 0
+	add = value:spth_resource_stockpile|spth_resource|minor_artifacts|
+	mult = 0.15
+}
+spth_tr_spiritual_power_finish_factor_3 = {
+	base = 0
+	add = value:spth_resource_stockpile|spth_resource|minor_artifacts|
+	subtract = 1600
+	min = 0
+	square_root = yes
+	mult = 0.5
+	add = 1600
+}
+
+spth_leader_negative_traits_count = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = count_owned_leader
+		trigger_scope = this
+		parameters = { limit = { num_leader_traits = { negative = yes value > 0 } } }
+		mode = add
+	}
+	min = 1
+}
+
+spth_kamikakushi_protect_factor = {
+	base = 0
+	modifier = {
+		is_touhou_player_faction = no
+		add = modifier:weapon_type_energy_weapon_damage_mult
+	}
+	modifier = {
+		is_touhou_player_faction = yes
+		add = modifier:weapon_type_lingli_weapon_damage_mult
+	}
+	mult = 0.85
+}
+
+yin_yang_orb_drp_size = {
+	base = 0
+	add = trigger:empire_size
+	min = 50
+	abs = yes
+	square_root = yes
+	mult = $factor$
+}
+yin_yang_orb_drp_year = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger_scope = owner
+		trigger = years_passed
+		mode = add
+	}
+	min = 1
+	square_root = yes
+	mult = $factor$
+}
+yin_yang_orb_drp_count = {
+	base = 0
+	modifier = {
+		is_variable_set = yin_yang_orb_active_count
+		add = yin_yang_orb_active_count
+	}
+	mult = $active_factor$
+}
+yin_yang_orb_drp_mult = {
+	base = 0
+	add = 10
+	add = value:yin_yang_orb_drp_size|factor|0.1|
+	add = value:yin_yang_orb_drp_year|factor|0.4|
+	modifier = {
+		mid_game_years_passed < 0
+		end_game_years_passed < 0
+		mult = 1.1
+	}
+	modifier = {
+		mid_game_years_passed > 0
+		end_game_years_passed < 0
+		mult = 1.2
+	}
+	modifier = {
+		mid_game_years_passed > 0
+		end_game_years_passed > 0
+		mult = 1.3
+	}
+	mult = value:yin_yang_orb_drp_count|active_factor|$active_factor$|
+}
+# 基础*(ship_weapon_damage+能量+灵力+修正)*(1+船体伤害)*(1+大小倍率计算)=final
+# 修正 = final/(1+大小倍率计算)/(1+船体伤害)/基础 - ship_weapon_damage-能量-灵力
+th_instant_kill_hull_damage = {
+	base = 0
+	add = 1
+	add = modifier:ship_hull_damage_mult
+	min = 1
+}
+th_instant_kill_value = {
+	base = 0
+	add = $final_dmg$
+	divide = 3
+	divide = $base_dmg$
+	divide = value:th_instant_kill_hull_damage
+	subtract = modifier:ship_weapon_damage
+	subtract = modifier:weapon_type_energy_weapon_damage_mult
+	subtract = modifier:weapon_type_lingli_weapon_damage_mult
+	abs = yes
+}
+
+touhou_extra_export_value = {
+	base = 0
+	add = $modifier$
+	min = 0
+}
+
+touhou_mokou_reduce_value = {
+	base = 1
+	add = trigger:has_hp
+	mult = -1
+}
+
+touhou_export_resource_1 = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = resource_stockpile_compare
+		parameters = { resource = $resource$ }
+		mode = add
+	}
+	min = 0
+	max = 9999999
+}
+touhou_export_resource = {
+	base = 0
+	add = value:touhou_export_resource_1|resource|$resource$|
+	mult = $factor$
+}
+
+th_koishi_status_2_value = {
+	base = 0
+	add = modifier:$modifier$
+	min = 0
+}
+th_koishi_status_4_value = {
+	base = 0
+	add = modifier:weapon_type_lingli_weapon_damage_mult
+	add = modifier:weapon_type_energy_weapon_damage_mult
+	add = modifier:weapon_type_kinetic_weapon_damage_mult
+	min = 0
+}
+spth_super_carrier_computer_damage_reduce_value_1 = {
+	base = 0
+	add = trigger:has_max_hp
+	mult = 0.1
+}
+spth_super_carrier_computer_damage_reduce_value = {
+	base = 0
+	add = trigger:has_hp
+	add = value:spth_super_carrier_computer_damage_reduce_value_1
+	mult = 0.01
+	max = 10240
+}

@@ -5,7 +5,10 @@ country_event = {
 	id = th_card.0
 	title = th_card.0.name
 	desc = th_card.0.desc
-	picture = GFX_evt_th_card
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_th_alice_room }
 	is_triggered_only = yes
 	trigger = {
 		NOT = {
@@ -13,6 +16,7 @@ country_event = {
 		}
 	}
 	immediate = {
+		country_event = { id = th_card.1000 days = 360 }
         set_country_flag = th_card_event_lock
     }
 	#选择
@@ -36,6 +40,24 @@ country_event = {
 			}
 		}
 	}
+	option = {
+		name = th_card.0.b
+		trigger = {
+			check_variable = {
+				which = spth_card_current_tech
+				value >= @spth_card_max_tech
+			}
+			NOT = { check_variable = { which = spth_advanced_techs_count value >= @spth_card_max_advanced_tech } }
+		}
+		hidden_effect = {
+			country_event = { id = th_card.4 }
+		}
+	}
+	option = {
+		name = "th_card.0.c"
+		trigger = { count_owned_leader = { limit = { spth_has_start_ruler_trait = yes } count < 5 } }
+		hidden_effect = { country_event = { id = th_card.5 } }
+	}
     option = { # 全抽没了，暂时没东西给了
         name = th_card.0.y
 		trigger = {
@@ -48,7 +70,9 @@ country_event = {
                     which = spth_card_current_leader
                     value >= @spth_card_max_leader
                 }
+				count_owned_leader = { limit = { spth_has_start_ruler_trait = yes } count >= 5 }
             }
+			check_variable = { which = spth_advanced_techs_count value >= 3 }
 		}
         add_resource = {
 			influence = 10
@@ -61,18 +85,18 @@ country_event = {
     }
 	option = { # 退出
 		name = "th_card.0.z"
-		trigger = {
-            OR = {
-                check_variable = {
-                    which = spth_card_current_tech
-                    value < @spth_card_max_tech
-                }
-                check_variable = {
-                    which = spth_card_current_leader
-                    value < @spth_card_max_leader
-                }
-            }
-		}
+		# trigger = {
+        #     OR = {
+        #         check_variable = {
+        #             which = spth_card_current_tech
+        #             value < @spth_card_max_tech
+        #         }
+        #         check_variable = {
+        #             which = spth_card_current_leader
+        #             value < @spth_card_max_leader
+        #         }
+        #     }
+		# }
         hidden_effect = {
 			country_event = {
 				id = th_card.9
@@ -88,8 +112,11 @@ country_event = {
 	id = th_card.1
 	title = th_card.1.name
 	desc = th_card.1.desc
-	picture = GFX_evt_th_card
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_yukari_lake_room }
 	option = { # 领袖池
 		name = "th_card.1.a"
 		trigger = {
@@ -135,8 +162,11 @@ country_event = {
 	id = th_card.2
 	title = th_card.2.name
 	desc = th_card.2.desc
-	picture = GFX_evt_th_card
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_hakurei_shrine_1_room }
 	option = {
 		name = "th_card.2.a"
 		trigger = {
@@ -147,18 +177,15 @@ country_event = {
 		allow = {
 			resource_stockpile_compare = {
 				resource = sr_lingli
-				value >= 3000
+				value >= 750
 			}
 		}
 		add_resource = {
-			sr_lingli = -3000
+			sr_lingli = -750
 		}
 		hidden_effect = {
 			country_event = {
-				id = th_card.800 # 隐藏的随机获取将领事件
-			}
-			country_event = {
-				id = th_card.9 # 结束
+				id = th_card.101 # 隐藏的随机获取将领事件
 			}
 		}
 	}
@@ -181,6 +208,10 @@ country_event = {
 	desc = th_card.3.desc
 	picture = GFX_evt_th_card
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_yukari_lake_room }
 	option = {
 		name = "th_card.3.a"
 		trigger = {
@@ -192,15 +223,15 @@ country_event = {
 		allow = {
 			resource_stockpile_compare = {
 				resource = sr_lingli
-				value >= 5000
+				value >= 1250
 			}
 		}
 		add_resource = {
-			sr_lingli = -5000
+			sr_lingli = -1250
 		}
 		hidden_effect = {
 			country_event = {
-				id = th_card.1003
+				id = th_card.102
 			}
 			country_event = {
 				id = th_card.9
@@ -217,11 +248,11 @@ country_event = {
 		allow = {
 			resource_stockpile_compare = {
 				resource = sr_lingli
-				value >= 10000
+				value >= 2500
 			}
 		}
 		add_resource = {
-			sr_lingli = -10000
+			sr_lingli = -2500
 		}
 		hidden_effect = {
 			country_event = {
@@ -242,6 +273,194 @@ country_event = {
 	}
 }
 
+#############
+# 高级科技研究
+############
+country_event = {
+	id = th_card.4
+	is_triggered_only = yes
+	title = th_card.4.name
+	desc = th_card.4.desc
+	picture = GFX_evt_th_card
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hiff_story_shrine_room }
+	immediate = {
+		if = {
+			limit = { NOT = { is_variable_set = spth_advanced_techs_count } }
+			set_variable = { which = spth_advanced_techs_count value = 0 }
+		}
+	}
+	option = {
+		name = th_card.4.a
+		custom_tooltip = th_card.4.a.tooltip
+		allow = { resource_stockpile_compare = { resource = sr_lingli value >= 2500 } }
+		hidden_effect = {
+			spth_roll_advanced_techs = { cost = -2500 failed_factor = 75 success_factor = 25 }
+			country_event = { id = th_card.9 }
+		}
+	}
+	option = {
+		name = th_card.4.b
+		custom_tooltip = th_card.4.b.tooltip
+		allow = { resource_stockpile_compare = { resource = sr_lingli value >= 5000 } }
+		hidden_effect = {
+			spth_roll_advanced_techs = { cost = -5000 failed_factor = 50 success_factor = 50 }
+			country_event = { id = th_card.9 }
+		}
+	}
+	option = {
+		name = th_card.4.b
+		custom_tooltip = th_card.4.c.tooltip
+		allow = { resource_stockpile_compare = { resource = sr_lingli value >= 7500 } }
+		hidden_effect = {
+			spth_roll_advanced_techs = { cost = -7500 failed_factor = 25 success_factor = 75 }
+			country_event = { id = th_card.9 }
+		}
+	}
+	option = {
+		name = th_card.4.z
+		default_hide_option = yes
+		hidden_effect = {
+			country_event = { id = th_card.9 }
+		}
+	}
+}
+
+#############
+# 选择开局领袖
+############
+country_event = {
+	id = th_card.5
+	title = th_card.5.name
+	desc = th_card.5.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = koishi_hide_in_crowd_room }
+	immediate = {
+		random_list = {
+			1 = { set_variable = { which = th_card_5_var value = 1 } }
+			1 = { set_variable = { which = th_card_5_var value = 2 } }
+		}
+		reroll_random = yes
+	}
+	option = {
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value = 1 } }
+			text = th_card.5.a.1
+		}
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value != 1 } }
+			text = th_card.5.a.2
+		}
+		trigger = { NOT = { any_owned_leader = { has_trait = leader_trait_reimu } } }
+		hidden_effect = {
+			spth_effect_leader_init_spawner_default_effect = {
+				ID = reimu
+				CLASS = official
+			}
+			last_created_leader = {
+				add_trait_no_notify = leader_trait_boli
+				set_leader_flag = not_th_start_ruler
+			}
+			spth_leader_recruit_notice = { ID = reimu hakurei_shrine = yes }
+		}
+	}
+	option = {
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value = 1 } }
+			text = th_card.5.b.1
+		}
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value != 1 } }
+			text = th_card.5.b.2
+		}
+		trigger = { NOT = { any_owned_leader = { has_trait = leader_trait_yuyuko } } }
+		hidden_effect = {
+			spth_effect_leader_init_spawner_default_effect = {
+				ID = yuyuko
+				CLASS = official
+			}
+			last_created_leader = {
+				add_trait_no_notify = leader_trait_yuyuko1
+				set_leader_flag = not_th_start_ruler
+			}
+			spth_leader_recruit_notice = { ID = yuyuko tower_of_white_jade = yes }
+		}
+	}
+	option = {
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value = 1 } }
+			text = th_card.5.c.1
+		}
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value != 1 } }
+			text = th_card.5.c.2
+		}
+		trigger = { NOT = { any_owned_leader = { has_trait = leader_trait_satori } } }
+		hidden_effect = {
+			spth_effect_leader_init_spawner_default_effect = {
+				ID = satori
+				CLASS = official
+			}
+			last_created_leader = {
+				add_trait_no_notify = leader_trait_dld
+				set_leader_flag = not_th_start_ruler
+			}
+			spth_leader_recruit_notice = { ID = satori palace_of_the_earth_spirits = yes }
+		}
+	}
+	option = {
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value = 1 } }
+			text = th_card.5.d.1
+		}
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value != 1 } }
+			text = th_card.5.d.2
+		}
+		trigger = { NOT = { any_owned_leader = { has_trait = leader_trait_sanae } } }
+		hidden_effect = {
+			spth_effect_leader_init_spawner_default_effect = {
+				ID = sanae
+				CLASS = official
+			}
+			last_created_leader = {
+				add_trait_no_notify = leader_trait_xrs
+				set_leader_flag = not_th_start_ruler
+			}
+			spth_leader_recruit_notice = { ID = sanae suwa_shrine = yes }
+		}
+	}
+	option = {
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value = 1 } }
+			text = th_card.5.e.1
+		}
+		name = {
+			trigger = { check_variable = { which = th_card_5_var value != 1 } }
+			text = th_card.5.e.2
+		}
+		trigger = { NOT = { any_owned_leader = { has_trait = leader_trait_remilia } } }
+		hidden_effect = {
+			spth_effect_leader_init_spawner_default_effect = {
+				ID = remilia
+				CLASS = official
+			}
+			last_created_leader = {
+				set_leader_flag = not_th_start_ruler
+			}
+			spth_leader_recruit_notice = { ID = remilia scarlet_devil_mansion = yes }
+		}
+	}
+	option = {
+		name = th_card.5.refuse
+		country_event = { id = th_card.9 }
+	}
+}
 
 # 结束
 country_event = { # 整个事件链全都需要在这里结束，这个事件结束后会释放事件锁 
@@ -250,680 +469,14 @@ country_event = { # 整个事件链全都需要在这里结束，这个事件结
 	desc = th_card.9.desc
 	picture = GFX_evt_th_card
 	is_triggered_only = yes
-	option = {
-		name = th_card.9.a
-	}
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_th_alice_room }
+	option = { name = th_card.9.a }
     after = {
-        remove_country_flag = th_card_event_lock
+		hidden_effect = { remove_country_flag = th_card_event_lock }
     }
-}
-
-#######################################
-### 抽一个领袖
-#######################################
-country_event = {
-	id = th_card.800
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		country_event = {
-			id = th_card.801
-		}
-	}
-}
-
-country_event = {
-	id = th_card.801
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		random_list = {
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_meirin_get
-                }
-				country_event = {
-					id = th_card.8001
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-					OR = {
-						has_country_flag = th_koakuma_get
-						has_country_flag = th_fight_koakuma_get
-					}
-
-                }
-				country_event = {
-					id = th_card.8002
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_patchouli_get
-                }
-				country_event = {
-					id = th_card.8003
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_sakuya_get
-                }
-				country_event = {
-					id = th_card.8004
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_flandre_get
-                }
-				country_event = {
-					id = th_card.8005
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_letty_get
-                }
-				country_event = {
-					id = th_card.8006
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_youmu_get
-                }
-				country_event = {
-					id = th_card.8007
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_youki_get
-                }
-				country_event = {
-					id = th_card.8008
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_chen_get
-                }
-				country_event = {
-					id = th_card.8009
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_ran_get
-                }
-				country_event = {
-					id = th_card.8010
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_yukari_get
-                }
-				country_event = {
-					id = th_card.8011
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_nitori_get
-                }
-				country_event = {
-					id = th_card.8012
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_momiji_get
-                }
-				country_event = {
-					id = th_card.8013
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_aya_get
-                }
-				country_event = {
-					id = th_card.8014
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_hatate_get
-                }
-				country_event = {
-					id = th_card.8015
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_kanako_get
-                }
-				country_event = {
-					id = th_card.8016
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_suwako_get
-                }
-				country_event = {
-					id = th_card.8017
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_yuugi_get
-                }
-				country_event = {
-					id = th_card.8018
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_parsee_get
-                }
-				country_event = {
-					id = th_card.8019
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_rin_get
-                }
-				country_event = {
-					id = th_card.8020
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_utsuho_get
-                }
-				country_event = {
-					id = th_card.8021
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_koishi_get
-                }
-				country_event = {
-					id = th_card.8022
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_akyuu_get
-                }
-				country_event = {
-					id = th_card.8023
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_keine_get
-                }
-				country_event = {
-					id = th_card.8024
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_marisa_get
-                }
-				country_event = {
-					id = th_card.8025
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_kasen_get
-                }
-				country_event = {
-					id = th_card.8026
-				}
-			}
-			1 = {
-                modifier = {
-                    factor = 0
-        			has_country_flag = th_suika_get
-                }
-				country_event = {
-					id = th_card.8027
-				}
-			}
-		}
-	}
-}
-
-#红美铃
-country_event = {
-	id = th_card.8001
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_meirin_effect = yes
-	}
-}
-
-#小恶魔
-country_event = {
-	id = th_card.8002
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-        spth_effect_init_koakuma_effect = yes
-	}
-}
-
-#帕秋莉
-country_event = {
-	id = th_card.8003
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-        spth_effect_init_patchouli_effect = yes
-	}
-}
-
-
-#十六夜
-country_event = {
-	id = th_card.8004
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-        spth_effect_init_sakuya_effect = yes
-	}
-}
-
-#二小姐
-country_event = {
-	id = th_card.8005
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-        spth_effect_init_flandre_effect = yes
-	}
-}
-
-##############
-##白玉楼
-##############
-#蕾蒂
-country_event = {
-	id = th_card.8006
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_letty_effect = yes
-	}
-}
-
-#魂魄妖梦
-country_event = {
-	id = th_card.8007
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_youmu_effect = yes
-	}
-}
-
-#魂魄妖忌
-country_event = {
-	id = th_card.8008
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_youki_effect = yes
-	}
-}
-
-##############
-##八云之家
-##############
-#橙
-country_event = {
-	id = th_card.8009
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_chen_effect = yes
-	}
-}
-
-#蓝
-country_event = {
-	id = th_card.8010
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_ran_effect = yes
-	}
-}
-
-#紫
-country_event = {
-	id = th_card.8011
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_yukari_effect = yes
-	}
-}
-
-##############
-##妖怪山
-##############
-#河城荷取
-country_event = {
-	id = th_card.8012
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_nitori_effect = yes
-	}
-}
-
-#犬走椛
-country_event = {
-	id = th_card.8013
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_momiji_effect = yes
-	}
-}
-
-#射命丸文
-country_event = {
-	id = th_card.8014
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_aya_effect = yes
-	}
-}
-
-#姬海棠果
-country_event = {
-	id = th_card.8015
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_hatate_effect = yes
-	}
-}
-
-##############
-##守矢神社
-##############
-#八坂神奈子
-country_event = {
-	id = th_card.8016
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_kanako_effect = yes
-	}
-}
-
-#泄矢诹访子
-country_event = {
-	id = th_card.8017
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_suwako_effect = yes
-	}
-}
-
-#######################
-##地灵殿
-#######################
-#勇仪
-country_event = {
-	id = th_card.8018
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_yuugi_effect = yes
-	}
-}
-
-#帕露西
-country_event = {
-	id = th_card.8019
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_parsee_effect = yes
-	}
-}
-
-#燐
-country_event = {
-	id = th_card.8020
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_rin_effect = yes
-	}
-}
-
-#灵乌路空
-country_event = {
-	id = th_card.8021
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_utsuho_effect = yes
-	}
-}
-
-#恋恋
-country_event = {
-	id = th_card.8022
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_koishi_effect = yes
-	}
-}
-
-#######################
-##博丽神社
-#######################
-#阿求
-country_event = {
-	id = th_card.8023
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_akyuu_effect = yes
-	}
-}
-
-#慧音
-country_event = {
-	id = th_card.8024
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_keine_effect = yes
-	}
-}
-
-#魔理沙
-country_event = {
-	id = th_card.8025
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_marisa_effect = yes
-	}
-}
-
-#华扇
-country_event = {
-	id = th_card.8026
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_kasen_effect = yes
-	}
-}
-
-#萃香
-country_event = {
-	id = th_card.8027
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-        change_variable = {
-            which = spth_card_current_leader
-            value = 1
-        }
-		spth_effect_init_suika_effect = yes
-	}
 }
 
 #######################################
@@ -934,138 +487,223 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		country_event = {
-			id = th_card.101
-		}
+		spth_roll_card_techs = yes
 	}
 }
 
+#######################################
+### 抽一个领袖
+#######################################
+#noinspection ParadoxScriptUnresolvedExpression
 country_event = {
 	id = th_card.101
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
+		change_variable = {
+			which = spth_card_current_leader
+			value = 1
+		}
 		random_list = {
-			10 = {
-                modifier = {
-                    factor = 0
-        			has_technology = tech_th_engine_xijian
-                }
-				country_event = {
-					id = th_card.1001
-				}
-			}
-			10 = {
-                modifier = {
-                    factor = 0
-        			has_technology = tech_th_ship_part_taiyang
-                }
-				country_event = {
-					id = th_card.1002
-				}
-			}
-			10 = {
-                modifier = {
-                    factor = 0
-        			has_technology = tech_th_weapon_gungnir
-                }
-				country_event = {
-					id = th_card.1003
-				}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_meirin_get }
+				spth_effect_init_meirin_effect = yes
+				spth_leader_recruit_notice = { ID = meirin scarlet_devil_mansion = yes }
+				country_event = { id = spth_leader_recruit.105 }
 			}
 			1 = {
-                modifier = {
-                    factor = 0
-        			has_technology = tech_th_weapon_yuzhu
-                }
-				country_event = {
-					id = th_card.1004
-				}
+				modifier = { factor = 0 has_country_flag = th_koakuma_get }
+				spth_effect_init_koakuma_effect = yes
+				spth_leader_recruit_notice = { ID = koakuma scarlet_devil_mansion = yes }
+				country_event = { id = spth_leader_recruit.106 }
 			}
-			10 = {
-                modifier = {
-                    factor = 0
-        			has_technology = tech_spth_moon_computer
-                }
-				country_event = {
-					id = th_card.1005
-				}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_patchouli_get }
+				spth_effect_init_patchouli_effect = yes
+				spth_leader_recruit_notice = { ID = patchouli scarlet_devil_mansion = yes }
+				country_event = { id = spth_leader_recruit.107 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_sakuya_get }
+				spth_effect_init_sakuya_effect = yes
+				spth_leader_recruit_notice = { ID = sakuya scarlet_devil_mansion = yes }
+				country_event = { id = spth_leader_recruit.108 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_flandre_get }
+				spth_effect_init_flandre_effect = yes
+				spth_leader_recruit_notice = { ID = flandre scarlet_devil_mansion = yes }
+				country_event = { id = spth_leader_recruit.109 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_letty_get }
+				spth_effect_init_letty_effect = yes
+				spth_leader_recruit_notice = { ID = letty tower_of_white_jade = yes }
+				country_event = { id = spth_leader_recruit.110 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_youmu_get }
+				spth_effect_init_youmu_effect = yes
+				spth_leader_recruit_notice = { ID = youmu tower_of_white_jade = yes }
+				country_event = { id = spth_leader_recruit.111 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_youki_get }
+				spth_effect_init_youki_effect = yes
+				spth_leader_recruit_notice = { ID = youki tower_of_white_jade = yes }
+				country_event = { id = spth_leader_recruit.112 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_chen_get }
+				spth_effect_init_chen_effect = yes
+				spth_leader_recruit_notice = { ID = chen tower_of_white_jade = yes }
+				country_event = { id = spth_leader_recruit.113 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_ran_get }
+				spth_effect_init_ran_effect = yes
+				spth_leader_recruit_notice = { ID = ran tower_of_white_jade = yes }
+				country_event = { id = spth_leader_recruit.114 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_yukari_get }
+				spth_effect_init_yukari_effect = yes
+				spth_leader_recruit_notice = { ID = yukari tower_of_white_jade = yes }
+				country_event = { id = spth_leader_recruit.115 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_nitori_get }
+				spth_effect_init_nitori_effect = yes
+				spth_leader_recruit_notice = { ID = nitori suwa_shrine = yes }
+				country_event = { id = spth_leader_recruit.116 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_momiji_get }
+				spth_effect_init_momiji_effect = yes
+				spth_leader_recruit_notice = { ID = momiji suwa_shrine = yes }
+				country_event = { id = spth_leader_recruit.117 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_aya_get }
+				spth_effect_init_aya_effect = yes
+				spth_leader_recruit_notice = { ID = aya suwa_shrine = yes }
+				country_event = { id = spth_leader_recruit.118 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_hatate_get }
+				spth_effect_init_hatate_effect = yes
+				spth_leader_recruit_notice = { ID = hatate suwa_shrine = yes }
+				country_event = { id = spth_leader_recruit.119 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_kanako_get }
+				spth_effect_init_kanako_effect = yes
+				spth_leader_recruit_notice = { ID = kanako suwa_shrine = yes }
+				country_event = { id = spth_leader_recruit.120 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_suwako_get }
+				spth_effect_init_suwako_effect = yes
+				spth_leader_recruit_notice = { ID = suwako suwa_shrine = yes }
+				country_event = { id = spth_leader_recruit.121 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_yuugi_get }
+				spth_effect_init_yuugi_effect = yes
+				spth_leader_recruit_notice = { ID = yuugi suwa_shrine = yes }
+				country_event = { id = spth_leader_recruit.122 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_parsee_get }
+				spth_effect_init_parsee_effect = yes
+				spth_leader_recruit_notice = { ID = parsee palace_of_the_earth_spirits = yes }
+				country_event = { id = spth_leader_recruit.123 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_rin_get }
+				spth_effect_init_rin_effect = yes
+				spth_leader_recruit_notice = { ID = rin palace_of_the_earth_spirits = yes }
+				country_event = { id = spth_leader_recruit.124 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_utsuho_get }
+				spth_effect_init_utsuho_effect = yes
+				spth_leader_recruit_notice = { ID = utsuho palace_of_the_earth_spirits = yes }
+				country_event = { id = spth_leader_recruit.125 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_koishi_get }
+				spth_effect_init_koishi_effect = yes
+				spth_leader_recruit_notice = { ID = koishi palace_of_the_earth_spirits = yes }
+				country_event = { id = spth_leader_recruit.126 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_akyuu_get }
+				spth_effect_init_akyuu_effect = yes
+				spth_leader_recruit_notice = { ID = akyuu palace_of_the_earth_spirits = yes }
+				country_event = { id = spth_leader_recruit.127 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_keine_get }
+				spth_effect_init_keine_effect = yes
+				spth_leader_recruit_notice = { ID = keine hakurei_shrine = yes }
+				country_event = { id = spth_leader_recruit.128 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_marisa_get }
+				spth_effect_init_marisa_effect = yes
+				spth_leader_recruit_notice = { ID = marisa hakurei_shrine = yes }
+				country_event = { id = spth_leader_recruit.129 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_kasen_get }
+				spth_effect_init_kasen_effect = yes
+				spth_leader_recruit_notice = { ID = kasen hakurei_shrine = yes }
+				country_event = { id = spth_leader_recruit.130 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_suika_get }
+				spth_effect_init_suika_effect = yes
+				spth_leader_recruit_notice = { ID = suika hakurei_shrine = yes }
+				country_event = { id = spth_leader_recruit.131 }
+			}
+			1 = {
+				modifier = { factor = 0 has_country_flag = th_tenshi_get }
+				spth_effect_init_tenshi_effect = yes
+				spth_leader_recruit_notice = { ID = tenshi hakurei_shrine = yes }
 			}
 		}
 	}
 }
 
+# 神枪
 country_event = {
-	id = th_card.1001
+	id = th_card.102
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		give_technology = {
-			tech = "tech_th_engine_xijian"
+        change_variable = { which = spth_card_current_tech value = 1 }
+		give_technology = { tech = "tech_th_weapon_gungnir" }
+		create_message = {
+			type = spth_roll_tech_success
+			localization = spth_message_spth_roll_tech_success_desc
+			days = 30
+			target = this
+			recipient = this
 		}
-        change_variable = {
-            which = spth_card_current_tech
-            value = 1
-        }
 	}
 }
 
 country_event = {
-	id = th_card.1002
+	id = th_card.1000
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		give_technology = {
-			tech = "tech_th_ship_part_taiyang"
+		create_message = {
+			type = spth_message_latency_cooldown
+			localization = "MESSAGE_spth_message_latency_cooldown_DESC"
+			days = 60
+			target = this
 		}
-        change_variable = {
-            which = spth_card_current_tech
-            value = 1
-        }
-	}
-}
-
-country_event = {
-	id = th_card.1003
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		give_technology = {
-			tech = "tech_th_weapon_gungnir"
-		}
-        change_variable = {
-            which = spth_card_current_tech
-            value = 1
-        }
-	}
-}
-
-country_event = {
-	id = th_card.1004
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		give_technology = {
-			tech = "tech_th_weapon_yuzhu"
-		}
-        change_variable = {
-            which = spth_card_current_tech
-            value = 1
-        }
-	}
-}
-
-country_event = {
-	id = th_card.1005
-	hide_window = yes
-	is_triggered_only = yes
-	immediate = {
-		give_technology = {
-			tech = "tech_spth_moon_computer"
-		}
-        change_variable = {
-            which = spth_card_current_tech
-            value = 1
-        }
 	}
 }

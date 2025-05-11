@@ -1,0 +1,492 @@
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_alert.dds"
+    picture = GFX_evt_mc_hakurei_shrine
+    key = spth_repair_gensokyo_env
+    desc = {
+        text = spth_repair_gensokyo_env_desc
+        trigger = { always = yes }
+    }
+    cost = 0
+    days_to_research = 720
+    tech_department = society_technology
+    location = yes
+    sound = yes
+    event_scope = planet_event
+    timelimit = 7200
+    on_start = {
+        owner = { add_modifier = { modifier = spth_story_repair_env_upkeep } }
+    }
+    on_success = {
+        owner = {
+            remove_modifier = spth_story_repair_env_upkeep
+            country_event = { id = disappear_barrier.5 }
+        }
+
+    }
+    on_cancel = {
+        owner = { remove_modifier = spth_story_repair_env_upkeep }
+    }
+    on_fail = {
+        owner = { remove_modifier = spth_story_repair_env_upkeep }
+    }
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_main_quest.dds"
+    picture = GFX_evt_kamikakushi
+    key = spth_research_moon_barrier
+    desc = {
+        text = spth_research_moon_barrier_desc_1
+        trigger = { owner = { has_country_flag = spth_repair_moon_barrier } }
+    }
+    desc = {
+        text = spth_research_moon_barrier_desc_2
+        trigger = { owner = { has_country_flag = spth_break_moon_barrier } }
+    }
+    cost = 0
+    days_to_research = 90
+    tech_department = society_technology
+    requirements = {
+        shipclass_science_ship = 1
+        leader = scientist
+        skill >= 6
+    }
+    sound = yes
+    location = yes
+    event_scope = ship_event
+    on_progress_50 = {
+
+    }
+    on_success = {
+        owner = {
+            random_list = {
+                25 = { change_variable = { which = spth_research_moon_barrier_var value = 16 } }
+                25 = { change_variable = { which = spth_research_moon_barrier_var value = 20 } }
+                25 = { change_variable = { which = spth_research_moon_barrier_var value = 24 } }
+                15 = { change_variable = { which = spth_research_moon_barrier_var value = 32 } }
+                10 = { change_variable = { which = spth_research_moon_barrier_var value = 40 } }
+                5 = { change_variable = { which = spth_research_moon_barrier_var value = 48 } }
+            }
+            if = {
+                limit = {
+                    check_variable = { which = spth_research_moon_barrier_var value > 160 }
+                }
+                set_variable = { which = spth_research_moon_barrier_var value = 160 }
+            }
+            root = {
+                fire_on_action = {
+                    on_action = spth_on_special_project_completed
+                    scopes = { from = event_target:spth_story_sol_system_lunar_capital }
+                }
+            }
+        }
+    }
+    on_cancel = {
+
+    }
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_society.dds"
+    picture = GFX_evt_astral_rift_tropical_habitat_2
+    key = spth_disable_habitat_shield_0
+    desc = { text = spth_disable_habitat_shield_0_desc trigger = { always = yes } }
+    cost = 0
+    days_to_research = 30
+    tech_department = society_technology
+    requirements = {
+        shipclass_science_ship = 2
+        leader = scientist
+    }
+    sound = yes
+    location = yes
+    event_scope = ship_event
+    on_success = {
+        owner = {
+            create_message = {
+                type = spth_finish_special_project
+                localization = spth_message_finish_special_project_desc
+                variable = {
+                    type = name
+                    localization = SPTH_LEADER_NAME
+                    scope = root.leader
+                }
+                variable = {
+                    type = key
+                    value = spth_disable_habitat_shield_0
+                    localization = SPTH_PROJECT_NAME
+
+                }
+                days = 32
+                target = root.from
+                recipient = root.owner
+            }
+            country_event = { id = toho.3004 }
+        }
+    }
+}
+# 概率失败，第一次研究失败几率80%，之后每次下降20%
+# 失败需要重新开始研究上一个项目
+# 成功后roll 3～5个方案并且开启下一个项目
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_physics.dds"
+    picture = GFX_evt_astral_rift_tropical_habitat_2
+    key = spth_disable_habitat_shield_1
+    desc = { text = spth_disable_habitat_shield_1_desc trigger = { always = yes } }
+    cost = 64000
+    tech_department = physics_technology
+    sound = yes
+    location = yes
+    event_scope = planet_event
+    on_start = {
+        owner = {
+            if = {
+                limit = { NOT = { is_variable_set = spth_disable_habitat_shield_analysis_count } }
+                set_variable = { which = spth_disable_habitat_shield_analysis_count value = 0 }
+            }
+        }
+    }
+    on_success = {
+        owner = {
+            change_variable = { which = spth_disable_habitat_shield_analysis_count value = 1 }
+            if = {
+                limit = { check_variable = { which = spth_disable_habitat_shield_analysis_count value >= 5 } }
+                clear_variable = spth_disable_habitat_shield_analysis_count
+                random_list = {
+                    1 = { set_variable = { which = spth_disable_habitat_shield_count value = 3 } }
+                    1 = { set_variable = { which = spth_disable_habitat_shield_count value = 4 } }
+                    1 = { set_variable = { which = spth_disable_habitat_shield_count value = 5 } }
+                }
+                country_event = { id = toho.3006 }
+            } else = {
+                set_variable = { which = spth_disable_habitat_shield_analysis_sub value = 20 }
+                multiply_variable = {
+                    which = spth_disable_habitat_shield_analysis_sub
+                    value = spth_disable_habitat_shield_analysis_count
+                }
+                random_list = {
+                    20 = {
+                        modifier = { add = spth_disable_habitat_shield_analysis_sub }
+                        clear_variable = spth_disable_habitat_shield_analysis_count
+                        random_list = {
+                            1 = { set_variable = { which = spth_disable_habitat_shield_count value = 3 } }
+                            1 = { set_variable = { which = spth_disable_habitat_shield_count value = 4 } }
+                            1 = { set_variable = { which = spth_disable_habitat_shield_count value = 5 } }
+                        }
+                        country_event = { id = toho.3006 }
+                    }
+                    80 = {
+                        modifier = { subtract = spth_disable_habitat_shield_analysis_sub }
+                        owner = { country_event = { id = toho.3005 } }
+                    }
+                }
+                reroll_random = yes
+                clear_variable = spth_disable_habitat_shield_analysis_sub
+            }
+        }
+    }
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_engineering.dds"
+    picture = GFX_evt_torifune_in_sol
+    key = spth_disable_habitat_shield_2
+    desc = { text = spth_disable_habitat_shield_2_desc trigger = { always = yes } }
+    cost = 0
+    days_to_research = 64
+    tech_department = society_technology
+    requirements = {
+        shipclass_constructor = 1
+    }
+    sound = yes
+    location = yes
+    event_scope = ship_event
+    on_success = {
+        fire_on_action = {
+            on_action = spth_on_special_project_completed
+            scopes = { from = event_target:spth_story_sol_system_torifune }
+        }
+    }
+}
+
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_hiff_in_city_ruin_2
+    key = spth_project_astral_signals_search
+    event_chain = touhou_astral_signals
+    days_to_research = 60
+    tech_department = physics_technology
+    requirements = { shipclass_science_ship = 1 leader = scientist }
+    event_scope = ship_event
+    on_start = {}
+    on_success = {
+        if = {
+            limit = { from = { has_planet_flag = touhou_astral_signals_real_loc } }
+            owner = { country_event = { id = toho.8023 } }
+        } else = { owner = { country_event = { id = toho.8024 } } }
+    }
+    on_fail = {}
+}
+
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_astral_rift.dds"
+    picture = GFX_evt_spth_tuins_of_vina
+    key = spth_project_precursor_makai_locate
+    desc = {
+        text = spth_project_precursor_makai_locate_desc
+        trigger = { always = yes }
+    }
+    event_chain = touhou_makai_chain
+    cost = 0
+    days_to_research = 240
+    tech_department = physics_technology
+    sound = yes
+    location = yes
+    event_scope = planet_event
+    on_start = {}
+    on_success = {
+        owner = { country_event = { id = spth_precursor.102 } }
+    }
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_astral_rift.dds"
+    picture = GFX_evt_kamikakushi
+    key = spth_project_precursor_makai_arc_1
+    desc = {
+        text = spth_project_precursor_makai_arc_1_desc
+        trigger = { always = yes }
+    }
+    event_chain = touhou_makai_chain
+    cost = 0
+    days_to_research = 90
+    tech_department = physics_technology
+    sound = yes
+    location = yes
+    event_scope = planet_event
+    on_start = {}
+    on_success = {
+        owner = {
+            country_event = {
+                id = spth_precursor.104
+                scopes = {
+                    from = prev
+                }
+            }
+        }
+    }
+}
+special_project = { inline_script = { script = sp/spth_project_precursor_makai_config id = 105 picture = GFX_evt_dead_city } }
+special_project = { inline_script = { script = sp/spth_project_precursor_makai_config id = 106 picture = GFX_evt_space_station } }
+special_project = { inline_script = { script = sp/spth_project_precursor_makai_config id = 107 picture = GFX_evt_exploding_ship } }
+special_project = { inline_script = { script = sp/spth_project_precursor_makai_config id = 108 picture = GFX_evt_mysterious_signal } }
+special_project = { inline_script = { script = sp/spth_project_precursor_makai_config id = 109 picture = GFX_evt_spth_nebula } }
+special_project = { inline_script = { script = sp/spth_project_precursor_makai_config id = 110 picture = GFX_evt_astral_rift_research_lab } }
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_spth_shinki_1
+    key = spth_precursor_capital_makai_discover
+    desc = {
+        text = spth_precursor_capital_makai_discover_desc
+        trigger = { always = yes }
+    }
+    event_chain = touhou_makai_chain
+    cost = 0
+    days_to_research = 90
+    tech_department = physics_technology
+    sound = yes
+    location = yes
+    event_scope = planet_event
+    on_start = {}
+    on_success = {
+        owner = {
+            set_global_flag = spth_precursor_capital_makai_spawned
+            set_spawn_system_batch = begin
+            random_system_within_border = {
+                spawn_system = {
+                    initializer = spth_precursor_capital_makai
+                    hyperlane = no
+                    effect = {
+                        add_hyperlane = {
+                            from = this
+                            to = prev
+                        }
+                    }
+                }
+            }
+            set_spawn_system_batch = end
+            if = {
+                limit = { NOT = { has_event_chain = touhou_makai_chain } }
+                begin_event_chain = { event_chain = touhou_makai_chain target = this }
+            }
+            create_point_of_interest = {
+                id = spth_precursor_capital_makai.poi
+                name = spth_precursor_capital_makai.poi
+                desc = spth_precursor_capital_makai.poi.desc
+                event_chain = touhou_makai_chain
+                location = event_target:spth_precursor_capital_makai_system
+            }
+            country_event = { id = spth_precursor.115 }
+            every_playable_country = {
+                limit = { NOT = { is_same_value = prev } }
+                if = {
+                    limit = { has_special_project = spth_precursor_capital_makai_discover }
+                    abort_special_project = {
+                        type = spth_precursor_capital_makai_discover
+                        location = capital_scope
+                    }
+                }
+                country_event = {
+                    id = spth_precursor.116
+                    days = 30
+                    random = 30
+                    scopes = { from = prev }
+                }
+            }
+        }
+    }
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_megastructure_construction
+    key = spth_precursor_capital_makai_wedge_repair
+    desc = {
+        text = spth_precursor_capital_makai_wedge_repair_desc
+        trigger = { always = yes }
+    }
+    event_chain = touhou_makai_chain
+    cost = 0
+    days_to_research = 540
+    tech_department = engineering_technology
+    sound = yes
+    location = yes
+    event_scope = planet_event
+    on_start = {}
+    on_success = {
+        set_timed_global_flag = { flag = spth_makai_wedge_repair_finish_recent days = 360 }
+        event_target:spth_kamikakushi_invader_country = {
+            every_owned_fleet = { delete_fleet = this } destroy_country = yes
+        }
+        solar_system = {
+            spawn_megastructure = {
+                type = spth_makai_wedge_0
+                coords_from = star
+                owner = root.from
+                orbit_distance = 0
+                orbit_angle = 0
+                graphical_culture = root.from
+                init_effect = {
+                    set_megastructure_flag = is_repaired_makai_wedge
+                }
+            }
+        }
+        event_target:makai_wedge_ruined_object = {
+            destroy_ambient_object = this
+        }
+        random_megastructure = {
+            limit = { has_megastructure_flag = is_repaired_makai_wedge }
+            save_global_event_target_as = makai_wedge_ruined_object
+        }
+        from = {
+            spth_precursor_unlock_makai_ship_core = yes
+            country_event = { id = spth_precursor.124 }
+        }
+    }
+}
+
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_wormhole
+    key = spth_kamikakushi_crisis_gate_reverse
+    desc = {
+        text = spth_kamikakushi_crisis_gate_reverse_desc
+        trigger = { always = yes }
+    }
+    event_chain = spth_kamikakushi_crisis_invasion
+    cost = 0
+    days_to_research = 360
+    tech_department = physics_technology
+    sound = yes
+    location = yes
+    event_scope = planet_event
+    on_start = {}
+    on_success = {
+        set_global_flag = spth_kamikaushi_crisis_ended
+        stop_crisis_sound = yes
+        event_target:spth_kamikakushi_country = {
+            every_owned_fleet = {
+                create_ambient_object = {
+                    type = "star_explosion"
+                    play_animation_once = yes
+                    location = this
+                }
+                last_created_ambient_object = {
+                    set_location = { target = prev distance = 0 angle = random }
+                }
+                delete_fleet = this
+            }
+            destroy_country = yes
+        }
+        event_target:spth_kamikakushi_diplomacy = {
+            destroy_country = yes
+        }
+        every_playable_country = {
+            limit = { NOT = { is_same_value = event_target:defeat_kamikakushi_country } }
+            add_opinion_modifier = {
+                modifier = opinion_defeat_kamikakushi
+                who = event_target:defeat_kamikakushi_country
+            }
+        }
+        every_country = {
+            limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+            spth_play_music_once_message = {
+                music = spth_ndj_plcs_twilight_style
+                target = this
+            }
+            country_event = { id = touhou_crisis.121 }
+        }
+    }
+}
+
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_th135_cover3
+    key = touhou_kokoro_survey_project
+    days_to_research = 360
+    tech_department = society_technology
+    requirements = { shipclass_science_ship = 1 leader = scientist }
+    event_scope = ship_event
+    on_start = {}
+    on_success = {
+        owner = {
+            country_event = {
+                id = toho.8104
+                scopes = {
+                    from = event_target:toho_8103_target_@root
+                    fromfrom = prev
+                }
+            }
+        }
+    }
+    on_fail = {}
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_shielded_planet
+    key = spth_lunar_union_unlock_shield
+    event_chain = spth_event_chain_past_legacy
+    days_to_research = 360
+    tech_department = physics_technology
+    requirements = { shipclass_science_ship = 1 leader = scientist }
+    event_scope = ship_event
+    on_start = {}
+    on_success = {
+        event_target:spth_story_lunar_capital_union_system = {
+            random_system_planet = {
+                limit = { has_planet_flag = spth_story_lunar_capital_union_system_arc }
+                th_spawn_explosion_particle = { color = pink size = large }
+                change_pc = pc_gaia
+                spth_spawn_lunar_capital_union_fleet = yes
+                event_target:spth_disappear_barrier_player = { country_event = { id = disappear_barrier.1007 } }
+                create_archaeological_site = site_lunar_capital_ruined_ship
+            }
+        }
+    }
+    on_fail = {}
+}

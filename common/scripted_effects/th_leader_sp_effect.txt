@@ -28,3 +28,693 @@ TH_capture_defender_army = {
 
     clear_variable = TH_capture_enemies_count
 }
+
+spth_calc_koishi_lingli_upkeep = {
+    optimize_memory
+    set_variable = { which = koishi_lingli_upkeep value = 0 }
+    if = {
+        limit = { has_country_flag = enable_koishi_fleet_support_1 }
+        change_variable = { which = koishi_lingli_upkeep value = 15 }
+    }
+    if = {
+        limit = { has_country_flag = enable_koishi_fleet_support_2 }
+        change_variable = { which = koishi_lingli_upkeep value = 5 }
+    }
+    if = {
+        limit = { has_country_flag = enable_koishi_fleet_support_3 }
+        change_variable = { which = koishi_lingli_upkeep value = 20 }
+    }
+    if = {
+        limit = { has_country_flag = enable_koishi_fleet_support_4 }
+        change_variable = { which = koishi_lingli_upkeep value = 5 }
+    }
+    if = {
+        limit = { has_country_flag = enable_koishi_fleet_support_5 }
+        change_variable = { which = koishi_lingli_upkeep value = 20 }
+    }
+    if = {
+        limit = { has_country_flag = enable_koishi_fleet_support_6 }
+        change_variable = { which = koishi_lingli_upkeep value = 15 }
+    }
+}
+
+koishi_gal_combat_effect_self = {
+    optimize_memory
+    if = {
+        limit = { owner = { has_country_flag = enable_koishi_fleet_support_1 } }
+        koishi_gal_combat_effect_1_self = yes
+    }
+    if = {
+        limit = { owner = { has_country_flag = enable_koishi_fleet_support_3 } }
+        koishi_gal_combat_effect_3_self = yes
+    }
+    if = {
+        limit = { owner = { has_country_flag = enable_koishi_fleet_support_6 } }
+        koishi_gal_combat_effect_6_self = yes
+    }
+}
+
+# This = our fleet
+# From = enemy fleet
+# FromFrom = our country
+koishi_gal_combat_effect = {
+    optimize_memory
+    if = {
+        limit = { fromfrom = { has_country_flag = enable_koishi_fleet_support_1 } }
+        from = { every_owned_ship = { set_ship_flag = debuff_koishi_fleet_support_1 } }
+    }
+    if = {
+        limit = { fromfrom = { has_country_flag = enable_koishi_fleet_support_2 } }
+        from = {
+            if = {
+                limit = { NOT = { has_fleet_flag = koishi_combat_assassin_cooldown } }
+                if = {
+                    limit = { exists = leader leader = { NOT = { has_leader_flag = spth_sp_leader } } }
+                    random_list = {
+                        75 = {}
+                        25 = {
+                            leader = {
+                                if = {
+                                    limit = { NOT = { has_leader_flag = spth_sp_leader } }
+                                    unassign_leader = this
+                                    # exile_leader_as = this
+                                    kill_leader = { show_notification = no }
+                                }
+                            }
+                        }
+                    }
+                }
+                set_timed_fleet_flag = { flag = koishi_combat_assassin_cooldown days = 5 }
+            }
+        }
+    }
+    if = {
+        limit = { fromfrom = { has_country_flag = enable_koishi_fleet_support_3 } }
+        koishi_gal_combat_effect_3 = yes
+    }
+    if = {
+        limit = { fromfrom = { has_country_flag = enable_koishi_fleet_support_4 } }
+        koishi_gal_combat_effect_4 = yes
+    }
+    if = {
+        limit = { fromfrom = { has_country_flag = enable_koishi_fleet_support_5 } }
+        koishi_gal_combat_effect_5 = yes
+    }
+}
+koishi_gal_combat_effect_3 = {
+    optimize_memory
+    # 保证船体提升至少floor(2000000*(60%+(恋恋灵力/1028)))
+    set_variable = { which = koishi_ship_hull_var value = owner.spth_koishi_lingli_var }
+    divide_variable = { which = koishi_ship_hull_var value = 1028 }
+    change_variable = { which = koishi_ship_hull_var value = 0.60 }
+    multiply_variable = { which = koishi_ship_hull_var value = 2000000 }
+}
+koishi_gal_combat_effect_4 = {
+    optimize_memory
+    if = {
+        limit = {
+            from = { is_ship_class = shipclass_military }
+            NOT = { has_fleet_flag = koishi_support_cooldown }
+        }
+        set_timed_fleet_flag = { flag = koishi_support_cooldown days = 45 }
+        solar_system = {
+            create_ambient_object = {
+                type = "star_explosion"
+                play_animation_once = yes
+                location = this.star
+            }
+            last_created_ambient_object = {
+                set_location = { target = this.star distance = 0 angle = random }
+            }
+        }
+        from = {
+            set_variable = { which = koishi_ship_count value = 0 }
+            export_trigger_value_to_variable = {
+                trigger = count_owned_ship
+                parameters = { limit = { is_ship_class = shipclass_military is_koishi_original_ships = yes } }
+                variable = koishi_ship_count
+            }
+            random_list = {
+                1 = { multiply_variable = { which = koishi_ship_count value = 0.20 } }
+                1 = { multiply_variable = { which = koishi_ship_count value = 0.25 } }
+                1 = { multiply_variable = { which = koishi_ship_count value = 0.30 } }
+                1 = { multiply_variable = { which = koishi_ship_count value = 0.35 } }
+                1 = { multiply_variable = { which = koishi_ship_count value = 0.40 } }
+                1 = { multiply_variable = { which = koishi_ship_count value = 0.45 } }
+                1 = { multiply_variable = { which = koishi_ship_count value = 0.50 } }
+            }
+            reroll_random = yes
+            floor_variable = koishi_ship_count
+            if = {
+                limit = { check_variable = { which = koishi_ship_count value < 1 } }
+                set_variable = { which = koishi_ship_count value = 1 }
+            }
+            if = {
+                limit = {
+                    exists = leader
+                    leader = { has_trait = leader_trait_koishi }
+                }
+                while = {
+                    count = koishi_ship_count
+                    random_owned_ship = {
+                        limit = { is_ship_class = shipclass_military }
+                        koishi_reduce_hp_percent = { percent = 50 }
+                    }
+                }
+            } else = {
+                while = {
+                    count = koishi_ship_count
+                    random_owned_ship = {
+                        limit = { is_ship_class = shipclass_military }
+                        koishi_reduce_hp_percent = { percent = 25 }
+                    }
+                }
+            }
+        }
+    }
+}
+koishi_gal_combat_effect_5 = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_fleet_flag = koishi_combat_upgrade_finished } }
+        set_fleet_flag = koishi_combat_upgrade_finished
+        every_owned_ship = {
+            set_variable = { which = koishi_repeatable_rate value = 0.05 }
+            set_variable = { which = koishi_repeatable_temp value = owner.spth_koishi_lingli_var }
+            divide_variable = { which = koishi_repeatable_temp value = 2056 }
+            if = {
+                limit = { check_variable = { which = koishi_repeatable_temp value > 0.05 } }
+                change_variable = { which = koishi_repeatable_rate value = koishi_repeatable_temp }
+            } else = {
+                change_variable = { which = koishi_repeatable_rate value = 0.05 }
+            }
+
+            set_variable = { which = koishi_repeatable_var value = 0 }
+            # energy
+            export_modifier_to_variable = {
+                modifier = weapon_type_energy_weapon_damage_mult
+                variable = koishi_repeatable_var
+            }
+            if = {
+                limit = { check_variable = { which = koishi_repeatable_var value < 0 } }
+                multiply_variable = { which = koishi_repeatable_var value = -1 }
+            }
+            multiply_variable = { which = koishi_repeatable_var value = koishi_repeatable_rate }
+            change_variable = { which = koishi_repeatable_var value = 1 }
+            add_modifier = { modifier = koishi_improve_energy_damage multiplier = koishi_repeatable_var }
+            set_variable = { which = koishi_repeatable_temp value = koishi_repeatable_var }
+            # kinetic
+            export_modifier_to_variable = {
+                modifier = weapon_type_kinetic_weapon_damage_mult
+                variable = koishi_repeatable_var
+            }
+            if = {
+                limit = { check_variable = { which = koishi_repeatable_var value < 0 } }
+                multiply_variable = { which = koishi_repeatable_var value = -1 }
+            }
+            multiply_variable = { which = koishi_repeatable_var value = koishi_repeatable_rate }
+            change_variable = { which = koishi_repeatable_var value = 1 }
+            add_modifier = { modifier = koishi_improve_kinetic_damage multiplier = koishi_repeatable_var }
+            if = {
+                limit = { check_variable = { which = koishi_repeatable_var value > koishi_repeatable_temp } }
+                set_variable = { which = koishi_repeatable_temp value = koishi_repeatable_var }
+            }
+            # explosive
+            export_modifier_to_variable = {
+                modifier = weapon_type_explosive_weapon_damage_mult
+                variable = koishi_repeatable_var
+            }
+            if = {
+                limit = { check_variable = { which = koishi_repeatable_var value < 0 } }
+                multiply_variable = { which = koishi_repeatable_var value = -1 }
+            }
+            multiply_variable = { which = koishi_repeatable_var value = koishi_repeatable_rate }
+            change_variable = { which = koishi_repeatable_var value = 1 }
+            add_modifier = { modifier = koishi_improve_explosive_damage multiplier = koishi_repeatable_var }
+            if = {
+                limit = { check_variable = { which = koishi_repeatable_var value > koishi_repeatable_temp } }
+                set_variable = { which = koishi_repeatable_temp value = koishi_repeatable_var }
+            }
+            # special
+            change_variable = { which = koishi_repeatable_var value = 2 }
+            add_modifier = { modifier = koishi_improve_special_damage multiplier = koishi_repeatable_var }
+
+            clear_variable = koishi_repeatable_temp
+        }
+    }
+}
+koishi_gal_combat_effect_1_self = {
+    optimize_memory
+    TH_dynamic_modifier_conditional = {
+        modifier = "ship_evasion_mult"
+        relation = "<"
+        limit_value = 1
+        value = 1
+    }
+    TH_dynamic_modifier_conditional = {
+        modifier = "ship_evasion_add"
+        relation = "<"
+        limit_value = 100
+        value = 100
+    }
+}
+koishi_gal_combat_effect_1_enemy = {
+    optimize_memory
+    if = {
+        limit = { has_ship_flag = debuff_koishi_fleet_support_1 }
+        if = {
+            limit = {
+                check_variable = { which = koishi_combat_days value <= 4 }
+            }
+            TH_dynamic_modifier_conditional = {
+                modifier = "ship_accuracy_mult"
+                relation = ">"
+                limit_value = -1
+                value = -1
+            }
+            TH_dynamic_modifier_conditional = {
+                modifier = "ship_tracking_mult"
+                relation = ">"
+                limit_value = -1
+                value = -1
+            }
+        }
+        if = {
+            limit = { NOT = { has_ship_flag = koishi_combat_1_cooldown } }
+            TH_timed_check_modifier = {
+                modifier = "ship_accuracy_mult"
+                relation = ">"
+                check_value = -1
+                value = -1
+                days = 2
+            }
+            TH_timed_check_modifier = {
+                modifier = "ship_tracking_mult"
+                relation = ">"
+                check_value = -1
+                value = -1
+                days = 2
+            }
+            set_timed_ship_flag = { flag = koishi_combat_1_cooldown days = 8 }
+        }
+    }
+}
+koishi_gal_combat_effect_3_self = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_ship_flag = koishi_combat_defence_cooldown } }
+        set_variable = { which = koishi_ship_hull_var value = fleet.koishi_ship_hull_var }
+        floor_variable = koishi_ship_hull_var
+        # set_update_modifiers_batch = begin
+        remove_modifier = koishi_improve_ship_hull
+        add_modifier = { modifier = koishi_improve_ship_hull multiplier = koishi_ship_hull_var }
+        # set_update_modifiers_batch = end
+        spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 }
+        set_timed_ship_flag = { flag = koishi_combat_defence_cooldown days = 3 }
+    }
+}
+koishi_gal_combat_effect_6_self = {
+    optimize_memory
+    TH_dynamic_modifier_conditional = {
+        modifier = "ship_shield_penetration_mult"
+        relation = "<"
+        limit_value = 0.50
+        value = 0.50
+    }
+    TH_dynamic_modifier_conditional = {
+        modifier = "ship_armor_penetration_mult"
+        relation = "<"
+        limit_value = 0.50
+        value = 0.50
+    }
+}
+
+koishi_reduce_hp_percent = {
+    optimize_memory
+    set_variable = { which = koishi_hitpoint value = 0 }
+    export_trigger_value_to_variable = { trigger = has_hp variable = koishi_hitpoint }
+    multiply_variable = { which = koishi_hitpoint value = $percent$ }
+    multiply_variable = { which = koishi_hitpoint value = 0.01 }
+    floor_variable = koishi_hitpoint
+    reduce_hp = koishi_hitpoint
+    clear_variable = koishi_hitpoint
+}
+
+koishi_reduce_hp_rest = {
+    optimize_memory
+    set_variable = { which = koishi_hitpoint value = 0 }
+    export_trigger_value_to_variable = { trigger = has_hp variable = koishi_hitpoint }
+    change_variable = { which = koishi_hitpoint value = $rest$ }
+    floor_variable = koishi_hitpoint
+    reduce_hp = koishi_hitpoint
+    clear_variable = koishi_hitpoint
+}
+
+spth_leader_recruit_save_event_target = {
+    optimize_memory
+    random_owned_leader = {
+        limit = { has_leader_flag = spth_sp_leader has_trait = leader_trait_$who$ }
+        save_event_target_as = spth_card_portrait_leader
+    }
+}
+spth_leader_second_destiny_select_clear_all_flags = {
+    optimize_memory
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_surveyor }
+        remove_leader_flag = spth_leader_destiny_leader_trait_surveyor
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_midas_touch }
+        remove_leader_flag = spth_leader_destiny_leader_trait_midas_touch
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_collective_wisdom }
+        remove_leader_flag = spth_leader_destiny_leader_trait_collective_wisdom
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_knowledge_for_the_masses }
+        remove_leader_flag = spth_leader_destiny_leader_trait_knowledge_for_the_masses
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_robotist }
+        remove_leader_flag = spth_leader_destiny_leader_trait_robotist
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_great_researcher }
+        remove_leader_flag = spth_leader_destiny_leader_trait_great_researcher
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_xeno_cataloger }
+        remove_leader_flag = spth_leader_destiny_leader_trait_xeno_cataloger
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_frontier_adventurer }
+        remove_leader_flag = spth_leader_destiny_leader_trait_frontier_adventurer
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_brilliant_shipwright }
+        remove_leader_flag = spth_leader_destiny_leader_trait_brilliant_shipwright
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_truth_seeker }
+        remove_leader_flag = spth_leader_destiny_leader_trait_truth_seeker
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_master_gunner }
+        remove_leader_flag = spth_leader_destiny_leader_trait_master_gunner
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_military_overseer }
+        remove_leader_flag = spth_leader_destiny_leader_trait_military_overseer
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_armorer }
+        remove_leader_flag = spth_leader_destiny_leader_trait_armorer
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_destiny_engineer }
+        remove_leader_flag = spth_leader_destiny_leader_trait_destiny_engineer
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_guerilla_tactics }
+        remove_leader_flag = spth_leader_destiny_leader_trait_guerilla_tactics
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_survivalist }
+        remove_leader_flag = spth_leader_destiny_leader_trait_survivalist
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_maven_of_war }
+        remove_leader_flag = spth_leader_destiny_leader_trait_maven_of_war
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_peacekeeper }
+        remove_leader_flag = spth_leader_destiny_leader_trait_peacekeeper
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_taskmaster }
+        remove_leader_flag = spth_leader_destiny_leader_trait_taskmaster
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_fortress_cracker }
+        remove_leader_flag = spth_leader_destiny_leader_trait_fortress_cracker
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_chainbreaker }
+        remove_leader_flag = spth_leader_destiny_leader_trait_chainbreaker
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_honored_warmaster }
+        remove_leader_flag = spth_leader_destiny_leader_trait_honored_warmaster
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_academia_recruiter }
+        remove_leader_flag = spth_leader_destiny_leader_trait_academia_recruiter
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_supreme_warrior }
+        remove_leader_flag = spth_leader_destiny_leader_trait_supreme_warrior
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_bellicose }
+        remove_leader_flag = spth_leader_destiny_leader_trait_bellicose
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_efficient }
+        remove_leader_flag = spth_leader_destiny_leader_trait_efficient
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_arbiter }
+        remove_leader_flag = spth_leader_destiny_leader_trait_arbiter
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_utopian_idealist }
+        remove_leader_flag = spth_leader_destiny_leader_trait_utopian_idealist
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_mediator }
+        remove_leader_flag = spth_leader_destiny_leader_trait_mediator
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_shroud_preacher }
+        remove_leader_flag = spth_leader_destiny_leader_trait_shroud_preacher
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_master_diplomat }
+        remove_leader_flag = spth_leader_destiny_leader_trait_master_diplomat
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_supreme_organizer }
+        remove_leader_flag = spth_leader_destiny_leader_trait_supreme_organizer
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_galvanizer }
+        remove_leader_flag = spth_leader_destiny_leader_trait_galvanizer
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_diplo_weight }
+        remove_leader_flag = spth_leader_destiny_leader_trait_diplo_weight
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_supporting_voter }
+        remove_leader_flag = spth_leader_destiny_leader_trait_supporting_voter
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_spymaster }
+        remove_leader_flag = spth_leader_destiny_leader_trait_spymaster
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_totalitarian }
+        remove_leader_flag = spth_leader_destiny_leader_trait_totalitarian
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_educator }
+        remove_leader_flag = spth_leader_destiny_leader_trait_educator
+    }
+    if = {
+        limit = { has_leader_flag = spth_leader_destiny_leader_trait_master_bureaucrat }
+        remove_leader_flag = spth_leader_destiny_leader_trait_master_bureaucrat
+    }
+}
+
+spth_leader_recruit_notice = {
+    optimize_memory
+    random_owned_leader = {
+        limit = { has_leader_flag = spth_sp_leader has_leader_flag = flag_$ID$ }
+        save_event_target_as = spth_leader_recruit_temp
+    }
+    create_message = {
+        type = spth_legend_leader_recruit_message
+        localization = spth_message_spth_legend_leader_recruit_desc
+        days = 30
+        variable = {
+            type = name
+            localization = SPTH_LEADER_NAME
+            scope = event_target:spth_leader_recruit_temp
+        }
+        target = event_target:spth_leader_recruit_temp
+        recipient = this
+    }
+    [[hakurei_shrine] country_event = { id = spth_leader_recruit.1 } ]
+    [[suwa_shrine] country_event = { id = spth_leader_recruit.2 } ]
+    [[tower_of_white_jade] country_event = { id = spth_leader_recruit.3 } ]
+    [[palace_of_the_earth_spirits] country_event = { id = spth_leader_recruit.4 } ]
+    [[shining_needle_castle] country_event = { id = spth_leader_recruit.5 } ]
+    [[scarlet_devil_mansion] country_event = { id = spth_leader_recruit.6 } ]
+}
+
+spth_change_leader_portrait_koishi_effect = {
+    optimize_memory
+}
+spth_change_leader_portrait_reimu_effect = {
+    optimize_memory
+    spth_play_music_once_message = {
+        music = spth_ndj_music_memory
+        target = prev
+    }
+}
+spth_change_leader_portrait_youmu_effect = {
+    optimize_memory
+}
+spth_change_leader_portrait_yukari_effect = {
+    optimize_memory
+}
+spth_play_music_once_message = {
+    optimize_memory
+    create_message = {
+        type = $music$
+        localization = "MESSAGE_$music$_DESC"
+        days = 999
+        target = $target$
+    }
+}
+
+spth_mokou_create_army = {
+    optimize_memory
+    while = {
+        count = $count$
+        create_army = {
+            name = random
+            owner = root
+            species = root.owner_main_species
+            type = $type$
+        }
+    }
+}
+
+spth_kokoro_apply_face_effect = {
+    optimize_memory
+    add_modifier = { modifier = th_kokoro_face_$id$ days = $days$ }
+    [[enm]
+        event_target:kokoro_effect_enemy = {
+            add_modifier = { modifier = th_kokoro_face_$id$_enm days = $days$ }
+        }
+    ]
+}
+spth_kokoro_init_apply_random_face = {
+    optimize_memory
+    random_list = {
+        1 = { spth_kokoro_apply_face_effect = { id = 1 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 2 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 3 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 4 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 5 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 6 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 7 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 8 days = $days$ enm = yes } }
+        1 = { spth_kokoro_apply_face_effect = { id = 9 days = $days$ enm = yes } }
+    }
+}
+spth_kokoro_init_effect = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_fleet_flag = spth_kokoro_self_fired } }
+        set_fleet_flag = spth_kokoro_self_fired
+        if = {
+            limit = { solar_system = { any_fleet_in_system = { exists = leader leader = { has_trait = leader_trait_koishi } } } }
+            random_fleet_in_system = {
+                limit = { exists = leader leader = { has_trait = leader_trait_koishi } }
+                reroll_random = yes
+                random_list = {
+                    3 = {
+                        unassign_leader = this
+                        set_fleet_flag = spth_kokoro_koishi_bad_end
+                        prev = { set_fleet_flag = spth_kokoro_koishi_bad_end }
+                    }
+                    97 = {}
+                }
+                if = {
+                    limit = { NOT = { has_fleet_flag = spth_kokoro_koishi_bad_end } }
+                    reroll_random = yes spth_kokoro_init_apply_random_face = { days = 120 }
+                } else = { remove_fleet_flag = spth_kokoro_koishi_bad_end }
+            }
+            if = {
+                limit = { NOT = { has_fleet_flag = spth_kokoro_koishi_bad_end } }
+                reroll_random = yes spth_kokoro_init_apply_random_face = { days = 120 enm = yes }
+            }
+        } else = { spth_kokoro_init_apply_random_face = { days = 60 enm = yes } }
+        if = {
+            limit = { NOT = { has_fleet_flag = spth_kokoro_koishi_bad_end } }
+            fleet_event = { id = th_leader_sp.210 }
+        } else = {
+            unassign_leader = this
+            owner = { country_event = { id = th_leader_sp.213 scopes = { from = prev } } }
+            remove_fleet_flag = spth_kokoro_koishi_bad_end
+        }
+    }
+}
+spth_kokoro_apply_face_to_fleet = {
+    optimize_memory
+    set_variable = { which = spth_kokoro_apply_face_count value = $count$ }
+    while = {
+        count = $count$
+        reroll_random = yes
+        random_list = {
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 1 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 2 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 3 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 4 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 5 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 6 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 7 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 8 days = 12 }
+            inline_script = { script = switch_items/spth_kokoro_apply_random_to_fleet id = 9 days = 12 }
+        }
+    }
+}
+spth_kokoro_apply_face = {
+    optimize_memory
+    spth_kokoro_apply_face_to_fleet = { count = $count$ }
+    reroll_random = yes
+    set_variable = { which = spth_kokoro_fleet_ship_count value = trigger:num_ships }
+    random_list = {
+        50 = { multiply_variable = { which = spth_kokoro_fleet_ship_count value = 0.05 } }
+        35 = { multiply_variable = { which = spth_kokoro_fleet_ship_count value = 0.10 } }
+        15 = { multiply_variable = { which = spth_kokoro_fleet_ship_count value = 0.15 } }
+    }
+    floor_variable = spth_kokoro_fleet_ship_count
+    every_owned_ship = {
+        limit = { prev = { check_variable = { which = spth_kokoro_fleet_ship_count value <= 0 } } }
+        set_timed_ship_flag = { flag = spth_has_kokoro_face_ship days = 10 }
+        # for checking
+        set_timed_ship_flag = { flag = spth_has_kokoro_face_ship_extend days = 12 }
+    }
+}
+spth_kokoro_duration_check = {
+    optimize_memory
+    if = {
+        limit = { has_fleet_flag = fleet_th_has_kokori_face_$id$ }
+        [[destoryed]
+            every_owned_ship = {
+                limit = { has_ship_flag = spth_has_kokoro_face_ship_extend }
+                spth_kokoro_apply_face_effect = { id = $id$ days = 10 }
+            }
+        ]
+        [[non_destoryed]
+            every_owned_ship = {
+                limit = { NOT = { has_ship_flag = spth_has_kokoro_face_ship_extend } }
+                spth_kokoro_apply_face_effect = { id = $id$ days = 10 }
+            }
+        ]
+    }
+}

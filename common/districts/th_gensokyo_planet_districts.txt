@@ -6,7 +6,10 @@ district_gensokyo_renli = {
 	show_on_uncolonized = {
 		uses_district_set = gensokyo_planet
 	}
-	
+
+	zone_slots = {
+		slot_gensokyo_renli
+	}
 	potential = {
 		OR = {
 			uses_district_set = gensokyo_planet
@@ -20,81 +23,67 @@ district_gensokyo_renli = {
 		district_nexus
 		district_hive
 	}
-	
+
 	resources = {
 		category = planet_districts
 		cost = {
-			minerals = 1000
-			sr_lingli = 3000
+			minerals = 3600
+			sr_lingli = 800
 		}
 		produces = {
-			sr_lingli = 25
+			food = 10
+			trigger = {
+				OR = {
+					colony_type = col_spth_basis
+					colony_type = col_spth_basis_city
+				}
+			}
+		}
+		produces = {
+			exotic_gases = 0.6
+			volatile_motes = 0.6
+			rare_crystals = 0.6
+			trigger = {
+				OR = {
+					colony_type = col_spth_refine
+					colony_type = col_spth_refine_city
+				}
+			}
 		}
 		upkeep = {
 			energy = 15
+			sr_lingli = 5
+		}
+		upkeep = {
 			food = 10
-		}		
-	}
-	
-	planet_modifier = {
-		planet_housing_add = 40
-		planet_jobs_food_produces_mult = 0.3
+			trigger = {
+				OR = {
+					colony_type = col_spth_refine
+					colony_type = col_spth_refine_city
+				}
+			}
+		}
 	}
 
+	planet_modifier = {
+		planet_housing_add = 4000
+		planet_jobs_food_produces_mult = 0.05
+	}
 	triggered_planet_modifier = {
 		potential = {
 			exists = owner
 			owner = {
 				is_fallen_empire = no
 				is_regular_empire = yes
+				has_authority = auth_gensokyo
 			}
 		}
 		modifier = {
-			job_farmer_add = 8
-		}
-	}
-	triggered_planet_modifier = {
-		potential = {
-			exists = owner
-			owner = {
-				has_civic = civic_scarlet_devil
-			}
-		}
-		modifier = {
-			job_maid_add = 3
-		}
-	}
-	triggered_planet_modifier = {
-		potential = {
-			exists = owner
-			owner = {
-				has_civic = civic_gensokyo
-			}
-		}
-		modifier = {
-			job_reimu_add = 1
+			job_spth_story_farmer_add = 400
+			job_spth_story_chemist_add = 200
 		}
 	}
 
-	triggered_desc = {
-		trigger = {
-			exists = owner
-			owner = { 
-				is_fallen_empire = no
-				is_regular_empire = yes 
-			}
-		}
-		text = job_clerk_effect_desc
-	}	
-	
-	triggered_desc = {
-		trigger = {
-			exists = owner
-			owner = { is_gestalt = yes }
-		}
-		text = job_maintenance_drone_effect_desc
-	}	
-	
 	ai_weight = {
 		weight = 2
 		modifier = {
@@ -107,59 +96,69 @@ district_gensokyo_mosen = {
 	base_buildtime = 600
 	is_capped_by_modifier = no
 	icon = district_gensokyo_mosen
-	
+
 	show_on_uncolonized = {
 		OR = {
 			uses_district_set = gensokyo_planet
 		}
 	}
-	
+
+	zone_slots = {
+		slot_gensokyo_mosen
+	}
 	potential = {
 		OR = {
 			uses_district_set = gensokyo_planet
 		}
 	}
-	
+
 	conversion_ratio = 1
 	convert_to = {
 		district_city
 		district_nexus
 		district_hive
 		district_arcology_housing
-	}	
-	
+	}
+
 	resources = {
 		category = planet_districts
 		cost = {
-			minerals = 8000
-			sr_lingli = 6000
+			minerals = 4000
+			sr_lingli = 1000
+			astral_threads = 600
 		}
-		produces = {
-			exotic_gases = 4
-			rare_crystals = 4
-			volatile_motes = 4
+		inline_script = {
+			script = districts/spth_gp_district_prod3
+			rss1 = exotic_gases count1 = 10
+			rss2 = rare_crystals count2 = 10
+			rss3 = volatile_motes count3 = 10
+			job = genso_farmer districts = district_gensokyo_mosen
+			buildings = building_spth_refine
+			category = farmers sp_upkeep = 2
+			upkeep_rs = minerals upkeep_count = 25
+		}
+		inline_script = {
+			script = districts/spth_gp_district_prod3
+			rss1 = food count1 = 30
+			rss2 = consumer_goods count2 = 20
+			rss3 = society_research count3 = 30
+			job = genso_artisan districts = district_gensokyo_mosen
+			buildings = building_spth_common_factory
+			category = artisans sp_upkeep = 3
+			upkeep_rs = food upkeep_count = 9.15
 		}
 		upkeep = {
-			sr_lingli = 10
+			astral_threads = 2
 		}
 	}
 
+	inline_script = { script = districts/gensokyo_planet_tooltip district = district_gensokyo_mosen }
 	planet_modifier = {
-		job_mogu_girl_add = 2
-		job_th_marisa_add = 2
+		planet_housing_add = 1000
+		planet_max_buildings_add = 1
+		job_th_monk_add = 300
 	}
 
-	triggered_planet_modifier = {
-		potential = {
-			exists = owner
-			owner = {
-				has_civic = civic_gensokyo
-			}
-		}
-		modifier = {
-			job_spth_renou_add = 2
-		}
-	}
 
 	ai_weight = {
 		weight = 1
@@ -169,110 +168,184 @@ district_gensokyo_yaoguai = {
 	base_buildtime = 600
 	is_capped_by_modifier = no
 	icon = district_gensokyo_yaoguai
-	
+
 	show_on_uncolonized = {
 		OR = {
 			uses_district_set = gensokyo_planet
 		}
 	}
-	
+
+	zone_slots = {
+		slot_gensokyo_yaoguai
+	}
 	potential = {
 		uses_district_set = gensokyo_planet
 	}
-	
+
 	conversion_ratio = 1
 	convert_to = {
 		district_city
 		district_nexus
 		district_hive
 		district_arcology_housing
-	}	
-	
+	}
+
 	resources = {
 		category = planet_districts
 		cost = {
-			minerals = 8000
-			sr_lingli = 6000
+			minerals = 4000
+			sr_lingli = 1000
+			astral_threads = 600
+		}
+		inline_script = {
+			script = districts/spth_gp_district_prod3
+			rss1 = minerals count1 = 50
+			rss2 = food count2 = 20
+			rss3 = consumer_goods count3 = 10
+			job = genso_miner districts = district_gensokyo_yaoguai
+			buildings = building_spth_mining_centre
+			category = miners sp_upkeep = 3.5
+			upkeep_rs = alloys upkeep_count = 9.35
 		}
 		upkeep = {
-			alloys = 10
-			sr_lingli = 11
+			astral_threads = 2
 		}
 	}
 
+	inline_script = { script = districts/gensokyo_planet_tooltip district = district_gensokyo_yaoguai }
 	planet_modifier = {
-		job_huahua_add = 2
-			job_wenwen_add = 2
-			job_kappa_add = 3
+		planet_housing_add = 1000
+		planet_max_buildings_add = 1
+		job_th_monk_add = 300
 	}
 
 	ai_weight = {
 		weight = 1
 	}
 }
-
 district_gensokyo_kyuuto = {
 	base_buildtime = 600
 	is_capped_by_modifier = no
 	icon = district_gensokyo_kyuuto
-	
+
 	show_on_uncolonized = {
 		OR = {
 			uses_district_set = gensokyo_planet
 		}
 	}
-	
+
+	zone_slots = {
+		slot_gensokyo_kyuuto
+	}
 	potential = {
 		uses_district_set = gensokyo_planet
 	}
-	
+
 	conversion_ratio = 1
 	convert_to = {
 		district_city
 		district_nexus
 		district_hive
 		district_arcology_housing
-	}	
-	
+	}
+
 	resources = {
 		category = planet_districts
 		cost = {
-			minerals = 8000
-			sr_lingli = 6000
+			minerals = 4000
+			sr_lingli = 1000
+			astral_threads = 600
+		}
+		inline_script = {
+			script = districts/spth_gp_district_prod3
+			rss1 = minerals count1 = 20
+			rss2 = energy count2 = 100
+			rss3 = physics_research count3 = 30
+			job = genso_technician districts = district_gensokyo_kyuuto
+			buildings = building_spth_power_station
+			category = technician sp_upkeep = 5.3
+			upkeep_rs = consumer_goods upkeep_count = 7.65
 		}
 		upkeep = {
-			minerals = 20
-			sr_lingli = 5
+			astral_threads = 2
 		}
 	}
 
+	inline_script = { script = districts/gensokyo_planet_tooltip district = district_gensokyo_kyuuto }
 	planet_modifier = {
-		planet_housing_add = 3
-		job_th_akong_add = 1
-		job_th_yamame_add = 1
-		job_th_satori_add = 1
+		planet_housing_add = 1000
+		planet_max_buildings_add = 1
+		job_th_monk_add = 300
 	}
 
 	ai_weight = {
 		weight = 1
 	}
 }
+district_gensokyo_misty_lake = {
+	base_buildtime = 600
+	is_capped_by_modifier = no
+	icon = district_gensokyo_misty_lake
+	show_on_uncolonized = {
+		exists = from
+		from = { has_authority = auth_gensokyo }
+		uses_district_set = gensokyo_planet
+	}
+	zone_slots = {
+		slot_gensokyo_misty_lake
+	}
+	potential = {
+		uses_district_set = gensokyo_planet
+	}
+	conversion_ratio = 1
+	convert_to = {
+		district_city
+		district_nexus
+		district_hive
+		district_arcology_housing
+	}
+	resources = {
+		category = planet_districts
+		cost = {
+			minerals = 4000
+			sr_lingli = 1000
+			astral_threads = 600
+		}
+		inline_script = {
+			script = districts/spth_gp_district_prod3
+			rss1 = alloys count1 = 40
+			rss2 = food count2 = 20
+			rss3 = consumer_goods count3 = 10
+			job = genso_foundry districts = district_gensokyo_misty_lake
+			buildings = building_spth_common_foundry
+			category = metallurgists sp_upkeep = 4.25
+			upkeep_rs = minerals upkeep_count = 14.5
+		}
+		upkeep = {
+			astral_threads = 2
+		}
+	}
 
-# district_gensokyo_shengong = {
-# 	base_buildtime = 900
+	inline_script = { script = districts/gensokyo_planet_tooltip district = district_gensokyo_misty_lake }
+	planet_modifier = {
+		planet_housing_add = 1000
+		planet_max_buildings_add = 1
+		job_th_monk_add = 300
+	}
+}
+# district_gensokyo_bamboo_forest = {
+# 	base_buildtime = 600
 # 	is_capped_by_modifier = no
-# 	icon = district_gensokyo_shengong
-	
+# 	icon = district_gensokyo_bamboo_forest
 # 	show_on_uncolonized = {
-# 		OR = {
-# 			uses_district_set = gensokyo_planet
-# 		}
-# 	}
-	
-# 	potential = {
+# 		owner = { has_authority = auth_gensokyo }
 # 		uses_district_set = gensokyo_planet
 # 	}
-	
+# 	potential = {
+# 		exists = owner
+# 		owner = { has_authority = auth_gensokyo }
+# 		uses_district_set = gensokyo_planet
+# 	}
 # 	conversion_ratio = 1
 # 	convert_to = {
 # 		district_city
@@ -280,44 +353,72 @@ district_gensokyo_kyuuto = {
 # 		district_hive
 # 		district_arcology_housing
 # 	}
-	
 # 	resources = {
 # 		category = planet_districts
 # 		cost = {
-# 			minerals = 10000
-# 			sr_lingli = 6000
-# 		}
-# 		produces = {
-# 			physics_research = 66
-# 			engineering_research = 66
-# 			society_research = 66
-# 		}
-# 		upkeep = {
-# 			sr_lingli = 15
+# 			minerals = 8000
+# 			sr_lingli = 1000
 # 		}
 # 	}
-
+#
 # 	planet_modifier = {
-# 		job_spth_shengong_add = 1
-# 		planet_jobs_society_research_produces_mult = 0.1
-# 		planet_jobs_physics_research_produces_mult = 0.1
-# 		planet_jobs_engineering_research_produces_mult = 0.1
-# 	}
-
-# 	# triggered_planet_modifier = {
-# 	# 	potential = {
-# 	# 		exists = owner
-# 	# 		owner = {
-# 	# 			is_regular_empire = yes
-# 	# 		}
-# 	# 	}
-# 	# 	modifier = {
-# 	# 		job_huahua_add = 1
-# 	# 		job_wenwen_add = 1
-# 	# 	}
-# 	# }
-
-# 	ai_weight = {
-# 		weight = 1
+# 		planet_housing_add = 1000
+# 		planet_max_buildings_add = 1
+# 		job_th_monk_add = 300
 # 	}
 # }
+district_gensokyo_genbu_ravine = {
+	base_buildtime = 600
+	is_capped_by_modifier = no
+	icon = district_gensokyo_genbu_ravine
+	show_on_uncolonized = {
+		exists = from
+		from = { has_authority = auth_gensokyo }
+		uses_district_set = gensokyo_planet
+	}
+	zone_slots = {
+		slot_gensokyo_genbu_ravine
+	}
+	potential = {
+		uses_district_set = gensokyo_planet
+	}
+	conversion_ratio = 1
+	convert_to = {
+		district_city
+		district_nexus
+		district_hive
+		district_arcology_housing
+	}
+	resources = {
+		category = planet_districts
+		cost = {
+			minerals = 4000
+			sr_lingli = 1000
+			astral_threads = 600
+		}
+		inline_script = {
+			script = districts/spth_gp_district_prod3
+			rss1 = alloys count1 = 10
+			rss2 = engineering_research count2 = 30
+			rss3 = consumer_goods count3 = 10
+			job = genso_researcher_engineering districts = district_gensokyo_genbu_ravine
+			buildings = building_spth_research_base_1
+			category = researchers sp_upkeep = 5
+			upkeep_rs = energy upkeep_count = 10
+		}
+		produces = {
+			trade = 20
+			mult = planet.planet_weak_genso_job_produce_faith_modifier
+		}
+		upkeep = {
+			astral_threads = 2
+		}
+	}
+
+	inline_script = { script = districts/gensokyo_planet_tooltip district = district_gensokyo_genbu_ravine }
+	planet_modifier = {
+		planet_housing_add = 1000
+		planet_max_buildings_add = 1
+		job_th_monk_add = 300
+	}
+}

@@ -11,6 +11,10 @@ spth_effect_init_container_country_effect = {
 					"null"
 					"null"
 				}
+				background = {
+					category = "backgrounds"
+					file = "00_solid.dds"
+				}
             }
 			effect = {
 				save_global_event_target_as = spth_container_country
@@ -31,4 +35,1426 @@ spth_effect_init_container_country_effect = {
 	    	}
         }
     }
+}
+
+spth_debug_trigger_lunar_capital_ruin = {
+	optimize_memory
+	if = {
+		limit = { is_scope_type = country }
+		country_event = {
+			id = toho.3000
+			scopes = {
+				from = event_target:spth_story_sol_system_earth
+				fromfrom = event_target:spth_story_sol_system_lunar_capital
+			}
+		}
+	}
+}
+
+# special project completed effects
+# This - ship conducted the project
+# From - Project creation location
+spth_special_project_research_moon_barrier = {
+	optimize_memory
+	root.owner = {
+		if = {
+			limit = { check_variable = { which = spth_research_moon_barrier_var value >= 160 } }
+			create_message = {
+				type = spth_finish_special_project
+				localization = spth_message_finish_special_project_desc
+				variable = {
+					type = name
+					localization = SPTH_LEADER_NAME
+					scope = root.leader
+				}
+				variable = {
+					type = key
+					value = spth_research_moon_barrier
+					localization = SPTH_PROJECT_NAME
+				}
+				target = root.leader
+				recipient = this
+				days = 32
+			}
+			country_event = { id = toho.3001 }
+			clear_variable = spth_research_moon_barrier_var
+		} else = {
+			set_variable = { which = spth_research_moon_barrier_max value = 160 }
+			create_message = {
+				type = spth_finish_progress_special_project
+				localization = spth_message_finish_progress_special_project_desc
+				variable = {
+					type = name
+					localization = SPTH_LEADER_NAME
+					scope = root.leader
+				}
+				variable = {
+					type = key
+					value = spth_research_moon_barrier
+					localization = SPTH_PROJECT_NAME
+				}
+				variable = {
+					type = variable
+					varname = spth_research_moon_barrier_var
+					localization = SPTH_PROGRESS
+					scope = this
+				}
+				variable = {
+					type = variable
+					varname = spth_research_moon_barrier_max
+					localization = SPTH_TOTAL_PROGRESS
+					scope = this
+				}
+				target = root.leader
+				recipient = this
+				days = 32
+			}
+			clear_variable = spth_research_moon_barrier_max
+			enable_special_project = {
+				name = spth_research_moon_barrier
+				location = event_target:spth_story_sol_system_lunar_capital
+				owner = this
+			}
+			root.fleet = {
+				fleet_action_research_special_project = {
+					special_project = spth_research_moon_barrier
+					target = event_target:spth_story_sol_system_lunar_capital
+				}
+			}
+		}
+	}
+}
+spth_special_project_torifune_shield = {
+	optimize_memory
+	root.owner = {
+		# 60%几率失败，但最后一个方案必定成功
+		change_variable = { which = spth_disable_habitat_shield_retry value = 1 }
+		random_list = {
+			60 = {
+				modifier = {
+					mult = 0
+					check_variable = {
+						which = spth_disable_habitat_shield_retry
+						value >= spth_disable_habitat_shield_count
+					}
+				}
+				create_message = {
+					type = spth_finish_progress_special_project
+					localization = spth_message_finish_progress_special_project_desc_1
+					variable = {
+						type = name
+						localization = SPTH_SHIP_NAME
+						scope = root
+					}
+					variable = {
+						type = variable
+						varname = spth_disable_habitat_shield_retry
+						localization = SPTH_RETRY_TIMES
+						scope = this
+					}
+					variable = {
+						type = key
+						value = spth_disable_habitat_shield_2
+						localization = SPTH_PROJECT_NAME
+					}
+					variable = {
+						type = variable
+						varname = spth_disable_habitat_shield_count
+						localization = SPTH_TOTAL_COUNT
+						scope = this
+					}
+					target = this
+					recipient = this
+					days = 30
+				}
+				enable_special_project = {
+					name = spth_disable_habitat_shield_2
+					location = root.from
+					owner = root.owner
+				}
+			}
+			40 = {
+				create_message = {
+					type = spth_finish_special_project
+					localization = spth_message_finish_special_project_desc_1
+					variable = {
+						type = key
+						value = spth_disable_habitat_shield_2
+						localization = SPTH_PROJECT_NAME
+					}
+					target = root.from
+					recipient = this
+					days = 30
+				}
+				country_event = { id = toho.3007 }
+			}
+		}
+	}
+}
+
+# unlock the super carrier ship design
+spth_unlock_super_carrier = {
+	optimize_memory
+	# [[flag] set_country_flag = can_build_spth_super_carrier]
+	# [[reset]
+	# 	remove_global_ship_design = NAME_spth_super_carrier_basic
+	# 	add_global_ship_design = NAME_spth_super_carrier_basic
+	# 	random_owned_ship = {
+	# 		limit = { is_ship_size = TH_super_carrier }
+	# 		set_ship_design = { design = NAME_spth_super_carrier_basic }
+	# 		prev = { remove_ship_design = prev.design }
+	# 	}
+	# ]
+	if = {
+		limit = { NOT = { has_existing_ship_design = TH_super_carrier } }
+		create_ship_design = { design = NAME_spth_super_carrier_basic }
+		add_ship_design = last_created_design
+	}
+}
+
+spth_spawn_kedama_country = {
+	optimize_memory
+	if = {
+		limit = { NOT = { exists = event_target:kedama_country } }
+		create_country = {
+			name = NAME_spth_kedama_country
+			type = kedama
+			flag = {
+				icon = {
+					category = "zoological"
+					file = "flag_zoological_1.dds"
+				}
+				background= {
+					category = "backgrounds"
+					file = "00_solid.dds"
+				}
+				colors={
+					"red"
+					"red"
+					"null"
+					"null"
+				}
+			}
+			effect = {
+				save_global_event_target_as = kedama_country
+			}
+		}
+	}
+}
+spth_spawn_kedama_fleet = {
+	optimize_memory
+	create_fleet = {
+		name = $NAME$
+		settings = {
+			can_change_composition = $can_change_composition|yes$
+			uses_naval_capacity = $uses_naval_capacity|no$
+			spawn_debris = $spawn_debris|no$
+			can_disband = $can_disband$
+			is_boss = $is_boss$
+		}
+		effect = {
+			set_owner = $OWNER$
+			[[bombardment] set_fleet_bombardment_stance = $bombardment$ ]
+			[[flag] set_fleet_flag = $flag$ ]
+			[[spth_kedama_small_common] while = { count = $spth_kedama_small_common$ } create_ship = { name = random design = NAME_spth_kedama_small_common } ]
+			[[spth_kedama_small_common_sp] while = { count = $spth_kedama_small_common_sp$ } create_ship = { name = random design = NAME_spth_kedama_small_common_sp } ]
+			[[spth_kedama_small_rare] while = { count = $spth_kedama_small_rare$ } create_ship = { name = random design = NAME_spth_kedama_small_rare } ]
+			[[spth_kedama_small_rare_sp] while = { count = $spth_kedama_small_rare_sp$ } create_ship = { name = random design = NAME_spth_kedama_small_rare_sp } ]
+			[[spth_kedama_small_titan] while = { count = $spth_kedama_small_titan$ } create_ship = { name = random design = NAME_spth_kedama_small_titan } ]
+			set_location = $location$
+		}
+	}
+}
+spth_init_special_ship_flag = {
+	optimize_memory
+	if = {
+		limit = {
+			OR = {
+				spth_has_ag_mod = yes
+				spth_has_kuat_mod = yes
+			}
+		}
+		every_owned_ship = {
+			if = {
+				limit = { spth_is_kuat_flagship = yes }
+				set_ship_flag = has_ag_flagship
+			}
+			if = {
+				limit = { spth_is_kuat_sub_flagship = yes }
+				set_ship_flag = has_ag_sub_flagship
+			}
+			if = {
+				limit = { spth_is_kuat_standard_ship = yes }
+				set_ship_flag = has_ag_standard_ship
+			}
+		}
+	}
+}
+spth_create_fleet = {
+	optimize_memory
+	create_fleet = {
+		name = $NAME$
+		settings = {
+			can_change_composition = $can_change_composition|yes$
+			uses_naval_capacity = $uses_naval_capacity|no$
+			spawn_debris = $spawn_debris|no$
+			can_disband = $can_disband$
+			is_boss = $is_boss$
+		}
+		effect = {
+			set_owner = $OWNER$
+			set_location = { target = $location$ distance = $distance|25$ angle = random }
+			[[bombardment] set_fleet_bombardment_stance = $bombardment$ ]
+			[[flag] set_fleet_flag = $flag$ ]
+			[[flag2] set_fleet_flag = $flag2$ ]
+			[[timed_flag] set_timed_fleet_flag = { flag = $timed_flag$ days = $timed_flag_d$ } ]
+
+			# kedama ships
+			[[spth_kedama_small_common] while = { count = $spth_kedama_small_common$ } create_ship = { name = random design = NAME_spth_kedama_small_common } ]
+			[[spth_kedama_small_common_sp] while = { count = $spth_kedama_small_common_sp$ } create_ship = { name = random design = NAME_spth_kedama_small_common_sp } ]
+			[[spth_kedama_small_rare] while = { count = $spth_kedama_small_rare$ } create_ship = { name = random design = NAME_spth_kedama_small_rare } ]
+			[[spth_kedama_small_rare_sp] while = { count = $spth_kedama_small_rare_sp$ } create_ship = { name = random design = NAME_spth_kedama_small_rare_sp } ]
+			[[spth_kedama_small_titan] while = { count = $spth_kedama_small_titan$ } create_ship = { name = random design = NAME_spth_kedama_small_titan } ]
+
+			# enclave ships
+			[[spth_curator_defence_bc_tor] while = { count = $spth_curator_defence_bc_tor$ create_ship = { name = random design = spth_curator_defence_bc_tor } } ]
+			[[spth_curator_defence_bc_tlx] while = { count = $spth_curator_defence_bc_tlx$ create_ship = { name = random design = spth_curator_defence_bc_tlx } } ]
+			[[spth_curator_defence_bc_tmp] while = { count = $spth_curator_defence_bc_tmp$ create_ship = { name = random design = spth_curator_defence_bc_tmp } } ]
+			[[spth_curator_defence_bc_ylx] while = { count = $spth_curator_defence_bc_ylx$ create_ship = { name = random design = spth_curator_defence_bc_ylx } } ]
+			[[spth_curator_defence_cr] while = { count = $spth_curator_defence_cr$ create_ship = { name = random design = spth_curator_defence_cr graphical_culture = strg_01 } } ]
+			[[spth_curator_defence_co] while = { count = $spth_curator_defence_co$ create_ship = { name = random design = spth_curator_defence_co graphical_culture = strg_01 } } ]
+
+			# makai ships
+			[[spth_kamikakushi_invader_titan] while = { count = $spth_kamikakushi_invader_titan$ create_ship = { name = random design = spth_kamikakushi_invader_titan } } ]
+			[[spth_kamikakushi_invader_bc_tor] while = { count = $spth_kamikakushi_invader_bc_tor$ create_ship = { name = random design = spth_kamikakushi_invader_bc_tor } } ]
+			[[spth_kamikakushi_invader_bc_tlx] while = { count = $spth_kamikakushi_invader_bc_tlx$ create_ship = { name = random design = spth_kamikakushi_invader_bc_tlx } } ]
+			[[spth_kamikakushi_invader_bc_tmp] while = { count = $spth_kamikakushi_invader_bc_tmp$ create_ship = { name = random design = spth_kamikakushi_invader_bc_tmp } } ]
+			[[spth_kamikakushi_invader_bc_ylx] while = { count = $spth_kamikakushi_invader_bc_ylx$ create_ship = { name = random design = spth_kamikakushi_invader_bc_ylx } } ]
+			[[spth_kamikakushi_invader_bc_yyk] while = { count = $spth_kamikakushi_invader_bc_yyk$ create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk } } ]
+			[[spth_kamikakushi_invader_bc_yyk_p] while = { count = $spth_kamikakushi_invader_bc_yyk_p$ create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk_p } } ]
+			[[spth_kamikakushi_invader_bc_yyk_g] while = { count = $spth_kamikakushi_invader_bc_yyk_g$ create_ship = { name = random design = spth_kamikakushi_invader_bc_yyk_g } } ]
+			[[spth_makai_ship_core_0] while = { count = $spth_makai_ship_core_0$ create_ship = { name = NAME_spth_makai_ship_core_0 design = NAME_spth_makai_ship_core_0 } } ]
+			[[spth_makai_ship_core_1] while = { count = $spth_makai_ship_core_1$ create_ship = { name = NAME_spth_makai_ship_core_1 design = NAME_spth_makai_ship_core_1 } } ]
+			[[spth_kamikakushi_gate] while = { count = $spth_kamikakushi_gate$ create_ship = { name = NAME_spth_kamikakushi_gate design = NAME_spth_kamikakushi_gate } } ]
+			[[spth_kamikakushi_cruiser_1] while = { count = $spth_kamikakushi_cruiser_1$ create_ship = { name = random design = NAME_spth_kamikakushi_cruiser_1 } } ]
+			[[spth_kamikakushi_cruiser_2] while = { count = $spth_kamikakushi_cruiser_2$ create_ship = { name = random design = NAME_spth_kamikakushi_cruiser_2 } } ]
+			[[spth_kamikakushi_super_carrier] while = { count = $spth_kamikakushi_super_carrier$ create_ship = { name = NAME_spth_kamikakushi_super_carrier design = NAME_spth_kamikakushi_super_carrier_design } } ]
+			[[spth_makai_defence_system_titan] while = { count = $spth_makai_defence_system_titan$ create_ship = { name = random design = spth_makai_defence_system_titan } } ]
+			[[spth_makai_defence_system_yyk_t] while = { count = $spth_makai_defence_system_yyk_t$ create_ship = { name = random design = spth_makai_defence_system_yyk_t } } ]
+			[[spth_makai_defence_system_yyk_x] while = { count = $spth_makai_defence_system_yyk_x$ create_ship = { name = random design = spth_makai_defence_system_yyk_x } } ]
+			[[spth_makai_defence_system_bc_g] while = { count = $spth_makai_defence_system_bc_g$ create_ship = { name = random design = spth_makai_defence_system_bc_g } } ]
+			[[spth_makai_defence_system_bc_h] while = { count = $spth_makai_defence_system_bc_h$ create_ship = { name = random design = spth_makai_defence_system_bc_h } } ]
+			[[spth_makai_defence_system_bc_t] while = { count = $spth_makai_defence_system_bc_t$ create_ship = { name = random design = spth_makai_defence_system_bc_t } } ]
+			[[spth_makai_defence_system_cruiser] while = { count = $spth_makai_defence_system_cruiser$ create_ship = { name = random design = spth_makai_defence_system_cruiser } } ]
+			[[spth_makai_defence_system_carrier] while = { count = $spth_makai_defence_system_carrier$ create_ship = { name = NAME_spth_makai_defence_system_carrier design = spth_makai_defence_system_carrier } } ]
+
+			# lunar capital
+			[[NAME_lunar_capital_carrier_crisis] while = { count = $NAME_lunar_capital_carrier_crisis$ create_ship = { name = random design = NAME_lunar_capital_carrier_crisis } } ]
+			[[NAME_lunar_capital_battleship_crisis] while = { count = $NAME_lunar_capital_battleship_crisis$ create_ship = { name = random design = NAME_lunar_capital_battleship_crisis } } ]
+			[[NAME_lunar_capital_escort_crisis] while = { count = $NAME_lunar_capital_escort_crisis$ create_ship = { name = random design = NAME_lunar_capital_escort_crisis } } ]
+			[[NAME_lunar_capital_frigate_crisis] while = { count = $NAME_lunar_capital_frigate_crisis$ create_ship = { name = random design = NAME_lunar_capital_frigate_crisis } } ]
+			[[NAME_lunar_capital_frigate_s_crisis] while = { count = $NAME_lunar_capital_frigate_s_crisis$ create_ship = { name = random design = NAME_lunar_capital_frigate_s_crisis } } ]
+
+			[[fleet_action] fleet_event = { id = $fleet_action$ } ]
+			[[fleet_action_delayed] fleet_event = { id = $fleet_action_delayed$ days = $DAYS$ random = $DAYS_RANDOM$ } ]
+			[[modifier] add_modifier = { modifier = $modifier$ mult = $MUL$ days = $DURATION$ } ]
+			[[evt_target] save_event_target_as = $evt_target$ ]
+			spth_init_special_ship_flag = yes
+		}
+	}
+}
+# this = country
+# curator: spth_spawn_enclave_system = { type = curator }
+spth_spawn_enclave_system = {
+	optimize_memory
+	if = {
+		limit = { NOT = { has_global_flag = created_spth_enclave_$type$ } }
+		capital_scope.solar_system = {
+			set_spawn_system_batch = begin
+			spawn_system = {
+				initializer = spth_enclave_$type$_system
+				hyperlane = yes
+				min_distance >= 20
+				max_distance <= 50
+				max_jumps = 3
+			}
+			set_spawn_system_batch = end
+		}
+	}
+}
+
+spth_roll_card_techs = {
+	optimize_memory
+	change_variable = { which = spth_card_current_tech value = 1 }
+	random_list = {
+		10 = {
+			modifier = {
+				factor = 0
+				has_technology = tech_th_engine_xijian
+			}
+			give_technology = { tech = "tech_th_engine_xijian" }
+		}
+		10 = {
+			modifier = {
+				factor = 0
+				has_technology = tech_th_ship_part_taiyang
+			}
+			give_technology = { tech = "tech_th_ship_part_taiyang" }
+		}
+		10 = {
+			modifier = {
+				factor = 0
+				has_technology = tech_th_weapon_gungnir
+			}
+			give_technology = { tech = "tech_th_weapon_gungnir" }
+		}
+		1 = {
+			modifier = {
+				factor = 0
+				has_technology = tech_th_weapon_yuzhu
+			}
+			give_technology = { tech = "tech_th_weapon_yuzhu" }
+		}
+		10 = {
+			modifier = {
+				factor = 0
+				has_technology = tech_spth_moon_computer
+			}
+			give_technology = { tech = "tech_spth_moon_computer" }
+		}
+	}
+	create_message = {
+		type = spth_roll_tech_success
+		localization = spth_message_spth_roll_tech_success_desc
+		days = 30
+		target = this
+		recipient = this
+	}
+}
+spth_roll_advanced_techs = {
+	optimize_memory
+	add_resource = { sr_lingli = $cost$ }
+	random_list = {
+		$failed_factor$ = {}
+		$success_factor$ = { set_country_flag = spth_advanced_tech_get }
+	}
+	reroll_random = yes
+	if = {
+		limit = { has_country_flag = spth_advanced_tech_get }
+		remove_country_flag = spth_advanced_tech_get
+		change_variable = { which = spth_advanced_techs_count value = 1 }
+		random_list = {
+			1 = {
+				modifier = {
+					factor = 0
+					has_technology = tech_spth_weapon_laevatain
+				}
+				give_technology = { tech = tech_spth_weapon_laevatain }
+			}
+			1 = {
+				modifier = {
+					factor = 0
+					has_technology = tech_spth_hv_bombardment
+				}
+				give_technology = { tech = tech_spth_hv_bombardment }
+			}
+			1 = {
+				modifier = {
+					factor = 0
+					has_technology = tech_spth_super_carrier_theory
+				}
+				give_technology = { tech = tech_spth_super_carrier_theory }
+			}
+		}
+		create_message = {
+			type = spth_roll_tech_success
+			localization = spth_message_spth_roll_tech_success_desc
+			days = 30
+			target = this
+			recipient = this
+		}
+	} else = {
+		create_message = {
+			type = spth_roll_tech_failed
+			localization = spth_message_spth_roll_tech_failed_desc
+			days = 30
+			target = this
+			recipient = this
+		}
+	}
+}
+
+spth_add_starbase_buildings = {
+	optimize_memory
+	if = {
+		limit = { NOT = { has_starbase_building = $building$ } }
+		set_starbase_building = { slot = $slot$ building = $building$ }
+	}
+}
+spth_create_player_space_shrine = {
+	optimize_memory
+	create_fleet = {
+		name = NAME_spth_space_shrine_station_fleet
+		settings = { spawn_debris = no uses_naval_capacity = no }
+		effect = {
+			set_owner = $OWNER$
+			create_ship = {
+				design = NAME_spth_space_shrine_station
+				prefix = yes
+				effect = {
+					if = {
+						limit = {
+							OR = {
+								spth_has_ag_mod = yes
+								spth_has_kuat_mod = yes
+							}
+						}
+						set_ship_flag = has_ag_flagship
+						set_ship_flag = has_sg_flagship
+					}
+					set_ship_flag = is_spth_space_shrine_station
+					set_ship_flag = player_space_shrine_station
+					set_name = NAME_spth_space_shrine_station_fleet
+					set_disable_at_health = 0.01
+					if = {
+						limit = { exists = event_target:player_space_shrine_@$OWNER$ }
+						event_target:player_space_shrine_@$OWNER$ = {
+							delete_ship = this
+							delete_fleet = {
+								destroy_template = yes
+								target = this.fleet
+							}
+						}
+						clear_global_event_target = player_space_shrine_@$OWNER$
+					}
+					save_global_event_target_as = player_space_shrine_@$OWNER$
+					starbase = { set_ship_construction_type = starbase_shipyard }
+					ship_event = { id = spth_fleet.200 days = 1 }
+				}
+			}
+			set_fleet_flag = is_spth_space_shrine_station
+			set_fleet_flag = player_space_shrine_station
+			set_location = { target = $LOCATION$ angle = random distance = -10 }
+		}
+	}
+	$OWNER$ = { spth_refresh_space_shrine_yard = yes }
+}
+spth_refresh_space_shrine_yard = {
+	optimize_memory
+	every_owned_ship = {
+		limit = {
+			is_ship_size = spth_space_shrine_station
+			has_ship_flag = is_spth_space_shrine_station
+			starbase = { NOT = { has_starbase_building = space_shrine_yard } }
+		}
+		starbase = {
+			spth_add_starbase_buildings = { slot = 1 building = titan_yards }
+			spth_add_starbase_buildings = { slot = 2 building = colossus_yards }
+			spth_add_starbase_buildings = { slot = 3 building = toho_yards }
+			spth_add_starbase_buildings = { slot = 4 building = space_shrine_yard }
+		}
+	}
+}
+
+spth_concept_query_select = {
+	optimize_memory
+	hidden_effect = {
+		[[room]
+			event_target:spth_concept_display_page = {
+				room_name_override = $room$
+			}
+		]
+		spth_clear_concept_query_flags = yes
+		set_country_flag = spth_selected_queried_concept
+		[[spth_sub] set_country_flag = spth_selected_queried_$spth_sub$ ]
+		set_country_flag = spth_concept_type_$type$
+		set_country_flag = spth_queried_concept_$id$
+	}
+}
+spth_clear_concept_query_flags = {
+	optimize_memory
+	remove_country_flag = spth_selected_queried_concept
+	remove_country_flag = spth_selected_queried_ag_data
+	remove_country_flag = spth_concept_type_basic
+	remove_country_flag = spth_concept_type_relic
+	remove_country_flag = spth_concept_type_precursor
+	remove_country_flag = spth_concept_type_tech
+	remove_country_flag = spth_queried_concept_a
+	remove_country_flag = spth_queried_concept_b
+	remove_country_flag = spth_queried_concept_c
+	remove_country_flag = spth_queried_concept_d
+	remove_country_flag = spth_queried_concept_e
+	remove_country_flag = spth_queried_concept_f
+	remove_country_flag = spth_queried_concept_g
+	remove_country_flag = spth_queried_concept_h
+	remove_country_flag = spth_queried_concept_i
+	remove_country_flag = spth_queried_concept_j
+	remove_country_flag = spth_queried_concept_k
+	remove_country_flag = spth_queried_concept_l
+	remove_country_flag = spth_queried_concept_m
+	remove_country_flag = spth_queried_concept_n
+	remove_country_flag = spth_queried_concept_o
+	remove_country_flag = spth_queried_concept_p
+	remove_country_flag = spth_queried_concept_q
+	remove_country_flag = spth_queried_concept_r
+	remove_country_flag = spth_queried_concept_s
+	remove_country_flag = spth_queried_concept_t
+	remove_country_flag = spth_queried_concept_u
+	remove_country_flag = spth_queried_concept_v
+	remove_country_flag = spth_queried_concept_w
+	remove_country_flag = spth_queried_concept_x
+	remove_country_flag = spth_queried_concept_y
+	remove_country_flag = spth_queried_concept_z
+
+	remove_country_flag = spth_queried_concept_ag_a
+	remove_country_flag = spth_queried_concept_ag_b
+	remove_country_flag = spth_queried_concept_ag_c
+	remove_country_flag = spth_queried_concept_ag_d
+	remove_country_flag = spth_queried_concept_ag_e
+	remove_country_flag = spth_queried_concept_ag_f
+	remove_country_flag = spth_queried_concept_ag_g
+	remove_country_flag = spth_queried_concept_ag_h
+	remove_country_flag = spth_queried_concept_ag_i
+	remove_country_flag = spth_queried_concept_ag_j
+	remove_country_flag = spth_queried_concept_ag_k
+	remove_country_flag = spth_queried_concept_ag_l
+	remove_country_flag = spth_queried_concept_ag_m
+	remove_country_flag = spth_queried_concept_ag_n
+	remove_country_flag = spth_queried_concept_ag_o
+	remove_country_flag = spth_queried_concept_ag_p
+	remove_country_flag = spth_queried_concept_ag_q
+	remove_country_flag = spth_queried_concept_ag_r
+	remove_country_flag = spth_queried_concept_ag_s
+	remove_country_flag = spth_queried_concept_ag_t
+	remove_country_flag = spth_queried_concept_ag_u
+	remove_country_flag = spth_queried_concept_ag_v
+	remove_country_flag = spth_queried_concept_ag_w
+	remove_country_flag = spth_queried_concept_ag_x
+	remove_country_flag = spth_queried_concept_ag_y
+	remove_country_flag = spth_queried_concept_ag_z
+}
+
+spth_puzzle_solving_roll_all_text = {
+	optimize_memory
+	spth_puzzle_solving_roll_text = { spth_index = 1 spth_pos = 1 }
+	spth_puzzle_solving_roll_text = { spth_index = 1 spth_pos = 2 }
+	spth_puzzle_solving_roll_text = { spth_index = 1 spth_pos = 3 }
+	spth_puzzle_solving_roll_text = { spth_index = 1 spth_pos = 4 }
+	spth_puzzle_solving_roll_text = { spth_index = 1 spth_pos = 5 }
+	spth_puzzle_solving_roll_text = { spth_index = 2 spth_pos = 1 }
+	spth_puzzle_solving_roll_text = { spth_index = 2 spth_pos = 2 }
+	spth_puzzle_solving_roll_text = { spth_index = 2 spth_pos = 3 }
+	spth_puzzle_solving_roll_text = { spth_index = 2 spth_pos = 4 }
+	spth_puzzle_solving_roll_text = { spth_index = 2 spth_pos = 5 }
+	spth_puzzle_solving_roll_text = { spth_index = 3 spth_pos = 1 }
+	spth_puzzle_solving_roll_text = { spth_index = 3 spth_pos = 2 }
+	spth_puzzle_solving_roll_text = { spth_index = 3 spth_pos = 3 }
+	spth_puzzle_solving_roll_text = { spth_index = 3 spth_pos = 4 }
+	spth_puzzle_solving_roll_text = { spth_index = 3 spth_pos = 5 }
+	spth_puzzle_solving_roll_text = { spth_index = 4 spth_pos = 1 }
+	spth_puzzle_solving_roll_text = { spth_index = 4 spth_pos = 2 }
+	spth_puzzle_solving_roll_text = { spth_index = 4 spth_pos = 3 }
+	spth_puzzle_solving_roll_text = { spth_index = 4 spth_pos = 4 }
+	spth_puzzle_solving_roll_text = { spth_index = 4 spth_pos = 5 }
+	spth_puzzle_solving_roll_text = { spth_index = 5 spth_pos = 1 }
+	spth_puzzle_solving_roll_text = { spth_index = 5 spth_pos = 2 }
+	spth_puzzle_solving_roll_text = { spth_index = 5 spth_pos = 3 }
+	spth_puzzle_solving_roll_text = { spth_index = 5 spth_pos = 4 }
+	spth_puzzle_solving_roll_text = { spth_index = 5 spth_pos = 5 }
+	spth_puzzle_solving_roll_text = { spth_index = 6 spth_pos = 1 }
+	spth_puzzle_solving_roll_text = { spth_index = 6 spth_pos = 2 }
+	spth_puzzle_solving_roll_text = { spth_index = 6 spth_pos = 3 }
+	spth_puzzle_solving_roll_text = { spth_index = 6 spth_pos = 4 }
+	spth_puzzle_solving_roll_text = { spth_index = 6 spth_pos = 5 }
+}
+spth_puzzle_solving_roll_text = {
+	optimize_memory
+	set_variable_to_random_value = {
+		which = spth_puzzle_solving_word_$spth_index$_$spth_pos$
+		min = 1
+		max = 26
+	}
+	floor_variable = spth_puzzle_solving_word_$spth_index$_$spth_pos$
+}
+spth_puzzle_solving_clear_vars = {
+	optimize_memory
+	spth_puzzle_solving_clear_var = { spth_index = 1 spth_pos = 1 }
+	spth_puzzle_solving_clear_var = { spth_index = 1 spth_pos = 2 }
+	spth_puzzle_solving_clear_var = { spth_index = 1 spth_pos = 3 }
+	spth_puzzle_solving_clear_var = { spth_index = 1 spth_pos = 4 }
+	spth_puzzle_solving_clear_var = { spth_index = 1 spth_pos = 5 }
+	spth_puzzle_solving_clear_var = { spth_index = 2 spth_pos = 1 }
+	spth_puzzle_solving_clear_var = { spth_index = 2 spth_pos = 2 }
+	spth_puzzle_solving_clear_var = { spth_index = 2 spth_pos = 3 }
+	spth_puzzle_solving_clear_var = { spth_index = 2 spth_pos = 4 }
+	spth_puzzle_solving_clear_var = { spth_index = 2 spth_pos = 5 }
+	spth_puzzle_solving_clear_var = { spth_index = 3 spth_pos = 1 }
+	spth_puzzle_solving_clear_var = { spth_index = 3 spth_pos = 2 }
+	spth_puzzle_solving_clear_var = { spth_index = 3 spth_pos = 3 }
+	spth_puzzle_solving_clear_var = { spth_index = 3 spth_pos = 4 }
+	spth_puzzle_solving_clear_var = { spth_index = 3 spth_pos = 5 }
+	spth_puzzle_solving_clear_var = { spth_index = 4 spth_pos = 1 }
+	spth_puzzle_solving_clear_var = { spth_index = 4 spth_pos = 2 }
+	spth_puzzle_solving_clear_var = { spth_index = 4 spth_pos = 3 }
+	spth_puzzle_solving_clear_var = { spth_index = 4 spth_pos = 4 }
+	spth_puzzle_solving_clear_var = { spth_index = 4 spth_pos = 5 }
+	spth_puzzle_solving_clear_var = { spth_index = 5 spth_pos = 1 }
+	spth_puzzle_solving_clear_var = { spth_index = 5 spth_pos = 2 }
+	spth_puzzle_solving_clear_var = { spth_index = 5 spth_pos = 3 }
+	spth_puzzle_solving_clear_var = { spth_index = 5 spth_pos = 4 }
+	spth_puzzle_solving_clear_var = { spth_index = 5 spth_pos = 5 }
+	spth_puzzle_solving_clear_var = { spth_index = 6 spth_pos = 1 }
+	spth_puzzle_solving_clear_var = { spth_index = 6 spth_pos = 2 }
+	spth_puzzle_solving_clear_var = { spth_index = 6 spth_pos = 3 }
+	spth_puzzle_solving_clear_var = { spth_index = 6 spth_pos = 4 }
+	spth_puzzle_solving_clear_var = { spth_index = 6 spth_pos = 5 }
+}
+spth_puzzle_solving_clear_var = {
+	optimize_memory
+	clear_variable = spth_puzzle_solving_word_$spth_index$_$spth_pos$
+}
+
+spth_precursor_105_finish_effect = {
+	optimize_memory
+}
+spth_precursor_106_finish_effect = {
+	optimize_memory
+}
+spth_precursor_107_finish_effect = {
+	optimize_memory
+	custom_tooltip = spth_precursor_107_finish_effect
+	hidden_effect = {
+		spth_create_fleet = {
+			NAME = NAME_spth_makai_ship_core_0
+			can_disband = no is_boss = no
+			OWNER = prev location = prev.capital_scope
+			spth_makai_ship_core_0 = 1
+		}
+		set_country_flag = spth_precursor_makai_ruined_ship_get
+	}
+}
+spth_precursor_108_finish_effect = {
+	optimize_memory
+}
+spth_precursor_109_finish_effect = {
+	optimize_memory
+}
+spth_precursor_110_finish_effect = {
+	optimize_memory
+}
+spth_spawn_kamikakushi_guard = {
+	optimize_memory
+	if = {
+		limit = { NOT = { event_target:global_event_country = { is_variable_set = spth_lunar_capital_crisis_difficulty } } }
+		event_target:global_event_country = { set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 } }
+	}
+	set_update_modifiers_batch = begin
+	if = {
+		limit = { NOT = { exists = event_target:spth_kamikakushi_invader_country } }
+		create_country = {
+			name = spth_kamikakushi_invader
+			type = spth_kamikakushi_invader
+			flag = {
+				icon = {
+					category = "touhousp"
+					file = "kamikakushi.dds"
+				}
+				colors = {
+					"white"
+					"white"
+					"white"
+					"null"
+				}
+				background = {
+					category = "backgrounds"
+					file = "00_solid.dds"
+				}
+			}
+			name_list = touhouchs
+			effect = {
+				set_graphical_culture = strg_01
+				set_country_flag = touhou_mod_country
+				set_country_flag = spth_kamikakushi_invader_country
+				[[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
+				save_global_event_target_as = spth_kamikakushi_invader_country
+				every_playable_country = {
+					limit = { NOT = { is_same_value = prev } }
+					establish_communications_no_message = prev
+				}
+			}
+		}
+	}
+	event_target:makai_wedge_ruined_object = {
+		solar_system = {
+			every_system_colony = {
+				spth_planet_kill_all_pop = yes
+				destroy_colony = yes
+			}
+			every_fleet_in_system = {
+				set_mia = mia_return_home
+			}
+		}
+		spth_create_fleet = {
+			NAME = spth_kamikakushi_invader_titan
+			can_disband = no is_boss = yes
+			OWNER = event_target:spth_kamikakushi_invader_country
+			location = prev uses_naval_capacity = no
+			flag = spth_kamikakushi_invader_fleet
+			spth_kamikakushi_invader_titan = 1
+			spth_kamikakushi_invader_bc_tlx = 10
+			spth_kamikakushi_invader_bc_tmp = 20
+			spth_kamikakushi_invader_bc_tor = 20
+			spth_kamikakushi_invader_bc_ylx = 10
+			evt_target = spth_kamikakushi_invader_fleet
+		}
+		spth_create_fleet = {
+			NAME = spth_kamikakushi_invader_bc_tlx
+			can_disband = no is_boss = yes
+			OWNER = event_target:spth_kamikakushi_invader_country
+			location = event_target:spth_precursor_capital_makai_lunar
+			uses_naval_capacity = no
+			flag = spth_kamikakushi_invader_fleet
+			spth_kamikakushi_invader_bc_tlx = 5
+			spth_kamikakushi_invader_bc_tmp = 10
+			spth_kamikakushi_invader_bc_tor = 10
+			spth_kamikakushi_invader_bc_ylx = 5
+			evt_target = spth_kamikakushi_invader_fleet
+		}
+	}
+	set_update_modifiers_batch = end
+}
+spth_spawn_kamikakushi_diplomacy = {
+	optimize_memory
+	if = {
+		limit = { NOT = { exists = event_target:spth_kamikakushi_diplomacy } }
+		create_country = {
+			name = spth_kamikakushi_diplomacy
+			type = spth_kamikakushi_diplomacy
+			flag = {
+				icon = {
+					category = "touhousp"
+					file = "kamikakushi_alt.dds"
+				}
+				colors = {
+					"purple"
+					"purple"
+					"purple"
+					"null"
+				}
+				background = {
+					category = "backgrounds"
+					file = "00_solid.dds"
+				}
+			}
+			name_list = touhouchs
+			effect = {
+				set_graphical_culture = strg_01
+				set_country_flag = touhou_mod_country
+				set_country_flag = spth_kamikakushi_diplomacy
+				[[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
+				save_global_event_target_as = spth_kamikakushi_diplomacy
+				random_country = {
+					limit = { NOT = { is_same_value = prev } has_country_flag = spth_kamikaushi_repaired_wedge_country }
+					establish_communications_no_message = prev
+				}
+			}
+		}
+	}
+}
+spth_spawn_kamikakushi_country = {
+	optimize_memory
+	if = {
+		limit = { NOT = { exists = event_target:spth_kamikakushi_country } }
+		create_country = {
+			name = spth_kamikakushi_country
+			type = spth_kamikakushi_country
+			flag = {
+				icon = {
+					category = "touhousp"
+					file = "kamikakushi_alt.dds"
+				}
+				colors = {
+					"purple"
+					"purple"
+					"purple"
+					"null"
+				}
+				background = {
+					category = "backgrounds"
+					file = "00_solid.dds"
+				}
+			}
+			name_list = touhouchs
+			effect = {
+				set_graphical_culture = strg_01
+				set_country_flag = touhou_mod_country
+				set_country_flag = touhou_crisis_country
+				set_country_flag = spth_kamikakushi_country
+				set_country_flag = protected_from_queen_storm
+				if = {
+					limit = { NOT = { has_country_flag = has_given_starbase_spth_kamikakushi_designs } }
+					create_ship_design = { design = NAME_starbase_spth_kamikakushi }
+					add_ship_design = last_created_design
+				}
+				activate_fog_machine = spth_kamikakushi_cloud
+				fog_machine_auto_tracking = yes
+				[[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
+				save_global_event_target_as = spth_kamikakushi_country
+				every_playable_country = {
+					limit = { NOT = { is_same_value = prev } }
+					establish_communications_no_message = prev
+				}
+				if = {
+					limit = {
+						exists = event_target:spth_makai_defence_system_country
+						event_target:spth_makai_defence_system_country = { has_country_flag = touhou_crisis_country }
+					}
+					set_faction_hostility = {
+						target = event_target:spth_makai_defence_system_country
+						set_friendly = yes
+					}
+				}
+				country_event = { id = touhou_crisis.19 days = 360 }
+			}
+		}
+	}
+}
+spth_spawn_kamikakushi_invade_system = {
+	optimize_memory
+	set_spawn_system_batch = begin
+	random_rim_system = {
+		limit = { spth_is_no_spawn_crisis_system = no }
+		set_star_flag = spth_no_jump_in_system
+		set_star_flag = ag_no_jump_in_system
+		spawn_system = {
+			initializer = $initializer$
+			hyperlane = no
+			effect = {
+				add_hyperlane = {
+					from = this
+					to = prev
+				}
+				save_event_target_as = last_kamikakushi_invade_system
+			}
+		}
+	}
+	event_target:last_kamikakushi_invade_system = {
+		set_name = { key = spth_purple_this_name variable_string = "\[This.GetName\]" }
+	}
+	set_spawn_system_batch = end
+}
+spth_precursor_unlock_makai_ship_core = {
+	optimize_memory
+	every_owned_ship = {
+		limit = { is_ship_size = spth_makai_ship_core_0 }
+		fleet = {
+			create_ship = {
+				name = NAME_spth_makai_ship_core_1
+				design = NAME_spth_makai_ship_core_1
+				effect = {
+					set_ship_flag = spth_makai_ship_core_unlocked
+					save_global_event_target_as = spth_makai_ship_core_unlocked_player
+				}
+			}
+		}
+		delete_ship = this
+	}
+}
+spth_precursor_refresh_makai_ship_core = {
+	optimize_memory
+
+}
+
+spth_kamikaushi_refused = {
+	optimize_memory
+	hidden_effect = {
+		remove_country_flag = touhou_crisis_102_wait
+		set_country_flag = touhou_crisis_102_refuse
+		set_country_flag = touhou_crisis_102_has_chosen
+		set_global_flag = spth_kamikaushi_crisis_intro
+	}
+	country_event = { id = touhou_crisis.105 days = 180 }
+	observer_event = { id = touhou_crisis.201 days = 180 scopes = { from = this } }
+}
+spth_kamikakushi_destroy_wedge = {
+	optimize_memory
+	remove_country_flag = touhou_crisis_102_wait
+	set_country_flag = touhou_crisis_102_accept
+	set_country_flag = touhou_crisis_102_has_chosen
+	if = {
+		limit = { exists = event_target:makai_wedge_ruined_object }
+		event_target:makai_wedge_ruined_object = {
+			remove_megastructure = this
+		}
+	}
+	event_target:spth_precursor_capital_makai_system.star = {
+		create_ambient_object = {
+			type = spth_precursor_capital_makai_wedge_object
+			use_3d_location = yes
+			entity_offset_height = { min = 0 max = 25 }
+			location = this
+		}
+		last_created_ambient_object = {
+			set_ambient_object_flag = spth_precursor_capital_makai_wedge_ruined
+			set_ambient_object_flag = spth_precursor_capital_makai_wedge_destroyed
+			save_global_event_target_as = makai_wedge_ruined_object
+			set_location = prev
+		}
+	}
+	country_event = { id = touhou_crisis.103 }
+	observer_event = { id = touhou_crisis.200 scopes = { from = this } }
+}
+
+spth_kamikakushi_add_fleet_counter = {
+	optimize_memory
+	every_country = {
+		limit = { has_event_chain = spth_kamikakushi_crisis_invasion }
+		add_event_chain_counter = {
+			event_chain = spth_kamikakushi_crisis_invasion
+			counter = spth_kamikakushi_fleet_counter
+			amount = 1
+		}
+	}
+}
+spth_kamikakushi_spawn_preview_fleet = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_preview
+		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_preview_fleet
+		flag2 = spth_kamikakushi_fleet
+		spth_kamikakushi_invader_bc_tlx = 2
+		spth_kamikakushi_invader_bc_tmp = 7
+		spth_kamikakushi_invader_bc_tor = 7
+		spth_kamikakushi_invader_bc_ylx = 4
+		spth_kamikakushi_cruiser_1 = 2
+	}
+	spth_kamikakushi_add_fleet_counter = yes
+}
+spth_kamikakushi_spawn_invader_fleet = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_invader
+		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_invader_fleet
+		flag2 = spth_kamikakushi_fleet
+		spth_kamikakushi_invader_titan = 1
+		spth_kamikakushi_invader_bc_tlx = 7
+		spth_kamikakushi_invader_bc_tmp = 13
+		spth_kamikakushi_invader_bc_tor = 13
+		spth_kamikakushi_invader_bc_ylx = 7
+		spth_kamikakushi_cruiser_1 = 5
+	}
+	spth_kamikakushi_add_fleet_counter = yes
+}
+spth_kamikakushi_spawn_main_fleet = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_main_fleet_$id$
+		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_main_fleet_$id$
+		flag2 = spth_kamikakushi_fleet
+		spth_kamikakushi_invader_titan = 2
+		spth_kamikakushi_invader_bc_yyk = 20
+		spth_kamikakushi_invader_bc_yyk_g = 15
+		spth_kamikakushi_invader_bc_yyk_p = 25
+		spth_kamikakushi_cruiser_1 = 10
+		evt_target = spth_temp_main_fleet
+	}
+	event_target:spth_temp_main_fleet = { save_global_event_target_as = spth_kamikakushi_main_fleet_$id$ }
+	spth_kamikakushi_add_fleet_counter = yes
+}
+spth_kamikakushi_spawn_defence_fleet = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_defence
+		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_defence_fleet
+		spth_kamikakushi_invader_titan = 2
+		spth_kamikakushi_invader_bc_tlx = 10
+		spth_kamikakushi_invader_bc_tmp = 15
+		spth_kamikakushi_invader_bc_tor = 14
+		spth_kamikakushi_invader_bc_yyk_g = 6
+		spth_kamikakushi_invader_bc_ylx = 8
+		spth_kamikakushi_invader_bc_yyk_p = 2
+		spth_kamikakushi_cruiser_1 = 15
+	}
+	spth_kamikakushi_add_fleet_counter = yes
+}
+spth_kamikakushi_spawn_super_carrier_fleet = {
+	optimize_memory
+	if = {
+		limit = { has_global_flag = touhou_kamikakushi_extra_11 }
+		spth_create_fleet = {
+			NAME = NAME_spth_kamikakushi_super_carrier_fleet
+			can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+			OWNER = event_target:spth_kamikakushi_country
+			location = event_target:spth_kamikakushi_spawnpoint
+			flag = spth_kamikakushi_fleet
+			flag2 = spth_kamikakushi_flagship_fleet
+			spth_kamikakushi_super_carrier = 1
+			spth_kamikakushi_invader_titan = 2
+			spth_kamikakushi_invader_bc_yyk = 10
+			spth_kamikakushi_invader_bc_yyk_g = 10
+			spth_kamikakushi_invader_bc_yyk_p = 10
+			spth_kamikakushi_cruiser_1 = 8
+		}
+		spth_kamikakushi_add_fleet_counter = yes
+	}
+}
+spth_kamikakushi_spawn_small_defence_fleet = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_defence
+		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_defence_fleet
+		spth_kamikakushi_invader_titan = 1
+		spth_kamikakushi_invader_bc_tmp = 15
+		spth_kamikakushi_invader_bc_tor = 15
+		spth_kamikakushi_cruiser_1 = 10
+	}
+	spth_kamikakushi_add_fleet_counter = yes
+}
+spth_kamikakushi_spawn_random_support_fleet = {
+	optimize_memory
+	reroll_random = yes
+	random_list = {
+		50 = {
+			spth_create_fleet = {
+				NAME = spth_kamikakushi_support_small
+				can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+				OWNER = event_target:spth_kamikakushi_country
+				location = event_target:spth_kamikakushi_spawnpoint
+				flag = spth_kamikakushi_support_fleet
+				flag2 = spth_kamikakushi_fleet
+				spth_kamikakushi_invader_bc_tmp = 2
+				spth_kamikakushi_invader_bc_tor = 2
+				spth_kamikakushi_cruiser_1 = 1
+			}
+		}
+		35 = {
+			spth_create_fleet = {
+				NAME = spth_kamikakushi_support_medium
+				can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+				OWNER = event_target:spth_kamikakushi_country
+				location = event_target:spth_kamikakushi_spawnpoint
+				flag = spth_kamikakushi_support_fleet
+				flag2 = spth_kamikakushi_fleet
+				spth_kamikakushi_invader_bc_tlx = 1
+				spth_kamikakushi_invader_bc_ylx = 1
+				spth_kamikakushi_invader_bc_tmp = 2
+				spth_kamikakushi_invader_bc_tor = 2
+				spth_kamikakushi_cruiser_1 = 2
+			}
+		}
+		15 = {
+			spth_create_fleet = {
+				NAME = spth_kamikakushi_support_large
+				can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+				OWNER = event_target:spth_kamikakushi_country
+				location = event_target:spth_kamikakushi_spawnpoint
+				flag = spth_kamikakushi_support_fleet
+				flag2 = spth_kamikakushi_fleet
+				spth_kamikakushi_invader_bc_tlx = 2
+				spth_kamikakushi_invader_bc_ylx = 2
+				spth_kamikakushi_invader_bc_tmp = 3
+				spth_kamikakushi_invader_bc_tor = 3
+				spth_kamikakushi_cruiser_1 = 2
+			}
+		}
+	}
+}
+spth_kamikakushi_spawn_gate = {
+	optimize_memory
+	spth_create_fleet = {
+		NAME = NAME_spth_kamikakushi_gate
+		can_disband = no is_boss = yes
+		OWNER = event_target:spth_kamikakushi_country
+		location = event_target:spth_kamikakushi_spawnpoint
+		flag = spth_kamikakushi_gate
+		spth_kamikakushi_gate = 1
+		evt_target = spth_kamikakushi_gate
+	}
+	every_country = {
+		limit = {
+			has_event_chain = spth_kamikakushi_crisis_invasion
+			NOT = { has_point_of_interest = { poi = spth_kamikakushi_crisis_invasion_gate_$spth_id$ } }
+		}
+		add_event_chain_counter = {
+			event_chain = spth_kamikakushi_crisis_invasion
+			counter = spth_kamikakushi_gate_counter
+			amount = 1
+		}
+		create_point_of_interest = {
+			id = spth_kamikakushi_crisis_invasion_gate_$spth_id$
+			name = spth_kamikakushi_crisis_invasion_gate_$spth_id$
+			desc = spth_kamikakushi_crisis_invasion_gate_$spth_id$_desc
+			event_chain = spth_kamikakushi_crisis_invasion
+			picture = GFX_evt_wormhole
+			location = event_target:spth_kamikakushi_gate
+		}
+	}
+}
+spth_kamikakushi_spawn_fleets_detail = {
+	optimize_memory
+	if = {
+		limit = { has_global_flag = spth_kamikaushi_crisis_gate_$spth_id$_spawned }
+		if = {
+			limit = { NOT = { has_global_flag = spth_kamikakushi_gate_$spth_id$_destroyed } }
+			event_target:spth_kamikakushi_country = { change_variable = { which = spth_kamikakushi_spawn_interval value = 1 } }
+		}
+		if = {
+			limit = {
+				event_target:spth_kamikakushi_country = {
+					if = {
+						limit = { NOT = { has_global_flag = touhou_kamikakushi_extra_21 } }
+						count_owned_fleet = { limit = { has_fleet_flag = spth_kamikakushi_fleet NOT = { has_fleet_flag = spth_kamikakushi_support_fleet } } count <= 48 }
+					} else = { count_owned_fleet = { limit = { has_fleet_flag = spth_kamikakushi_fleet NOT = { has_fleet_flag = spth_kamikakushi_support_fleet } } count <= 60 } }
+				}
+			}
+			random_system = {
+				limit = { has_star_flag = spth_kamikaushi_crisis_gate_$spth_id$ }
+				random_system_planet = {
+					limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+					save_event_target_as = spth_kamikakushi_spawnpoint
+				}
+				if = {
+					limit = { NOT = { has_global_flag = spth_kamikakushi_gate_$spth_id$_destroyed } }
+					if = {
+						limit = { NOT = { exists = event_target:spth_kamikakushi_main_fleet_$spth_id$ } }
+						spth_kamikakushi_spawn_main_fleet = { id = $spth_id$ }
+					}
+					event_target:spth_kamikakushi_spawnpoint = {
+						planet_event = { id = touhou_crisis.111 days = 5 }
+					}
+					event_target:spth_kamikakushi_country = { change_variable = { which = spth_kamikakushi_spawn_interval value = 1 } }
+				} else = {
+					event_target:spth_kamikakushi_spawnpoint = {
+						planet_event = { id = touhou_crisis.122 days = 5 }
+					}
+				}
+			}
+		}
+	}
+}
+spth_kamikukushi_spawn_starbase = {
+	optimize_memory
+	if = {
+		limit = { NOT = { exists = starbase } }
+		event_target:spth_kamikakushi_country = {
+			if = {
+				limit = { NOT = { has_country_flag = has_given_starbase_spth_kamikakushi_designs } }
+				create_ship_design = { design = NAME_starbase_spth_kamikakushi }
+				add_ship_design = last_created_design
+			}
+		}
+		create_starbase = {
+			size = starbase_spth_kamikakushi
+			owner = event_target:spth_kamikakushi_country
+			effect = {
+				fleet = {
+					set_name = random
+				}
+			}
+		}
+	}
+}
+
+touhou_kamikakushi_extra_expand_page = {
+	optimize_memory
+	hidden_effect = {
+		remove_country_flag = touhou_kamikakushi_extra_1
+		remove_country_flag = touhou_kamikakushi_extra_2
+		remove_country_flag = touhou_kamikakushi_extra_3
+		remove_country_flag = touhou_kamikakushi_extra_4
+		set_country_flag = touhou_kamikakushi_extra_$spth_id$
+	}
+}
+touhou_kamikakushi_extra_page_1_off = {
+	optimize_memory
+	hidden_effect = {
+		remove_global_flag = touhou_kamikakushi_extra_11
+		remove_global_flag = touhou_kamikakushi_extra_12
+		remove_global_flag = touhou_kamikakushi_extra_13
+		remove_global_flag = touhou_kamikakushi_extra_14
+	}
+}
+touhou_kamikakushi_extra_page_2_off = {
+	optimize_memory
+	hidden_effect = {
+		remove_global_flag = touhou_kamikakushi_extra_21
+		remove_global_flag = touhou_kamikakushi_extra_22
+		remove_global_flag = touhou_kamikakushi_extra_23
+		remove_global_flag = touhou_kamikakushi_extra_24
+	}
+}
+touhou_kamikakushi_extra_page_3_off = {
+	optimize_memory
+	hidden_effect = {
+		remove_global_flag = touhou_kamikakushi_extra_31
+		remove_global_flag = touhou_kamikakushi_extra_32
+		remove_global_flag = touhou_kamikakushi_extra_33
+		remove_global_flag = touhou_kamikakushi_extra_34
+	}
+}
+touhou_kamikakushi_extra_page_4_off = {
+	optimize_memory
+	hidden_effect = {
+		remove_global_flag = touhou_kamikakushi_extra_41
+		remove_global_flag = touhou_kamikakushi_extra_42
+		remove_global_flag = touhou_kamikakushi_extra_43
+	}
+}
+touhou_kamikakushi_extra_page_1_on = {
+	optimize_memory
+	hidden_effect = {
+		set_global_flag = touhou_kamikakushi_extra_11
+		set_global_flag = touhou_kamikakushi_extra_12
+		set_global_flag = touhou_kamikakushi_extra_13
+		set_global_flag = touhou_kamikakushi_extra_14
+	}
+}
+touhou_kamikakushi_extra_page_2_on = {
+	optimize_memory
+	hidden_effect = {
+		set_global_flag = touhou_kamikakushi_extra_21
+		set_global_flag = touhou_kamikakushi_extra_22
+		set_global_flag = touhou_kamikakushi_extra_23
+		set_global_flag = touhou_kamikakushi_extra_24
+	}
+}
+touhou_kamikakushi_extra_page_3_on = {
+	optimize_memory
+	hidden_effect = {
+		set_global_flag = touhou_kamikakushi_extra_31
+		set_global_flag = touhou_kamikakushi_extra_32
+		set_global_flag = touhou_kamikakushi_extra_33
+		set_global_flag = touhou_kamikakushi_extra_34
+	}
+}
+touhou_kamikakushi_extra_page_4_on = {
+	optimize_memory
+	hidden_effect = {
+		set_global_flag = touhou_kamikakushi_extra_41
+		set_global_flag = touhou_kamikakushi_extra_42
+		set_global_flag = touhou_kamikakushi_extra_43
+	}
+}
+
+spth_spawn_test_fleet = {
+	optimize_memory
+	if = {
+		limit = { is_scope_type = country }
+		save_event_target_as = test_fleet_owner
+		capital_scope = { save_event_target_as = test_fleet_loc }
+		spth_create_fleet = {
+			NAME = NAME_spth_test_fleet
+			can_disband = no is_boss = yes
+			OWNER = event_target:test_fleet_owner
+			location = event_target:test_fleet_loc
+			flag = spth_test_fleet
+			NAME_lunar_capital_carrier_crisis = 1
+			NAME_lunar_capital_battleship_crisis = 20
+			NAME_lunar_capital_escort_crisis = 15
+			NAME_lunar_capital_frigate_crisis = 15
+			NAME_lunar_capital_frigate_s_crisis = 10
+		}
+		spth_create_fleet = {
+			NAME = NAME_spth_test_fleet
+			can_disband = no is_boss = yes
+			OWNER = event_target:test_fleet_owner
+			location = event_target:test_fleet_loc
+			flag = spth_test_fleet
+			NAME_lunar_capital_battleship_crisis = 10
+			NAME_lunar_capital_escort_crisis = 10
+			NAME_lunar_capital_frigate_crisis = 10
+			NAME_lunar_capital_frigate_s_crisis = 5
+		}
+		spth_create_fleet = {
+			NAME = NAME_spth_test_fleet
+			can_disband = no is_boss = yes
+			OWNER = event_target:test_fleet_owner
+			location = event_target:test_fleet_loc
+			flag = spth_test_fleet
+			NAME_lunar_capital_battleship_crisis = 10
+			NAME_lunar_capital_escort_crisis = 10
+			NAME_lunar_capital_frigate_crisis = 10
+			NAME_lunar_capital_frigate_s_crisis = 5
+		}
+		spth_create_fleet = {
+			NAME = NAME_spth_test_fleet
+			can_disband = no is_boss = yes
+			OWNER = event_target:test_fleet_owner
+			location = event_target:test_fleet_loc
+			flag = spth_test_fleet
+			NAME_lunar_capital_frigate_crisis = 12
+			NAME_lunar_capital_frigate_s_crisis = 5
+		}
+		spth_create_fleet = {
+			NAME = NAME_spth_test_fleet
+			can_disband = no is_boss = yes
+			OWNER = event_target:test_fleet_owner
+			location = event_target:test_fleet_loc
+			flag = spth_test_fleet
+			NAME_lunar_capital_frigate_crisis = 12
+			NAME_lunar_capital_frigate_s_crisis = 5
+		}
+		spth_create_fleet = {
+			NAME = NAME_spth_test_fleet
+			can_disband = no is_boss = yes
+			OWNER = event_target:test_fleet_owner
+			location = event_target:test_fleet_loc
+			flag = spth_test_fleet
+			NAME_lunar_capital_frigate_crisis = 12
+			NAME_lunar_capital_frigate_s_crisis = 5
+		}
+	}
+}
+
+spth_set_crisis_sound = {
+	optimize_memory
+	if = {
+		limit = { NOT = { has_global_flag = close_touhou_crisis_music } }
+		set_crisis_sound = $sound$
+	}
+}
+spth_set_stage_crisis_sound = {
+	optimize_memory
+	if = {
+		limit = { has_global_flag = spth_kamikaushi_crisis_start }
+		if = {
+			limit = { NOT = { has_global_flag = spth_kamikaushi_crisis_ended } }
+			if = {
+				limit = { exists = event_target:defeat_kamikakushi_country }
+				spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_2 }
+			} else = { spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_1 } }
+		} else = { stop_crisis_sound = yes }
+	}
+}
+spth_astral_thread_small_reward = {
+	optimize_memory
+	owner = {
+		custom_tooltip = astral_threads_found
+		locked_random_list = {
+			1 = {
+				add_resource_astral_threads = { VALUE = 40 ADD = $ADD$ }
+			}
+			1 = {
+				add_resource_astral_threads = { VALUE = 50 ADD = $ADD$ }
+			}
+			1 = {
+				add_resource_astral_threads = { VALUE = 60 ADD = $ADD$ }
+			}
+		}
+	}
 }

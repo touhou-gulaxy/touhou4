@@ -1,0 +1,191 @@
+scarlet_weather_storm_apply_aftermath_modifier = {
+    optimize_memory
+    every_system_planet = {
+        limit = { OR = { is_colonizable = yes is_colony = yes } }
+        storm_apply_aftermath_modifier = {
+            severity = {
+                modifier = scarlet_weather_$type$_storm_aftermath_modifier_severity_low
+                days = 900
+                chance = {
+                    base = 50
+                    modifier = {
+                        factor = 0
+                        OR = {
+                            NOT = { exists = owner owner = { has_authority = auth_gensokyo } }
+                            has_modifier = scarlet_weather_$type$_storm_aftermath_modifier_severity_high
+                            has_modifier = scarlet_weather_$type$_storm_aftermath_modifier_severity_mid
+                        }
+                    }
+                }
+                effect = { [[event_id_gensokyo_low] planet_event = { id = $event_id_gensokyo_low$ } ] }
+            }
+            severity = {
+                modifier = scarlet_weather_$type$_storm_aftermath_modifier_severity_mid
+                days = 900
+                chance = {
+                    base = 30
+                    modifier = {
+                        factor = 0
+                        NOT = {
+                            AND = { exists = owner owner = { has_authority = auth_gensokyo } }
+                            has_modifier = scarlet_weather_$type$_storm_aftermath_modifier_severity_high
+                            has_modifier = scarlet_weather_$type$_storm_aftermath_modifier_severity_low
+                        }
+                    }
+                }
+                effect = { [[event_id_gensokyo_mid] planet_event = { id = $event_id_gensokyo_mid$ } ] }
+            }
+            severity = {
+                modifier = scarlet_weather_$type$_storm_aftermath_modifier_severity_high
+                days = 900
+                chance = {
+                    base = 30
+                    modifier = {
+                        factor = 0
+                        NOT = {
+                            AND = { exists = owner owner = { has_authority = auth_gensokyo } }
+                            has_modifier = scarlet_weather_$type$_storm_aftermath_modifier_severity_mid
+                            has_modifier = scarlet_weather_$type$_storm_aftermath_modifier_severity_low
+                        }
+                    }
+                }
+                effect = { [[event_id_gensokyo_high] planet_event = { id = $event_id_gensokyo_high$ } ] }
+            }
+        }
+        if = {
+            limit = { is_colony = yes exists = owner }
+            owner = {
+                create_message = {
+                    type = scarlet_weather_aftermath
+                    localization = MESSAGE_STORM_AFTERMATH_DESC
+                    days = @toast_important_message_days
+                    target = prev
+                    variable = { type = name localization = PLANET scope = prev }
+                    custom_toast_content_text = scarlet_weather_$type$_storm_aftermath_modifier_desc
+                }
+            }
+        }
+    }
+}
+
+scarlet_weather_storm_add = {
+    optimize_memory
+    set_star_flag = scarlet_weather_storm_system
+    set_global_flag = scarlet_weather_cosmic_storm_has_occurred
+    inline_script = {
+        script = "cosmic_storms/StormVisuals"
+        STORM_NAME = "gravity_storm"
+    }
+    if = {
+        limit = { has_owner = yes }
+        owner = { set_country_flag = affected_by_scarlet_weather_$type$_storm }
+    }
+}
+scarlet_weather_event_storm_add = {
+    optimize_memory
+    set_star_flag = space_shrine_jumped_system
+    set_star_flag = scarlet_weather_storm_system
+    set_global_flag = scarlet_weather_cosmic_storm_has_occurred
+    inline_script = {
+        script = "cosmic_storms/StormVisuals"
+        STORM_NAME = "shroud_storm"
+    }
+    if = {
+        limit = { has_owner = yes }
+        owner = { set_country_flag = affected_by_scarlet_weather_$type$_storm }
+    }
+    star = {
+        create_ambient_object = {
+            type = shroud_storm
+            location = this
+        }
+        last_created_ambient_object = {
+            set_ambient_object_flag = scarlet_weather_event_space_storm_object
+            set_location = {
+                target = prev
+                distance = 0
+                angle = random
+            }
+        }
+    }
+}
+scarlet_weather_storm_remove = {
+    optimize_memory
+    remove_storm_visuals_effect = yes
+    remove_star_flag = scarlet_weather_storm_system
+    if = {
+        limit = { has_owner = yes }
+        owner = { remove_country_flag = affected_by_scarlet_weather_$type$_storm }
+    }
+    # scarlet_weather_storm_apply_aftermath_modifier = { type = $type$ }
+}
+scarlet_weather_event_storm_remove = {
+    optimize_memory
+    remove_storm_visuals_effect = yes
+    remove_star_flag = scarlet_weather_storm_system
+    remove_star_flag = space_shrine_jumped_system
+    if = {
+        limit = { has_owner = yes }
+        owner = { remove_country_flag = affected_by_scarlet_weather_$type$_storm }
+    }
+    random_system_ambient_object = {
+        limit = { has_ambient_object_flag = scarlet_weather_event_space_storm_object }
+        destroy_ambient_object = this
+    }
+}
+
+scarlet_weather_system_selector = {
+    optimize_memory
+    start_storm_area_placing = {
+        sacrifice_leader_with_ui = $sacrifice|yes$
+        cosmic_storm = scarlet_weather_$type$_storm
+        immediate = yes
+        reticle_radius = { base = 100 }
+        max_range = { base = 1500 }
+        on_confirm = { last_created_cosmic_storm = { set_storm_flag = scarlet_weather_$type$_man_made_@root } }
+        on_cancel = {}
+    }
+}
+scarlet_weather_break = {
+    optimize_memory
+    every_cosmic_storm = {
+        limit = { has_storm_flag = scarlet_weather_$type$_man_made_@root }
+        destroy_cosmic_storm = yes
+    }
+}
+spth_storm_system_selector = {
+    optimize_memory
+    start_storm_area_placing = {
+        sacrifice_leader_with_ui = $sacrifice$ # yes则弹出窗口选择要牺牲的领袖
+        cosmic_storm = spth_selector_storm # 风暴类型
+        immediate = yes
+        reticle_radius = { base = 10 }
+        max_range = { base = 1000 } # 大圈选择范围
+        on_confirm = {
+            last_created_cosmic_storm = {
+                random_system_within_storm = { system_event = { id = $event_id$ } }
+                destroy_cosmic_storm = yes
+            }
+        }
+        on_cancel = {}
+    }
+}
+
+th_leader_sp_spawn_storm = {
+    optimize_memory
+    spawn_random_storm = {
+        type = scarlet_weather_$type$_storm
+        cosmic_storm_start_position = fromfrom
+        immediate = yes
+    }
+    hidden_effect = {
+        create_message = {
+            type = tenshi_scarlet_weather
+            localization = tenshi_scarlet_weather_desc
+            days = @toast_important_message_days
+            target = this
+            variable = { type = name localization = TH_TARGET_SYSTEM_NAME scope = fromfrom }
+            custom_toast_content_text = scarlet_weather_$type$_storm_color_tooltip
+        }
+    }
+}

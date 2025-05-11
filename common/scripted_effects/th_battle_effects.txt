@@ -6,3 +6,122 @@ sakuya_the_world = {
 		}
 	}
 }
+
+tenshi_init_aura_effect = {
+	optimize_memory
+	set_timed_fleet_flag = { flag = has_tenshi_aura_effect days = $days$ }
+	solar_system = {
+		create_fleet = {
+			name = th_tenshi_aura
+			settings = {
+				can_upgrade = no
+				spawn_debris = no
+				can_change_leader = no
+				uses_naval_capacity = no
+				is_boss = yes
+				is_ultra_boss = yes
+				garrison = no
+				can_change_composition = no
+			}
+			effect = {
+				set_owner = root
+				create_ship = {
+					design = th_tenshi_aura_ship
+					effect = {
+						set_name = th_tenshi_aura
+						set_ship_flag = spth_invincible
+						set_disable_at_health = 0.01
+					}
+				}
+				set_location = {
+					target = prev
+					distance = 0
+					angle = random
+				}
+				fleet_event = { id = spth_fleet.1006 days = $days$ }
+			}
+		}
+		create_ambient_object = {
+			type = "explosion_particle_object"
+			scale = 19
+			play_animation_once = yes
+			location = prev
+		}
+		last_created_ambient_object = {
+			set_location = { target = prev distance = 0 angle = random }
+		}
+	}
+}
+
+alice_create_fleet_effect = {
+	optimize_memory
+	create_fleet = {
+		name = th_alice_phantom
+		settings = {
+			is_boss = yes
+			spawn_debris = no
+			can_change_composition = no
+			can_change_leader = no
+			can_disband = no
+			can_upgrade = no
+		}
+		effect = {
+			set_fleet_flag = th_alice_phantom_player_fleet
+			set_owner = event_target:alice_owner
+			create_ship = {
+				design = th_alice_phantom_ship_1
+				effect = {
+					set_name = random
+					set_ship_flag = spth_invincible
+					set_disable_at_health = 0.01
+				}
+			}
+			while = {
+				count = 15
+				create_ship = {
+					design = th_alice_phantom_ship_2
+					effect = {
+						set_name = random
+						set_ship_flag = spth_invincible
+						set_disable_at_health = 0.01
+					}
+				}
+			}
+			set_location = {
+				target = event_target:alice_pos
+				distance = 0
+				angle = random
+			}
+			fleet_event = { id = spth_fleet.1006 days = $days$ }
+		}
+	}
+}
+alice_init_combat_effect = {
+	optimize_memory
+	set_timed_fleet_flag = { flag = has_alice_aura_effect days = $days$ }
+	reroll_random = yes
+	random_list = {
+		1 = { while = { count = 1 alice_create_fleet_effect = { days = $days$ } } }
+		1 = { while = { count = 2 alice_create_fleet_effect = { days = $days$ } } }
+		1 = { while = { count = 3 alice_create_fleet_effect = { days = $days$ } } }
+	}
+}
+
+th_spawn_explosion_particle = {
+	optimize_memory
+	create_ambient_object = {
+		type = th_explosion_$color$_$size$
+		location = this
+		duration = 10
+		use_3d_location = yes
+		entity_offset = { min = 0 max = 0 }
+		entity_offset_angle = { min = 0 max = 0 }
+		entity_offset_height = { min = $min_height|0$ max = $max_height|0$ }
+		entity_scale_to_size = yes
+		scale = 0.1
+	}
+}
+th_kill_leader = {
+	optimize_memory
+	kill_leader = { show_notification = $notification|no$ }
+}

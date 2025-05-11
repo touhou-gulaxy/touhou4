@@ -1,0 +1,385 @@
+namespace = spth_makai_defender
+
+# 唤醒防御系统
+country_event = {
+    id = spth_makai_defender.1
+    title = spth_makai_defender.1.name
+    desc = spth_makai_defender.1.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mysterious_signal_room }
+    trigger = { NOT = { has_global_flag = spth_makai_defender_1_fired } }
+    immediate = { set_global_flag = spth_makai_defender_1_fired }
+    option = {
+        name = spth_makai_defender.1.a
+        custom_tooltip = spth_makai_defender.1.a.tooltip
+        hidden_effect = { reroll_random = yes }
+        random_list = {
+            50 = {
+                modifier = { factor = 0 has_global_flag = spth_makai_defender_must_fail }
+                country_event = { id = spth_makai_defender.2 }
+            }
+            50 = {
+                modifier = { factor = 0 has_global_flag = spth_makai_defender_must_success }
+                country_event = { id = spth_makai_defender.3 }
+            }
+        }
+        hidden_effect = {
+            reroll_random = yes
+            random_rim_system = {
+                set_spawn_system_batch = begin
+                random_rim_system = {
+                    limit = { spth_is_no_spawn_crisis_system = no }
+                    set_star_flag = spth_no_jump_in_system
+                    set_star_flag = ag_no_jump_in_system
+                    spawn_system = {
+                        initializer = spth_makai_defence_system_home
+                        hyperlane = no
+                        effect = {
+                            add_hyperlane = {
+                                from = this
+                                to = prev
+                            }
+                            save_event_target_as = last_kamikakushi_invade_system
+                        }
+                    }
+                }
+                set_spawn_system_batch = end
+            }
+        }
+    }
+    option = {
+        name = spth_makai_defender.1.b
+        default_hide_option = yes
+    }
+}
+
+country_event = {
+    id = spth_makai_defender.2
+    title = spth_makai_defender.2.name
+    desc = spth_makai_defender.2.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    picture_event_data = { room = spth_only_no_video_feed_room }
+    immediate = { set_global_flag = spth_makai_defence_system_crisis_start }
+    option = {
+        name = spth_makai_defender.2.good
+        default_hide_option = yes
+    }
+    after = {
+        hidden_effect = {
+            set_global_flag = spth_makai_defence_system_non_crisis
+            set_update_modifiers_batch = begin
+            spth_makai_defender_normal_spawn = yes
+            spth_makai_defender_crisis_spawn_fleets = yes
+            spth_makai_defender_crisis_spawn_defence_fleet = yes
+            spth_makai_defender_crisis_spawn_defence_fleet = yes
+            set_update_modifiers_batch = end
+        }
+    }
+}
+country_event = {
+    id = spth_makai_defender.3
+    title = spth_makai_defender.3.name
+    desc = spth_makai_defender.3.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    picture_event_data = { room = spth_only_no_video_feed_room }
+    immediate = { set_global_flag = spth_makai_defence_system_crisis_start }
+    option = {
+        name = spth_makai_defender.3.a
+        default_hide_option = yes
+        response_text = spth_makai_defender.3.a.response
+    }
+    option = {
+        name = spth_makai_defender.3.b
+        response_text = spth_makai_defender.3.b.response
+    }
+    after = {
+        hidden_effect = {
+            set_update_modifiers_batch = begin
+            spth_makai_defender_crisis_spawn = yes
+            spth_makai_defender_crisis_spawn_fleets = yes
+            spth_makai_defender_crisis_spawn_defence_fleet = yes
+            spth_makai_defender_crisis_spawn_defence_fleet = yes
+            spth_makai_defender_crisis_spawn_defence_fleet = yes
+            spth_makai_defender_crisis_spawn_defence_fleet = yes
+            set_update_modifiers_batch = end
+        }
+    }
+}
+
+country_event = {
+    id = spth_makai_defender.4
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_global_flag = spth_makai_defence_system_crisis_start
+        NOT = { has_global_flag = spth_makai_defence_system_crisis_ended }
+    }
+    immediate = {
+        if = {
+            limit = { count_owned_fleet = { limit = { has_fleet_flag = spth_makai_defender_fleet } count <= 48 } }
+            spth_makai_defender_crisis_spawn_fleets = yes
+        }
+        country_event = { id = spth_makai_defender.4 days = 270 random = 90 }
+    }
+}
+
+# 寻路
+fleet_event = {
+    id = spth_makai_defender.12
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_global_flag = spth_makai_defence_system_crisis_start
+        NOT = { has_global_flag = spth_makai_defence_system_crisis_ended }
+    }
+    immediate = { spth_invasion_fleet_action = { ID = spth_makai_defender TYPE = makai_defence_system OWNER = spth_makai_defence_system_country } }
+}
+
+# makai crisis bombed a planet
+# This = Planet
+# From = Bombarder country
+planet_event = {
+    id = spth_makai_defender.13
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_orbital_bombardment = yes
+        planet_devastation >= 90
+        from = { is_country_type = spth_makai_defence_system_crisis }
+    }
+    immediate = {
+        owner = {
+            country_event = {
+                id = spth_makai_defender.14
+                scopes = { from = root fromfrom = event_target:spth_makai_defence_system_country }
+            }
+        }
+        set_variable = { which = touhou_crisis_13_districts_count value = trigger:num_districts }
+        reroll_random = yes
+        random_list = {
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.1 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.2 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.3 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.4 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.5 } }
+        }
+        reroll_random = yes
+        floor_variable = touhou_crisis_13_districts_count
+        while = { count = touhou_crisis_13_districts_count add_deposit = d_ruined_district }
+        clear_variable = touhou_crisis_13_districts_count
+        add_deposit = d_ruined_building_blocker
+        add_deposit = d_ruined_building_blocker
+        spth_planet_kill_all_pop = yes
+        destroy_colony = yes
+        if = {
+            limit = { is_ringworld = yes }
+            spawn_ringworld_cracker_effect = yes
+            change_pc = pc_ringworld_habitable_damaged
+            set_planet_entity = { entity = ringworld_habitable_damaged_entity }
+        } else_if = {
+            limit = { spth_is_habitat = yes }
+            spth_spawn_habitat_cracker_effect = yes
+        } else_if = {
+            limit = { has_modifier = "holy_planet" }
+            change_pc = pc_shattered
+            remove_modifier = "holy_planet"
+        }
+        solar_system = {
+            if = {
+                limit = {
+                    count_system_colony = { count = 0 }
+                    NOT = { is_star_class = sc_spth_void }
+                }
+                create_ambient_object = { type = "star_explosion" play_animation_once = yes location = this }
+                last_created_ambient_object = { set_location = { target = prev.star distance = 0 angle = random } }
+                set_star_class = sc_spth_void
+                star = {
+                    if = {
+                        limit = { NOT = { is_planet_class = pc_spth_void } }
+                        change_pc = pc_spth_void
+                        set_variable = { which = spth_void_star_original_size value = trigger:planet_size }
+                        set_planet_flag = spth_void_star_flag
+                        set_planet_size = 1
+                    }
+                }
+            }
+            every_fleet_in_system = {
+                limit = {
+                    exists = owner
+                    owner = { is_touhou_crisis_faction = yes }
+                    has_fleet_flag = spth_makai_defender_fleet
+                    OR = {
+                        AND = { exists = orbit orbit = { is_same_value = root } }
+                        AND = {
+                            is_fleet_idle = yes
+                            NAND = {
+                                exists = orbit
+                                orbit = {
+                                    NOT = { is_star = yes }
+                                    exists = owner
+                                    owner = { is_hostile = event_target:spth_makai_defence_system_country }
+                                }
+                            }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = spth_makai_defender.12 days = 5 random = 15 }
+            }
+        }
+    }
+}
+#Invasion fleet action on orbit planet.
+country_event = {
+    id = spth_makai_defender.14
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_makai_defence_system_crisis_start
+        NOT = { has_global_flag = spth_makai_defence_system_crisis_ended }
+        is_touhou_crisis_faction = yes
+        from = { has_fleet_flag = spth_makai_defender_fleet }
+        fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
+    }
+    immediate = {
+        from = {
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = spth_makai_defender.12 days = 3 random = 2 }
+        }
+    }
+}
+#Invasion fleet action on win a space battle.
+country_event = {
+    id = spth_makai_defender.15
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_makai_defence_system_crisis_start
+        NOT = { has_global_flag = spth_makai_defence_system_crisis_ended }
+        is_touhou_crisis_faction = yes
+        fromfrom = { fleet = { has_fleet_flag = spth_makai_defender_fleet } }
+        fromfromfrom = {
+            OR = {
+                is_ship_class = shipclass_starbase
+                is_ship_class = shipclass_military
+            }
+        }
+    }
+    after = {
+        fromfrom = {
+            solar_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        owner = { is_touhou_crisis_faction = yes }
+                        has_fleet_flag = spth_makai_defender_fleet
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = spth_makai_defender.12 days = 3 random = 2 }
+                }
+            }
+        }
+    }
+}
+#Check every month to prevent bugs.
+event = {
+    id = spth_makai_defender.16
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_makai_defence_system_crisis_start
+        NOT = { has_global_flag = spth_makai_defence_system_crisis_ended }
+        exists = event_target:spth_makai_defence_system_country
+        event_target:spth_makai_defence_system_country = {
+            any_owned_fleet = {
+                exists = this
+                is_fleet_idle = yes
+                has_fleet_flag = spth_makai_defender_fleet
+                NAND = {
+                    exists = orbit
+                    orbit = {
+                        NOT = { is_star = yes }
+                        exists = owner
+                        owner = { is_hostile = event_target:spth_makai_defence_system_country }
+                        exists = controller
+                        controller = { is_hostile = event_target:spth_makai_defence_system_country }
+                    }
+                }
+            }
+        }
+    }
+    immediate = {
+        event_target:spth_makai_defence_system_country = {
+            every_owned_fleet = {
+                limit = {
+                    exists = this
+                    is_fleet_idle = yes
+                    has_fleet_flag = spth_makai_defender_fleet
+                    NAND = {
+                        exists = orbit
+                        orbit = {
+                            NOT = { is_star = yes }
+                            exists = owner
+                            owner = { is_hostile = event_target:spth_makai_defence_system_country }
+                            exists = controller
+                            controller = { is_hostile = event_target:spth_makai_defence_system_country }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = spth_makai_defender.12 days = 3 random = 2 }
+            }
+        }
+    }
+}
+
+event = {
+    id = spth_makai_defender.100
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_makai_defence_system_crisis_start
+        NOT = { has_global_flag = spth_makai_defence_system_non_crisis }
+        NOT = { has_global_flag = spth_makai_defence_system_crisis_ended }
+        exists = event_target:spth_makai_defence_system_country
+        event_target:spth_makai_defence_system_country = {
+            count_owned_fleet = { limit = { has_fleet_flag = spth_makai_defender_defence_fleet } count = 0 }
+        }
+    }
+    immediate = {
+        event_target:spth_makai_defence_system_country = { destroy_country = yes }
+        set_global_flag = spth_makai_defence_system_crisis_ended
+    }
+}
+
+country_event = {
+    id = spth_makai_defender.101
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_makai_defence_system_crisis_start
+        has_global_flag = spth_makai_defence_system_non_crisis
+        NOT = { has_global_flag = spth_makai_defence_system_crisis_ended }
+    }
+    immediate = {
+        event_target:spth_makai_defence_system_country = { destroy_country = yes }
+        set_global_flag = spth_makai_defence_system_crisis_ended
+    }
+}

@@ -1,4 +1,130 @@
 namespace = spth_ap
+country_event = { # 开启一段飞升前置局势
+	id = spth_ap.1001
+	title = spth_ap.1001.name
+	desc = spth_ap.1001.desc
+	picture = GFX_evt_spth_news
+	show_sound = event_radio_chatter
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		has_authority = auth_gensokyo
+		NOT = { has_country_flag = has_triggered_spth_ap_1001 }
+		has_technology = tech_spth_spirit_power_beginning
+		# last_increased_tech = tech_spth_spirit_power_beginning
+	}
+	immediate = {
+		set_country_flag = has_triggered_spth_ap_1001
+	}
+	option = {
+		name = spth_ap.1001.a
+		start_situation = {
+			type = situation_spth_spirit_power_exploration
+			target = this
+		}
+		# hidden_effect = {
+		# 	country_event = {
+		# 		id = spth_ap.1002
+		# 	}
+		# }
+	}
+}
+first_contact_event = { # 一段飞升接触国家计数器
+	id = spth_ap.10001
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		owner = { is_country_type = default }
+		from = { is_country_type = default }
+		OR = {
+			owner = {
+				has_authority = auth_gensokyo
+				NOT = { has_technology = tech_spth_unified_theory }
+			}
+			from = {
+				has_authority = auth_gensokyo
+				NOT = { has_technology = tech_spth_unified_theory }
+			}
+		}
+	}
+	immediate = {
+		owner = {
+			if = {
+				limit = {
+					has_authority = auth_gensokyo
+					NOT = { has_technology = tech_spth_unified_theory }
+				}
+				change_variable = {
+					which = ap_spth_gsk_1_contact_counter
+					value = 1
+				}
+			}
+		}
+		from = {
+			if = {
+				limit = {
+					has_authority = auth_gensokyo
+					NOT = { has_technology = tech_spth_unified_theory }
+				}
+				change_variable = {
+					which = ap_spth_gsk_1_contact_counter
+					value = 1
+				}
+			}
+		}
+	}
+}
+situation_event = {
+	id = spth_ap.1010
+	title = spth_ap.1010.name
+	desc = spth_ap.1010.desc
+	picture = GFX_evt_spth_news
+	is_triggered_only = yes
+	
+	immediate = {
+		set_situation_flag = phase_2
+	}
+}
+country_event = {
+	id = spth_ap.1020
+	title = spth_ap.1020.name
+	desc = spth_ap.1020.desc
+	picture = GFX_evt_spth_news
+	is_triggered_only = yes
+	
+	after = {
+	}
+	option = {
+		name = GOOD
+		give_technology = {
+			tech = tech_spth_unified_theory
+			message = yes
+		}
+		destroy_situation = from
+	}
+}
+
+# 飞升2完成，解锁种族转换
+country_event = {
+	id = spth_ap.2101
+	title = spth_ap.2101.name
+	desc = spth_ap.2101.desc
+	picture = GFX_evt_HXX4
+	show_sound = event_th_zhys
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_HXX4_room }
+	is_triggered_only = yes
+	option = {
+		name = spth_ap.2101.a
+		custom_tooltip = spth_pop_convert_enabled_tooltip
+		hidden_effect = {
+			set_country_flag = spth_pop_convert_enabled
+		}
+	}
+}
+
 # 本文件内的事件暂未实装
 #country_event = {
 #	id = spth_ap.0
@@ -1471,6 +1597,10 @@ country_event = {
 	picture = GFX_evt_spth_gensokyo_city
 	location = capital_scope
 	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_gensokyo_city_room }
 	option = {
 		name = spth_ap.6000.a
 		trigger = {

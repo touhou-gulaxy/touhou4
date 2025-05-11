@@ -1,0 +1,678 @@
+# planet scope
+spth_effect_establish_barrier = {
+    optimize_memory
+    if = {
+        limit = {
+            NOT = { has_deposit = d_hakurei_barrier }
+        }
+        add_deposit = d_hakurei_barrier
+    }
+    add_modifier = {
+        modifier = spth_hakurei_barrier_info
+    }
+}
+
+# planet scope
+spth_effect_refresh_barrier_and_faith = {
+    optimize_memory
+    set_variable = {
+        which = planet_genso_job_buff_modifier
+        value = value:planet_genso_job_buff_modifier
+    }
+    set_variable = {
+        which = planet_available_barrier_capacity
+        value = value:planet_available_barrier_capacity
+    }
+    set_variable = {
+        which = planet_barrier_pressure_ratio
+        value = value:planet_barrier_pressure_ratio
+    }
+    set_variable = {
+        which = planet_base_faith_strength
+        value = value:planet_base_faith_strength
+    }
+    set_variable = {
+        which = planet_faith_sum
+        value = value:planet_faith_sum
+    }
+    set_variable = {
+        which = planet_weak_genso_job_produce_barrier_modifier
+        value = value:planet_weak_genso_job_produce_barrier_modifier
+    }
+    set_variable = {
+        which = planet_weak_genso_job_produce_faith_modifier
+        value = value:planet_weak_genso_job_produce_faith_modifier
+    }
+    set_variable = {
+        which = planet_weak_genso_job_upkeep_barrier_modifier
+        value = value:planet_weak_genso_job_upkeep_barrier_modifier
+    }
+    set_variable = {
+        which = planet_weak_genso_job_upkeep_faith_modifier
+        value = value:planet_weak_genso_job_upkeep_faith_modifier
+    }
+    set_variable = {
+        which = planet_strong_genso_job_produce_faith_modifier
+        value = value:planet_strong_genso_job_produce_faith_modifier
+    }
+    set_variable = {
+        which = planet_strong_genso_job_upkeep_faith_modifier
+        value = value:planet_strong_genso_job_upkeep_faith_modifier
+    }
+    set_variable = {
+        which = planet_sp_upkeep_faith_pressure_modifier
+        value = value:planet_sp_upkeep_faith_pressure_modifier
+    }
+    set_variable = {
+        which = planet_genso_soldier_counter
+        value = value:planet_genso_soldier_counter
+    }
+    set_variable = {
+        which = gensokyo_planet_drp_factor
+        value = value:gensokyo_planet_drp_factor
+    }
+}
+
+
+spth_effect_count_th_deposits = {
+    optimize_memory
+    export_trigger_value_to_variable = {
+        trigger = count_deposit
+        parameters = {
+            limit = { is_deposit_type = $deposit$ }
+        }
+        variable = spth_count_deposit_$deposit$
+    }
+}
+
+spth_effect_restore_th_deposits = {
+    optimize_memory
+    if = {
+        limit = { is_variable_set = spth_count_deposit_$deposit$ }
+        while = {
+            count = spth_count_deposit_$deposit$
+            add_deposit = $deposit$
+        }
+        clear_variable = spth_count_deposit_$deposit$
+    }
+}
+
+spth_planet_season_effect = {
+    optimize_memory
+    if = {
+        limit = { spth_is_$season$ = yes }
+        if = {
+            limit = { NOT = { has_modifier = spth_story_in_$season$ } }
+            add_modifier = { modifier = spth_story_in_$season$ }
+        }
+        spth_planet_$season$_remove_season = yes
+    }
+}
+spth_planet_spring_remove_season = {
+    optimize_memory
+    if = {
+        limit = { has_modifier = spth_story_in_summer }
+        remove_modifier = spth_story_in_summer
+    }
+    if = {
+        limit = { has_modifier = spth_story_in_autumn }
+        remove_modifier = spth_story_in_autumn
+    }
+    if = {
+        limit = { has_modifier = spth_story_in_winter }
+        remove_modifier = spth_story_in_winter
+    }
+}
+spth_planet_summer_remove_season = {
+    optimize_memory
+    if = {
+        limit = { has_modifier = spth_story_in_spring }
+        remove_modifier = spth_story_in_spring
+    }
+    if = {
+        limit = { has_modifier = spth_story_in_autumn }
+        remove_modifier = spth_story_in_autumn
+    }
+    if = {
+        limit = { has_modifier = spth_story_in_winter }
+        remove_modifier = spth_story_in_winter
+    }
+}
+spth_planet_autumn_remove_season = {
+    optimize_memory
+    if = {
+        limit = { has_modifier = spth_story_in_summer }
+        remove_modifier = spth_story_in_summer
+    }
+    if = {
+        limit = { has_modifier = spth_story_in_spring }
+        remove_modifier = spth_story_in_spring
+    }
+    if = {
+        limit = { has_modifier = spth_story_in_winter }
+        remove_modifier = spth_story_in_winter
+    }
+}
+spth_planet_winter_remove_season = {
+    optimize_memory
+    if = {
+        limit = { has_modifier = spth_story_in_summer }
+        remove_modifier = spth_story_in_summer
+    }
+    if = {
+        limit = { has_modifier = spth_story_in_autumn }
+        remove_modifier = spth_story_in_autumn
+    }
+    if = {
+        limit = { has_modifier = spth_story_in_spring }
+        remove_modifier = spth_story_in_spring
+    }
+}
+
+spth_reset_planet_deposits_effect = {
+    optimize_memory
+    # spth_effect_count_th_deposits = { deposit = d_zhulin }
+    # spth_effect_count_th_deposits = { deposit = d_yokai_mountain }
+    # spth_effect_count_th_deposits = { deposit = d_sunshine_flower_field }
+    # spth_effect_count_th_deposits = { deposit = d_th_underway }
+    # spth_effect_count_th_deposits = { deposit = d_false_heaven_shield }
+    # spth_effect_count_th_deposits = { deposit = d_wifi_tower }
+    # spth_effect_count_th_deposits = { deposit = d_mosen }
+    # clear_deposits = yes
+    # spth_effect_restore_th_deposits = { deposit = d_zhulin }
+    # spth_effect_restore_th_deposits = { deposit = d_yokai_mountain }
+    # spth_effect_restore_th_deposits = { deposit = d_sunshine_flower_field }
+    # spth_effect_restore_th_deposits = { deposit = d_th_underway }
+    # spth_effect_restore_th_deposits = { deposit = d_false_heaven_shield }
+    # spth_effect_restore_th_deposits = { deposit = d_wifi_tower }
+    # spth_effect_restore_th_deposits = { deposit = d_mosen }
+    every_deposit = {
+        limit = { spth_is_no_remove_deposit = no }
+        if = {
+            limit = { is_blocker = yes }
+            clear_blocker = yes
+        } else = { remove_deposit = yes }
+    }
+}
+spth_change_pc_gensokyo_city_effect = {
+    optimize_memory
+    if = {
+        limit = {
+            has_modifier = spth_hakurei_barrier_info
+            NOT = { has_deposit = d_hakurei_barrier }
+        }
+        add_deposit = d_hakurei_barrier
+    }
+    change_pc = pc_gensokyo_city
+    add_district = district_spth_sp_produce
+    set_planet_entity = {
+        entity = "gensokyo_city_entity"
+        graphical_culture = owner
+    }
+    this = {
+        save_event_target_as = spth_new_gensokyo_planet
+    }
+    owner = {
+        switch = {
+            trigger = has_country_flag
+            spth_scarlet_start = {
+                event_target:spth_new_gensokyo_planet = {
+                    create_ambient_object = {
+                        type = "spth_scarlet_city_object"
+                        entity_offset_height = {
+                            min = -35
+                            max = -40
+                        }
+                        location = this
+                    }
+                    last_created_ambient_object = {
+                        set_location = {
+                            target = event_target:spth_new_gensokyo_planet
+                        }
+                    }
+                }
+            }
+            spth_hakurei_start = {
+                event_target:spth_new_gensokyo_planet = {
+                    create_ambient_object = {
+                        type = "spth_hakurei_city_object"
+                        entity_offset_height = {
+                            min = -35
+                            max = -40
+                        }
+                        location = this
+                    }
+                    last_created_ambient_object = {
+                        set_location = {
+                            target = event_target:spth_new_gensokyo_planet
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+spth_change_pc_gensokyo_planet_effect = {
+    optimize_memory
+    if = {
+        limit = {
+            has_modifier = spth_hakurei_barrier_info
+            NOT = { has_deposit = d_hakurei_barrier }
+        }
+        add_deposit = d_hakurei_barrier
+    }
+    change_pc = pc_gensokyo_planet
+    set_planet_entity = {
+        entity = "gensokyo_city_entity"
+        graphical_culture = owner
+    }
+    this = {
+        save_event_target_as = spth_new_gensokyo_planet
+    }
+    owner = {
+        switch = {
+            trigger = has_country_flag
+            spth_moriya_start = {
+                event_target:spth_new_gensokyo_planet = {
+                    create_ambient_object = {
+                        type = "spth_moriya_city_object"
+                        entity_offset_height = {
+                            min = -35
+                            max = -40
+                        }
+                        location = this
+                    }
+                    last_created_ambient_object = {
+                        set_location = {
+                            target = event_target:spth_new_gensokyo_planet
+                        }
+                    }
+                }
+            }
+            spth_hakurei_start = {
+                event_target:spth_new_gensokyo_planet = {
+                    create_ambient_object = {
+                        type = "spth_hakurei_city_object"
+                        entity_offset_height = {
+                            min = -35
+                            max = -40
+                        }
+                        location = this
+                    }
+                    last_created_ambient_object = {
+                        set_location = {
+                            target = event_target:spth_new_gensokyo_planet
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+spth_change_pc_gensokyo_ringworld_effect = {
+    optimize_memory
+    if = {
+        limit = {
+            has_modifier = spth_hakurei_barrier_info
+            NOT = { has_deposit = d_hakurei_barrier }
+        }
+        add_deposit = d_hakurei_barrier
+    }
+    remove_all_districts = yes
+    change_pc = pc_ringworld_th
+    set_planet_entity = {
+        entity = "ringworld_habitable_entity"
+        graphical_culture = owner
+    }
+}
+
+spth_count_to_be_converted_pops = {
+    optimize_memory
+    if = {
+        limit = { has_modifier = spth_planet_pop_convert }
+        if = {
+            limit = { NOT = { is_variable_set = spth_to_be_converted_pops_counter } }
+            set_variable = { which = spth_to_be_converted_pops_counter value = 0 }
+        }
+        export_trigger_value_to_variable = {
+            trigger = count_owned_pop_group
+            parameters = {
+                limit = {
+                    NOT = { pop_group_has_trait = trait_touhou }
+                    NOT = { pop_group_has_trait = trait_spth_do_not_convert }
+                }
+            }
+            variable = spth_to_be_converted_pops_counter
+        }
+    }
+}
+
+spth_spawn_habitat_cracker_effect = {
+    optimize_memory
+    if = {
+        limit = { has_planet_flag = is_spth_megastructure_planet }
+        switch = {
+            trigger = is_planet_class
+            pc_space_shrine_habitat = {
+                create_ambient_object = {
+                    location = this
+                    type = habitat_cracker_object
+                    play_animation_once = yes
+                    duration = 5
+                    use_3d_location = yes
+                    base_angle_towards = star
+                    entity_face_object = star
+                    entity_offset = { min = 0 max = 0 }
+                    entity_scale_to_size = yes
+                    scale = 0.10
+                }
+                save_event_target_as = target_habitat
+                solar_system = {
+                    spawn_megastructure = {
+                        type = th_shrine_mega_ruined
+                        owner = this.owner
+                        coords_from = PREV
+                    }
+                    star = { set_planet_flag = habitat_build_site }
+                    every_fleet_in_system = {
+                        limit = {
+                            is_ship_class = shipclass_habitat_station
+                        }
+                        orbit = {
+                            remove_planet_flag = has_megastructure
+                        }
+                        delete_fleet = this
+                    }
+                }
+                remove_planet = yes
+            }
+            pc_torifune_shrine_habitat = {
+                create_ambient_object = {
+                    location = this
+                    type = habitat_cracker_object
+                    play_animation_once = yes
+                    duration = 5
+                    use_3d_location = yes
+                    base_angle_towards = star
+                    entity_face_object = star
+                    entity_offset = { min = 0 max = 0 }
+                    entity_scale_to_size = yes
+                    scale = 0.10
+                }
+                save_event_target_as = target_habitat
+                solar_system = {
+                    spawn_megastructure = {
+                        type = th_shrine_mega_2_ruined
+                        owner = this.owner
+                        coords_from = PREV
+                    }
+                    star = { set_planet_flag = habitat_build_site }
+                    every_fleet_in_system = {
+                        limit = {
+                            is_ship_class = shipclass_habitat_station
+                        }
+                        orbit = {
+                            remove_planet_flag = has_megastructure
+                        }
+                        delete_fleet = this
+                    }
+                    random_system_megastructure = {
+                        limit = {
+                            is_megastructure_type = th_shrine_mega_shipyard
+                            has_megastructure_flag = is_shrine_shipyard_@prevprev
+                        }
+                        remove_megastructure = this
+                    }
+                }
+                # 多余的船坞全丢出去
+                if = {
+                    limit = { check_variable = { which = spth_torifune_shrine_shipyard_count value > 6 } }
+                    subtract_variable = { which = spth_torifune_shrine_shipyard_count value = 6 }
+                    owner = { change_variable = { which = th_shrine_mega_shipyard_removed_count value = prev.spth_torifune_shrine_shipyard_count } }
+                }
+                remove_planet = yes
+            }
+            default = {
+                # do nothing
+            }
+        }
+    } else = {
+        spawn_habitat_cracker_effect = yes
+    }
+}
+
+spth_auto_rw_base = {
+    optimize_memory
+    set_colony_type = $col_type$
+}
+spth_auto_rw_build_districts = {
+    optimize_memory
+    # ori
+    [[district_rw_city] while = { count = $district_rw_city$ add_district = district_rw_city }]
+    [[district_rw_farming] while = { count = $district_rw_farming$ add_district = district_rw_farming }]
+    [[district_rw_generator] while = { count = $district_rw_generator$ add_district = district_rw_generator }]
+    [[district_rw_industrial] while = { count = $district_rw_industrial$ add_district = district_rw_industrial }]
+    [[district_rw_science] while = { count = $district_rw_science$ add_district = district_rw_science }]
+    [[district_rw_commercial] while = { count = $district_rw_commercial$ add_district = district_rw_commercial }]
+    # spth
+    [[district_gensokyo_renli] while = { count = $district_gensokyo_renli$ add_district = district_gensokyo_renli }]
+    [[district_gensokyo_tushu] while = { count = $district_gensokyo_tushu$ add_district = district_gensokyo_tushu }]
+    [[district_gensokyo_jiqiao] while = { count = $district_gensokyo_jiqiao$ add_district = district_gensokyo_jiqiao }]
+    [[district_gensokyo_jinja] while = { count = $district_gensokyo_jinja$ add_district = district_gensokyo_jinja }]
+    [[district_spth_sp_produce] while = { count = $district_spth_sp_produce$ add_district = district_spth_sp_produce }]
+}
+spth_auto_rw_build_buildings = {
+    optimize_memory
+    add_building = building_spth_cloner
+    hidden_effect = { subtract_variable = { which = spth_auto_rw_free_building_slots value = 1 } }
+    [[building_spth_common_factory] while = { count = $building_spth_common_factory$ add_building = building_spth_common_factory }]
+    [[building_spth_common_foundry] while = { count = $building_spth_common_foundry$ add_building = building_spth_common_foundry }]
+    [[building_spth_common_farm] while = { count = $building_spth_common_farm$ add_building = building_spth_common_farm }]
+    [[building_spth_mining_centre] while = { count = $building_spth_mining_centre$ add_building = building_spth_mining_centre }]
+    [[building_spth_power_station] while = { count = $building_spth_power_station$ add_building = building_spth_power_station }]
+    [[building_spth_refine] while = { count = $building_spth_refine$ add_building = building_spth_refine }]
+    [[building_spth_spellcard_workshop] while = { count = $building_spth_spellcard_workshop$ add_building = building_spth_spellcard_workshop }]
+    [[building_spth_research_base_1] while = { count = $building_spth_research_base_1$ add_building = building_spth_research_base_1 }]
+    [[building_spth_research_base_2] while = { count = $building_spth_research_base_2$ add_building = building_spth_research_base_2 }]
+    [[building_spth_housing] while = { count = $building_spth_housing$ add_building = building_spth_housing }]
+    [[building_spth_spirit_power_reactor] while = { count = $building_spth_spirit_power_reactor$ add_building = building_spth_spirit_power_reactor }]
+    [[building_spth_tavern] while = { count = $building_spth_tavern$ add_building = building_spth_tavern }]
+}
+spth_auto_rw_build_SRA_districts = {
+    optimize_memory
+    while = { count = $count$ add_district = district_SRA_auto_energy_rw }
+}
+spth_auto_rw_build_SRA_buildings = {
+    optimize_memory
+    if = {
+        limit = { owner = { has_technology = tech_SRA_T3_Wide_Area_Mind_Control } }
+        add_building = building_SRA_T3_Psychic_Beacon
+        hidden_effect = { subtract_variable = { which = spth_auto_rw_free_building_slots value = 1 } }
+    }
+    if = {
+        limit = { owner = { has_technology = tech_SRA_T3_Recovery_Nest } }
+        add_building = building_SRA_T3_Recovery_Nest
+        hidden_effect = { subtract_variable = { which = spth_auto_rw_free_building_slots value = 1 } }
+    }
+    if = {
+        limit = { owner = { has_technology = tech_SRA_T3_Singularity_Gravitation_Control } }
+        add_building = building_SRA_T3_Singularity_Controller
+        hidden_effect = { subtract_variable = { which = spth_auto_rw_free_building_slots value = 1 } }
+    }
+    if = {
+        limit = { owner = { has_technology = tech_SRA_T3_Crystal_Node } }
+        add_building = building_SRA_T3_Crystal_Node
+        hidden_effect = { subtract_variable = { which = spth_auto_rw_free_building_slots value = 1 } }
+    }
+    [[building_SRA_RE_foundry] while = { count = $building_SRA_RE_foundry$ add_building = building_SRA_RE_foundry }]
+    [[building_SRA_RE_research] while = { count = $building_SRA_RE_research$ add_building = building_SRA_RE_research_institute }]
+    [[building_SRA_RE_alloys] while = { count = $building_SRA_RE_alloys$ add_building = building_SRA_RE_alloys }]
+    [[building_SRA_RE_factory] while = { count = $building_SRA_RE_factory$ add_building = building_SRA_RE_factory }]
+}
+spth_auto_rw_build_ag_buildings = {
+    optimize_memory
+    if = {
+        limit = { owner = { has_technology = tech_ag_dimensional_obelisk } }
+        add_building = ag_dimensional_obelisk
+        hidden_effect = { subtract_variable = { which = spth_auto_rw_free_building_slots value = 1 } }
+    }
+    if = {
+        limit = { owner = { has_technology = tech_ag_psionic_monument } }
+        add_building = ag_psionic_monument
+        hidden_effect = { subtract_variable = { which = spth_auto_rw_free_building_slots value = 1 } }
+    }
+    [[ag_sr_production_center]
+        if = {
+            limit = { always = $ag_sr_production_center$ owner = { has_technology = tech_ag_sr_production_center } }
+            add_building = ag_sr_production_center
+            hidden_effect = { subtract_variable = { which = spth_auto_rw_free_building_slots value = 1 } }
+        }
+    ]
+    [[ag_living_metal_forge] while = { count = $ag_living_metal_forge$ add_building = ag_living_metal_forge }]
+    [[ag_nanites_assembly_plant] while = { count = $ag_nanites_assembly_plant$ add_building = ag_nanites_assembly_plant }]
+    [[ag_dark_matter_plant] while = { count = $ag_dark_matter_plant$ add_building = ag_dark_matter_plant }]
+    [[ag_zro_refinery] while = { count = $ag_zro_refinery$ add_building = ag_zro_refinery }]
+}
+
+spth_astral_signal_set_planet = {
+    optimize_memory
+    if = {
+        limit = { capital_scope.solar_system = { any_fleet_in_system = { any_owned_ship = { is_ship_class = shipclass_science_ship } } } }
+        capital_scope.solar_system = {
+            random_fleet_in_system = {
+                limit = { any_owned_ship = { is_ship_class = shipclass_science_ship } }
+                save_event_target_as = spth_target_fleet
+            }
+        }
+    } else_if = {
+        limit = { any_owned_ship = { is_ship_class = shipclass_science_ship } }
+        random_owned_fleet = {
+            limit = { any_owned_ship = { is_ship_class = shipclass_science_ship } }
+            save_event_target_as = spth_target_fleet
+        }
+    }
+    random_system = {
+        limit = {
+            exists = space_owner
+            space_owner = { is_same_value = root }
+            NOT = { any_system_planet = { is_colony = yes } }
+            OR = {
+                NOT = { exists = event_target:spth_target_fleet }
+                AND = {
+                    exists = event_target:spth_target_fleet
+                    event_target:spth_target_fleet = { can_access_system = prev }
+                }
+            }
+        }
+        random_system_planet = {
+            set_planet_flag = has_touhou_astral_signals_@root
+            save_global_event_target_as = touhou_astral_signals_loc_$id$_@root
+        }
+    }
+    if = {
+        limit = { NOT = { exists = event_target:touhou_astral_signals_loc_$id$_@root } }
+        random_system = {
+            limit = {
+                exists = space_owner
+                space_owner = { is_same_value = root }
+                NOT = { any_system_planet = { OR = { is_colony = yes has_planet_flag = has_touhou_astral_signals_@root } } }
+            }
+            random_system_planet = { save_global_event_target_as = touhou_astral_signals_loc_$id$_@root }
+        }
+        if = {
+            limit = { NOT = { exists = event_target:touhou_astral_signals_loc_$id$_@root } }
+            random_system = {
+                limit = { NOT = { any_system_planet = { OR = { is_colony = yes has_planet_flag = has_touhou_astral_signals_@root } } } }
+                random_system_planet = { save_global_event_target_as = touhou_astral_signals_loc_$id$_@root }
+            }
+        }
+        if = {
+            limit = { NOT = { exists = event_target:touhou_astral_signals_loc_$id$_@root } }
+            random_system = {
+                limit = { NOT = { any_system_planet = { has_planet_flag = has_touhou_astral_signals_@root } } }
+                random_system_planet = { save_global_event_target_as = touhou_astral_signals_loc_$id$_@root }
+            }
+        }
+    }
+}
+spth_astral_signal_set_real = {
+    optimize_memory
+    event_target:touhou_astral_signals_loc_$id$_@root = { set_planet_flag = touhou_astral_signals_real_loc }
+}
+spth_astral_signal_set_project = {
+    optimize_memory
+    event_target:touhou_astral_signals_loc_$id$_@root = {
+        enable_special_project = {
+            name = "spth_project_astral_signals_search"
+            location = this
+            owner = root
+        }
+    }
+}
+spth_astral_signal_abort_project = {
+    optimize_memory
+    abort_special_project = {
+        type = spth_project_astral_signals_search
+        location = event_target:touhou_astral_signals_loc_$id$_@root
+    }
+}
+
+# this = solar_system
+spth_auto_ringworld_build_story = {
+    optimize_memory
+    if = {
+        limit = {
+            prev = {
+                resource_stockpile_compare = { resource = alloys value >= 125000 }
+                resource_stockpile_compare = { resource = sr_lingli value >= 30000 }
+            }
+        }
+        root = { add_resource = { alloys = -125000 sr_lingli = -30000 } }
+        spawn_megastructure = {
+            type = spth_story_ring_world_base
+            orbit_angle = 0 orbit_distance = 0 owner = prev
+            graphical_culture = prev planet = star
+            init_effect = {
+                upgrade_megastructure_to = spth_story_ring_world_1_gensokyo
+            }
+        }
+    }
+}
+spth_auto_ringworld_build_common = {
+    optimize_memory
+    if = {
+        limit = {
+            prev = {
+                resource_stockpile_compare = { resource = alloys value >= 125000 }
+                resource_stockpile_compare = { resource = sr_lingli value >= 5000 }
+            }
+        }
+        root = { add_resource = { alloys = -12500 sr_lingli = -5000 } }
+        spawn_megastructure = {
+            type = spth_story_ring_world_base
+            orbit_angle = 0 orbit_distance = 0 owner = prev
+            graphical_culture = prev planet = star
+            init_effect = {
+                upgrade_megastructure_to = spth_story_ring_world_1_common
+            }
+        }
+    }
+}
+
+spth_kill_single_pop = {
+    optimize_memory
+    kill_single_pop = yes
+}
+spth_kill_pop_group = {
+    optimize_memory
+    kill_pop_group = {
+        pop_group = this
+        percentage = 1
+    }
+}
+spth_planet_kill_all_pop = {
+    optimize_memory
+    every_owned_pop_group = {
+        spth_kill_pop_group = yes
+    }
+}

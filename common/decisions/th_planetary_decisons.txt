@@ -14,7 +14,7 @@ th_deposits_build = {
 		NOT = { is_planet_class = pc_machine }
 		NOT = { is_planet_class = pc_hive }
 		NOT = { is_planet_class = pc_city }
-		has_building = building_mls_1
+		has_deposit = d_hakurei_barrier
 		NOT = {
 			check_variable = {
 				which = th_deposits_num
@@ -35,28 +35,364 @@ th_deposits_build = {
 				value = 1
 			}
 			random_list = {
-				20 = {
-					add_deposit = d_zhulin
-				}
-				10 = {
-					add_deposit = d_yokai_mountain
-				}
-				10 = {
-					add_deposit = d_sunshine_flower_field
-				}
-				10 = {
-					add_deposit = d_th_underway
-				}
-				10 = {
-					add_deposit = d_false_heaven_shield
-				}
-				5 = {
-					add_deposit = d_wifi_tower
-				}
-				20 = {
-					add_deposit = d_mosen
+				20 = { add_deposit = d_zhulin }
+				10 = { add_deposit = d_yokai_mountain }
+				10 = { add_deposit = d_sunshine_flower_field }
+				10 = { add_deposit = d_th_underway }
+				10 = { add_deposit = d_false_heaven_shield }
+				5 = { add_deposit = d_wifi_tower }
+				5 = { add_deposit = d_hakurajinjia }
+				20 = { add_deposit = d_mosen }
+			}
+		}
+	}
+}
+spth_investigate_torifune_arc = {
+	owned_planets_only = yes
+	icon = decision_extradimensional_experimentation
+	enactment_time = 360
+	resources = {
+		category = decisions
+		cost = {
+			sr_lingli = 500
+			energy = 500
+		}
+	}
+
+	potential = {
+		has_planet_flag = spth_story_sol_system_torifune
+		has_planet_flag = can_unlock_torifune_arc
+	}
+	effect = {
+		remove_planet_flag = can_unlock_torifune_arc
+		set_planet_flag = has_unlock_torifune_arc
+		create_archaeological_site = site_torifune_arc
+	}
+}
+spth_spiritual_power_habitat = {
+	owned_planets_only = yes
+	icon = decision_gensokyo_planet_project
+	enactment_time = 2400
+	resources = {
+		category = decisions
+		cost = {
+			minerals = 40000
+			sr_lingli = 40000
+		}
+	}
+
+	prerequisites = {
+		tech_spth_spiritual_power_habitat
+	}
+	potential = {
+		NOT = { has_planet_flag = is_spth_megastructure_planet }
+		is_planet_class = pc_habitat
+	}
+	effect = {
+		fromfrom.solar_system = {
+			set_star_flag = has_habitat
+		}
+		set_planet_flag = habitat
+		set_planet_flag = habitat_level_10
+		change_pc = pc_spiritual_power_habitat
+		clear_blockers = yes
+	}
+}
+spth_build_spth_capital_shirne = {
+	owned_planets_only = yes
+	icon = decision_gensokyo_project
+	sound = event_celebration
+	enactment_time = 90
+	resources = {
+		category = decisions
+		cost = {
+			minerals = 4000
+			sr_lingli = 1000
+		}
+	}
+	prerequisites = { tech_build_spth_capital_shirne }
+	potential = {
+		OR = {
+			has_building = building_system_capital
+			has_building = building_ancient_palace
+			has_building = building_nirvana_empire_palace
+			has_building = building_hab_system_capital
+		}
+		NOR = {
+			has_building = building_spth_old_shirne
+			has_building = building_spth_planet_shirne
+		}
+		from = {
+			has_authority = auth_gensokyo
+		}
+	}
+	allow = {
+		NOR = {
+			has_modifier = resort_colony
+			has_modifier = slave_colony
+			has_building = building_imperial_capital
+		}
+		sapient_pop_amount >= 6000
+	}
+	effect = {
+		custom_tooltip = spth_build_spth_capital_shirne_effect
+		hidden_effect = {
+			remove_building = building_system_capital
+			remove_building = building_ancient_palace
+			remove_building = building_nirvana_empire_palace
+			remove_building = building_hab_system_capital
+			add_building = building_spth_old_shirne
+		}
+	}
+	ai_weight = { weight = 0 }
+}
+spth_advanced_plantary_shield = {
+	owned_planets_only = yes
+	icon = decision_establish_barrier
+	sound = event_red_alert
+	enactment_time = 90
+	resources = {
+		category = decisions
+		cost = {
+			energy = 10000
+		}
+	}
+	potential = {
+		NOT = { has_modifier = spth_has_advanced_plantary_shield }
+		from = {
+			has_country_flag = can_use_spth_crisis_weapon_0
+		}
+	}
+	allow = {
+		from = {
+			has_country_flag = can_use_spth_crisis_weapon_0
+		}
+	}
+	effect = {
+		add_modifier = {
+			modifier = spth_has_advanced_plantary_shield
+		}
+		hidden_effect = {
+			set_planet_flag = enable_spth_plantary_shield
+		}
+	}
+	ai_weight = { weight = 0 }
+}
+
+spth_shrine_mega_shipyard_remove = {
+	owned_planets_only = yes
+	icon = decision_dyson_sphere
+	sound = event_mega_structure_other_empire_build_complete
+	enactment_time = 30
+	resources = {
+		category = decisions
+		cost = {
+			energy = 1000
+			sr_lingli = 350
+		}
+	}
+	prerequisites = { tech_th_shrine_mega_2_control }
+	potential = {
+		has_planet_flag = is_spth_megastructure_planet
+		has_planet_flag = is_spth_th_shrine_mega_2
+		NOT = { has_planet_flag = spth_shrine_mega_shipyard_removed }
+	}
+	allow = {
+		solar_system = {
+			any_system_megastructure = { has_megastructure_flag = is_shrine_shipyard_@prevprev }
+		}
+	}
+	effect = {
+		hidden_effect = {
+			set_planet_flag = spth_shrine_mega_shipyard_removed
+			solar_system = {
+				random_system_megastructure = {
+					limit = {
+						has_megastructure_flag = is_shrine_shipyard_@prevprev
+						is_megastructure_type = th_shrine_mega_shipyard
+					}
+					remove_megastructure = this
 				}
 			}
+		}
+	}
+	ai_weight = { weight = 0 }
+}
+spth_shrine_mega_shipyard_create = {
+	owned_planets_only = yes
+	icon = decision_dyson_sphere
+	sound = event_mega_structure_other_empire_build_complete
+	enactment_time = 30
+	resources = {
+		category = decisions
+		cost = {
+			energy = 1000
+			sr_lingli = 350
+		}
+	}
+	prerequisites = { tech_th_shrine_mega_2_control }
+	potential = {
+		has_planet_flag = is_spth_megastructure_planet
+		has_planet_flag = is_spth_th_shrine_mega_2
+		has_planet_flag = spth_shrine_mega_shipyard_removed
+	}
+	effect = {
+		hidden_effect = {
+			remove_planet_flag = spth_shrine_mega_shipyard_removed
+			# adjust = rest = count - 6
+			set_variable = {
+				which = spth_torifune_shrine_shipyard_rest
+				value = spth_torifune_shrine_shipyard_count
+			}
+			change_variable = { which = spth_torifune_shrine_shipyard_rest value = -6 }
+			solar_system = {
+				spawn_megastructure = {
+					type = th_shrine_mega_shipyard
+					owner = root.from
+					planet = prev
+					graphical_culture = root.from
+					init_effect = {
+						set_megastructure_flag = ag_ancient_construction_section_megashipyard
+						set_megastructure_flag = is_shrine_shipyard_@prevprev
+						add_modifier = {
+							modifier = spth_spth_torifune_shrine_shipyard_adjust
+							mult = prevprev.spth_torifune_shrine_shipyard_rest
+						}
+					}
+				}
+			}
+			clear_variable = spth_torifune_shrine_shipyard_rest
+		}
+	}
+	ai_weight = { weight = 0 }
+}
+spth_torifune_shrine_research_mode_adjust = {
+	owned_planets_only = yes
+	icon = decision_dyson_sphere
+	sound = event_mega_structure_other_empire_build_complete
+	enactment_time = 30
+	resources = {
+		category = decisions
+		cost = {
+			energy = 1000
+			sr_lingli = 350
+		}
+	}
+	prerequisites = { tech_th_shrine_mega_2_control }
+	potential = {
+		has_planet_flag = is_spth_megastructure_planet
+		has_planet_flag = is_spth_th_shrine_mega_2
+	}
+	effect = { planet_event = { id = spth_colony.1000 } }
+	ai_weight = { weight = 0 }
+}
+th_shrine_mega_shipyard_rebuild = {
+	owned_planets_only = yes
+	icon = decision_dyson_sphere
+	sound = event_mega_structure_other_empire_build_complete
+	enactment_time = 30
+	resources = {
+		category = decisions
+		cost = {
+			energy = 1000
+			sr_lingli = 350
+		}
+	}
+	prerequisites = { tech_th_shrine_mega_2_control }
+	potential = {
+		has_planet_flag = is_spth_megastructure_planet
+		has_planet_flag = is_spth_th_shrine_mega_2
+		NOT = { has_planet_flag = spth_shrine_mega_shipyard_removed }
+	}
+	allow = {
+		custom_tooltip = {
+			fail_text = th_shrine_mega_shipyard_rebuild_allow
+			check_variable = { which = spth_torifune_shrine_shipyard_count value <= 0 }
+		}
+		custom_tooltip = {
+			fail_text = spth_allocate_shrine_shipyard_allow
+			from = { check_variable = { which = th_shrine_mega_shipyard_removed_count value > 0 } }
+		}
+	}
+	abort_trigger = {
+		OR = {
+			custom_tooltip = {
+				fail_text = th_shrine_mega_shipyard_rebuild_allow
+				check_variable = { which = spth_torifune_shrine_shipyard_count value > 0 }
+			}
+			custom_tooltip = {
+				fail_text = spth_allocate_shrine_shipyard_allow
+				from = { check_variable = { which = th_shrine_mega_shipyard_removed_count value < 0 } }
+			}
+		}
+	}
+	effect = {
+		hidden_effect = {
+			from = { change_variable = { which = th_shrine_mega_shipyard_removed_count value = -1 } }
+			change_variable = { which = spth_torifune_shrine_shipyard_count value = 1 }
+			set_variable = {
+				which = spth_torifune_shrine_shipyard_rest
+				value = spth_torifune_shrine_shipyard_count
+			}
+			change_variable = { which = spth_torifune_shrine_shipyard_rest value = -6 }
+			solar_system = {
+				random_system_megastructure = {
+					limit = { has_megastructure_flag = is_shrine_shipyard_@prevprev }
+					remove_modifier = spth_spth_torifune_shrine_shipyard_adjust
+					add_modifier = {
+						modifier = spth_spth_torifune_shrine_shipyard_adjust
+						mult = prevprev.spth_torifune_shrine_shipyard_rest
+					}
+				}
+			}
+			clear_variable = spth_torifune_shrine_shipyard_rest
+		}
+	}
+	ai_weight = { weight = 0 }
+}
+
+fumo_deploy = {
+	owned_planets_only = yes
+	icon = decision_fumo_deploy
+	enactment_time = 66
+	resources = {
+		category = decisions
+		cost = {
+			sr_lingli = 2.5
+			consumer_goods = 15
+			mult = trigger:spth_pop_group_amount
+		}
+	}
+	potential = {
+		owner = {
+			spth_check_gensokyo_auth = yes
+			has_country_flag = fumo_deploy
+		}
+	}
+	allow = { NOT = { has_modifier = fumo_deploy } }
+	effect = {
+		add_modifier = { modifier = fumo_deploy }
+	}
+	ai_weight = {
+		weight = 1
+		modifier = {
+			add = 10
+			free_amenities < -5
+			spth_pop_group_amount > 10
+			owner = {
+				resource_income_compare = {
+					resource = consumer_goods
+					value > 0
+				}
+				resource_stockpile_compare = {
+					resource = consumer_goods
+					value > 300
+				}
+			}
+		}
+		modifier = {
+			factor = 0
+			free_amenities > 20
 		}
 	}
 }

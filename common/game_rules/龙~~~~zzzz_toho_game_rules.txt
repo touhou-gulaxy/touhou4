@@ -1,0 +1,655 @@
+#可进行轨道轰炸（来自小伞泛用规则兼容）
+#Root = fleet, potential attacker
+#From = planet, potential target
+can_orbital_bombard = {
+    exists = FROM.OWNER
+    ###_|绝对禁止|	+RSnf/阿夸/精灵	########################################
+    NOR = {
+        any_controlled_ship = {
+            is_ship_size = colossus
+        }
+        FROM = {
+            OR = {
+                is_planet_class = pc_hollow		# RSnf
+                is_ELF_can_not_be_orbital_bombard_planet = yes	# 精灵
+                OWNER = { is_country_type = kuat_fire_base_hositle }	# 阿夸
+                has_planet_flag = enable_kuat_shield
+                has_planet_flag = enable_spth_plantary_shield
+                has_planet_flag = spth_lunar_repair_barrier
+            }
+        }
+    }
+
+    ###_|基本条件|	########################################
+    OR = {
+        ##	AUP/HFE	####################	只要敌对都能炸
+        ROOT.CONTROLLER = { is_hostile = FROM.CONTROLLER }
+        #	TAC		---禁用|高能耗|
+        #ROOT = { has_component = AI_MATRICES }
+
+        ##	vanilla	####################
+        AND = {
+            ROOT.CONTROLLER = {
+                NOT = { has_communications = FROM.OWNER }
+            }
+            FROM.OWNER = {
+                NOT = { is_country_type = primitive }
+            }
+        }
+        AND = {
+            ROOT.CONTROLLER = {
+                NOR = {
+                    has_policy_flag = interference_not_allowed
+                    has_policy_flag = interference_subtle
+                }
+            }
+            FROM.OWNER = { is_country_type = primitive }
+        }
+        ROOT.CONTROLLER = { is_at_war_with = FROM.CONTROLLER }
+        #	V|可随意轰炸	+bwm
+        FROM = {
+            OR = {
+                is_planet_class = pc_infested
+                has_planet_flag = bwm_ancestor_world			# bwm
+            }
+        }
+        ##_|可被轰炸|	+古代帝国/SOFE/bwm/Giga/Ehof/阿夸/多彩
+        FROM.CONTROLLER = {
+            OR = {
+                #	UGRC通用
+                has_country_flag = UGRC_flg_cntr_RULE_can_be_bombed
+                #	VANILLA
+                is_country_type = swarm
+                is_country_type = ai_empire
+                is_country_type = cybrex_empire
+                AND = {
+                    is_country_type = awakened_marauders
+                    ROOT.CONTROLLER = { is_hostile = prev }
+                }
+
+                is_country_type = mem_ancestor_guardian			# bwm
+                is_country_type = original_empire				# SOFE
+                is_country_type = compound_empire				# Giga/Ehof
+                is_country_type = void_lifeforms_1				# Giga/ACOT
+                is_country_type = void_lifeforms_2				# Giga/ACOT
+                is_country_type = katzenartig_imperium			# Giga/ACOT
+                ag_can_be_orbital_bombardment_country = yes		# 古代帝国	安装=|has_ancient_empire_mod|
+                kuat_can_be_orbital_bombarment_country = yes	# 阿夸		安装=|install_kuat_mod|
+                is_country_type = ten_crisis_empire				# 多彩
+            }
+        }
+        ##_|可轰炸|	+ev/wsg/swg/阿夸/古代帝国/失落帝国历史	/bwm/ACOT/SOFE/MEM/SRA/SSNI/久远/多彩/精灵/thl
+        ROOT.CONTROLLER = {
+            OR = {
+                #	UGRC通用
+                has_country_flag = UGRC_flg_cntr_RULE_can_bomb
+                #	VANILLA
+                is_country_type = extradimensional
+                is_country_type = extradimensional_2
+                is_country_type = extradimensional_3
+                is_country_type = swarm
+                is_country_type = ai_empire
+                is_country_type = cybrex_empire					# <aup去除了此项>
+                is_country_type = synth_queen
+                is_country_type = awakened_synth_queen
+                is_country_type = synth_queen_convoys
+                is_country_type = synth_queen_outposts
+                is_country_type = dormant_marauders
+                is_country_type = marauder_raiders
+                is_country_type = ruined_marauders
+                is_country_type = debt_collectors
+                is_country_type = gray_goo
+                is_country_type = vol
+                AND = {
+                    is_country_type = frenzied_voidworms
+                    has_country_flag = can_bombard
+                    FROM.CONTROLLER = { has_country_flag = tormented_by_frenzied_voidworms }
+                }
+                AND = {
+                    OR = {
+                        is_country_type = awakened_marauders
+                        is_country_type = formless
+                    }
+                    FROM.CONTROLLER = { is_hostile = prev }
+                }
+                AND = {
+                    is_voidworms_hostile_country_type = yes
+                    ROOT = {
+                        is_ship_size = voidworms_titan
+                    }
+                }
+
+                is_country_type = ev_leviathans_crisis			# ev
+                is_country_type = afk_crisis_country			# swg
+                is_country_type = LsE_fallen_empire				# 失落帝国历史
+                #	wsg
+                is_country_type = wg_crisis_country
+                is_khan_country_type = yes
+                #	古代帝国
+                ag_can_do_orbital_bombardment_country = yes
+                #	阿夸
+                kuat_can_do_bombarment_country = yes
+
+                is_country_type = mem_ancestor_guardian			# bwm
+                is_country_type = original_empire				# SOFE
+                #	ACOT
+                is_country_type = compound_empire
+                is_country_type = katzenartig_imperium
+                is_country_type = void_lifeforms_1
+                is_country_type = void_lifeforms_2
+                is_country_type = acot_crazed_stellarite
+                #	MEM
+                is_country_type = mem_surveyor_country_red		# 瓦祖兰
+                is_country_type = mem_vazurans
+                #	SRA
+                SRA_can_do_orbital_bombardment_country = yes
+                #	SSNI
+                is_country_type = sentinel_hostile_expansion
+                #	久远
+                KZ_VOY_can_unconditional_bombarment_country = yes
+                #	多彩
+                is_country_type = ten_crisis_empire
+                #	精灵
+                is_ELF_can_orbital_bombard_country_type = yes
+                #	thl
+                is_country_type = koishi_berserk_fleet
+
+                #   fxl
+                is_touhou_crisis_faction = yes
+            }
+        }
+        ##	V|星球所有者轰炸被其他阵营占据的星球	-SOFE<去掉了此项>
+        AND = {
+            from.controller = {
+                is_country_type = faction
+                NOT = { is_same_value = ROOT.CONTROLLER }
+            }
+            from.owner = {
+                is_same_value = ROOT.CONTROLLER
+            }
+        }
+    }
+}
+
+can_enter_system_by_jump = {
+    custom_tooltip = {
+        # success_text = "debug: can jump"
+        fail_text = cannot_jump_to_system
+        OR = {
+            ###_绝对通行	FW
+            root = {
+                OR = {
+                    has_country_flag = FW_flg_cntr_CHT_orrery_ON		# 璀璨星图
+                    has_country_flag = FW_flg_cntr_CHT_beacon_ON		# 永恒星炬
+                }
+            }
+            ###_特殊通行	+AAR/TAC/多彩
+            root = {
+                #	|禁止条件|
+                #	|通行可用|
+                OR = {
+                    has_country_flag = AAR_flg_cntr_JUMP_webway_TGT		# |AAR|网道行者
+                    has_country_flag = TAC_traveler						# |TAC|
+                    has_country_flag = wtmnb_order						# |多彩|wtmnb
+                }
+            }
+
+            ###_基础条件
+            AND = {
+                ##_Sealed system
+                OR = {
+                    # vanilla
+                    NOT = { has_star_flag = sealed_system }
+                    AND = {
+                        root = { has_country_flag = entered_sealed_system }
+                        has_star_flag = sealed_system
+                    }
+                }
+
+                ##_特殊禁入星系		+wsg/古代帝国/阿夸/SOFE/Giga/Ehof/seooc/多彩/TAC/莉莉
+                NOR = {
+                    has_star_flag = spth_story_crisis_outpost
+                    has_star_flag = spth_story_crisis_home
+                    has_star_flag = spth_no_jump_in_system
+                    # vanilla
+                    has_star_flag = lcluster
+
+                    # wsg
+                    AND = { has_global_flag = has_wsg_mod	# 舰r激活
+                        OR = {
+                            has_star_flag = wg_sealed_system
+                            has_star_flag = wg_psionic_systems
+                            AND = { exists = space_owner
+                                space_owner = { is_country_type = monolith_crisis_country }
+                            }
+                        }
+                    }
+                    #	古代帝国
+                    has_star_flag = ag_no_jump_in_system
+                    #	阿夸
+                    has_star_flag = kuat_initial_system
+                    has_star_flag = Kuat_empire_system
+                    has_star_flag = ag_kae_e_area_system
+                    AND = {
+                        has_global_flag = starkillerbase_not_passed
+                        has_star_flag = starkiller_system
+                    }
+                    #	SOFE
+                    has_star_flag = outercluster
+                    #	Giga
+                    has_star_flag = ehof_compound_system
+                    has_star_flag = giga_core_03
+                    cohesive_system = yes
+                    urmazin_system = yes
+                    everchanging_system = yes
+                    katzen_jump_blocked_system = yes
+                    #	seooc
+                    has_star_flag = nep_Krahen_cluster
+                    has_star_flag = nep_Scrus_cluster
+                    AND = {
+                        has_global_flag = nep_not_pass_Aemethms
+                        OR = {
+                            has_star_flag = nep_dragon_system
+                            has_star_flag = nep_heptagram_cluster
+                        }
+                    }
+                    #	|多彩|
+                    AND = { has_global_flag = love_between_us	# |安装|
+                        OR = {
+                            has_star_flag = ten_crisis_system
+                            any_neighbor_system = { has_star_flag = ten_crisis_system }
+                            AND = {
+                                exists = event_target:holylight_god_heaven_empire
+                                OR = {
+                                    has_star_flag = SUC_lustgod_ring_world_system
+                                    has_star_flag = init_sample_of_death
+                                    has_star_flag = init_sample_of_prosperity
+                                    has_star_flag = init_INN_holylight_god_system2
+                                }
+                            }
+                        }
+                    }
+                    #	|精灵|
+                    has_star_flag = ELF_Singularity_System
+                    has_star_flag = wtmnb_star_11th		# wtmnb
+                    #	莉莉
+                    has_star_flag = al_huge_home_bed
+                    #	驴岛
+                    has_star_flag = ark_isolated
+                    #	SCFE
+                    has_star_flag = formless_system
+                    AND = { has_star_flag = scfe_shaded_colony_system		root = { scfe_can_jump_in_shaded_system = no } }
+                }
+            }
+        }
+    }
+}
+
+###_[物种组装]
+#_|基础trgr|	原版智械/原版克隆|is_organic_species|
+#_|MOD物种|		wsg/莉莉/adf/swg/kc/DAL/微械/时空/久远/azl/azlr/GF/PTep/SC/thl/spth	/hiveDLC/wv/多彩/精灵	/EE
+# Checks if a pop can be assembled
+# This = Species
+# Root = Planet
+can_species_be_assembled = {
+    is_sapient = yes
+    NOT = { has_trait = trait_exd }
+    NAND = {
+        has_trait = trait_mechanical
+        root.owner = { is_individual_machine = yes }
+    }
+    NAND = {
+        has_virtual_species_trait = yes
+        root.owner = {
+            is_fallen_empire = no
+            has_active_tradition = tr_virtuality_finish
+        }
+    }
+    NOR = {
+        has_citizenship_type = {
+            type = citizenship_protected_drone
+            country = root.owner
+        }
+        has_citizenship_type = {
+            type = citizenship_symbiotic_drone
+            country = root.owner
+        }
+        has_citizenship_type = {
+            type = citizenship_exploited_drone
+            country = root.owner
+        }
+    }
+    has_population_control = {
+        type = no
+        country = root.owner
+    }
+    ##_|基础条件|
+    OR = {
+        #_|原版组装|	+azl/GF/wv/久远/时空
+        AND = {
+            is_robotic = yes	# 含|是wsg物种|
+            NOT = { has_trait = trait_robot_mind_relic_core }	# azl
+            KZ_VOY_trgr_plnt_ASSEMBLY = yes	# 久远
+
+            #	wv
+            if = { limit = { has_trait = trait_dummy }
+                if = { limit = { root.owner = { has_origin = origin_garbage_princesses } }
+                    root = {
+                        OR = {
+                            has_building = building_enigmatic_assembly_plant
+                            num_assigned_jobs = {
+                                job = dummicist
+                                value > 0
+                            }
+                        }
+                        check_modifier_value = {
+                            modifier = planet_pop_assembly_add
+                            value > 0
+                        }
+                    }
+                }
+                else = {
+                    root.owner = { has_technology = tech_dummy_workers }
+                    root = {
+                        num_assigned_jobs = {
+                            job = dummicist
+                            value > 0
+                        }
+                    }
+                    root = {
+                        check_modifier_value = {
+                            modifier = planet_pop_assembly_add
+                            value > 0
+                        }
+                    }
+                }
+            }
+            #	久远
+            else_if = { limit = { has_trait = trait_KZ_VOY_magic_doll }
+                KZ_VOY_can_assemble_magic_doll = yes
+            }
+            #	GF
+            else_if = { limit = { has_trait = GF_trait_doll }
+                root.owner = {
+                    GF_can_build_doll_species = yes
+                }
+            }
+            #	thl
+            else_if = { limit = { has_trait = trait_thl_doll }
+                THL_trgr_spcs_RULE_doll_assembly = yes
+            }
+            #_|v默认|	+azl
+            else = {
+                root = {
+                    check_modifier_value = { modifier = planet_pop_assembly_add	value > 0 }
+                    owner = {
+                        NOR = {# 这类mod国家不组装机器人
+                            has_country_flag = synth_assembly_stopped
+                            # azl
+                            has_authority = auth_azur_lane_1
+                            has_authority = auth_azur_lane_2
+                            has_authority = auth_azur_lane_K
+                        }
+                    }
+                }
+            }
+        }
+        #_|原版克隆|	+ECI/星海皇帝/thl/spth	/wv
+        AND = {
+            is_organic_species = yes
+            #_|v蜂群|	+ECI
+            if = {
+                limit = {
+                    OR = {
+                        has_trait = trait_hive_mind
+                        has_trait = trait_psionic_link	# ECI
+                    }
+                }
+                root.owner = { is_hive_empire = yes }
+            }
+            #_|v植物|
+            else_if = {
+                limit = { has_budding_trait = yes }
+                root = {
+                    any_owned_species = { is_exact_same_species = prevprev }
+                }
+            }
+            #_|v鲸族|
+            else_if = {
+                limit = { has_trait = trait_tiyanki }
+                root = {
+                    any_owned_species = { is_exact_same_species = prevprev }
+                }
+            }
+            #_|v克隆军|
+            else_if = {
+                limit = {
+                    OR = {
+                        has_trait = trait_clone_soldier_infertile
+                        has_trait = trait_clone_soldier_infertile_full_potential
+                    }
+                }
+                root = {
+                    # Event 'clones.3' should cover this, but extra safety check.
+                    check_modifier_value = { modifier = clone_soldiers_sustained value > 0 }
+                    NOT = {
+                        check_variable = {
+                            which = clone_pops_missing
+                            value = 0
+                        }
+                    }
+                }
+            }
+            #_|wv|
+            else_if = {
+                limit = { has_species_flag = UGRC_flg_spcs_RULE_wv }	# 魔女物种
+                if = {
+                    limit = {
+                        OR = {
+                            has_trait = trait_houki
+                            has_trait = trait_reanimated_materials
+                        }
+                    }
+                    root = {
+                        OR = {
+                            num_assigned_jobs = {
+                                job = matter_reanimator
+                                value > 0
+                            }
+                            has_building = building_clone_vats
+                            has_building = building_dimensional_instrument
+                        }
+                    }
+                    if = {
+                        limit = { has_trait = trait_houki }
+                        root.owner = {
+                            has_country_flag = newbirth_houki
+                            NOT = { has_country_flag = max_houki_number_reached }
+                        }
+                    }
+                }
+                else_if = { # for Familiars
+                    limit = {
+                        has_trait = trait_servitude
+                    }
+                    root = {
+                        OR = {
+                            num_assigned_jobs = {
+                                job = familiarizer
+                                value > 0
+                            }
+                            has_building = building_clone_vats
+                            has_building = building_familiar_clone_vat
+                        }
+                    }
+                }
+                else_if = { # for Familiars
+                    limit = {
+                        has_trait = trait_reanimated_materials
+                    }
+                    root = {
+                        OR = {
+                            has_building = building_object_converter
+                            has_building = building_object_converter_2
+                        }
+                    }
+                }
+            }
+            #_|通用|=|存在克隆+特殊spcs|		+星海帝皇/ECI/thl
+            else = {
+                #_|相关修正|	fake_pop_growth_mod/bonus_pop_growth/clone_soldiers_sustained
+                OR = {
+                    check_modifier_value = { modifier = bonus_pop_growth	value > 0 }
+                    check_modifier_value = { modifier = fake_pop_growth_mod	value > 0 }
+                    check_modifier_value = { modifier = clone_soldiers_sustained	value > 0 }
+                }
+                #root = {
+                #	OR = {
+                #		#	vanilla
+                #		has_building = building_clone_vats	# |ap_engineered_evolution/tr_genetics_adopt|
+                #		has_modifier = tiyanki_trophy
+                #		owner = { has_modifier = syamelles_curse }
+                #		AND = {
+                #			has_building = building_posthumous_employment_center
+                #			owner = { has_civic = civic_permanent_employment }
+                #		}
+                #		AND = {
+                #			has_building = building_genomic_facility
+                #			exists = owner
+                #			owner = {
+                #				has_country_flag = cloning_unlock_level_1
+                #			}
+                #		}
+                #		has_planet_flag = can_organic_assemble_flag #for mod compatibility
+                #
+                #		#	星海帝皇
+                #		has_building = building_clone_guard_clone_vat
+                #		#	ECI
+                #		has_building = building_advanced_clone_vats
+                #		#	thl
+                #		THL_trgr_plnt_RULE_can_assembly_organic = yes
+                #	}
+                #}
+            }
+        }
+        is_archetype = LILY						# 莉莉
+        is_archetype = Dolls					# adf
+        is_archetype = STARSHIPGIRLS			# swg
+        is_archetype = KANMUSU					# kc
+        is_archetype = DATEALIVE				# DAL
+        is_archetype = DPURIFIER				# SC|净化者|
+        is_archetype = ASCENDED					# EE
+        #	wsg
+        is_archetype = WARSHIPGIRL
+        is_archetype = SHENHAI
+        is_archetype = UNITED_FLEET
+        is_archetype = NANITES_CROP
+        #	久远
+        KZ_VOY_trgr_plnt_CLONE = yes
+        #	spth
+        is_archetype = TOUHOUGIRLS
+        #	azl/azlr
+        AND = {
+            OR = {
+                is_Azur_Lane_organic_species = yes
+                is_KANSEN_species = yes
+            }
+            root = {
+                check_modifier_value = {
+                    modifier = planet_pop_assembly_organic_add
+                    value > 0
+                }
+            }
+        }
+        #	PTep
+        AND = {
+            has_trait = trait_plentiful_traditions_pt_cocoon
+            root.owner = { has_ascension_perk = ap_total_assimilation }
+        }
+        #	精灵
+        ELF_species_assembled_rules = yes
+        #	多彩
+        AND = { has_global_flag = love_between_us	# |安装|
+            OR = {
+                #雌伏于阴影之下起源 允许孤雌生殖物种组装
+                AND = {
+                    has_trait = trait_suc_parthenogenesis
+                    root = {
+                        owner = { has_origin = origin_female_in_shadow }
+                    }
+                }
+                #允许播种者组装
+                has_trait = trait_sowing_and_breeding
+                #Y触之虫组装Y奴
+                AND = {
+                    is_species_class = PAR
+                    root = {
+                        owner = { has_country_flag = parasite_mind_flag }
+                        any_owned_pop = { has_job = ten_nest_worker }
+                    }
+                }
+                #虫与自然组装
+                AND = {
+                    OR = {
+                        is_species_class = TEN
+                        is_species_class = PAR
+                    }
+                    root = { owner = { has_valid_civic = civic_parasite_and_nature } }
+                }
+                #Y触圣女组装Y触造物
+                AND = {
+                    is_species_class = Magical_Tentacle
+                    root = {
+                        owner = { has_country_flag = abstinence_flag }
+                        any_owned_pop = { has_job = procreate_doll }
+                    }
+                }
+                #圣光创造圣女
+                AND = {
+                    has_trait = trait_DC_ethic_asceticism
+                    root = {
+                        OR = {
+                            has_building = building_holylight_clone_vats
+                            has_building = building_world_tree_0
+                            has_building = building_world_tree_1
+                            has_building = building_world_tree_2
+                            has_building = building_world_tree_3
+                            has_building = building_world_tree_4
+                            has_building = building_world_tree_5
+                            AND = {
+                                exists = owner
+                                has_holding = { holding = holding_world_tree owner = owner.overlord }
+                            }
+                            owner = { has_origin = origin_INN_destruction_light }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    ##	微械	####################
+    root.owner = { NOT = { has_modifier = modifier_ban_assemble } }
+    #	hiveDLC
+    NAND = {
+        has_trait = trait_machine_central
+        root.owner = { has_valid_civic = civic_machine_replicators }
+    }
+    ##	精灵
+    ELF_can_not_be_assembled_species = yes
+    #	久远
+    if = {
+        limit = {
+            OR = {
+                has_trait = trait_KZ_VOY_terranoid_dragon
+                has_trait = trait_KZ_VOY_terranoid_dragon_SP
+            }
+        }
+        KZ_VOY_trgr_plnt_CLONE = yes
+    }
+    #	rmaid
+    Maid_trigger_5_can_species_be_assembled = yes
+    #	时空
+    TIME_RULE_trgr_CAN_spcs_be_assembled = yes
+    better_ascension_traits_RULE_trgr_CAN_spcs_be_assembled = yes
+}

@@ -8,25 +8,26 @@ country_event = {
 	is_triggered_only = yes
 	trigger = {
 		has_authority = auth_gensokyo
+		NOT = { has_origin = origin_spth_story_gensokyo }
 	}
 	option = {
 		name = th_pop.0.a
 		hidden_effect = {
-			country_event = {
-				id = th_pop.1
-			}
-			country_event = {
-				id = th_pop.2
-			}
+			#country_event = {
+			#	id = th_pop.1
+			#}
+			#country_event = {
+			#	id = th_pop.2
+			#}
 			country_event = {
 				id = th_arc.3
 				days = 1080
 			}
 			#country_event = { id = th_pop.3 days = 8280 }
-			country_event = {
-				id = th_pop.100
-				days = 1080
-			}
+			#country_event = {
+			#	id = th_pop.100
+			#	days = 1080
+			#}
 			#AI幻想乡强化
 		}
 	}
@@ -51,6 +52,7 @@ country_event = {
 	is_triggered_only = yes
 	trigger = {
 		has_authority = auth_gensokyo
+		NOT = { has_origin = origin_spth_story_gensokyo }
 	}
 	immediate = {
 		#计数器
@@ -62,10 +64,10 @@ country_event = {
 			which = create_touhou_pop_count
 			value = 0
 		}
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				species = {
-					has_trait = trait_touhou
+					pop_group_has_trait = trait_touhou
 				}
 			}
 			owner = {
@@ -119,7 +121,7 @@ country_event = {
 				while = {
 					count = create_touhou_pop_count
 					capital_scope = {
-						create_pop = {
+						create_pop_group = {
 							species = owner.species
 						}
 					}
@@ -181,7 +183,7 @@ country_event = {
 					while = {
 						count = create_touhou_pop_count
 						capital_scope = {
-							create_pop = {
+							create_pop_group = {
 								species = owner.species
 							}
 						}
@@ -231,7 +233,7 @@ country_event = {
 					while = {
 						count = create_touhou_pop_count
 						capital_scope = {
-							create_pop = {
+							create_pop_group = {
 								species = owner.species
 							}
 						}
@@ -254,13 +256,13 @@ country_event = {
 		#清除人口
 		while = {
 			count = kill_touhou_pop_count
-			random_owned_pop = {
+			random_owned_pop_group = {
 				limit = {
 					species = {
-						has_trait = trait_touhou
+						pop_group_has_trait = trait_touhou
 					}
 				}
-				kill_pop = yes
+				spth_kill_pop_group = yes
 			}
 		}
 	}
@@ -356,7 +358,7 @@ country_event = {
 		while = {
 			count = 6
 			random_owned_planet = {
-				create_pop = {
+				create_pop_group = {
 					species = owner_species
 				}
 			}
@@ -377,7 +379,7 @@ country_event = {
 	}
 	immediate = {
 		every_owned_planet = {
-			create_pop = {
+			create_pop_group = {
 				species = owner_species
 			}
 		}
@@ -397,7 +399,7 @@ country_event = {
 	}
 	immediate = {
 		random_owned_planet = {
-			create_pop = {
+			create_pop_group = {
 				species = owner_species
 			}
 		}
@@ -430,7 +432,7 @@ country_event = {
 					}
 				}
 				add_building = building_mls_1
-				# create_pop = {
+				# create_pop_group = {
 				# 	species = owner_species
 				# }
 			}
@@ -451,7 +453,7 @@ country_event = {
 	}
 	immediate = {
 		every_owned_planet = {
-			create_pop = {
+			create_pop_group = {
 				species = owner_species
 			}
 		}
@@ -489,12 +491,12 @@ country_event = {
 				limit = {
 					has_building = building_slm_sjx
 				}
-				random_owned_pop = {
+				random_owned_pop_group = {
 					limit = {
 						NOR = {
-							has_trait = trait_touhou
-							has_trait = trait_machine_unit
-							has_trait = trait_hive_mind
+							pop_group_has_trait = trait_touhou
+							pop_group_has_trait = trait_machine_unit
+							pop_group_has_trait = trait_hive_mind
 						}
 					}
 					change_species = owner_species
@@ -520,10 +522,10 @@ country_event = {
 						value = 2
 					}
 				}
-				random_owned_pop = {
+				random_owned_pop_group = {
 					limit = {
 						NOT = {
-							has_trait = trait_vampire_1
+							pop_group_has_trait = trait_vampire_1
 						}
 					}
 					change_species = owner_species
@@ -548,16 +550,16 @@ country_event = {
 		}
 	}
 	immediate = {
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				species = {
-					has_trait = trait_touhou
+					pop_group_has_trait = trait_touhou
 				}
 				has_pop_flag = spth_normal_sjx
 			}
 			random_list = {
 				60 = {
-					kill_pop = yes
+					spth_kill_pop_group = yes
 					owner = {
 						subtract_variable = {
 							which = spth_sjx_num
@@ -622,10 +624,10 @@ country_event = {
 		has_country_flag = sjx_dead_start
 	}
 	immediate = {
-		every_owned_pop = {
+		every_owned_pop_group = {
 			limit = {
 				species = {
-					has_trait = trait_touhou
+					pop_group_has_trait = trait_touhou
 				}
 				has_pop_flag = spth_normal_sjx
 			}
@@ -641,6 +643,44 @@ country_event = {
 				}
 				40 = {
 				}
+			}
+		}
+	}
+}
+
+# 人偶相关
+country_event = {
+	id = th_pop.200
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = { has_country_flag = th_pop_100_fired }
+		spth_check_gensokyo_auth = yes
+		has_technology = tech_trait_th_alice_doll
+	}
+	immediate = {
+		set_country_flag = th_pop_100_fired
+		create_species = {
+			name = th_doll
+			plural = th_doll_plural
+			class = ROBOT
+			namelist = this
+			portrait = spth_touhou_q
+			gender = female
+			homeworld = capital_scope
+			traits = {
+				trait = trait_mechanical
+				trait = trait_th_alice_doll
+				trait = trait_titania_doll
+				trait = trait_auto_mod_robotic
+				trait = trait_robot_luxurious
+				trait = trait_robot_repurposed_hardware
+			}
+			effect = {
+				set_species_identity = event_target:global_robot_parent_species
+				set_species_flag = mechanical_species@root
+				save_global_event_target_as = th_doll_@root
+				root = { set_built_species = prev }
 			}
 		}
 	}

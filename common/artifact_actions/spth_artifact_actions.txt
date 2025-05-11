@@ -1,0 +1,101 @@
+spth_precursor_makai_locate_action = {
+    resources = {
+        category = artifact_actions
+        cost = {
+            astral_threads = 60
+            minor_artifacts = 120
+        }
+    }
+    potential = {
+        has_technology = tech_spth_precursor_makai_locate
+    }
+    allow = {
+        # custom_tooltip = {
+        #     text = spth_precursor_makai_locate_action_always_no
+        #     always = no
+        # }
+        is_ai = no
+        has_authority = auth_gensokyo
+        custom_tooltip = {
+            fail_text = spth_precursor_makai_locate_action_cooldown_desc
+            NOT = { has_modifier = spth_precursor_makai_locate_action_cooldown }
+        }
+        custom_tooltip = {
+            fail_text = spth_precursor_makai_locate_action_fail
+            check_variable = {
+                which = spth_precursor_makai_locate_action_count
+                value <= 6
+            }
+        }
+        any_planet_within_border = { spth_is_arc_planet = yes }
+    }
+    effect = {
+        hidden_effect = {
+            add_modifier = {
+                modifier = spth_precursor_makai_locate_action_cooldown
+                days = 720
+            }
+            if = {
+                limit = { NOT = { is_variable_set = spth_precursor_makai_locate_action_count } }
+                set_variable = { which = spth_precursor_makai_locate_action_count value = 0 }
+            }
+            change_variable = { which = spth_precursor_makai_locate_action_count value = 1 }
+        }
+        locked_random_list = {
+            # not finished, set to 0.
+            0 = {
+                modifier = { factor = 0 has_country_flag = triggered_spth_precursor_103 }
+                hidden_effect = {
+                    random_planet_within_border = {
+                        limit = { spth_is_arc_planet = yes }
+                        save_event_target_as = spth_makai_planet_event_target
+                    }
+                    set_country_flag = triggered_spth_precursor_103
+                }
+                country_event = {
+                    id = spth_precursor.103
+                    scopes = { from = event_target:spth_makai_planet_event_target }
+                }
+            }
+            inline_script = { script = switch_items/spth_precursor_makai_locate_action id = 105 }
+            inline_script = { script = switch_items/spth_precursor_makai_locate_action id = 106 }
+            inline_script = { script = switch_items/spth_precursor_makai_locate_action id = 107 }
+            inline_script = { script = switch_items/spth_precursor_makai_locate_action id = 108 }
+            inline_script = { script = switch_items/spth_precursor_makai_locate_action id = 109 }
+            inline_script = { script = switch_items/spth_precursor_makai_locate_action id = 110 }
+        }
+    }
+}
+spth_precursor_makai_locate_capital_action = {
+    resources = {
+        category = artifact_actions
+        cost = {
+            astral_threads = 120
+            minor_artifacts = 240
+        }
+    }
+    potential = {
+        has_country_flag = spth_precursor_114_fired
+        NOT = { has_country_flag = spth_precursor_makai_locate_capital_used }
+    }
+    allow = {
+        # custom_tooltip = {
+        #     text = spth_precursor_makai_locate_action_always_no
+        #     always = no
+        # }
+        hidden_trigger = {
+            NOT = {
+                has_country_flag = spth_precursor_makai_locate_capital_used
+                has_global_flag = spth_precursor_capital_makai_spawned
+            }
+        }
+    }
+    effect = {
+        hidden_effect = { set_country_flag = spth_precursor_makai_locate_capital_used }
+        enable_special_project = {
+            name = spth_precursor_capital_makai_discover
+            owner = this
+            location = capital_scope
+        }
+    }
+}

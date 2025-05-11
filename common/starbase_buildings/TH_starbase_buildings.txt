@@ -4,13 +4,26 @@ toho_yards = {
 	
 	potential = {
 		exists = owner
-		owner = { has_civic = civic_gensokyo }
+		owner = {
+			OR = {
+				is_touhou_crisis_faction = yes
+				has_civic = civic_gensokyo
+			}
+			OR = {
+				has_tradition = tr_spth_spiritual_power_5
+				has_country_flag = spth_story_lunar_outpost
+			}
+		}
 	}
 	
 	possible = {
 		custom_tooltip = {
 			fail_text = "requires_citadel"
-			has_starbase_size >= starbase_citadel
+			OR = {
+				from = { has_country_flag = spth_story_lunar_outpost }
+				has_starbase_size >= starbase_citadel
+				has_starbase_size = spth_space_shrine_station
+			}
 		}
 	}
     ship_modifier = {
@@ -96,6 +109,13 @@ th_spaceport_sukima_warehouse = {
 	country_modifier = {
 		country_resource_max_add = 50000
 	}
+	triggered_country_modifier = {
+		potential = {
+			exists = owner
+			owner = { has_technology = tech_building_kamikakushi_silo_update }
+		}
+		country_resource_max_add = 50000
+	}
 	
 	show_in_tech = "tech_th_engine_xijian"
 
@@ -104,4 +124,25 @@ th_spaceport_sukima_warehouse = {
 	ai_weight = {
 		weight = 50
 	}
+}
+
+space_shrine_yard = {
+	icon = "GFX_th_spaceport_shenmi"
+	construction_days = 114514
+	potential = { has_starbase_size = spth_space_shrine_station }
+	possible = { always = no }
+	ship_modifier = { ship_starting_experience_add = 11000 }
+	resources = { category = starbase_buildings }
+	# has 85+16=101 yards
+	station_modifier = { starbase_shipyard_capacity_add = 4 }
+	triggered_station_modifier = {
+		potential = {
+			exists = owner
+			owner = { has_country_flag = close_space_shrine_shipyard }
+		}
+		starbase_shipyard_capacity_add = -5140
+	}
+	ai_build_at_chokepoint = no
+	ai_build_outside_chokepoint = yes
+	ai_weight = { weight = 0 }
 }

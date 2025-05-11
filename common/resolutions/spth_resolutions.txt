@@ -1,0 +1,313 @@
+@resolution_flag_timer = 360
+spth_gensokyo_res_spellcard_rule_1 = {
+    icon = "GFX_galactic_focus_generic"
+    resources = {
+        category = resolutions
+        cost = {
+            trigger = { NOT = { has_authority = auth_gensokyo } }
+            influence = 100 unity = 1000
+        }
+        cost = {
+            trigger = { has_authority = auth_gensokyo }
+            sr_lingli = 750 sr_fuka = 500
+        }
+    }
+    target = no
+    level = 1
+    modifier = {
+        spth_gensokyo_res_spellcard_rule_1 = 1
+    }
+    effect = {
+        hidden_effect = {
+            set_global_flag = galactic_community_resolution_passed
+            set_timed_country_flag = { flag = galactic_community_resolution_passed_spth_gensokyo_res_spellcard_rule_1 days = @resolution_flag_timer }
+            add_modifier = {
+                modifier = resolution_passed_diplomatic_weight
+                days = 2200
+            }
+        }
+    }
+    fail_effects = {
+        hidden_effect = {
+            set_timed_country_flag = { flag = galactic_community_resolution_failed_spth_gensokyo_res_spellcard_rule_1 days = @resolution_flag_timer }
+            add_modifier = {
+                modifier = resolution_failed_diplomatic_weight
+                days = 2200
+            }
+        }
+    }
+    allow = {
+        custom_tooltip = {
+            fail_text = "resolution_already_active"
+            NOR = {
+                is_active_resolution = "spth_gensokyo_res_spellcard_rule_1"
+            }
+        }
+    }
+    ai_weight = {
+        base = 10
+
+        modifier = {
+            factor = 0.25
+            is_militarist = yes
+            desc = ethic_militarist
+        }
+        modifier = {
+            factor = 2
+            is_pacifist = yes
+            desc = ethic_pacifist
+        }
+
+        modifier = {
+            factor = 1.5
+            OR = {
+                has_valid_civic = civic_privatized_exploration
+                has_valid_civic = civic_free_traders
+                has_valid_civic = civic_corporate_hedonism
+                has_valid_civic = civic_gospel_of_the_masses
+                has_valid_civic = civic_private_military_companies
+                has_valid_civic = civic_naval_contractors
+                has_valid_civic = civic_hive_subspace_ephapse
+                has_valid_civic = civic_gensokyo
+            }
+            desc = gal_com_supporting_civics
+        }
+
+        modifier = {
+            factor = 1.25
+            is_in_breach_of_any = no
+            OR = {
+                is_militarist = yes
+                is_pacifist = yes
+            }
+            desc = gal_com_supporting_ethics
+        }
+
+        modifier = {
+            factor = 0.5
+            any_federation_ally = {
+                OR = {
+                    is_in_breach_of_any = yes
+                    has_modifier = resolution_denounced
+                }
+            }
+            desc = gal_com_federation_member_in_breach_or_denounced
+        }
+
+        modifier = {
+            factor = 1.25
+            any_rival_country = {
+                OR = {
+                    is_in_breach_of_any = yes
+                    has_modifier = resolution_denounced
+                }
+            }
+            desc = gal_com_rival_in_breach_or_denounced
+        }
+    }
+}
+
+spth_gensokyo_res_spellcard_rule_repeal_1 = {
+    icon = "GFX_repeal_red"
+    resources = {
+        category = resolutions
+        cost = {
+            trigger = { NOT = { has_authority = auth_gensokyo } }
+            influence = 100 unity = 1000
+        }
+        cost = {
+            trigger = { has_authority = auth_gensokyo }
+            sr_lingli = 750 sr_fuka = 500
+        }
+    }
+    target = no
+    fire_and_forget = yes
+    effect = {
+        custom_tooltip = spth_gensokyo_res_spellcard_rule_repeal_1_success
+        hidden_effect = {
+            cancel_resolution = "spth_gensokyo_res_spellcard_rule_1"
+            set_timed_country_flag = { flag = galactic_community_resolution_passed_spth_gensokyo_res_spellcard_rule_1_repeal days = @resolution_flag_timer }
+            add_modifier = {
+                modifier = resolution_passed_diplomatic_weight
+                days = 2200
+            }
+        }
+    }
+    fail_effects = {
+        hidden_effect = {
+            set_timed_country_flag = { flag = galactic_community_resolution_failed_spth_gensokyo_res_spellcard_rule_1_repeal days = @resolution_flag_timer }
+            add_modifier = {
+                modifier = resolution_failed_diplomatic_weight
+                days = 2200
+            }
+        }
+    }
+    potential = {
+        is_active_resolution = "spth_gensokyo_res_spellcard_rule_1"
+    }
+
+    allow = {}
+
+    ai_weight = {
+        base = 10
+
+        modifier = {
+            factor = 2
+            is_militarist = yes
+            desc = ethic_militarist
+        }
+
+        modifier = {
+            factor = 0
+            is_pacifist = yes
+            desc = ethic_pacifist
+        }
+    }
+}
+
+spth_gensokyo_res_kamikakushi_protect = {
+    icon = "GFX_resolution_cosmic_storms_stances"
+    resources = {
+        category = resolutions
+        cost = {
+            influence = @resolution_cost_t1
+        }
+    }
+    target = no
+    triggered_modifier = {
+        potential = { always = yes }
+        damage_vs_country_type_spth_kamikakushi_country_mult = -1
+        mult = value:spth_kamikakushi_protect_factor
+    }
+    effect = {
+        custom_tooltip = spth_gensokyo_res_kamikakushi_protect_success
+        hidden_effect = {
+            set_global_flag = galactic_community_resolution_passed
+            set_global_flag = resolution_with_breach_effect_passed
+            set_timed_country_flag = { flag = galactic_community_resolution_passed_general days = @resolution_flag_timer }
+            add_modifier = {
+                modifier = resolution_passed_diplomatic_weight
+                days = 2200
+            }
+        }
+    }
+    fail_effects = {
+        hidden_effect = {
+            set_timed_country_flag = { flag = galactic_community_resolution_failed_general days = @resolution_flag_timer }
+            add_modifier = {
+                modifier = resolution_failed_diplomatic_weight
+                days = 2200
+            }
+        }
+    }
+    potential = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        NOT = { is_active_resolution = "spth_gensokyo_res_kamikakushi_protect" }
+    }
+    allow = {
+        custom_tooltip = {
+            fail_text = "resolution_already_active"
+            NOT = { is_active_resolution = "spth_gensokyo_res_kamikakushi_protect" }
+        }
+    }
+
+    active = {
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+    }
+
+    breach = {
+        NOT = { has_country_flag = constitutional_immunity }
+        always = yes
+    }
+    ai_weight = {
+        base = 10
+    }
+}
+
+spth_gensokyo_res_kamikakushi_protect_repeal = {
+    icon = "GFX_repeal_blue"
+    resources = {
+        category = resolutions
+        cost = {
+            influence = @resolution_cost_t1
+        }
+    }
+    target = no
+    fire_and_forget = yes	effect = {
+        custom_tooltip = spth_gensokyo_res_kamikakushi_protect_repeal_success
+        hidden_effect = {
+            cancel_resolution = "spth_gensokyo_res_kamikakushi_protect"
+            set_timed_country_flag = { flag = galactic_community_resolution_passed_ecology_repeal days = @resolution_flag_timer }
+            add_modifier = {
+                modifier = resolution_passed_diplomatic_weight
+                days = 2200
+            }
+        }
+    }
+
+    fail_effects = {
+        hidden_effect = {
+            set_timed_country_flag = { flag = galactic_community_resolution_failed_ecology_repeal days = @resolution_flag_timer }
+            add_modifier = {
+                modifier = resolution_failed_diplomatic_weight
+                days = 2200
+            }
+        }
+    }
+
+    potential = {
+        is_active_resolution = "spth_gensokyo_res_kamikakushi_protect"
+    }
+
+    ai_weight = {
+        base = 7.5
+    }
+}
+
+resolution_galactic_focus_crisis_kamikakushi = {
+    icon = "GFX_resolution_emergency_measure"
+    resources = {
+        category = resolutions
+        cost = { influence = 1000 }
+    }
+    target = no
+    modifier = {
+    }
+    effect = {
+        custom_tooltip = "resolution_galactic_focus_crisis_effect_success"
+
+        hidden_effect = {
+            repeal_all_galactic_focus_resolutions = yes
+
+            set_global_flag = galactic_focus_crisis_kamikakushi
+            set_global_flag = galactic_community_crisis_fighting
+
+            set_global_flag = galactic_community_resolution_passed
+            set_timed_country_flag = { flag = galactic_community_resolution_passed_general days = @resolution_flag_timer }
+            add_modifier = { modifier = resolution_passed_diplomatic_weight days = 2200 }
+        }
+    }
+    fail_effects = {
+        hidden_effect = {
+            set_timed_country_flag = { flag = galactic_community_resolution_failed_general days = @resolution_flag_timer }
+            add_modifier = { modifier = resolution_failed_diplomatic_weight days = 2200 }
+        }
+    }
+
+    potential = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        NOT = { is_active_resolution = "spth_gensokyo_res_kamikakushi_protect" }
+    }
+
+    active = { NOT = { has_global_flag = spth_kamikaushi_crisis_ended } }
+
+    ai_weight = {
+        base = 6.5
+        modifier = { factor = 10 has_ascension_perk = ap_defender_of_the_galaxy }
+        modifier = { factor = 1.2 is_militarist = yes }
+        modifier = { factor = 1.1 is_xenophile = yes }
+        modifier = { factor = 10 event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 2 } } }
+    }
+}

@@ -5,6 +5,430 @@ namespace = th_leader_sp
 @skill_support_t1 = 0.1
 @skill_support_t2 = 0.2
 
+# 绀珠之药
+country_event = {
+    id = th_leader_sp.100
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        any_owned_leader = {
+            has_leader_flag = spth_auto_clear_negative_traits
+            num_leader_traits = { negative = yes value > 0 }
+        }
+    }
+    immediate = {
+        every_owned_leader = {
+            limit = { has_leader_flag = spth_auto_clear_negative_traits }
+            if = {
+                limit = { NOT = { has_trait = spth_auto_clear_negative_traits } }
+                remove_leader_flag = spth_auto_clear_negative_traits
+                remove_leader_flag = immune_to_negative_traits
+            } else_if = {
+                limit = { num_leader_traits = { negative = yes value > 0 } }
+                if = {
+                    limit = {
+                        prev = {
+                            resource_stockpile_compare = { resource = sr_lingli value >= 120 }
+                            resource_stockpile_compare = { resource = sr_fuka value >= 60 }
+                        }
+                    }
+                    prev = { add_resource = { sr_lingli = -120 sr_fuka = -60 } }
+                    remove_all_negative_traits = yes
+                }
+            }
+        }
+    }
+}
+
+# 召唤绯想天
+# this = planet
+# root = planet
+# from = fleet
+planet_event = {
+    id = th_leader_sp.200
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        from = {
+            exists = owner
+            owner = { NOT = { has_country_flag = has_tenshi_scarlet_weather_cooldown } }
+            any_owned_ship = { check_modifier_value = { modifier = ship_th_tenshi_allow value != 0 } }
+        }
+    }
+    immediate = {
+        solar_system = { save_event_target_as = tenshi_storm_location }
+        from.owner = {
+            set_timed_country_flag = { flag = has_tenshi_scarlet_weather_cooldown days = 360 }
+            country_event = {
+                id = th_leader_sp.201
+                scopes = { from = root.from fromfrom = event_target:tenshi_storm_location }
+            }
+        }
+    }
+}
+
+country_event = {
+    id = th_leader_sp.201
+    title = th_leader_sp.201.name
+    desc = th_leader_sp.201.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_leader_function_ui
+    custom_gui_option = spth_leader_function_button
+    picture_event_data = { room = hakuri_shrine_sun_room }
+    option = {
+        name = th_leader_sp.201.random
+        default_hide_option = yes
+        hidden_effect = {
+            reroll_random = yes
+            random_list = {
+                1 = { th_leader_sp_spawn_storm = { type = reimu } }
+                1 = { th_leader_sp_spawn_storm = { type = marisa } }
+                1 = { th_leader_sp_spawn_storm = { type = sakuya } }
+                1 = { th_leader_sp_spawn_storm = { type = alice } }
+                1 = { th_leader_sp_spawn_storm = { type = patchouli } }
+                1 = { th_leader_sp_spawn_storm = { type = remilia } }
+            }
+            reroll_random = yes
+        }
+    }
+    inline_script = { script = events/th_leader_sp_storm_option type = reimu }
+    inline_script = { script = events/th_leader_sp_storm_option type = marisa }
+    inline_script = { script = events/th_leader_sp_storm_option type = sakuya }
+    inline_script = { script = events/th_leader_sp_storm_option type = alice }
+    inline_script = { script = events/th_leader_sp_storm_option type = patchouli }
+    inline_script = { script = events/th_leader_sp_storm_option type = remilia }
+}
+
+country_event = {
+    id = th_leader_sp.202
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = th_leader_sp_202_fired }
+        spth_check_gensokyo_auth = yes
+        has_technology = tech_th_tenshi_aux
+    }
+    immediate = {
+        set_country_flag = th_leader_sp_202_fired
+        if = {
+            limit = { NOT = { has_existing_ship_design = th_tenshi_beacon } }
+            create_ship_design = { design = th_tenshi_aux_ship }
+            add_ship_design = last_created_design
+        }
+    }
+}
+
+# 不死鸟的舍身击
+# this = ship
+# from = ship, disabler
+# fromfrom = fleet, victim fleet
+# fromfromfrom = fleet, disabler fleet
+# fromfromfromfrom = solar system, where disable triggered
+ship_event = {
+    id = th_leader_sp.203
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = leader
+        leader = {
+            has_leader_flag = spth_sp_leader
+            has_trait = leader_trait_mokou
+        }
+    }
+    immediate = {
+        from = { spth_reduce_shield = { percent = 0.5 factor = 0.5 } }
+        if = {
+            limit = { has_hp < 400000000 }
+            reduce_hp = value:touhou_mokou_reduce_value
+        }
+    }
+}
+
+# 不死鸟的舍身击 - 陆军复活与分裂
+country_event = {
+    id = th_leader_sp.204
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        from = {
+            is_touhou_army = yes
+            is_defensive_army = no
+            exists = leader
+            leader = {
+                has_leader_flag = spth_sp_leader
+                has_trait = leader_trait_mokou
+            }
+        }
+    }
+    immediate = {
+        if = {
+            limit = { from = { check_touhou_army_tier = { tier = 0 } } }
+            random_list = {
+                50 = {}
+                35 = {
+                    fromfromfrom = {
+                        random_list = {
+                            50 = { spth_mokou_create_army = { count = 1 type = danmaku_army } }
+                            30 = { spth_mokou_create_army = { count = 2 type = danmaku_army } }
+                            20 = { spth_mokou_create_army = { count = 3 type = danmaku_army } }
+                        }
+                        reroll_random = yes
+                    }
+                }
+                15 = {
+                    fromfromfrom = {
+                        random_list = {
+                            50 = { spth_mokou_create_army = { count = 1 type = psi_danmaku_army } }
+                            30 = { spth_mokou_create_army = { count = 2 type = psi_danmaku_army } }
+                            20 = { spth_mokou_create_army = { count = 3 type = psi_danmaku_army } }
+                        }
+                        reroll_random = yes
+                    }
+                }
+            }
+        } else_if = {
+            limit = { from = { check_touhou_army_tier = { tier = 1 } } }
+            random_list = {
+                50 = {}
+                50 = {
+                    fromfromfrom = {
+                        random_list = {
+                            50 = { spth_mokou_create_army = { count = 1 type = fairy_army } }
+                            30 = { spth_mokou_create_army = { count = 2 type = fairy_army } }
+                            20 = { spth_mokou_create_army = { count = 3 type = fairy_army } }
+                        }
+                        reroll_random = yes
+                    }
+                }
+            }
+        }
+        reroll_random = yes
+        add_resource = { sr_lingli = 25 sr_fuka = 5 }
+    }
+}
+
+system_event = {
+    id = th_leader_sp.205
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        any_system_planet = {
+           is_colony = yes exists = owner
+            owner = { is_touhou_country = yes }
+            exists = leader
+            leader = {
+                has_leader_flag = spth_sp_leader
+                has_trait = leader_trait_kaguya
+            }
+        }
+    }
+    immediate = {
+        every_system_planet = {
+            limit = {
+                is_colony = yes exists = owner
+                owner = { is_touhou_country = yes }
+                exists = leader
+                leader = {
+                    has_leader_flag = spth_sp_leader
+                    has_trait = leader_trait_kaguya
+                }
+            }
+            export_trigger_value_to_variable = {
+                trigger = planet_devastation
+                variable = th_leader_sp_devastation_storm_ori
+            }
+            planet_event = { id = th_leader_sp.206 days = 30 }
+        }
+    }
+}
+planet_event = {
+    id = th_leader_sp.206
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = {
+                is_colony = yes exists = owner
+                owner = { is_touhou_country = yes }
+                exists = leader
+                leader = {
+                    has_leader_flag = spth_sp_leader
+                    has_trait = leader_trait_kaguya
+                }
+                solar_system = { is_inside_storm = yes }
+            }
+            export_trigger_value_to_variable = {
+                trigger = planet_devastation
+                variable = th_leader_sp_devastation_storm_cur
+            }
+            subtract_variable = {
+                which = th_leader_sp_devastation_storm_cur
+                value = th_leader_sp_devastation_storm_ori
+            }
+            if = {
+                limit = { check_variable = { which = th_leader_sp_devastation_storm_cur value > 0 } }
+                set_planet_flag = spth_planet_damaged_in_storm
+                multiply_variable = { which = th_leader_sp_devastation_storm_cur value = -1 }
+                add_planet_devastation = th_leader_sp_devastation_storm_cur
+            } else = { clear_variable = th_leader_sp_devastation_storm_cur }
+            planet_event = { id = th_leader_sp.206 days = 30 }
+        } else = {
+            clear_variable = th_leader_sp_devastation_storm_ori
+            remove_planet_flag = spth_planet_damaged_in_storm
+        }
+    }
+}
+
+# 辉夜技能
+planet_event = {
+    id = th_leader_sp.207
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_orbital_bombardment = yes
+        NOT = { has_planet_flag = planet_kaguya_protect_cooldown }
+        check_modifier_value = { modifier = planet_kaguya_protect_duration value > 0 }
+    }
+    immediate = {
+        set_variable = { which = planet_kaguya_protect_time value = 1 }
+        if = {
+            limit = { check_modifier_value = { modifier = planet_kaguya_protect_duration value > 45 } }
+            add_planet_devastation = -100
+            planet_event = { id = th_leader_sp.208 days = 90 }
+        } else = {
+            add_planet_devastation = -100
+            planet_event = { id = th_leader_sp.208 days = 45 }
+        }
+        planet_event = { id =  th_leader_sp.209 days = 1 }
+    }
+}
+planet_event = {
+    id = th_leader_sp.208
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = { set_timed_planet_flag = { flag = planet_kaguya_protect_cooldown days = 360 } }
+}
+planet_event = {
+    id = th_leader_sp.209
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = {
+                has_orbital_bombardment = yes
+                check_modifier_value = { modifier = planet_kaguya_protect_duration value > 0 }
+                NOT = { has_planet_flag = planet_kaguya_protect_cooldown }
+            }
+            if = {
+                limit = {
+                    check_modifier_value = { modifier = planet_kaguya_protect_duration value < 90 }
+                    check_variable = { which = planet_kaguya_protect_time value >= 45 }
+                }
+                clear_variable = planet_kaguya_protect_time
+                remove_planet_flag = planet_kaguya_protect_90
+                remove_planet_flag = planet_kaguya_protect_45
+            } else = { planet_event = { id =  th_leader_sp.209 days = 1 } }
+            add_planet_devastation = -100
+            change_variable = { which = planet_kaguya_protect_time value = 1 }
+        } else = {
+            clear_variable = planet_kaguya_protect_time
+            remove_planet_flag = planet_kaguya_protect_90
+            remove_planet_flag = planet_kaguya_protect_45
+        }
+    }
+}
+
+# 亡失的情感
+fleet_event = {
+    id = th_leader_sp.210
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            reroll_random = yes
+            random_list = {
+                50 = { spth_kokoro_apply_face = { count = 1 } }
+                30 = { spth_kokoro_apply_face = { count = 2 } }
+                20 = { spth_kokoro_apply_face = { count = 3 } }
+            }
+            reroll_random = yes
+            fleet_event = { id = th_leader_sp.212 days = 10 }
+            fleet_event = { id = th_leader_sp.210 days = 30 }
+        } else = {
+            remove_fleet_flag = spth_kokoro_self_fired
+        }
+    }
+}
+ship_event = {
+    id = th_leader_sp.211
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { has_ship_flag = spth_has_kokoro_face_ship exists = fleet }
+    immediate = { fleet = { set_fleet_flag = spth_kokoro_face_ship_destoryed } }
+}
+fleet_event = {
+    id = th_leader_sp.212
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { has_fleet_flag = spth_kokoro_face_ship_destoryed }
+            spth_kokoro_duration_check =  { id = 1 destoryed = yes }
+            spth_kokoro_duration_check =  { id = 2 destoryed = yes }
+            spth_kokoro_duration_check =  { id = 3 destoryed = yes }
+            spth_kokoro_duration_check =  { id = 4 destoryed = yes }
+            spth_kokoro_duration_check =  { id = 5 destoryed = yes }
+            spth_kokoro_duration_check =  { id = 6 destoryed = yes }
+            spth_kokoro_duration_check =  { id = 7 destoryed = yes }
+            spth_kokoro_duration_check =  { id = 8 destoryed = yes }
+            spth_kokoro_duration_check =  { id = 9 destoryed = yes }
+        } else = {
+            spth_kokoro_duration_check =  { id = 1 non_destoryed = yes }
+            spth_kokoro_duration_check =  { id = 2 non_destoryed = yes }
+            spth_kokoro_duration_check =  { id = 3 non_destoryed = yes }
+            spth_kokoro_duration_check =  { id = 4 non_destoryed = yes }
+            spth_kokoro_duration_check =  { id = 5 non_destoryed = yes }
+            spth_kokoro_duration_check =  { id = 6 non_destoryed = yes }
+            spth_kokoro_duration_check =  { id = 7 non_destoryed = yes }
+            spth_kokoro_duration_check =  { id = 8 non_destoryed = yes }
+            spth_kokoro_duration_check =  { id = 9 non_destoryed = yes }
+        }
+    }
+}
+country_event = {
+    id = th_leader_sp.213
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = th_leader_sp_213_fired } }
+    immediate = { set_country_flag = th_leader_sp_213_fired }
+    title = th_leader_sp.213.name
+    desc = th_leader_sp.213.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = kamikakushi_room }
+    option = { name = th_leader_sp.213.a default_hide_option = yes }
+    option = { name = th_leader_sp.213.aa }
+    option = { name = th_leader_sp.213.b }
+}
+
+fleet_event = {
+    id = th_leader_sp.214
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { has_fleet_flag = koishi_skill_3_fired }
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            50 = { every_owned_ship = { repair_ship = yes } }
+            50 = { every_owned_ship = { repair_armor_percentage = 1.0 } }
+        }
+        fleet_event = { id = th_leader_sp.214 days = 4 }
+    }
+}
+
 # 拥戴 俘获陆军 attacker
 # 开片了
 planet_event = {
