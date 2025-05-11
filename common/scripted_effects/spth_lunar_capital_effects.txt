@@ -1,0 +1,58 @@
+spth_spawn_lunar_capital_union_fleet = {
+    optimize_memory
+    if = {
+        limit = { NOT = { event_target:global_event_country = { is_variable_set = spth_lunar_capital_crisis_difficulty } } }
+        event_target:global_event_country = { set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 } }
+    }
+    set_update_modifiers_batch = begin
+    if = {
+        limit = { NOT = { exists = event_target:spth_lunar_capital_union_fleet_country } }
+        create_country = {
+            name = spth_lunar_union_fleet_country
+            type = spth_lunar_capital_union_fleet
+            flag = {
+                icon = {
+                    category = "touhousp"
+                    file = "lunar_capital_alt.dds"
+                }
+                colors = {
+                    "blue"
+                    "blue"
+                    "blue"
+                    "null"
+                }
+                background = {
+                    category = "backgrounds"
+                    file = "00_solid.dds"
+                }
+            }
+            name_list = touhouchs
+            effect = {
+                set_graphical_culture = strg_01
+                set_country_flag = touhou_mod_country
+                set_country_flag = spth_lunar_capital_union_fleet_country
+                [[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
+                save_global_event_target_as = spth_lunar_capital_union_fleet_country
+                every_playable_country = {
+                    limit = { NOT = { is_same_value = prev } }
+                    establish_communications_no_message = prev
+                }
+            }
+        }
+    }
+    event_target:spth_story_lunar_capital_union_system = {
+        spth_create_fleet = {
+            NAME = spth_lunar_union_fleet
+            can_disband = no is_boss = yes
+            OWNER = event_target:spth_lunar_capital_union_fleet_country
+            location = prev uses_naval_capacity = no
+            flag = spth_lunar_capital_union_fleet
+            NAME_lunar_capital_battleship_crisis = 2
+            NAME_lunar_capital_escort_crisis = 4
+            NAME_lunar_capital_frigate_crisis = 6
+            NAME_lunar_capital_frigate_s_crisis = 6
+            evt_target = spth_lunar_capital_union_fleet
+        }
+    }
+    set_update_modifiers_batch = end
+}

@@ -230,18 +230,22 @@ spth_super_carrier_on_hit_effect = {
                 every_owned_ship = {
                     if = {
                         limit = {
-                            compare_distance = {
-                                closer_object = event_target:target
-                                further_object = event_target:target_d_32
+                            event_target:target = {
+                                compare_distance = {
+                                    closer_object = prev
+                                    further_object = event_target:target_d_32
+                                }
                             }
                         }
                         set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_damage_target days = 3 }
                     }
                     if = {
                         limit = {
-                            compare_distance = {
-                                closer_object = event_target:target
-                                further_object = event_target:target_d_48
+                            event_target:target = {
+                                compare_distance = {
+                                    closer_object = prev
+                                    further_object = event_target:target_d_48
+                                }
                             }
                         }
                         spth_reduce_shield = { factor = 0.2 percent = 0.2 }
@@ -292,5 +296,74 @@ spth_super_carrier_on_hit_effect = {
             }
         }
     }
-    th_spawn_explosion_particle = { color = pink size = large }
+}
+
+spth_toyohime_instant_kill_on_hit = {
+    optimize_memory
+    from = {
+        if = {
+            limit = { is_variable_set = ship_toyohime_instant_kill_used }
+            change_variable = { which = ship_toyohime_instant_kill_used value = 1 }
+        }
+    }
+    if = {
+        limit = {
+            from = {
+                check_variable_arithmetic = {
+                    which = modifier:ship_toyohime_instant_kill
+                    subtract = ship_toyohime_instant_kill_used
+                    value > 0
+                }
+                NOT = { has_ship_flag = exists_mod_ship_toyohime_instant_kill }
+            }
+        }
+        set_timed_ship_flag = { flag = mod_ship_toyohime_instant_kill_target days = 2 }
+        from = { set_timed_ship_flag = { flag = exists_mod_ship_toyohime_instant_kill days = 2 } }
+        th_spawn_explosion_particle = { color = pink size = large }
+        create_fleet = {
+            name = mod_ship_toyohime_instant_kill
+            settings = {
+                can_upgrade = no
+                spawn_debris = no
+                can_change_leader = no
+                uses_naval_capacity = no
+                is_boss = yes
+                is_ultra_boss = yes
+                garrison = no
+                can_change_composition = no
+            }
+            effect = {
+                set_owner = event_target:shooter.owner
+                create_ship = {
+                    design = mod_ship_toyohime_instant_kill
+                    effect = {
+                        set_name = mod_ship_toyohime_instant_kill
+                        set_ship_flag = spth_invincible
+                        set_disable_at_health = 0.01
+                    }
+                }
+                set_location = {
+                    target = prevprev
+                    distance = 0
+                    angle = random
+                }
+                fleet_event = { id = spth_fleet.1006 days = 2 }
+            }
+        }
+    }
+}
+th_toyohime_weapon_sp_hit_effect = {
+    optimize_memory
+    if = {
+        limit = { NOT = { is_variable_set = th_toyohime_weapon_$size$_hit_count } }
+        set_variable = { which = th_toyohime_weapon_$size$_hit_count value = 0 }
+    }
+    change_variable = { which = th_toyohime_weapon_$size$_hit_count value = 1 }
+    remove_modifier = th_toyohime_weapon_$size$_effect_hit
+    add_modifier = { modifier = th_toyohime_weapon_$size$_effect_hit mult = th_toyohime_weapon_$size$_hit_count days = 5 }
+    if = {
+        limit = { check_variable = { which = th_toyohime_weapon_$size$_hit_count value >= 10 } }
+        set_variable = { which =  th_toyohime_weapon_$size$_hit_count value = 0 }
+        add_modifier = { modifier = th_toyohime_weapon_$size$_effect_final days = 5 }
+    }
 }

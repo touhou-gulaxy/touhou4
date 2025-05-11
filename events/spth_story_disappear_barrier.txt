@@ -464,7 +464,195 @@ country_event = {
 # 主事件链
 country_event = {
     id = disappear_barrier.1000
+    title = disappear_barrier.1000.name
+    desc = disappear_barrier.1000.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_travel_room }
+    mean_time_to_happen = { years = 3 }
+    trigger = {
+        has_country_flag = spth_past_legacy_begin
+        NOT = { has_country_flag = disappear_barrier_1000_fired }
+    }
+    immediate = {
+        set_country_flag = disappear_barrier_1000_fired
+    }
+    option = {
+        name = disappear_barrier.1000.a
+        default_hide_option = yes
+        start_situation = {
+            type = disappear_barrier_locate_lunar_system_1
+            target = root
+        }
+    }
+}
+situation_event = {
+    id = disappear_barrier.1001
     hide_window = yes
     is_triggered_only = yes
+    immediate = {
+        switch = {
+            trigger = current_stage
+            stage_1 = {
+                if = {
+                    limit = { current_situation_approach = "disappear_barrier_locate_lunar_system_1_approach_positive" }
 
+                }
+            }
+            stage_2 = {
+
+            }
+            stage_3 = {
+
+            }
+        }
+    }
+}
+situation_event = {
+    id = disappear_barrier.1002
+    title = disappear_barrier.1002.name
+    desc = disappear_barrier.1002.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_nebula_stars_room }
+    location = event_target:disappear_barrier_1002_reaction_system
+    immediate = {
+        owner = {
+            random_system = {
+                limit = { spth_can_spawn_story_lunar_capital_system = yes }
+                save_global_event_target_as = disappear_barrier_1002_reaction_system
+            }
+            if = {
+                limit = { NOT = { exists = event_target:disappear_barrier_1002_reaction_system } }
+                random_system_within_border = {
+                    save_global_event_target_as = disappear_barrier_1002_reaction_system
+                }
+            }
+        }
+    }
+    option = {
+        name = disappear_barrier.1002.a
+        default_hide_option = yes
+    }
+}
+situation_event = {
+    id = disappear_barrier.1003
+    title = disappear_barrier.1003.name
+    desc = disappear_barrier.1003.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_nebula_room }
+    option = {
+        name = disappear_barrier.1003.a
+        default_hide_option = yes
+    }
+}
+situation_event = {
+    id = disappear_barrier.1004
+    title = disappear_barrier.1004.name
+    desc = disappear_barrier.1004.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_in_orbit_room }
+    option = {
+        name = disappear_barrier.1004.a
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = disappear_barrier.1005
+    title = disappear_barrier.1005.name
+    desc = disappear_barrier.1005.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_travel_room }
+    option = {
+        name = disappear_barrier.1005.a
+        default_hide_option = yes
+    }
+    after = {
+        event_target:disappear_barrier_1002_reaction_system = {
+            set_spawn_system_batch = begin
+            spawn_system = {
+                initializer = spth_story_lunar_capital_union_system
+                hyperlane = no
+                effect = {
+                    add_hyperlane = {
+                        from = this
+                        to = prev
+                    }
+                }
+            }
+            set_spawn_system_batch = end
+        }
+        clear_global_event_target = disappear_barrier_1002_reaction_system
+        add_event_chain_counter = {
+            event_chain = spth_event_chain_past_legacy
+            counter = spth_past_legacy_ruins_find
+            amount = 1
+        }
+        create_point_of_interest = {
+            event_chain = spth_event_chain_past_legacy
+            id = spth_story_lunar_capital_union_system
+            name = spth_lunar_union_system
+            location = event_target:spth_story_lunar_capital_union_system
+        }
+    }
+}
+fleet_event = {
+    id = disappear_barrier.1006
+    title = disappear_barrier.1006.name
+    desc = disappear_barrier.1006.desc
+    is_triggered_only = yes
+    trigger = {
+        exists = owner
+        from = { has_star_flag = spth_story_lunar_capital_union_system }
+        owner = { NOT = { has_country_flag = disappear_barrier_1006_fired } }
+    }
+    immediate = {
+        owner = { set_country_flag = disappear_barrier_1006_fired }
+        from = {
+            random_system_planet = {
+                limit = { has_planet_flag = spth_story_lunar_capital_union_system_moon }
+                save_event_target_as = target_1006
+            }
+        }
+    }
+    location = event_target:target_1006
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_satellite_in_orbit_room }
+    option = {
+        name = disappear_barrier.1006.a
+        default_hide_option = yes
+    }
+    after = {
+        event_target:target_1006 = {
+            create_archaeological_site = site_lunar_capital_union_shattered_planet
+        }
+    }
+}
+country_event = {
+    id = disappear_barrier.1007
+    title = disappear_barrier.1007.name
+    desc = disappear_barrier.1007.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_evil_room }
+    option = {
+        name = disappear_barrier.1007.a
+        default_hide_option = yes
+    }
 }

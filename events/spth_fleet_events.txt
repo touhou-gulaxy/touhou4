@@ -650,7 +650,12 @@ ship_event = {
                     remove_modifier = space_shrine_planet_buff
                 }
                 if = {
-                    limit = { NOR = { is_star_class = sc_spth_void } }
+                    limit = {
+                        NOR = {
+                            is_star_class = sc_spth_void
+                            root.owner = { has_country_flag = close_space_shrine_convert }
+                        }
+                    }
                     random_system_planet = {
                         limit = { is_primary_star = yes is_variable_set = space_shrine_original_size }
                         change_pc = pc_spiritual_power_star
@@ -658,6 +663,13 @@ ship_event = {
                         clear_variable = space_shrine_original_size
                     }
                     set_star_class = sc_spiritual_power_star
+                } else_if = {
+                    limit = { root.owner = { has_country_flag = close_space_shrine_convert } }
+                    random_system_planet = {
+                        limit = { is_primary_star = yes is_variable_set = space_shrine_original_size }
+                        set_planet_size = space_shrine_original_size
+                        clear_variable = space_shrine_original_size
+                    }
                 } else = {
                     random_system_planet = {
                         limit = { is_primary_star = yes is_variable_set = space_shrine_original_size }
@@ -1612,24 +1624,7 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-            every_owned_ship = {
-                limit = { has_ship_flag = has_toyohime_instant_kill }
-                remove_modifier = th_toyohime_instant_kill_buff
-                if = {
-                    limit = {
-                        check_variable_arithmetic = {
-                            which = modifier:ship_toyohime_instant_kill
-                            subtract = ship_toyohime_instant_kill_used
-                            value > 0
-                        }
-                    }
-                    add_modifier = {
-                        modifier = th_toyohime_instant_kill_buff
-                        mult = value:th_instant_kill_value|base_dmg|10000|final_dmg|750000000|
-                    }
-                }
-            }
-            fleet_event = { id = spth_fleet.1206 days = 3 }
+            fleet_event = { id = spth_fleet.1206 days = 2 }
         } else = {
             remove_fleet_flag = spth_fleet_1205_fired
             every_owned_ship = {

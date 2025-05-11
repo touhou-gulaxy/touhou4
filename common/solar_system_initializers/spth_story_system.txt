@@ -1362,3 +1362,79 @@ spth_story_lunar_outpost_portal = {
         }
     }
 }
+
+spth_story_lunar_capital_union_system = {
+    class = "sc_pulsar"
+    name = spth_lunar_union_system
+    prevent_anomalies = yes
+    usage = misc_system_init
+    usage_odds = 0
+    flags = {
+        cannot_be_hit_by_aow_starfall_spear
+        kuat_cannot_be_hit_by_starkillerbase
+        ag_no_star_killer_target_system
+        spth_system
+        spth_no_jump_in_system
+        ag_no_jump_in_system
+        spth_story_lunar_capital_union_system
+    }
+    init_effect = {
+        set_global_flag = spth_kamikaushi_crisis_gate_1_spawned
+    }
+    planet = {
+        count = 1
+        class = pc_pulsar
+        orbit_distance = 0
+        orbit_angle = 1
+        size = { min = 20 max = 30 }
+        has_ring = no
+        flags = { spth_story_lunar_capital_union_system_star }
+        init_effect = {
+            prevent_anomaly = yes
+            while = {
+                count = 25
+                create_ambient_object = {
+                    type = "small_debris_object"
+                    entity_offset_height = { min = -0 max = -25 }
+                    location = this
+                }
+                last_created_ambient_object = {
+                    set_location = {
+                        target = prev
+                        distance = 45
+                        angle = random
+                    }
+                }
+            }
+        }
+    }
+
+    change_orbit = 100
+
+    planet = {
+        class = pc_shielded
+        orbit_distance = 20
+        orbit_angle = { min = 90 max = 270 }
+        size = 25
+        change_orbit = @base_moon_distance
+        init_effect = { prevent_anomaly = yes }
+        flags = { spth_story_lunar_capital_union_system_arc }
+        moon = {
+            class = pc_shattered
+            size = 10
+            flags = { spth_story_lunar_capital_union_system_moon }
+            init_effect = { prevent_anomaly = yes }
+        }
+    }
+    init_effect = {
+        create_ambient_object = {
+            type = spth_lunar_union_gateway_disabled
+            location = star
+            entity_offset = { min = 160 max = 240 }
+            entity_offset_angle = { min = 0 max = 180 }
+            use_3d_location = yes
+            entity_offset_height = { min = -30 max = -30 }
+        }
+        save_event_target_as = spth_story_lunar_capital_union_system
+    }
+}
