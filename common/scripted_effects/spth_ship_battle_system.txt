@@ -192,6 +192,8 @@ spth_super_carrier_instant_jump = {
 # Scope = ship (target), from = ship (shooter)
 spth_super_carrier_on_hit_effect = {
     optimize_memory
+    reduce_shield = 922337203
+    repair_armor_amount = -922337202
     set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_instant_kill_target days = 2 }
     create_ambient_object = {
         type = th_invisible_object
@@ -302,8 +304,8 @@ spth_toyohime_instant_kill_on_hit = {
     optimize_memory
     from = {
         if = {
-            limit = { is_variable_set = ship_toyohime_instant_kill_used }
-            change_variable = { which = ship_toyohime_instant_kill_used value = 1 }
+            limit = { NOT = { is_variable_set = ship_toyohime_instant_kill_used } }
+            set_variable = { which = ship_toyohime_instant_kill_used value = 0 }
         }
     }
     if = {
@@ -314,40 +316,24 @@ spth_toyohime_instant_kill_on_hit = {
                     subtract = ship_toyohime_instant_kill_used
                     value > 0
                 }
-                NOT = { has_ship_flag = exists_mod_ship_toyohime_instant_kill }
             }
         }
-        set_timed_ship_flag = { flag = mod_ship_toyohime_instant_kill_target days = 2 }
-        from = { set_timed_ship_flag = { flag = exists_mod_ship_toyohime_instant_kill days = 2 } }
-        th_spawn_explosion_particle = { color = pink size = large }
-        create_fleet = {
-            name = mod_ship_toyohime_instant_kill
-            settings = {
-                can_upgrade = no
-                spawn_debris = no
-                can_change_leader = no
-                uses_naval_capacity = no
-                is_boss = yes
-                is_ultra_boss = yes
-                garrison = no
-                can_change_composition = no
+        from = {
+            set_variable = { which = ship_toyohime_instant_kill_debug value = modifier:ship_toyohime_instant_kill }
+            set_ship_flag = has_toyohime_instant_kill
+            add_modifier = {
+                modifier = th_toyohime_instant_kill_buff
+                mult = value:th_instant_kill_value|base_dmg|10000|final_dmg|720000000|size_damage_factor|0.25|
             }
-            effect = {
-                set_owner = event_target:shooter.owner
-                create_ship = {
-                    design = mod_ship_toyohime_instant_kill
-                    effect = {
-                        set_name = mod_ship_toyohime_instant_kill
-                        set_ship_flag = spth_invincible
-                        set_disable_at_health = 0.01
-                    }
-                }
-                set_location = {
-                    target = prevprev
-                    distance = 0
-                    angle = random
-                }
-                fleet_event = { id = spth_fleet.1006 days = 2 }
+        }
+        reduce_shield = 922337203
+        repair_armor_amount = -922337202
+        th_spawn_explosion_particle = { color = pink size = large }
+    } else = {
+        from = {
+            if = {
+                limit = { has_modifier = th_toyohime_instant_kill_buff }
+                remove_modifier = th_toyohime_instant_kill_buff
             }
         }
     }
