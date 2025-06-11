@@ -297,8 +297,7 @@ building_spth_police_station = {
 	}
 
 	triggered_country_modifier = {
-		country_naval_cap_add = 4
-		country_naval_cap_add = 2.4
+		country_naval_cap_add = 6.4
 		mult = value:spth_police_station_factor
 	}
 }
@@ -365,7 +364,7 @@ building_spth_stronghold = {
 building_spth_tavern = {
 	base_buildtime = 360
 	can_build = yes
-	category = amenity
+	category = unity
 	building_sets = {
 		government
 		urban
@@ -608,13 +607,20 @@ building_spth_lunar_databank = {
 }
 building_spth_torifune_shrine = {
 	base_buildtime = 0
-	can_build = no
+	can_build = yes
 	can_be_ruined = no
 	can_be_disabled = no
 	can_demolish = no
 	position_priority = 1
 	icon = building_suwa
 	category = government
+	allow = {
+		spth_check_gensokyo_auth = yes
+	}
+	potential = {
+		has_planet_flag = spth_story_sol_system_torifune
+		has_planet_flag = can_unlock_torifune_arc
+	}
 	building_sets = {
 		government
 		urban
@@ -662,26 +668,79 @@ building_spth_torifune_shrine = {
 		produces = {
 			society_research = 2
 			consumer_goods = 2
-			multiplier = trigger:spth_pop_group_amount
+			multiplier = value:spth_num_pops
 		}
 		produces = {
 			consumer_goods = 2
 			society_research = 2
-			multiplier = trigger:spth_pop_group_amount
+			multiplier = value:spth_num_pops
 			# 完成遗址
 			trigger = { has_deposit = d_spth_torifune_control_centre }
 		}
 		produces = {
 			society_research = 4
 			consumer_goods = 4
-			multiplier = trigger:spth_pop_group_amount
+			multiplier = value:spth_num_pops
 			trigger = {
 				owner = { has_ascension_perk = ap_toho4 }
 			}
 		}
 		upkeep = {
 			sr_lingli = 4
-			multiplier = trigger:spth_pop_group_amount
+			multiplier = value:spth_num_pops
+		}
+	}
+}
+building_lunar_aethon_archive = {
+	base_buildtime = 0
+	can_build = yes
+	can_be_ruined = no
+	can_be_disabled = no
+	can_demolish = no
+	position_priority = 1
+	category = government
+	allow = {
+		spth_check_gensokyo_auth = yes
+	}
+	potential = {
+		has_planet_flag = lunar_aethon_event_rw
+		exists = owner
+		owner = { has_country_flag = disappear_barrier_aethon_research_section_fired }
+	}
+	building_sets = {
+		government
+		urban
+	}
+	planet_modifier = {
+		planet_jobs_physics_research_produces_mult = 0.25
+		planet_jobs_society_research_produces_mult = 0.5
+		planet_jobs_engineering_research_produces_mult = 0.5
+		job_spth_story_researcher_add = 800
+	}
+	country_modifier = {
+		category_archaeostudies_research_speed_mult = 0.2
+	}
+	triggered_country_modifier = {
+		potential = { spth_has_ag_mod = yes }
+		category_ag_ancient_tech_category_research_speed_mult = 0.2
+	}
+	resources = {
+		category = planet_buildings
+		cost = {
+			minerals = 1
+			sr_lingli = 1
+		}
+		produces = {
+			physics_research = 150
+			society_research = 225
+			engineering_research = 225
+		}
+		produces = {
+			trigger = { exists = owner owner = { has_ascension_perk = ap_cosmogenesis } }
+			advanced_logic = 5
+		}
+		upkeep = {
+			energy = 4
 		}
 	}
 }
@@ -723,42 +782,36 @@ building_spth_housing = {
 	}
 
 	planet_modifier = {
-		planet_housing_add = 1600
-		planet_amenities_add = 800
+		planet_housing_add = 2000
+		planet_amenities_add = 1200
 	}
 	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = {
+				is_ai = no
+				is_regular_empire = yes
+				has_authority = auth_gensokyo
+				has_ascension_perk = ap_toho3
+			}
+		}
+		modifier = {
+			planet_housing_add = 1600
+			planet_amenities_add = 1200
+		}
+	}
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = {
+				is_ai = no
+				is_regular_empire = yes
+				has_authority = auth_gensokyo
+				has_ascension_perk = ap_toho3
+			}
+			spth_is_touhou_planet = yes
+		}
 		planet_housing_add = 400
-		planet_amenities_add = 400
-		multiplier = planet.planet_genso_job_buff_modifier
-	}
-	triggered_planet_modifier = {
-		potential = {
-			exists = owner
-			owner = {
-				is_ai = no
-				is_regular_empire = yes
-				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho3
-			}
-		}
-		modifier = {
-			planet_housing_add = 800
-			planet_amenities_add = 800
-		}
-	}
-	triggered_planet_modifier = {
-		potential = {
-			exists = owner
-			owner = {
-				is_ai = no
-				is_regular_empire = yes
-				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho3
-			}
-		}
-		planet_housing_add = 800
-		planet_amenities_add = 800
-		multiplier = planet.planet_genso_job_buff_modifier
 	}
 	triggered_planet_modifier = {
 		potential = {
@@ -771,8 +824,8 @@ building_spth_housing = {
 			}
 		}
 		modifier = {
-			planet_housing_add = 400
-			planet_amenities_add = 400
+			planet_housing_add = 1400
+			planet_amenities_add = 1200
 		}
 	}
 	triggered_planet_modifier = {
@@ -784,10 +837,9 @@ building_spth_housing = {
 				has_authority = auth_gensokyo
 				has_ascension_perk = ap_toho4
 			}
+			spth_is_touhou_planet = yes
 		}
-		planet_housing_add = 1000
-		planet_amenities_add = 800
-		multiplier = planet.planet_genso_job_buff_modifier
+		planet_housing_add = 200
 	}
 }
 
@@ -841,10 +893,9 @@ building_spth_old_shirne = {
 		planet_housing_add = 4800
 		planet_amenities_add = 2400
 		planet_stability_add = 12
-		pop_bonus_workforce_mult = 0.9
-		planet_max_buildings_add = 12
+		pop_bonus_workforce_mult = 0.50
+		planet_defense_armies_add = 20
 		planet_max_branch_office_buildings_add = 4
-		defense_armies_add = 20
 	}
 
 	triggered_planet_modifier = {
@@ -877,6 +928,7 @@ building_spth_old_shirne = {
 			owner = { has_technology = tech_capital_productivity_1 }
 		}
 		modifier = {
+			planet_jobs_productive_upkeep_mult = 0.1
 			pop_bonus_workforce_mult = 0.1
 		}
 	}
@@ -887,6 +939,7 @@ building_spth_old_shirne = {
 			owner = { has_technology = tech_capital_productivity_2 }
 		}
 		modifier = {
+			planet_jobs_productive_upkeep_mult = 0.1
 			pop_bonus_workforce_mult = 0.1
 		}
 	}
@@ -897,6 +950,7 @@ building_spth_old_shirne = {
 			owner = { has_technology = tech_capital_productivity_3 }
 		}
 		modifier = {
+			planet_jobs_productive_upkeep_mult = 0.1
 			pop_bonus_workforce_mult = 0.1
 		}
 	}
@@ -920,13 +974,13 @@ building_spth_old_shirne = {
 		}
 	}
 
-	triggered_desc = {
-		trigger = {
-			exists = owner.federation
-			owner.federation = { has_federation_perk = culture_workers_1 }
-		}
-		text = job_culture_worker_effect_desc
-	}
+	# triggered_desc = {
+	# 	trigger = {
+	# 		exists = owner.federation
+	# 		owner.federation = { has_federation_perk = culture_workers_1 }
+	# 	}
+	# 	text = job_culture_worker_effect_desc
+	# }
 
 	triggered_desc = {
 		trigger = {
@@ -992,10 +1046,9 @@ building_spth_planet_shirne = {
 		planet_housing_add = 6400
 		planet_amenities_add = 3200
 		planet_stability_add = 16
-		pop_bonus_workforce_mult = 0.9
-		planet_max_buildings_add = 24
+		pop_bonus_workforce_mult = 0.50
+		planet_defense_armies_add = 24
 		planet_max_branch_office_buildings_add = 4
-		defense_armies_add = 24
 		job_spth_story_chief_researcher_per_pop = 0.05
 	}
 
@@ -1075,13 +1128,13 @@ building_spth_planet_shirne = {
 		}
 	}
 
-	triggered_desc = {
-		trigger = {
-			exists = owner.federation
-			owner.federation = { has_federation_perk = culture_workers_1 }
-		}
-		text = job_culture_worker_effect_desc
-	}
+	# triggered_desc = {
+	# 	trigger = {
+	# 		exists = owner.federation
+	# 		owner.federation = { has_federation_perk = culture_workers_1 }
+	# 	}
+	# 	text = job_culture_worker_effect_desc
+	# }
 
 	triggered_desc = {
 		trigger = {
@@ -1103,7 +1156,6 @@ building_kamikakushi_silo = {
 	building_sets = {
 		government
 		urban
-		hydroponics
 		generator
 		mining
 		farming
@@ -1118,8 +1170,42 @@ building_kamikakushi_silo = {
 	}
 	show_in_tech = tech_building_kamikakushi_silo
 	destroy_trigger = { always = no }
+	planet_modifier = {
+		job_spth_human_trader_add = 100
+	}
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = {
+				has_authority = auth_gensokyo
+				has_ascension_perk = ap_toho2
+			}
+		}
+		job_spth_human_trader_add = 100
+	}
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = {
+				has_authority = auth_gensokyo
+				has_ascension_perk = ap_toho3
+			}
+		}
+		job_spth_human_trader_add = 100
+	}
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = {
+				has_authority = auth_gensokyo
+				has_ascension_perk = ap_toho4
+			}
+		}
+		job_spth_human_trader_add = 100
+	}
 	country_modifier = {
 		country_resource_max_add = 25000
+		country_trade_produces_mult = 0.01
 	}
 	triggered_country_modifier = {
 		potential = {
@@ -1127,6 +1213,7 @@ building_kamikakushi_silo = {
 			owner = { has_technology = tech_building_kamikakushi_silo_update }
 		}
 		country_resource_max_add = 25000
+		country_trade_produces_mult = 0.01
 	}
 	resources = {
 		category = planet_buildings

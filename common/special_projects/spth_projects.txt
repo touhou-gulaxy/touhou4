@@ -490,3 +490,61 @@ special_project = {
     }
     on_fail = {}
 }
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_lunar_jumpdrive_gate
+    key = spth_lunar_union_unlock_gateway
+    event_chain = spth_event_chain_past_legacy
+    days_to_research = 90
+    tech_department = physics_technology
+    requirements = { shipclass_science_ship = 1 leader = scientist }
+    event_scope = ship_event
+    on_start = {}
+    on_success = {
+        event_target:spth_story_lunar_capital_union_system = {
+            random_system_ambient_object = {
+                limit = { is_ambient_object_type = spth_lunar_union_gateway_disabled }
+                save_event_target_as = spth_lunar_union_gateway_disabled
+            }
+            spawn_megastructure = {
+                type = spth_lunar_jumpdrive_gateway
+                name = spth_lunar_jumpdrive_gateway_union
+                coords_from = event_target:spth_lunar_union_gateway_disabled
+                owner = event_target:spth_disappear_barrier_player
+                graphical_culture = event_target:spth_disappear_barrier_player
+                init_effect = {
+                    set_megastructure_flag = is_spth_lunar_jumpdrive_gateway
+                    set_megastructure_flag = spth_lunar_jumpdrive_gateway_union
+                }
+            }
+            event_target:spth_lunar_union_gateway_disabled = {
+                destroy_ambient_object = this
+            }
+        }
+        event_target:spth_disappear_barrier_player = {
+            set_country_flag = spth_unlock_union_system_gate
+            random_system_within_border = {
+                set_spawn_system_batch = begin
+                spawn_system = {
+                    initializer = spth_story_lunar_capital_aethon
+                    hyperlane = no
+                }
+                set_spawn_system_batch = end
+                add_event_chain_counter = {
+                    event_chain = spth_event_chain_past_legacy
+                    counter = spth_past_legacy_ruins_find
+                    amount = 1
+                }
+                create_point_of_interest = {
+                    event_chain = spth_event_chain_past_legacy
+                    id = spth_story_lunar_capital_aethon
+                    picture = GFX_evt_star_chart
+                    name = spth_lunar_aethon
+                    location = event_target:spth_story_lunar_capital_aethon
+                    desc = spth_lunar_aethon_desc
+                }
+            }
+        }
+    }
+    on_fail = {}
+}

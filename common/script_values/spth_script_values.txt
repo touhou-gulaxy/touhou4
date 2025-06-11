@@ -422,22 +422,31 @@ yin_yang_orb_drp_mult = {
 	mult = value:yin_yang_orb_drp_count|active_factor|$active_factor$|
 }
 # 基础*(ship_weapon_damage+能量+灵力+修正)*(1+船体伤害)*(1+大小倍率计算)=final
-# 修正 = final/(1+大小倍率计算)/(1+船体伤害)/基础 - ship_weapon_damage-能量-灵力
+# 修正 = final/(1+大小倍率计算)/(1+船体伤害)/基础 - ship_weapon_damage - 能量 - 灵力
 th_instant_kill_hull_damage = {
 	base = 0
 	add = 1
 	add = modifier:ship_hull_damage_mult
+	add = $weapon_hull_damage$
 	min = 1
+}
+th_instant_kill_size_factor = {
+	base = 0
+	add = $size_damage_factor$
+	mult = 8
+	add = 1
 }
 th_instant_kill_value = {
 	base = 0
 	add = $final_dmg$
-	divide = 3
+	divide = value:th_instant_kill_size_factor|size_damage_factor|$size_damage_factor$|
+	divide = value:th_instant_kill_hull_damage|weapon_hull_damage|$weapon_hull_damage|0$|
 	divide = $base_dmg$
-	divide = value:th_instant_kill_hull_damage
 	subtract = modifier:ship_weapon_damage
-	subtract = modifier:weapon_type_energy_weapon_damage_mult
-	subtract = modifier:weapon_type_lingli_weapon_damage_mult
+	subtract = modifier:weapon_type_$tag1|energy$_weapon_damage_mult
+	subtract = modifier:weapon_type_$tag2|lingli$_weapon_damage_mult
+	[[tag3] subtract = modifier:weapon_type_$tag3$_weapon_damage_mult ]
+	[[tag4] subtract = modifier:weapon_type_$tag4$_weapon_damage_mult ]
 	abs = yes
 }
 
@@ -492,4 +501,20 @@ spth_super_carrier_computer_damage_reduce_value = {
 	add = value:spth_super_carrier_computer_damage_reduce_value_1
 	mult = 0.01
 	max = 10240
+}
+spth_cluster34_psi_random_planet_count = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = count_owned_planet
+		parameters = {
+			limit = {
+				is_colony = yes
+				NOT = { has_planet_flag = disappear_barrier_cluster34_psi_mark }
+			}
+		}
+		mode = add
+	}
+	mult = 0.2
+	floor = yes
+	max = 4
 }
