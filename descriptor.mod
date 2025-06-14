@@ -1,4 +1,4 @@
-version="2.2.beta2"
+version="2.2.beta3"
 tags={
 	"Gameplay"
 	"Galaxy Generation"
