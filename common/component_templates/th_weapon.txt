@@ -1277,7 +1277,15 @@ weapon_component_template = {
     ai_weight = { weight = 1000 }
     on_hit = {
         custom_tooltip = th_toyohime_weapon_g_effect
-        hidden_effect = { spth_reduce_shield = { factor = 0.01 percent = 0.01 } }
+        hidden_effect = {
+            if = {
+                limit = { has_shield_hp > 0 }
+                reduce_shield = value:spth_max_shield_value|percent|0.01|
+            } else_if = {
+                limit = { has_armor_percentage > 0 }
+                repair_armor_amount = value:spth_max_armor_value|percent|0.01|neg|yes|
+            }
+        }
     }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
 }
