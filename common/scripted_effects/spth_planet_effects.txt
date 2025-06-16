@@ -169,6 +169,10 @@ spth_planet_winter_remove_season = {
     }
 }
 
+spth_save_planet_buildings = {
+    optimize_memory
+}
+
 spth_reset_planet_deposits_effect = {
     optimize_memory
     # spth_effect_count_th_deposits = { deposit = d_zhulin }
@@ -448,12 +452,39 @@ spth_auto_rw_base = {
 spth_auto_rw_build_districts = {
     optimize_memory
     # ori
-    [[district_rw_city] while = { count = $district_rw_city$ add_district = district_rw_city }]
-    [[district_rw_farming] while = { count = $district_rw_farming$ add_district = district_rw_farming }]
-    [[district_rw_generator] while = { count = $district_rw_generator$ add_district = district_rw_generator }]
-    [[district_rw_industrial] while = { count = $district_rw_industrial$ add_district = district_rw_industrial }]
-    [[district_rw_science] while = { count = $district_rw_science$ add_district = district_rw_science }]
-    [[district_rw_commercial] while = { count = $district_rw_commercial$ add_district = district_rw_commercial }]
+    [[district_rw_city]
+        while = { count = $district_rw_city$ add_district = district_rw_city }
+        add_zone = { district = district_rw_city zone = zone_urban zone_slot = slot_city_01 }
+        add_zone = { district = district_rw_city zone = zone_urban zone_slot = slot_city_02 }
+    ]
+    [[district_rw_farming]
+        while = { count = $district_rw_farming$ add_district = district_rw_farming }
+        add_district = district_rw_city
+        add_zone = { district = district_rw_farming zone = zone_food_ring_world zone_slot = slot_food }
+        add_zone = { district = district_rw_city zone = zone_urban_food  zone_slot = slot_city_01 }
+    ]
+    [[district_rw_generator]
+        while = { count = $district_rw_generator$ add_district = district_rw_generator }
+        add_district = district_rw_city
+        add_zone = { district = district_rw_generator zone = zone_energy_ring_world zone_slot = slot_energy }
+        add_zone = { district = district_rw_city zone = zone_urban_energy zone_slot = slot_city_01 }
+    ]
+    [[district_rw_industrial]
+        while = { count = $district_rw_industrial$ add_district = district_rw_city }
+        add_zone = { district = district_rw_city zone = zone_industrial_ring_world zone_slot = slot_city_01 }
+        add_zone = { district = district_rw_city zone = zone_industrial_ring_world zone_slot = slot_city_02 }
+    ]
+    [[district_rw_science]
+        while = { count = $district_rw_science$ add_district = district_rw_science }
+        add_district = district_rw_city
+    ]
+    [[district_rw_commercial]
+        while = { count = $district_rw_commercial$ add_district = district_rw_commercial }
+        add_district = district_rw_city
+        add_zone = { district = district_rw_city zone = zone_trade_ring_world zone_slot = slot_city_01 }
+        add_zone = { district = district_rw_city zone = zone_trade_ring_world zone_slot = slot_city_02 }
+        add_zone = { district = district_rw_commercial zone = zone_trade_ring_world }
+    ]
     # spth
     [[district_gensokyo_renli] while = { count = $district_gensokyo_renli$ add_district = district_gensokyo_renli }]
     [[district_gensokyo_tushu] while = { count = $district_gensokyo_tushu$ add_district = district_gensokyo_tushu }]
@@ -463,6 +494,7 @@ spth_auto_rw_build_districts = {
 }
 spth_auto_rw_build_buildings = {
     optimize_memory
+    set_variable = { which = spth_auto_rw_free_building_slots value = trigger:free_building_slots }
     add_building = building_spth_cloner
     hidden_effect = { subtract_variable = { which = spth_auto_rw_free_building_slots value = 1 } }
     [[building_spth_common_factory] while = { count = $building_spth_common_factory$ add_building = building_spth_common_factory }]
@@ -480,10 +512,16 @@ spth_auto_rw_build_buildings = {
 }
 spth_auto_rw_build_SRA_districts = {
     optimize_memory
-    while = { count = $count$ add_district = district_SRA_auto_energy_rw }
+    if = {
+        limit = { use_touhou_starting_district = yes }
+        while = { count = $count$ add_district = district_spth_sp_produce }
+    } else = {
+        while = { count = $count$ add_district = district_rw_city }
+    }
 }
 spth_auto_rw_build_SRA_buildings = {
     optimize_memory
+    set_variable = { which = spth_auto_rw_free_building_slots value = trigger:free_building_slots }
     if = {
         limit = { owner = { has_technology = tech_SRA_T3_Wide_Area_Mind_Control } }
         add_building = building_SRA_T3_Psychic_Beacon
@@ -509,8 +547,22 @@ spth_auto_rw_build_SRA_buildings = {
     [[building_SRA_RE_alloys] while = { count = $building_SRA_RE_alloys$ add_building = building_SRA_RE_alloys }]
     [[building_SRA_RE_factory] while = { count = $building_SRA_RE_factory$ add_building = building_SRA_RE_factory }]
 }
+spth_auto_rw_build_ag_districts = {
+    optimize_memory
+    if = {
+        limit = { use_touhou_starting_district = yes }
+        while = { count = spth_auto_rw_free_district_slots add_district = district_spth_sp_produce }
+    } else = {
+        while = { count = spth_auto_rw_free_district_slots add_district = district_rw_city }
+    }
+    add_zone = { district = district_spth_sp_produce zone_slot = slot_spth_generic_01 zone = $zone_01$ }
+    add_zone = { district = district_spth_sp_produce zone_slot = slot_spth_generic_02 zone = $zone_02$ }
+}
 spth_auto_rw_build_ag_buildings = {
     optimize_memory
+    # 6 + 3 * 2 - 4
+    add_building = building_spth_cloner
+    set_variable = { which = spth_auto_rw_free_building_slots value = 8 }
     if = {
         limit = { owner = { has_technology = tech_ag_dimensional_obelisk } }
         add_building = ag_dimensional_obelisk
