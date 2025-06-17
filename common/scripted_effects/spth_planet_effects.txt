@@ -169,8 +169,221 @@ spth_planet_winter_remove_season = {
     }
 }
 
-spth_save_planet_buildings = {
+spth_save_planet_buildings_and_districts = {
     optimize_memory
+    # export_trigger_value_to_variable = {
+    #     trigger = num_buildings
+    #     parameters = { in_construction = no type = building_spth_cloner }
+    #     variable = spth_saved_b_building_spth_cloner
+    # }
+    # if = {
+    #     limit = { has_district = district_spth_generic_factory }
+    #     export_trigger_value_to_variable = {
+    #         trigger = num_districts
+    #         parameters = { type = district_spth_generic_factory }
+    #         variable = spth_saved_d_district_spth_generic_factory
+    #     }
+    #     while = {
+    #         count = spth_saved_d_district_spth_generic_factory
+    #         remove_district = district_spth_generic_factory
+    #     }
+    #     export_trigger_value_to_variable = {
+    #         trigger = num_buildings
+    #         parameters = { in_construction = no type = building_spth_cloner }
+    #         variable = spth_saved_b_building_spth_cloner_temp
+    #     }
+    #     set_variable = { which = spth_saved_b_building_spth_cloner_in_district_spth_generic_factory value = 0 }
+    #     subtract_variable = {
+    #         which = spth_saved_b_building_spth_cloner_in_district_spth_generic_factory
+    #         value = spth_saved_b_building_spth_cloner_temp
+    #     }
+    #     clear_variable = spth_saved_b_building_spth_cloner_temp
+    # }
+    switch = {
+        trigger = has_building
+        building_capital = { set_planet_flag = has_saved_building_capital }
+        building_major_capital = { set_planet_flag = has_saved_building_major_capital }
+        building_system_capital = { set_planet_flag = has_saved_building_system_capital }
+        building_spth_old_shirne = { set_planet_flag = has_saved_building_spth_old_shirne }
+        building_spth_planet_shirne = { set_planet_flag = has_saved_building_spth_planet_shirne }
+        default = {  }
+    }
+    if = {
+        limit = { spth_has_rural_designation = yes }
+        set_planet_flag = spth_has_rural_designation
+    } else_if = {
+        limit = { spth_has_research_designation = yes }
+        set_planet_flag = spth_has_research_designation
+    } else_if = {
+        limit = { spth_has_refinery_designation = yes }
+        set_planet_flag = spth_has_refinery_designation
+    } else_if = {
+        limit = { spth_has_farming_designation = yes }
+        set_planet_flag = spth_has_farming_designation
+    } else_if = {
+        limit = { spth_has_mining_designation = yes }
+        set_planet_flag = spth_has_mining_designation
+    } else_if = {
+        limit = { spth_has_generator_designation = yes }
+        set_planet_flag = spth_has_generator_designation
+    } else_if = {
+        limit = { spth_has_factory_designation = yes }
+        set_planet_flag = spth_has_factory_designation
+    } else_if = {
+        limit = { spth_has_foundry_designation = yes }
+        set_planet_flag = spth_has_foundry_designation
+    } else_if = {
+        limit = { spth_has_industrial_designation = yes }
+        set_planet_flag = spth_has_industrial_designation
+    } else_if = {
+        limit = { spth_has_fortress_designation = yes }
+        set_planet_flag = spth_has_fortress_designation
+    } else_if = {
+        limit = { spth_has_trade_designation = yes }
+        set_planet_flag = spth_has_trade_designation
+    } else_if = {
+        limit = { spth_has_ag_mod = yes }
+        switch = {
+            trigger = has_designation
+            col_ag_living_metal = { set_planet_flag = spth_has_ag_living_metal_designation }
+            col_ag_dark_matter = { set_planet_flag = spth_has_ag_dark_matter_designation }
+            col_ag_nanites = { set_planet_flag = spth_has_ag_nanites_designation }
+            col_ag_zro = { set_planet_flag = spth_has_ag_zro_designation }
+            default = { set_planet_flag = spth_has_unknown_designation }
+        }
+    } else = { set_planet_flag = spth_has_unknown_designation }
+    set_variable = { which = spth_saved_district_spth_generic_factory value = value:spth_district_count|type|district_spth_generic_factory| }
+    set_variable = { which = spth_saved_district_spth_sp_produce value = value:spth_district_count|type|district_spth_sp_produce| }
+    set_variable = { which = spth_saved_district_city value = value:spth_district_count|type|district_city| }
+}
+spth_restore_planet_buildings_and_districts = {
+    optimize_memory
+    # if = {
+    #     limit = { check_variable = { which = spth_saved_b_building_spth_cloner value > 0 } }
+    #     while = { count = spth_saved_b_building_spth_cloner add_building = building_spth_cloner }
+    # }
+    remove_building = building_colony_shelter
+    switch = {
+        trigger = has_planet_flag
+        has_saved_building_capital = { set_planet_flag = has_saved_building_capital add_building = building_capital }
+        has_saved_building_major_capital = { set_planet_flag = has_saved_building_major_capital add_building = building_major_capital }
+        has_saved_building_system_capital = { set_planet_flag = has_saved_building_system_capital add_building = building_system_capital }
+        has_saved_building_spth_old_shirne = { set_planet_flag = has_saved_building_spth_old_shirne add_building = building_spth_old_shirne }
+        has_saved_building_spth_planet_shirne = { set_planet_flag = has_saved_building_spth_planet_shirne add_building = building_spth_planet_shirne }
+        default = { add_building = building_colony_shelter }
+    }
+    if = {
+        limit = {
+            check_variable_arithmetic = {
+                which = spth_saved_district_spth_sp_produce
+                add = spth_saved_district_city
+                value > 1
+            }
+        }
+        set_variable = { which = spth_restore_district_spth_sp_produce value = spth_saved_district_spth_sp_produce }
+        change_variable = { which = spth_restore_district_spth_sp_produce value = spth_saved_district_city }
+        subtract_variable = { which = spth_restore_district_spth_sp_produce value = 1 }
+        while = {
+            count = spth_restore_district_spth_sp_produce
+            add_district = district_spth_sp_produce
+        }
+        clear_variable = spth_restore_district_spth_sp_produce
+        clear_variable = spth_saved_district_spth_sp_produce
+        clear_variable = spth_saved_district_city
+    }
+    if = {
+        limit = { check_variable = { which = spth_saved_district_spth_generic_factory value > 0 } }
+        switch = {
+            trigger = has_planet_flag
+            spth_has_rural_designation = {
+                while = { add_district = district_gensokyo_jinja count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_jinja zone = gensokyo_jinja_zone }
+                remove_planet_flag = spth_has_rural_designation
+            }
+            spth_has_research_designation = {
+                while = { add_district = district_gensokyo_tushu count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_tushu zone = gensokyo_tushu_zone }
+                remove_planet_flag = spth_has_research_designation
+            }
+            spth_has_generator_designation = {
+                while = { add_district = district_gensokyo_jinja count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_jinja zone = spth_gensokyo_city_energy_zone }
+                remove_planet_flag = spth_has_generator_designation
+            }
+            spth_has_mining_designation = {
+                while = { add_district = district_gensokyo_jinja count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_jinja zone = spth_gensokyo_city_minerials_zone }
+                remove_planet_flag = spth_has_mining_designation
+            }
+            spth_has_farming_designation = {
+                while = { add_district = district_gensokyo_renli count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_jinja zone = spth_gensokyo_city_foods_zone }
+                remove_planet_flag = spth_has_farming_designation
+            }
+            spth_has_refinery_designation = {
+                while = { add_district = district_gensokyo_renli count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_jinja zone = spth_gensokyo_city_refine_zone }
+                remove_planet_flag = spth_has_refinery_designation
+            }
+            spth_has_industrial_designation = {
+                while = { add_district = district_gensokyo_jiqiao count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_jiqiao zone = gensokyo_jiqiao_zone }
+                remove_planet_flag = spth_has_industrial_designation
+            }
+            spth_has_foundry_designation = {
+                while = { add_district = district_gensokyo_jiqiao count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_jiqiao zone = spth_gensokyo_city_alloys_zone }
+                remove_planet_flag = spth_has_foundry_designation
+            }
+            spth_has_factory_designation = {
+                while = { add_district = district_gensokyo_jiqiao count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_jiqiao zone = spth_gensokyo_city_consumer_goods_zone }
+                remove_planet_flag = spth_has_factory_designation
+            }
+            spth_has_fortress_designation = {
+                while = { add_district = district_spth_sp_produce count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_fortress_zone zone_slot = slot_spth_generic_01 }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_fortress_zone zone_slot = slot_spth_generic_02 }
+                remove_planet_flag = spth_has_fortress_designation
+            }
+            spth_has_trade_designation = {
+                while = { add_district = district_spth_sp_produce count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_trade_zone zone_slot = slot_spth_generic_01 }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_trade_zone zone_slot = slot_spth_generic_02 }
+                remove_planet_flag = spth_has_trade_designation
+            }
+            spth_has_ag_living_metal_designation = {
+                while = { add_district = district_spth_sp_produce count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_ag_living_metal_zone zone_slot = slot_spth_generic_01 }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_ag_living_metal_zone zone_slot = slot_spth_generic_02 }
+                remove_planet_flag = spth_has_ag_living_metal_designation
+            }
+            spth_has_ag_nanites_designation = {
+                while = { add_district = district_spth_sp_produce count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_ag_nanite_zone zone_slot = slot_spth_generic_01 }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_ag_nanite_zone zone_slot = slot_spth_generic_02 }
+                remove_planet_flag = spth_has_ag_nanites_designation
+            }
+            spth_has_ag_dark_matter_designation = {
+                while = { add_district = district_spth_sp_produce count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_ag_drak_matter_zone zone_slot = slot_spth_generic_01 }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_ag_drak_matter_zone zone_slot = slot_spth_generic_02 }
+                remove_planet_flag = spth_has_ag_dark_matter_designation
+            }
+            spth_has_ag_zro_designation = {
+                while = { add_district = district_spth_sp_produce count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_ag_zro_zone zone_slot = slot_spth_generic_01 }
+                add_zone = { district = district_spth_sp_produce zone = spth_generic_ag_zro_zone zone_slot = slot_spth_generic_02 }
+                remove_planet_flag = spth_has_ag_zro_designation
+            }
+            default = {
+                while = { add_district = district_gensokyo_tushu count = spth_saved_district_spth_generic_factory }
+                add_zone = { district = district_gensokyo_tushu zone = gensokyo_tushu_zone }
+                remove_planet_flag = spth_has_unknown_designation
+            }
+        }
+        clear_variable = spth_saved_district_spth_generic_factory
+    }
 }
 
 spth_reset_planet_deposits_effect = {
@@ -207,8 +420,9 @@ spth_change_pc_gensokyo_city_effect = {
         }
         add_deposit = d_hakurei_barrier
     }
+    spth_save_planet_buildings_and_districts = yes
     change_pc = pc_gensokyo_city
-    add_district = district_spth_sp_produce
+    spth_restore_planet_buildings_and_districts = yes
     set_planet_entity = {
         entity = "gensokyo_city_entity"
         graphical_culture = owner
