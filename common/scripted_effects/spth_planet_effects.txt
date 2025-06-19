@@ -841,22 +841,21 @@ spth_astral_signal_set_planet = {
             limit = {
                 exists = space_owner
                 space_owner = { is_same_value = root }
-                NOT = { any_system_planet = { OR = { is_colony = yes has_planet_flag = has_touhou_astral_signals_@root } } }
+                NOT = { any_system_planet = { has_planet_flag = has_touhou_astral_signals_@root } }
             }
-            random_system_planet = { save_global_event_target_as = touhou_astral_signals_loc_$id$_@root }
-        }
-        if = {
-            limit = { NOT = { exists = event_target:touhou_astral_signals_loc_$id$_@root } }
-            random_system = {
-                limit = { NOT = { any_system_planet = { OR = { is_colony = yes has_planet_flag = has_touhou_astral_signals_@root } } } }
-                random_system_planet = { save_global_event_target_as = touhou_astral_signals_loc_$id$_@root }
+            random_system_planet = {
+                set_planet_flag = has_touhou_astral_signals_@root
+                save_global_event_target_as = touhou_astral_signals_loc_$id$_@root
             }
         }
         if = {
             limit = { NOT = { exists = event_target:touhou_astral_signals_loc_$id$_@root } }
             random_system = {
                 limit = { NOT = { any_system_planet = { has_planet_flag = has_touhou_astral_signals_@root } } }
-                random_system_planet = { save_global_event_target_as = touhou_astral_signals_loc_$id$_@root }
+                random_system_planet = {
+                    set_planet_flag = has_touhou_astral_signals_@root
+                    save_global_event_target_as = touhou_astral_signals_loc_$id$_@root
+                }
             }
         }
     }
@@ -877,9 +876,12 @@ spth_astral_signal_set_project = {
 }
 spth_astral_signal_abort_project = {
     optimize_memory
-    abort_special_project = {
-        type = spth_project_astral_signals_search
-        location = event_target:touhou_astral_signals_loc_$id$_@root
+    if = {
+        limit = { exists = event_target:touhou_astral_signals_loc_$id$_@root }
+        abort_special_project = {
+            type = spth_project_astral_signals_search
+            location = event_target:touhou_astral_signals_loc_$id$_@root
+        }
     }
 }
 
