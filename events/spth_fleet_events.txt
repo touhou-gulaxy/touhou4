@@ -953,8 +953,8 @@ ship_event = {
                 if = {
                     limit = { check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
                     random_list = {
-                        20 = { modifier = { add = modifier:ship_th_mokou_skill } }
-                        80 = {
+                        15 = { modifier = { add = modifier:ship_th_mokou_skill } }
+                        85 = {
                             modifier = { subtract = modifier:ship_th_mokou_skill }
                             if = {
                                 limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
@@ -1332,12 +1332,18 @@ country_event = {
                     limit = { NOT = { is_variable_set = resurrection_butterfly_kill_count } }
                     set_variable = { which = resurrection_butterfly_kill_count value = 0 }
                 }
-                change_variable = { which = resurrection_butterfly_kill_count value = 1 }
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_spth_yuyuko_ruler_effect_1 value != 0 } }
+                    change_variable = { which = resurrection_butterfly_kill_count value = 2 }
+                } else = {
+                    change_variable = { which = resurrection_butterfly_kill_count value = 1 }
+                }
                 remove_modifier = weapon_type_resurrection_butterfly_bouns
                 add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = resurrection_butterfly_kill_count }
                 random_list = {
                     0 = {
                         modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_count }
+                        modifier = { factor = 1 check_modifier_value = { modifier = ship_spth_yuyuko_ruler_effect_1 value != 0 } }
                         if = {
                             limit = { NOT = { is_variable_set = resurrection_butterfly_extra_count } }
                             set_variable = { which = resurrection_butterfly_extra_count value = 0 }
@@ -1346,7 +1352,11 @@ country_event = {
                         remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
                         add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = resurrection_butterfly_extra_count }
                     }
-                    0 = { modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_max } modifier = { subtract = modifier:ship_spth_yuyuko_fan_weapon_count } }
+                    0 = {
+                        modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_max }
+                        modifier = { subtract = modifier:ship_spth_yuyuko_fan_weapon_count }
+                        modifier = { factor = 0 check_modifier_value = { modifier = ship_spth_yuyuko_ruler_effect_1 value != 0 } }
+                    }
                 }
                 reroll_random = yes
             }
