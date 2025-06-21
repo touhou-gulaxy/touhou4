@@ -23,7 +23,9 @@ spth_system_selector_confirm_reimu_skill = {
                 }
             } else = {
                 event_target:spth_system_selector_reimu_fleet_@from = {
+                    set_fleet_flag = spth_reason_reimu_fleet
                     fleet_event = { id = touhou_ship_actions.3 }
+                    fleet_event = { id = touhou_ship_actions.5 }
                 }
             }
             if = {
@@ -33,12 +35,72 @@ spth_system_selector_confirm_reimu_skill = {
                     if = {
                         limit = { spth_can_not_jump_in_system = yes }
                         event_target:spth_system_selector_reimu_fleet_@from = {
+                            set_fleet_flag = spth_reason_reimu_fleet
                             fleet_event = { id = touhou_ship_actions.3 }
+                            fleet_event = { id = touhou_ship_actions.5 }
                         }
                     } else = {
                         event_target:spth_system_selector_reimu_fleet_@from = {
                             every_owned_ship = { spth_create_jump_particle_effect = yes }
                             fleet_event = { id = touhou_ship_actions.4 days = 3 random = 2 }
+                            clear_global_event_target = spth_system_selector_reimu_fleet_@owner
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+spth_system_selector_confirm_super_carrier_eater = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            if = {
+                limit = { is_scope_type = galactic_object }
+                save_event_target_as = spth_system_selector_target
+            } else_if = {
+                limit = { exists = solar_system }
+                solar_system = {
+                    save_event_target_as = spth_system_selector_target
+                }
+            } else = {
+                event_target:spth_system_selector_super_carrier_eater_fleet_@from = {
+                    set_fleet_flag = spth_reason_super_carrier_eater_fleet
+                    fleet_event = { id = touhou_ship_actions.6 }
+                    fleet_event = { id = touhou_ship_actions.5 }
+                }
+            }
+            if = {
+                limit = { exists = event_target:spth_system_selector_target }
+                event_target:spth_system_selector_target = {
+                    log = "选中了星系[This.GetName]QAQ"
+                    if = {
+                        limit = { spth_can_not_star_killer_hit_system = yes }
+                        event_target:spth_system_selector_super_carrier_eater_fleet_@from = {
+                            set_fleet_flag = spth_reason_super_carrier_eater_fleet
+                            fleet_event = { id = touhou_ship_actions.6 }
+                            fleet_event = { id = touhou_ship_actions.5 }
+                        }
+                    } else = {
+                        event_target:spth_system_selector_super_carrier_eater_fleet_@from = {
+                            every_owned_ship = {
+                                limit = { is_ship_size = TH_super_carrier }
+                                create_ambient_object = {
+                                    type = th_star_killer_winup_effect
+                                    location = this
+                                    use_3d_location = yes
+                                    entity_offset = { min = 0 max = 0 }
+                                    entity_offset_angle = { min = 0 max = 0 }
+                                    entity_offset_height = { min = 0 max = 0 }
+                                    entity_scale_to_size = yes
+                                    scale = 0.2
+                                    play_animation_once = yes
+                                    duration = 10
+                                }
+                            }
+                            fleet_event = { id = touhou_ship_actions.7 days = 10 random = 5 }
+                            clear_global_event_target = spth_system_selector_super_carrier_eater_fleet_@owner
                         }
                     }
                 }
