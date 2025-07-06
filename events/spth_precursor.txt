@@ -664,3 +664,180 @@ country_event = {
         }
     }
 }
+
+# 隙间之里堕落
+# 不明信号，一段时间后刷
+country_event = {
+    id = spth_precursor.201
+    title = spth_precursor.201.name
+    desc = spth_precursor.201.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mysterious_signal_room }
+    immediate = { set_global_flag = spth_precursor_201_triggered }
+    option = {
+        name = TH_INTERESTRING
+        default_hide_option = yes
+        hidden_effect = {
+            set_country_flag = kamikakushi_fallen_empire_trigger_empire
+            country_event = { id = spth_precursor.202 days = 90 random = 90 }
+        }
+    }
+}
+# 全图广播：滚远点
+country_event = {
+    id = spth_precursor.202
+    title = spth_precursor.202.name
+    desc = spth_precursor.202.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    immediate = {
+        spth_spawn_kamikakushi_fallen_empire = yes
+    }
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = event_target:spth_kamikakushi_fallen_empire.ruler
+    }
+    option = {
+        name = spth_precursor.202.a
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = spth_precursor.203
+    title = spth_precursor.203.name
+    desc = spth_precursor.203.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = event_target:spth_kamikakushi_fallen_empire.ruler
+    }
+    option = {
+        name = spth_precursor.203.a
+        default_hide_option = yes
+    }
+}
+# 我觉醒了，xxx你自己死一下好不好
+country_event = {
+    id = spth_precursor.204
+    title = spth_precursor.204.name
+    desc = {
+        trigger = { has_country_flag = spth_awaken_by_threat }
+        text = spth_precursor.204.desc
+    }
+    desc = {
+        trigger = { NOT = { has_country_flag = spth_awaken_by_threat } }
+        text = spth_precursor.204.desc.common
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = event_target:contact_empire.ruler
+    }
+    option = {
+        name = spth_precursor.204.a
+        trigger = { NOT = { is_same_empire = event_target:enemy_empire } }
+    }
+    option = {
+        name = spth_precursor.204.b
+        trigger = {
+            has_country_flag = spth_awaken_by_threat
+            is_same_empire = event_target:enemy_empire
+        }
+    }
+}
+country_event = {
+    id = spth_precursor.205
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { exists = this }
+    immediate = {
+        if = {
+            limit = { has_country_flag = spth_kamikakushi_fallen_empire_enable_refresh }
+            spth_refresh_kamikakushi_awaken_empire_fleets = yes
+        }
+        country_event = { id = spth_precursor.205 days = 540 random = 90 }
+    }
+}
+# 你灾飞我让你飞起来
+country_event = {
+    id = spth_precursor.214
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_country_type = default is_ai = no
+        OR = {
+            has_crisis_level = crisis_level_5
+            has_crisis_level = crisis_cosmogenesis_level_5
+            has_crisis_level = crisis_behemoth_level_5
+        }
+    }
+    immediate = {
+        if = {
+            limit = { has_authority = auth_gensokyo }
+            fire_on_action = { on_action = spth_on_country_crisis_level_5_gensokyo }
+        } else = {
+            fire_on_action = { on_action = spth_on_country_crisis_level_5_common }
+        }
+    }
+}
+country_event = {
+    id = spth_precursor.215
+    title = spth_precursor.215.name
+    desc = spth_precursor.215.desc
+    is_triggered_only = yes
+    trigger = { exists = event_target:spth_awaken_empire_kamikakushi }
+    diplomatic = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = event_target:spth_kamikakushi_fallen_empire.ruler
+    }
+    option = {
+        name = spth_precursor.215.a
+        default_hide_option = yes
+    }
+    option = {
+        name = spth_precursor.215.b
+    }
+    after = {
+        hidden_effect = {
+            save_event_target_as = spth_crisis_level_5_empire
+            event_target:spth_kamikakushi_fallen_empire = {
+                spth_make_kamikakushi_fallen_empire_awake = {
+                    threat = event_target:spth_crisis_level_5_empire
+                }
+                add_modifier = { modifier = spth_kamikakushi_awaken_modifier }
+                set_country_flag = spth_kamikakushi_fallen_empire_enable_refresh
+                if = {
+                    limit = { NOT = { has_country_flag = spth_precursor_205_fired } }
+                    set_country_flag = spth_precursor_205_fired
+                    country_event = { id = spth_precursor.205 }
+                }
+                declare_war = {
+                    target = event_target:spth_crisis_level_5_empire
+                    name = {
+                        key = "NAME_Declared_Crisis_War"
+                        variable_string = "[This.MainDefender.GetAdj]"
+                    }
+                    attacker_war_goal = wg_declared_crisis
+                }
+            }
+        }
+    }
+}

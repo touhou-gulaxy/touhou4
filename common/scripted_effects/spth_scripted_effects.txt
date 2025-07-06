@@ -359,6 +359,12 @@ spth_create_fleet = {
 			# sp
 			[[NAME_TH_battle_cruiser_ghost] while = { count = $NAME_TH_battle_cruiser_ghost$ create_ship = { name = random design = NAME_TH_battle_cruiser_ghost } } ]
 
+			# fe
+			[[spth_kamikakushi_fallen_battle_cruiser_g] while = { count = $spth_kamikakushi_fallen_battle_cruiser_g$ create_ship = { design = spth_kamikakushi_fallen_battle_cruiser_g } } ]
+			[[spth_kamikakushi_fallen_battle_cruiser_sk] while = { count = $spth_kamikakushi_fallen_battle_cruiser_sk$ create_ship = { design = spth_kamikakushi_fallen_battle_cruiser_sk } } ]
+			[[spth_kamikakushi_fallen_battle_cruiser_se] while = { count = $spth_kamikakushi_fallen_battle_cruiser_se$ create_ship = { design = spth_kamikakushi_fallen_battle_cruiser_se } } ]
+			[[spth_kamikakushi_fallen_battle_cruiser_ac] while = { count = $spth_kamikakushi_fallen_battle_cruiser_ac$ create_ship = { design = spth_kamikakushi_fallen_battle_cruiser_ac } } ]
+
 			[[fleet_action] fleet_event = { id = $fleet_action$ } ]
 			[[fleet_action_delayed] fleet_event = { id = $fleet_action_delayed$ days = $DAYS$ random = $DAYS_RANDOM$ } ]
 			[[modifier] add_modifier = { modifier = $modifier$ mult = $MUL$ days = $DURATION$ } ]
@@ -1458,6 +1464,110 @@ spth_astral_thread_small_reward = {
 			}
 			1 = {
 				add_resource_astral_threads = { VALUE = 60 ADD = $ADD$ }
+			}
+		}
+	}
+}
+
+spth_create_kamikakushi_fallen_empire = {
+	optimize_memory
+	create_species = {
+		name = species_kamikakushi
+		class = "THSC"
+		can_generate_leaders = yes
+		portrait = touhou2
+		pops_can_reproduce = yes
+		name_list = touhouchs
+		traits = {
+			trait = trait_touhou
+		}
+		extra_trait_points = 4
+		gender = female
+		immortal = yes
+		effect = {
+			save_global_event_target_as = spth_kamikakushi_fallen_empire_species
+		}
+	}
+	create_country = {
+		name = NAME_kamikakushi_real
+		species = event_target:spth_kamikakushi_fallen_empire_species
+		name_list = touhouchs
+		type = spth_fallen_empire_kamikakushi
+		flag = {
+			icon = {
+				category = "touhousp"
+				file = "kamikakushi_alt.dds"
+			}
+			background = {
+				category = "backgrounds"
+				file = "00_solid.dds"
+			}
+			colors = {
+				"light_orange"
+				"light_orange"
+				"light_orange"
+				"null"
+			}
+		}
+		ignore_initial_colony_error = yes
+		authority = auth_kamikakushi
+		civics = {
+			civic = civic_real_kamikakushi
+			civic = civic_kamikakushi_sigil
+		}
+		origin = "origin_real_kamikakushi"
+		ethos = { ethic = ethic_fanatic_spiritualist ethic = ethic_authoritarian }
+		effect = {
+			create_ship_design = { design = spth_kamikakushi_fallen_battle_cruiser_g }
+			add_ship_design = last_created_design
+			create_ship_design = { design = spth_kamikakushi_fallen_battle_cruiser_ac }
+			add_ship_design = last_created_design
+			create_ship_design = { design = spth_kamikakushi_fallen_battle_cruiser_se }
+			add_ship_design = last_created_design
+			create_ship_design = { design = spth_kamikakushi_fallen_battle_cruiser_sk }
+			add_ship_design = last_created_design
+			create_ship_design = { design = NAME_spth_kamikakushi_cruiser_1 }
+			add_ship_design = last_created_design
+			add_global_ship_design = "NAME_Cleanser"
+			add_global_ship_design = "NAME_Penitent"
+			add_global_ship_design = "NAME_Faith"
+			add_global_ship_design = "NAME_Pilgrim"
+			add_global_ship_design = "NAME_FE_Starbase"
+			save_global_event_target_as = spth_kamikakushi_fallen_empire
+			set_country_flag = protected_from_queen_storm
+			set_country_flag = spth_kamikakushi_fallen_empire
+			set_country_flag = touhou_mod_country
+			set_graphical_culture = strg_01
+			add_modifier = { modifier = spth_kamikakushi days = -1 }
+			add_resource = {
+				minerals = 1000000
+				energy = 1000000
+				food = 1000000
+				influence = 1000000
+				alloys = 1000000
+				consumer_goods = 1000000
+				sr_dark_matter = 1000000
+				sr_living_metal = 100000
+				sr_zro = 1000000
+				sr_fuka = 1000000
+				sr_lingli = 1000000
+			}
+			every_playable_country = {
+				limit = { NOT = { is_same_value = prev } }
+				establish_communications_no_message = prev
+				if = {
+					limit = { is_ai = no }
+					prev = {
+						set_closed_borders = {
+							who = prev
+							status = no
+						}
+					}
+				}
+				if = {
+					limit = { NOT = { has_country_flag = kamikakushi_fallen_empire_trigger_empire } }
+					country_event = { id = spth_precursor.203 }
+				}
 			}
 		}
 	}

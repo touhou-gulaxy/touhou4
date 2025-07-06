@@ -196,6 +196,9 @@ is_touhou_crisis_faction = {
         is_country_type = spth_makai_defence_system_crisis
         is_country_type = spth_crisis_lunar_outpost
         is_country_type = spth_fallen_empire
+        is_country_type = spth_fallen_empire_kamikakushi
+        is_country_type = spth_fallen_empire_hiffu
+        is_country_type = spth_awaken_empire_kamikakushi
         is_country_type = lunar_capital_remain_fleet
         is_country_type = spth_lunar_capital_union_fleet
     }
@@ -282,6 +285,9 @@ spth_always_remove_modifier_check = {
                 is_country_type = spth_country_type_container
                 is_country_type = spth_crisis_lunar_outpost
                 is_country_type = spth_fallen_empire
+                is_country_type = spth_fallen_empire_kamikakushi
+                is_country_type = spth_fallen_empire_hiffu
+                is_country_type = spth_awaken_empire_kamikakushi
                 is_country_type = spth_enclave
             }
         }
@@ -553,14 +559,32 @@ use_touhou_starting_district = {
     }
 }
 
+spth_is_regular_empire = {
+    optimize_memory
+    OR = {
+        is_country_type = default
+        #for checks in buildings and districts
+        is_country_type = awakened_marauders
+        is_country_type = fallen_empire
+        is_country_type = awakened_fallen_empire
+        is_country_type = spth_fallen_empire
+        is_country_type = spth_fallen_empire_kamikakushi
+        is_country_type = spth_awaken_empire_kamikakushi
+        is_country_type = spth_fallen_empire_hiffu
+    }
+    NOT = { has_ethic = ethic_gestalt_consciousness	}
+}
 # [CIVIC]
 # this: any scope that can has owner
 spth_check_gensokyo_auth = {
     optimize_memory
     exists = owner
     owner = {
-        is_regular_empire = yes
-        has_authority = auth_gensokyo
+        spth_is_regular_empire = yes
+        OR = {
+            has_authority = auth_gensokyo
+            has_country_flag = touhou_mod_country
+        }
         [[CIVIC]
             has_civic = $CIVIC$
         ]
