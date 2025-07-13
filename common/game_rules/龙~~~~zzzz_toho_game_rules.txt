@@ -2,19 +2,20 @@
 #Root = fleet, potential attacker
 #From = planet, potential target
 can_orbital_bombard = {
-    exists = from.owner
+    exists = FROM.OWNER
     ###_|绝对禁止|	+RSnf/阿夸/精灵	########################################
     NOR = {
         any_controlled_ship = {
             is_ship_size = colossus
         }
-        from = {
+        FROM = {
             OR = {
                 is_planet_class = pc_hollow		# RSnf
                 is_ELF_can_not_be_orbital_bombard_planet = yes	# 精灵
-                #	阿夸
+                OWNER = { is_country_type = kuat_fire_base_hositle }	# 阿夸
                 has_planet_flag = enable_kuat_shield
-                owner = { is_country_type = kuat_fire_base_hositle }
+                has_planet_flag = enable_spth_plantary_shield
+                has_planet_flag = spth_lunar_repair_barrier
             }
         }
     }
@@ -23,6 +24,8 @@ can_orbital_bombard = {
     OR = {
         ##	AUP/HFE	####################	只要敌对都能炸
         ROOT.CONTROLLER = { is_hostile = FROM.CONTROLLER }
+        #	TAC		---禁用|高能耗|
+        #ROOT = { has_component = AI_MATRICES }
 
         ##	vanilla	####################
         AND = {
@@ -50,36 +53,32 @@ can_orbital_bombard = {
                 has_planet_flag = bwm_ancestor_world			# bwm
             }
         }
-        ##_|可被轰炸|	+古代帝国/bwm/Giga/Ehof/阿夸/多彩
+        ##_|可被轰炸|	+古代帝国/SOFE/bwm/Giga/Ehof/阿夸/多彩
         FROM.CONTROLLER = {
             OR = {
-                #	绝对通用
+                #	UGRC通用
                 has_country_flag = UGRC_flg_cntr_RULE_can_be_bombed
                 #	VANILLA
                 is_country_type = swarm
                 is_country_type = ai_empire
                 is_country_type = cybrex_empire
-                is_country_type = abandoned_hatchery
                 AND = {
                     is_country_type = awakened_marauders
                     ROOT.CONTROLLER = { is_hostile = prev }
                 }
 
                 is_country_type = mem_ancestor_guardian			# bwm
-                is_country_type = sbtg_stellarborne_empire		# ACOT
+                is_country_type = original_empire				# SOFE
                 is_country_type = compound_empire				# Giga/Ehof
                 is_country_type = void_lifeforms_1				# Giga/ACOT
                 is_country_type = void_lifeforms_2				# Giga/ACOT
                 is_country_type = katzenartig_imperium			# Giga/ACOT
-                is_country_type = giga_eawaf_sirens				# Giga
-                is_country_type = acot_phanon_base				# ACOT
-                is_country_type = acot_phanon_retaliator		# ACOT
                 ag_can_be_orbital_bombardment_country = yes		# 古代帝国	安装=|has_ancient_empire_mod|
                 kuat_can_be_orbital_bombarment_country = yes	# 阿夸		安装=|install_kuat_mod|
                 is_country_type = ten_crisis_empire				# 多彩
             }
         }
-        ##_|可轰炸|	+ev/wsg/swg/阿夸/古代帝国/失落帝国历史	/bwm/ACOT/MEM/SRA/SSNI/久远/多彩/精灵/thl
+        ##_|可轰炸|	+ev/wsg/swg/阿夸/古代帝国/失落帝国历史	/bwm/ACOT/SOFE/MEM/SRA/SSNI/久远/多彩/精灵/thl
         ROOT.CONTROLLER = {
             OR = {
                 #	UGRC通用
@@ -101,8 +100,6 @@ can_orbital_bombard = {
                 is_country_type = debt_collectors
                 is_country_type = gray_goo
                 is_country_type = vol
-                is_country_type = behemoth_hatchling
-                is_country_type = abandoned_hatchery
                 AND = {
                     is_country_type = frenzied_voidworms
                     has_country_flag = can_bombard
@@ -134,17 +131,13 @@ can_orbital_bombard = {
                 kuat_can_do_bombarment_country = yes
 
                 is_country_type = mem_ancestor_guardian			# bwm
-                #	ACOT/Giga
-                is_progenitor_empires = yes
+                is_country_type = original_empire				# SOFE
+                #	ACOT
                 is_country_type = compound_empire
                 is_country_type = katzenartig_imperium
                 is_country_type = void_lifeforms_1
                 is_country_type = void_lifeforms_2
-                is_country_type = giga_hypersiphon_major_incursion
-                is_country_type = giga_eawaf_sirens
                 is_country_type = acot_crazed_stellarite
-                is_country_type = acot_phanon_base
-                is_country_type = acot_phanon_retaliator
                 #	MEM
                 is_country_type = mem_surveyor_country_red		# 瓦祖兰
                 is_country_type = mem_vazurans
@@ -160,11 +153,12 @@ can_orbital_bombard = {
                 is_ELF_can_orbital_bombard_country_type = yes
                 #	thl
                 is_country_type = koishi_berserk_fleet
-                #	spth
-                has_country_flag = touhou_mod_country
+
+                #   fxl
+                is_touhou_crisis_faction = yes
             }
         }
-        ##	V|星球所有者轰炸被其他阵营占据的星球
+        ##	V|星球所有者轰炸被其他阵营占据的星球	-SOFE<去掉了此项>
         AND = {
             from.controller = {
                 is_country_type = faction
@@ -172,21 +166,6 @@ can_orbital_bombard = {
             }
             from.owner = {
                 is_same_value = ROOT.CONTROLLER
-            }
-        }
-    }
-
-    ##	时空	####################
-    TIME_RULE_trgr_CAN_orbital_bombard = yes
-    ##	ACOT
-    if = { limit = { has_global_flag = acot_activated }	# mod激活
-        NAND = {
-            root.owner = { is_progenitor_empires = no }
-            from = {
-                OR = {
-                    is_planet_class = pc_acot_pmc_vault
-                    is_planet_class = pc_acot_enigmopolis
-                }
             }
         }
     }
