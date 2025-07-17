@@ -120,6 +120,38 @@ fleet_event = {
             add_modifier = { modifier = concept_spth_ship_skill_space_shrine_drive days = 90 }
         }
     }
+    option = {
+        name = concept_spth_ship_skill_space_shrine_drive
+        custom_tooltip = concept_spth_ship_skill_space_shrine_drive_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = {
+                check_modifier_value = { modifier = ship_has_touhou_action value != 0 }
+                check_modifier_value = { modifier = ship_spth_skill_space_shrine_beacon value != 0 }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { owner = { has_country_flag = touhou_ship_action_space_shrine_beacon_cooldown } }
+            }
+            custom_tooltip = {
+                fail_text = touhou_requires_no_active
+                NOT = { owner = { has_country_flag = touhou_ship_action_space_shrine_beacon_actived } }
+            }
+            owner = { resource_stockpile_compare = { resource = sr_fuka value >= 17000 } }
+        }
+        owner = { add_resource = { sr_fuka = -17000 } }
+        hidden_effect = {
+            owner = {
+                set_country_flag = touhou_ship_action_space_shrine_beacon_actived
+            }
+        }
+        random_owned_ship = {
+            limit = { check_modifier_value = { modifier = ship_spth_skill_space_shrine_drive value != 0 } }
+            set_ship_flag = touhou_ship_action_space_shrine_beacon_actived
+        }
+    }
     # Leader Actions
     option = {
         name = touhou_ship_action_leader
