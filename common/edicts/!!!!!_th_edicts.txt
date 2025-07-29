@@ -65,23 +65,62 @@ spth_mod_menu = {
 	}
 	effect = { country_event = { id = gensokyo_start.1145 } }
 }
-spth_no_grow ={
-	icon = "GFX_edict_type_touhou"
+spth_auto_combat_all = {
 	length = -1
-	potential = { always = no }
-	modifier = {
-		logistic_growth_mult = -99999
+	icon = GFX_edict_type_touhou
+	potential = { is_ai = no has_authority = auth_gensokyo NOT = { has_country_flag = spth_auto_combat_all_enabled } }
+	effect = {
+		hidden_effect = {
+			set_country_flag = spth_auto_combat_all_enabled
+			every_owned_fleet = {
+				limit = {
+					is_disabled = no is_ship_class = shipclass_military
+					any_owned_ship = { check_modifier_value = { modifier = ship_has_touhou_action value > 0 } }
+				}
+				set_fleet_flag = enable_touhou_auto_action_player
+				clear_orders = yes
+				clear_fleet_actions = this
+				fleet_event = { id = touhou_ship_actions.12 days = 1 random = 2 }
+			}
+			if = {
+				limit = { NOT = { has_country_flag = enable_touhou_auto_action_player } }
+				set_country_flag = enable_touhou_auto_action_player
+			}
+		}
 	}
 }
-spth_no_assm ={
-	icon = "GFX_edict_type_touhou"
+spth_auto_combat_all_disable = {
 	length = -1
-	potential = { always = no }
-	modifier = {
-		planet_pop_assembly_mult = -99999
-		bonus_pop_growth_mult = -99999
+	icon = GFX_edict_type_touhou
+	potential = { is_ai = no has_authority = auth_gensokyo has_country_flag = spth_auto_combat_all_enabled }
+	effect = {
+		hidden_effect = {
+			remove_country_flag = spth_auto_combat_all_enabled
+			every_owned_fleet = {
+				limit = { has_fleet_flag = enable_touhou_auto_action_player }
+				remove_fleet_flag = enable_touhou_auto_action_player
+			}
+			remove_country_flag = enable_touhou_auto_action_player
+		}
 	}
 }
+# spth_no_grow ={
+# 	icon = "GFX_edict_type_touhou"
+# 	length = -1
+# 	potential = { always = no }
+# 	modifier = {
+# 		logistic_growth_mult = -99999
+# 	}
+# }
+# spth_no_assm ={
+# 	icon = "GFX_edict_type_touhou"
+# 	length = -1
+# 	potential = { always = no }
+# 	modifier = {
+# 		planet_pop_assembly_mult = -99999
+# 		bonus_pop_growth_mult = -99999
+# 	}
+# }
 spth_build_auto_ringworld = {
 	icon = GFX_edict_type_touhou
 	length = -1
