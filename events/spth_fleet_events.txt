@@ -536,6 +536,34 @@ planet_event = {
                 }
             }
         }
+
+        # auto combat script
+        solar_system = {
+            every_fleet_in_system = {
+                limit = {
+                    exists = owner
+                    owner = { has_country_flag = enable_touhou_auto_action_player }
+                    has_fleet_flag = enable_touhou_auto_action_player
+                    OR = {
+                        AND = { exists = orbit orbit = { is_same_value = root } }
+                        AND = {
+                            is_fleet_idle = yes
+                            NAND = {
+                                exists = orbit
+                                orbit = {
+                                    NOT = { is_star = yes }
+                                    exists = owner
+                                    owner = { is_hostile = event_target:spth_kamikakushi_country }
+                                }
+                            }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = touhou_ship_actions.12 days = 5 random = 15 }
+            }
+        }
     }
 }
 

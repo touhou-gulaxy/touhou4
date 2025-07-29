@@ -152,6 +152,45 @@ fleet_event = {
             set_ship_flag = touhou_ship_action_space_shrine_beacon_actived
         }
     }
+    option = {
+        name = touhou_auto_combat_action_player
+        custom_tooltip = touhou_auto_combat_action_player_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            NOT = { has_fleet_flag = enable_touhou_auto_action_player }
+            any_owned_ship = { check_modifier_value = { modifier = ship_has_touhou_action value != 0 } }
+        }
+        hidden_effect = {
+            set_fleet_flag = enable_touhou_auto_action_player
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = touhou_ship_actions.12 days = 1 random = 2 }
+            owner = {
+                if = {
+                    limit = { NOT = { has_country_flag = enable_touhou_auto_action_player } }
+                    set_country_flag = enable_touhou_auto_action_player
+                }
+            }
+        }
+    }
+    option = {
+        name = touhou_auto_combat_action_player_alt
+        custom_tooltip = touhou_auto_combat_action_player_alt_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            has_fleet_flag = enable_touhou_auto_action_player
+            any_owned_ship = { check_modifier_value = { modifier = ship_has_touhou_action value != 0 } }
+        }
+        hidden_effect = {
+            remove_fleet_flag = enable_touhou_auto_action_player
+            owner = {
+                if = {
+                    limit = { NOT = { any_owned_fleet = { has_fleet_flag = enable_touhou_auto_action_player } } }
+                    remove_country_flag = enable_touhou_auto_action_player
+                }
+            }
+        }
+    }
     # Leader Actions
     option = {
         name = touhou_ship_action_leader
@@ -439,6 +478,106 @@ fleet_event = {
             last_created_ambient_object = { set_location = { target = prev.star distance = 0 angle = random } }
             every_fleet_in_system = {
                 every_owned_ship = { th_spawn_explosion_particle = { color = blue size = medium } }
+            }
+        }
+    }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.12
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_fleet_flag = enable_touhou_auto_action_player
+        exists = owner owner = { has_authority = auth_gensokyo }
+    }
+    immediate = {
+        owner = { save_event_target_as = touhou_auto_action_owner }
+        spth_invasion_fleet_action = {
+            ID = touhou_ship_actions
+            TYPE = spth_auto_combat_player
+            OWNER = touhou_auto_action_owner
+        }
+    }
+}
+# monthly check to prevent bugs
+event = {
+    id = touhou_ship_actions.13
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { any_playable_country = { is_ai = no has_authority = auth_gensokyo has_country_flag = enable_touhou_auto_action_player } }
+    immediate = {
+        every_playable_country = {
+            limit = { is_ai = no has_authority = auth_gensokyo has_country_flag = enable_touhou_auto_action_player }
+            every_owned_fleet = {
+                limit = {
+                    has_fleet_flag = enable_touhou_auto_action_player
+                    is_fleet_idle = yes
+                    NAND = {
+                        exists = orbit
+                        orbit = {
+                            NOT = { is_star = yes }
+                            exists = owner
+                            owner = { is_hostile = event_target:spth_kamikakushi_country }
+                            exists = controller
+                            controller = { is_hostile = event_target:spth_kamikakushi_country }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = touhou_ship_actions.12 days = 3 random = 2 }
+            }
+        }
+    }
+}
+# player fleet action on orbit planet.
+country_event = {
+    id = touhou_ship_actions.14
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = enable_touhou_auto_action_player
+        from = { has_fleet_flag = enable_touhou_auto_action_player }
+        fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
+    }
+    immediate = {
+        from = {
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = touhou_ship_actions.12 days = 3 random = 2 }
+        }
+    }
+}
+# player fleet action on win a space battle.
+country_event = {
+    id = touhou_ship_actions.15
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = enable_touhou_auto_action_player
+        fromfrom = { fleet = { has_fleet_flag = enable_touhou_auto_action_player } }
+        fromfromfrom = {
+            OR = {
+                is_ship_class = shipclass_starbase
+                is_ship_class = shipclass_military
+            }
+        }
+    }
+    after = {
+        fromfrom = {
+            solar_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        owner = { has_country_flag = enable_touhou_auto_action_player }
+                        has_fleet_flag = enable_touhou_auto_action_player
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = touhou_ship_actions.12 days = 3 random = 2 }
+                }
             }
         }
     }
