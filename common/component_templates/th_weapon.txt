@@ -66,6 +66,7 @@ weapon_component_template = {
     tags = { weapon_type_energy weapon_type_lingli s_slot weapon_type_spark }
     ai_tags = { weapon_role_anti_shield }
     ai_tag_weight = 1000
+    target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = small }
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
@@ -82,6 +83,7 @@ weapon_component_template = {
     tags = { weapon_type_energy weapon_type_lingli m_slot weapon_type_spark }
     ai_tags = { weapon_role_anti_shield }
     ai_tag_weight = 1000
+    target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = medium }
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
@@ -98,6 +100,7 @@ weapon_component_template = {
     tags = { weapon_type_energy weapon_type_lingli l_slot weapon_type_spark }
     ai_tags = { weapon_role_anti_shield }
     ai_tag_weight = 1000
+    target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = large }
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
@@ -110,7 +113,7 @@ weapon_component_template = {
     # firing_arc = 60.0
     prerequisites = { "tech_th_weapon_spark_2" }
     component_set = "th_weapon_spark1"
-    projectile_gfx = "th_spark"
+    projectile_gfx = "th_spark_extra"
     tags = { weapon_type_energy weapon_type_lingli weapon_role_artillery x_slot weapon_type_spark }
     ai_tags = { weapon_role_artillery artillery }
     ai_tag_weight = 1000
@@ -127,7 +130,7 @@ weapon_component_template = {
     # firing_arc = 25.0
     prerequisites = { "tech_th_weapon_spark_2" }
     component_set = "th_weapon_spark1"
-    projectile_gfx = "th_spark"
+    projectile_gfx = "th_spark_titanic"
     tags = { weapon_type_energy weapon_type_lingli weapon_role_artillery t_slot weapon_type_spark }
     ai_tags = { weapon_role_artillery }
     ai_tag_weight = 1000
@@ -682,6 +685,7 @@ weapon_component_template = {
     tags = { weapon_type_kinetic weapon_type_lingli l_slot weapon_type_needle }
     ai_tags = { weapon_role_anti_armor }
     ai_tag_weight = 998
+    target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = large }
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
@@ -696,6 +700,7 @@ weapon_component_template = {
     tags = { weapon_type_kinetic weapon_type_lingli m_slot weapon_type_needle }
     ai_tags = { weapon_role_anti_armor }
     ai_tag_weight = 998
+    target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = medium }
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
@@ -710,6 +715,7 @@ weapon_component_template = {
     tags = { weapon_type_kinetic weapon_type_lingli s_slot weapon_type_needle }
     ai_tags = { weapon_role_anti_armor }
     ai_tag_weight = 998
+    target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = small }
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
@@ -729,10 +735,25 @@ weapon_component_template = {
     tags = { weapon_type_kinetic weapon_type_lingli l_slot weapon_type_sanae }
     ai_tags = { weapon_role_anti_shield weapon_role_anti_armor }
     ai_tag_weight = 1000
+    target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = large }
     inline_script = { script = ship_components/spth_component_attributes name = special tag = sanae type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_weapon_sanae_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { has_shield_hp > 1 }
+                spth_reduce_shield = { percent = 0.01 factor = 0.01 }
+            } else = {
+                if = {
+                    limit = { has_shield_hp < 100000000 }
+                    reduce_shield = -320
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_weapon_sanae"
@@ -745,10 +766,25 @@ weapon_component_template = {
     tags = { weapon_type_kinetic weapon_type_lingli m_slot weapon_type_sanae }
     ai_tags = { weapon_role_anti_armor weapon_role_anti_shield }
     ai_tag_weight = 1000
+    target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = medium }
     inline_script = { script = ship_components/spth_component_attributes name = special tag = sanae type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_weapon_sanae_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { has_shield_hp > 1 }
+                spth_reduce_shield = { percent = 0.01 factor = 0.01 }
+            } else = {
+                if = {
+                    limit = { has_shield_hp < 100000000 }
+                    reduce_shield = -320
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_weapon_sanae"
@@ -760,10 +796,25 @@ weapon_component_template = {
     tags = { weapon_type_kinetic weapon_type_lingli s_slot weapon_type_sanae }
     ai_tags = { weapon_role_anti_shield weapon_role_anti_armor }
     ai_tag_weight = 1000
+    target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = small }
     inline_script = { script = ship_components/spth_component_attributes name = special tag = sanae type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_weapon_sanae_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { has_shield_hp > 1 }
+                spth_reduce_shield = { percent = 0.01 factor = 0.01 }
+            } else = {
+                if = {
+                    limit = { has_shield_hp < 100000000 }
+                    reduce_shield = -320
+                }
+            }
+        }
+    }
 }
 
 ##########楼观剑系#######
