@@ -305,7 +305,7 @@ spth_story_science_ship = {
 		ship_evasion_add = 50
 		ship_shield_add = 1200
 		ship_armor_add = 1200
-		ship_piracy_suppression_add = 6
+		ship_target_weight_mult = -1
 	}
 	ship_modifier = {
 		ship_is_spth_buildable_ship = 1
@@ -348,39 +348,61 @@ spth_story_science_ship = {
 	use_shipnames_from = science
 	enable_3dview_in_ship_browser = yes
 	is_designable = yes
+	available_to_everyone = yes
 	resources = {
 		category = ships
-		cost = { alloys = 200 }
-		upkeep = { energy = 3.0 alloys = 1.0 }
+		cost = {
+			trigger = { from = { country_uses_bio_ships = no } }
+			sr_lingli = 15
+			alloys = 200
+		}
+		cost = {
+			trigger = { from = { country_uses_bio_ships = yes } }
+			sr_lingli = 15
+			alloys = 100
+			food = 200
+		}
+		upkeep = {
+			trigger = { from = { country_uses_bio_ships = no } }
+			energy = 3.0 alloys = 1.0
+		}
+		upkeep = {
+			trigger = { from = { country_uses_bio_ships = yes } }
+			energy = 3.0 food = 2.0
+		}
 	}
 	min_upgrade_cost = { alloys = 6 }
 	entity = cruiser_entity
+	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
+	on_click_sound = spth_select_gensokyo_fleet
 }
 
+# A: 10+16->5L+8M
 TH_battle_cruiser = {
-	formation_priority = @juggernaut_formation_priority
+	formation_priority = 50
 	max_speed = 200
 	acceleration = 0.4
 	rotation_speed = 0.25
 	collision_radius = 5
 	entity = "TH_gensokyo_battle_cruiser_entity"
 	modifier = {
-		ship_hull_add = 50000
-		ship_hull_regen_add_static = 100
-		ship_armor_regen_add_static = 100
-		ship_shield_regen_add_static = 100
+		ship_hull_add = 35000
+		ship_hull_regen_add_static = 798.3
+		ship_armor_regen_add_static = 796.4
+		ship_shield_regen_add_static = 796.5
 		ship_evasion_add = 15
 		ship_accuracy_add = 15
+		ship_cloaking_strength_add = 1
 	}
 	ship_modifier = {
-		ship_hull_regen_add_perc = 1
-		ship_shield_regen_add_perc = 1
-		ship_armor_regen_add_perc = 1
+		ship_interstellar_speed_mult = 1
+		ship_shield_reduction = -0.25
 		ship_is_spth_buildable_ship = 1
 		ship_is_touhou_mod_ship = 1
 		ship_is_spth_common_ship = 1
+		ship_has_touhou_action = 1
 	}
-	max_hitpoints = 50000
+	max_hitpoints = 40000
 	size_multiplier = 16
 	combat_size_multiplier = 16
 	never_lost = yes
@@ -400,8 +422,15 @@ TH_battle_cruiser = {
 	resources = {
 		category = ships
 		cost = {
+			trigger = { from = { country_uses_bio_ships = no } }
 			sr_lingli = 150
-			alloys = 8000
+			alloys = 7200
+		}
+		cost = {
+			trigger = { from = { country_uses_bio_ships = yes } }
+			sr_lingli = 150
+			alloys = 2160
+			food = 6480
 		}
 		upkeep = {
 			sr_lingli = 1.75
@@ -411,7 +440,9 @@ TH_battle_cruiser = {
 	}
 	is_designable = yes
 	can_have_federation_design = yes
+	available_to_everyone = yes
 	construction_type = starbase_shipyard
+	can_be_inspected = yes
 	prerequisites = { tech_th_battle_cruiser }
 
 	required_component_set = "power_core"
@@ -420,6 +451,21 @@ TH_battle_cruiser = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	default_behavior = spth_battle_line_attack
+	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
+	on_click_sound = spth_select_gensokyo_fleet
+	ai_ship_data = {
+		fraction = {
+			base = 5140
+			modifier = {
+				OR = {
+					is_country_type = spth_fallen_empire_kamikakushi
+					is_country_type = spth_awaken_empire_kamikakushi
+				}
+				add = 17000
+			}
+		}
+	}
 }
 TH_super_carrier = {
 	formation_priority = 40
@@ -429,16 +475,16 @@ TH_super_carrier = {
 	collision_radius = 32
 	entity = "spth_super_carrier_entity"
 	modifier = {
-		ship_armor_add = 1000000
-		ship_shield_add = 1000000
-		ship_hull_add = 250000
+		ship_armor_add = 1152000
+		ship_shield_add = 1152000
+		ship_hull_add = 384000
 		ship_cloaking_strength_add = 10
-		ship_hull_regen_add_static = 1280
-		ship_armor_regen_add_static = 1280
-		ship_shield_regen_add_static = 1280
+		ship_hull_regen_add_static = 3840
+		ship_armor_regen_add_static = 5760
+		ship_shield_regen_add_static = 5760
 		ship_evasion_add = 15
 		ship_accuracy_add = 15
-		ship_weapon_damage = -5.14
+		ship_weapon_damage = -4.95
 	}
 	ship_modifier = {
 		# force_disparity_fire_rate_mult = 1
@@ -446,12 +492,19 @@ TH_super_carrier = {
 		ship_hull_regen_add_perc = 1
 		ship_shield_regen_add_perc = 1
 		ship_armor_regen_add_perc = 1
+		ship_shield_reduction = -0.5
+		ship_armor_reduction = -0.25
+		ship_target_weight_mult = -10
+		ship_spth_armor_efficiency = 1
+		ship_spth_shield_efficiency = 1
 		ship_is_spth_buildable_ship = 1
 		ship_is_touhou_mod_ship = 1
 		ship_is_spth_supercarrier = 1
 		ship_is_spth_support = 1
+		ship_interstellar_speed_mult = 1
+		ship_has_touhou_action = 1
 	}
-	max_hitpoints = 750000
+	max_hitpoints = 384000
 	size_multiplier = 64
 	combat_size_multiplier = 0
 	fleet_slot_size = 64
@@ -469,13 +522,23 @@ TH_super_carrier = {
 	resources = {
 		category = ships
 		cost = {
-			sr_lingli = 150
-			alloys = 8000
+			trigger = { from = { country_uses_bio_ships = no } }
+			sr_lingli = 400
+			sr_fuka = 1600
+			alloys = 50000
+		}
+		cost = {
+			trigger = { from = { country_uses_bio_ships = yes } }
+			sr_lingli = 400
+			sr_fuka = 1600
+			alloys = 10000
+			food = 80000
 		}
 	}
 	is_designable = no
 	enable_default_design = no
 	can_have_federation_design = no
+	available_to_everyone = yes
 	construction_type = starbase_shipyard
 	can_be_inspected = yes
 	possible_country = { has_authority = auth_gensokyo }
@@ -487,6 +550,8 @@ TH_super_carrier = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
+	on_click_sound = spth_select_gensokyo_fleet
 }
 spth_hv_bombardment_ship = {
 	formation_priority = 36
@@ -505,6 +570,7 @@ spth_hv_bombardment_ship = {
 		ship_evasion_add = 16
 		ship_accuracy_add = 16
 		ship_tracking_add = 16
+		ship_target_weight_mult = -100
 	}
 	ship_modifier = {
 		weapon_type_explosive_weapon_damage_mult = 5.12
@@ -536,13 +602,23 @@ spth_hv_bombardment_ship = {
 	resources = {
 		category = ships
 		cost = {
-			energy = 100000
-			alloys = 800000
+			trigger = { from = { country_uses_bio_ships = no } }
+			sr_lingli = 200
+			sr_fuka = 1000
+			alloys = 40000
+		}
+		cost = {
+			trigger = { from = { country_uses_bio_ships = yes } }
+			sr_lingli = 200
+			sr_fuka = 1000
+			alloys = 10000
+			food = 60000
 		}
 	}
 	combat_disengage_chance = 4
 	is_designable = yes
 	can_have_federation_design = no
+	available_to_everyone = yes
 	construction_type = starbase_shipyard
 	default_behavior = spth_flagship_attack
 	prerequisites = { tech_spth_hv_bombardment }
@@ -552,6 +628,8 @@ spth_hv_bombardment_ship = {
 	required_component_set = "combat_computers"
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
+	on_click_sound = spth_select_gensokyo_fleet
 }
 th_tenshi_beacon = {
 	formation_priority = @juggernaut_formation_priority
@@ -587,7 +665,7 @@ th_tenshi_beacon = {
 	num_target_locators = 0
 	is_space_station = no
 	can_disable = yes
-	icon = spth_boss_ship_sizes_5
+	icon = spth_boss_ship_sizes_7
 	class = shipclass_military
 	enable_3dview_in_ship_browser = yes
 	base_buildtime = 720
@@ -598,10 +676,24 @@ th_tenshi_beacon = {
 			sr_fuka = 6000
 			alloys = 12000
 		}
+		cost = {
+			trigger = { from = { country_uses_bio_ships = no } }
+			sr_lingli = 1500
+			sr_fuka = 6000
+			alloys = 12000
+		}
+		cost = {
+			trigger = { from = { country_uses_bio_ships = yes } }
+			sr_lingli = 1500
+			sr_fuka = 6000
+			alloys = 2000
+			food = 20000
+		}
 	}
 	components_add_to_cost = no
 	is_designable = no
 	can_have_federation_design = yes
+	available_to_everyone = yes
 	construction_type = starbase_shipyard
 	prerequisites = { tech_th_tenshi_aux }
 
@@ -611,6 +703,75 @@ th_tenshi_beacon = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
+	on_click_sound = spth_select_gensokyo_fleet
+}
+TH_battle_cruiser_ghost = {
+	formation_priority = @juggernaut_formation_priority
+	max_speed = 200
+	acceleration = 0.4
+	rotation_speed = 0.25
+	collision_radius = 5
+	entity = "TH_gensokyo_battle_cruiser_ghost_entity"
+	modifier = {
+		ship_hull_add = 50000
+		ship_hull_regen_add_static = 100
+		ship_armor_regen_add_static = 100
+		ship_shield_regen_add_static = 100
+		ship_evasion_add = 15
+		ship_accuracy_add = 15
+	}
+	ship_modifier = {
+		ship_hull_regen_add_perc = 1
+		ship_shield_regen_add_perc = 1
+		ship_armor_regen_add_perc = 1
+		ship_target_weight_mult = 2.4
+		ship_damage_reduction_mult = 0.5
+		ship_is_touhou_mod_ship = 1
+		ship_is_spth_common_ship = 1
+	}
+	max_hitpoints = 50000
+	size_multiplier = 1
+	combat_size_multiplier = 16
+	never_lost = yes
+	fleet_slot_size = 1
+	section_slots = {
+		"bow" = { locator = "part1" }
+		"mid" = { locator = "part2" }
+		"stern" = { locator = "part3" }
+	}
+	num_target_locators = 0
+	is_space_station = no
+	can_disable = yes
+	icon = spth_boss_ship_sizes_5
+	class = shipclass_military
+	enable_3dview_in_ship_browser = yes
+	base_buildtime = 720
+	resources = {
+		category = ships
+		cost = {
+			sr_lingli = 150
+			alloys = 8000
+		}
+		upkeep = {
+			sr_lingli = 1.75
+			energy = 12.5
+			alloys = 10
+		}
+	}
+	is_designable = no
+	can_have_federation_design = no
+	construction_type = starbase_shipyard
+	potential_construction = { always = no }
+	possible_construction = { always = no }
+
+	required_component_set = "power_core"
+	required_component_set = "ftl_components"
+	required_component_set = "combat_computers"
+	required_component_set = "thruster_components"
+	required_component_set = "sensor_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
+	on_click_sound = spth_select_gensokyo_fleet
 }
 
 spth_kamikakushi_super_carrier = {
@@ -629,13 +790,14 @@ spth_kamikakushi_super_carrier = {
 		ship_shield_regen_add_static = 51200
 		ship_evasion_add = 15
 		ship_accuracy_add = 15
+		ship_target_weight_mult = -100
 	}
 	ship_modifier = {
 		ship_starting_experience_add = 11000
 		ship_hull_regen_add_perc = 1
 		ship_shield_regen_add_perc = 1
 		ship_armor_regen_add_perc = 1
-		weapon_type_spth_yuzhu_weapon_fire_rate_mult = 500
+		weapon_type_spth_yuzhu_weapon_fire_rate_mult = 200
 		ship_spth_extra_life = 15
 		ship_spth_extra_life_power_down = 1
 		weapon_type_lingli_weapon_damage_mult = 2
@@ -670,6 +832,7 @@ spth_kamikakushi_super_carrier = {
 	is_designable = no
 	enable_default_design = no
 	can_have_federation_design = no
+	can_be_inspected = yes
 	construction_type = starbase_shipyard
 	can_be_inspected = yes
 	possible_country = { is_touhou_country = yes }
@@ -681,6 +844,8 @@ spth_kamikakushi_super_carrier = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
+	on_click_sound = spth_select_non_gensokyo_fleet
 }
 spth_kamikakushi_titan = {
 	formation_priority = 40
@@ -696,6 +861,7 @@ spth_kamikakushi_titan = {
 		ship_armor_regen_add_static = 100
 		ship_shield_regen_add_static = 100
 		ship_cloaking_strength_add = 32
+		ship_target_weight_mult = -100
 	}
 	ship_modifier = {
 		ship_spth_extra_life = 5
@@ -715,16 +881,24 @@ spth_kamikakushi_titan = {
 	num_target_locators = 0
 	is_space_station = no
 	can_disable = yes
-	icon = spth_boss_ship_sizes_5
+	icon = spth_boss_ship_sizes_7
 	class = shipclass_military
 	enable_3dview_in_ship_browser = yes
 	base_buildtime = 720
 	resources = {
 		category = ships
 		cost = {
+			trigger = { from = { country_uses_bio_ships = no } }
 			sr_lingli = 7500
 			sr_fuka = 15000
 			alloys = 80000
+		}
+		cost = {
+			trigger = { from = { country_uses_bio_ships = yes } }
+			sr_lingli = 7500
+			sr_fuka = 15000
+			alloys = 20000
+			food = 80000
 		}
 		upkeep = {
 			sr_lingli = 6
@@ -735,6 +909,8 @@ spth_kamikakushi_titan = {
 	}
 	is_designable = no
 	can_have_federation_design = no
+	can_be_inspected = yes
+	available_to_everyone = yes
 	construction_type = starbase_shipyard
 	prerequisites = { tech_spth_kamikakushi_cruiser }
 	required_component_set = "power_core"
@@ -743,6 +919,8 @@ spth_kamikakushi_titan = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
+	on_click_sound = spth_select_non_gensokyo_fleet
 }
 spth_kamikakushi_cruiser = {
 	formation_priority = 20
@@ -775,16 +953,24 @@ spth_kamikakushi_cruiser = {
 	num_target_locators = 0
 	is_space_station = no
 	can_disable = yes
-	icon = spth_boss_ship_sizes_1
+	icon = spth_boss_ship_sizes_11
 	class = shipclass_military
 	enable_3dview_in_ship_browser = yes
 	base_buildtime = 540
 	resources = {
 		category = ships
 		cost = {
+			trigger = { from = { country_uses_bio_ships = no } }
 			sr_lingli = 50
 			sr_fuka = 50
 			alloys = 2000
+		}
+		cost = {
+			trigger = { from = { country_uses_bio_ships = yes } }
+			sr_lingli = 50
+			sr_fuka = 50
+			alloys = 500
+			food = 3000
 		}
 		upkeep = {
 			sr_lingli = 0.30
@@ -795,6 +981,8 @@ spth_kamikakushi_cruiser = {
 	}
 	is_designable = no
 	can_have_federation_design = no
+	available_to_everyone = yes
+	can_be_inspected = yes
 	construction_type = starbase_shipyard
 	components_add_to_cost = no
 	prerequisites = { tech_spth_kamikakushi_cruiser }
@@ -805,6 +993,20 @@ spth_kamikakushi_cruiser = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
+	on_click_sound = spth_select_non_gensokyo_fleet
+	ai_ship_data = {
+		fraction = {
+			base = 5140
+			modifier = {
+				OR = {
+					is_country_type = spth_fallen_empire_kamikakushi
+					is_country_type = spth_awaken_empire_kamikakushi
+				}
+				add = 19000
+			}
+		}
+	}
 }
 spth_makai_ship_core_0 = {
 	formation_priority = @juggernaut_formation_priority
@@ -820,6 +1022,7 @@ spth_makai_ship_core_0 = {
 		ship_armor_regen_add_static = 100
 		ship_shield_regen_add_static = 100
 		ship_cloaking_strength_add = 32
+		ship_target_weight_mult = -100
 	}
 	ship_modifier = {
 		ship_hull_regen_add_perc = 1
@@ -836,7 +1039,7 @@ spth_makai_ship_core_0 = {
 	num_target_locators = 0
 	is_space_station = no
 	can_disable = yes
-	icon = spth_boss_ship_sizes_5
+	icon = spth_boss_ship_sizes_7
 	class = shipclass_military
 	enable_3dview_in_ship_browser = yes
 	base_buildtime = 720
@@ -865,6 +1068,8 @@ spth_makai_ship_core_0 = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
+	on_click_sound = spth_select_non_gensokyo_fleet
 }
 spth_makai_ship_core_1 = {
 	formation_priority = @juggernaut_formation_priority
@@ -880,6 +1085,7 @@ spth_makai_ship_core_1 = {
 		ship_armor_regen_add_static = 100
 		ship_shield_regen_add_static = 100
 		ship_cloaking_strength_add = 32
+		ship_target_weight_mult = -100
 	}
 	ship_modifier = {
 		ship_hull_regen_add_perc = 1
@@ -896,7 +1102,7 @@ spth_makai_ship_core_1 = {
 	num_target_locators = 0
 	is_space_station = no
 	can_disable = yes
-	icon = spth_boss_ship_sizes_5
+	icon = spth_boss_ship_sizes_7
 	class = shipclass_military
 	enable_3dview_in_ship_browser = yes
 	base_buildtime = 720
@@ -925,6 +1131,8 @@ spth_makai_ship_core_1 = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
+	on_click_sound = spth_select_non_gensokyo_fleet
 }
 spth_kamikakushi_gate = {
 	formation_priority = @juggernaut_formation_priority
@@ -934,17 +1142,21 @@ spth_kamikakushi_gate = {
 	collision_radius = 5
 	entity = "spth_makai_ship_core_fixed"
 	modifier = {
-		ship_armor_add = 50000000
-		ship_shield_add = 50000000
-		ship_hull_regen_add_static = 25000
-		ship_armor_regen_add_static = 25000
-		ship_shield_regen_add_static = 25000
+		ship_armor_mult = 1000000
+		ship_armor_add = 100
+		ship_shield_mult = 1000000
+		ship_shield_add = 100
+		ship_hull_mult = 1000000
+		ship_hull_regen_add_static = 250000
+		ship_armor_regen_add_static = 250000
+		ship_shield_regen_add_static = 250000
+		ship_target_weight_mult = -100
 	}
 	ship_modifier = {
 		ship_spth_extra_life = 10
 		ship_is_touhou_mod_ship = 1
 	}
-	max_hitpoints = 50000000
+	max_hitpoints = 100
 	size_multiplier = 64
 	combat_size_multiplier = 0
 	fleet_slot_size = 64
@@ -953,7 +1165,7 @@ spth_kamikakushi_gate = {
 	num_target_locators = 0
 	is_space_station = no
 	can_disable = yes
-	icon = spth_boss_ship_sizes_5
+	icon = spth_boss_ship_sizes_1
 	class = shipclass_military
 	enable_3dview_in_ship_browser = yes
 	base_buildtime = 720
@@ -982,6 +1194,8 @@ spth_kamikakushi_gate = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
+	on_click_sound = spth_select_non_gensokyo_fleet
 }
 starbase_spth_kamikakushi = {
 	formation_priority = 1
@@ -1000,9 +1214,9 @@ starbase_spth_kamikakushi = {
 		ship_weapon_damage = 1
 		ship_shield_regen_add_static = 7200
 		ship_hull_regen_add_static = 7200
-		ship_piracy_suppression_add = 1000
 		ship_cloaking_strength_add = 6
 		ship_cloaking_detection_add = 10
+		ship_target_weight_mult = -4.95
 	}
 
 	ship_modifier = {
@@ -1017,7 +1231,6 @@ starbase_spth_kamikakushi = {
 		ship_hull_regen_add_perc = 1
 		ship_shield_regen_add_perc = 1
 		ship_armor_regen_add_perc = 1
-		weapon_type_spth_yuzhu_weapon_fire_rate_mult = 400
 		ship_is_touhou_mod_ship = 1
 	}
 
@@ -1035,7 +1248,7 @@ starbase_spth_kamikakushi = {
 	num_target_locators = 0
 	is_space_station = no
 	icon_frame = 1
-	icon = spth_boss_ship_sizes_5
+	icon = spth_boss_ship_sizes_1
 
 	class = shipclass_starbase
 	is_designable = no
@@ -1048,6 +1261,8 @@ starbase_spth_kamikakushi = {
 
 	required_component_set = "power_core"
 	required_component_set = "combat_computers"
+	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
+	on_click_sound = spth_select_non_gensokyo_fleet
 }
 
 spth_space_shrine_station = {
@@ -1076,11 +1291,12 @@ spth_space_shrine_station = {
 		ship_armor_add = 1000000
 		ship_evasion_mult = -1
 		ship_weapon_damage = 1
-		ship_piracy_suppression_add = 1000
-		starbase_shipyard_capacity_add = 85
+		starbase_shipyard_capacity_add = 75
 		starbase_building_capacity_add = 4
+		ship_target_weight_mult = -100
 	}
 	ship_modifier = {
+		ship_cloaking_strength_add = 1100
 		ship_damage_against_starbases_mult = 1
 		ship_evasion_add = -100
 		ship_weapon_damage = 0.5
@@ -1099,6 +1315,7 @@ spth_space_shrine_station = {
 		ship_spth_armor_efficiency = 1
 		ship_spth_shield_efficiency = 1
 		ship_is_touhou_mod_ship = 1
+		ship_has_touhou_action = 1
 	}
 	entity = Toho_Tower_ship_entity
 	max_hitpoints = 4800000
@@ -1116,6 +1333,7 @@ spth_space_shrine_station = {
 	components_add_to_cost = no
 	enable_default_design = no	#if yes, countries will have an auto-generated design at start
 	is_designable = no
+	available_to_everyone = yes
 	can_disable = yes
 	class = shipclass_starbase
 	prerequisites = { tech_spth_space_shrine_station }
@@ -1130,6 +1348,8 @@ spth_space_shrine_station = {
 	required_component_set = "sensor_components"
 	required_component_set = "combat_computers"
 	required_component_set = "ship_aura_components"
+	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
+	on_click_sound = spth_select_gensokyo_fleet
 }
 
 spth_ur_didact_flagship = {
@@ -1364,7 +1584,7 @@ spth_hv_bombardment_ship_effect = {
 	}
 	ship_modifier = {
 		ship_target_weight_mult = -100
-		ship_damage_reduction_mult = 1
+		ship_damage_reduction_mult = 11
 		ship_damage_reduction_add = 114514
 		ship_weapon_range_mult = 2
 		ship_is_touhou_mod_ship = 1
@@ -1393,6 +1613,8 @@ spth_hv_bombardment_ship_effect = {
 	required_component_set = "combat_computers"
 	required_component_set = "ship_aura_components"
 	num_target_locators = 1
+	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
+	on_click_sound = spth_select_gensokyo_fleet
 }
 th_weapon_yuzhu_ultra_special_effect = {
 	formation_priority = 20
@@ -1412,7 +1634,7 @@ th_weapon_yuzhu_ultra_special_effect = {
 	}
 	ship_modifier = {
 		ship_target_weight_mult = -100
-		ship_damage_reduction_mult = 1
+		ship_damage_reduction_mult = 11
 		ship_damage_reduction_add = 114514
 		ship_weapon_range_mult = 2
 		ship_is_touhou_mod_ship = 1
@@ -1441,6 +1663,8 @@ th_weapon_yuzhu_ultra_special_effect = {
 	required_component_set = "combat_computers"
 	required_component_set = "ship_aura_components"
 	num_target_locators = 1
+	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
+	on_click_sound = spth_select_gensokyo_fleet
 }
 spth_remove_shrine_shipyard = {
 	formation_priority = 20
@@ -1479,6 +1703,7 @@ spth_remove_shrine_shipyard = {
 	base_buildtime = 180
 	can_have_federation_design = no
 	enable_default_design = no
+	available_to_everyone = yes
 	default_behavior = spth_flagship_attack
 	combat_disengage_chance = -0.9
 	class = shipclass_military_special
@@ -1540,6 +1765,7 @@ spth_allocate_shrine_shipyard = {
 	base_buildtime = 180
 	can_have_federation_design = no
 	enable_default_design = no
+	available_to_everyone = yes
 	default_behavior = spth_flagship_attack
 	combat_disengage_chance = -0.9
 	is_designable = no

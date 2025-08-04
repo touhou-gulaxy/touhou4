@@ -1,0 +1,584 @@
+namespace = touhou_ship_actions
+
+fleet_event = {
+    id = touhou_ship_actions.1
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = { fleet_event = { id = touhou_ship_actions.2 } }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.2
+    title = touhou_ship_actions.2.name
+    desc = touhou_ship_actions.2.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_leader_function_ui
+    custom_gui_option = spth_leader_function_button
+    picture_event_data = { room = hakuri_shrine_night_room }
+    immediate = {
+        owner = { set_country_flag = touhou_ship_action_menu_opened }
+    }
+    after = {
+        if = {
+            limit = { has_fleet_flag = should_not_close_touhou_ship_action_menu }
+            remove_fleet_flag = should_not_close_touhou_ship_action_menu
+        } else = {
+            owner = { remove_country_flag = touhou_ship_action_menu_opened }
+            remove_fleet_flag = touhou_ship_action_menu_leader_expend
+        }
+    }
+    abort_effect = {
+        if = {
+            limit = { has_fleet_flag = should_not_close_touhou_ship_action_menu }
+            remove_fleet_flag = should_not_close_touhou_ship_action_menu
+        } else = {
+            owner = { remove_country_flag = touhou_ship_action_menu_opened }
+            remove_fleet_flag = touhou_ship_action_menu_leader_expend
+            remove_fleet_flag = touhou_ship_action_menu_ship_expend
+        }
+    }
+    # Ship Actions
+    option = {
+        name = touhou_ship_action_ship
+        trigger = { NOT = { has_fleet_flag = touhou_ship_action_menu_ship_expend } }
+        hidden_effect = {
+            set_fleet_flag = touhou_ship_action_menu_ship_expend
+            set_fleet_flag = should_not_close_touhou_ship_action_menu
+            fleet_event = { id = touhou_ship_actions.2 }
+        }
+    }
+    option = {
+        name = touhou_ship_action_ship_expand
+        trigger = { has_fleet_flag = touhou_ship_action_menu_ship_expend }
+        hidden_effect = {
+            remove_fleet_flag = touhou_ship_action_menu_ship_expend
+            set_fleet_flag = should_not_close_touhou_ship_action_menu
+            fleet_event = { id = touhou_ship_actions.2 }
+        }
+    }
+    option = {
+        name = concept_spth_ship_skill_super_carrier_eater
+        custom_tooltip = concept_spth_ship_skill_super_carrier_eater_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = {
+                check_modifier_value = { modifier = ship_has_touhou_action value != 0 }
+                check_modifier_value = { modifier = ship_spth_skill_super_carrier_eater value != 0 }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = spth_system_selector_opened
+                NOT = { owner = { has_country_flag = has_spth_system_selector_opened } }
+            }
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { owner = { has_country_flag = touhou_ship_action_super_carrier_eater_cooldown } }
+            }
+            owner = { resource_stockpile_compare = { resource = sr_fuka value >= 19200 } }
+        }
+        owner = { add_resource = { sr_fuka = -19200 } }
+        hidden_effect = {
+            owner = {
+                set_timed_country_flag = {
+                    flag = touhou_ship_action_super_carrier_eater_cooldown
+                    days = 1080
+                }
+            }
+        }
+        fleet_event = { id = touhou_ship_actions.6 }
+    }
+    option = {
+        name = concept_spth_ship_skill_space_shrine_drive
+        custom_tooltip = concept_spth_ship_skill_space_shrine_drive_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = {
+                check_modifier_value = { modifier = ship_has_touhou_action value != 0 }
+                check_modifier_value = { modifier = ship_spth_skill_space_shrine_drive value != 0 }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { owner = { has_country_flag = touhou_ship_action_space_shrine_drive_cooldown } }
+            }
+            owner = { resource_stockpile_compare = { resource = sr_fuka value >= 7200 } }
+        }
+        owner = { add_resource = { sr_fuka = -7200 } }
+        hidden_effect = {
+            owner = {
+                set_timed_country_flag = {
+                    flag = touhou_ship_action_space_shrine_drive_cooldown
+                    days = 540
+                }
+            }
+        }
+        random_owned_ship = {
+            limit = { check_modifier_value = { modifier = ship_spth_skill_space_shrine_drive value != 0 } }
+            add_modifier = { modifier = concept_spth_ship_skill_space_shrine_drive days = 90 }
+        }
+    }
+    option = {
+        name = concept_spth_ship_skill_space_shrine_beacon
+        custom_tooltip = concept_spth_ship_skill_space_shrine_beacon_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = {
+                check_modifier_value = { modifier = ship_has_touhou_action value != 0 }
+                check_modifier_value = { modifier = ship_spth_skill_space_shrine_beacon value != 0 }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { owner = { has_country_flag = touhou_ship_action_space_shrine_beacon_cooldown } }
+            }
+            custom_tooltip = {
+                fail_text = touhou_requires_no_active
+                NOT = { owner = { has_country_flag = touhou_ship_action_space_shrine_beacon_actived } }
+            }
+            owner = { resource_stockpile_compare = { resource = sr_fuka value >= 17000 } }
+        }
+        owner = { add_resource = { sr_fuka = -17000 } }
+        hidden_effect = {
+            owner = {
+                set_country_flag = touhou_ship_action_space_shrine_beacon_actived
+            }
+        }
+        random_owned_ship = {
+            limit = { check_modifier_value = { modifier = ship_spth_skill_space_shrine_drive value != 0 } }
+            set_ship_flag = touhou_ship_action_space_shrine_beacon_actived
+        }
+    }
+    option = {
+        name = touhou_auto_combat_action_player
+        custom_tooltip = touhou_auto_combat_action_player_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            NOT = { has_fleet_flag = enable_touhou_auto_action_player }
+            any_owned_ship = { check_modifier_value = { modifier = ship_has_touhou_action value != 0 } }
+        }
+        hidden_effect = {
+            set_fleet_flag = enable_touhou_auto_action_player
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = touhou_ship_actions.12 days = 1 random = 2 }
+            owner = {
+                if = {
+                    limit = { NOT = { has_country_flag = enable_touhou_auto_action_player } }
+                    set_country_flag = enable_touhou_auto_action_player
+                }
+            }
+        }
+    }
+    option = {
+        name = touhou_auto_combat_action_player_alt
+        custom_tooltip = touhou_auto_combat_action_player_alt_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            has_fleet_flag = enable_touhou_auto_action_player
+            any_owned_ship = { check_modifier_value = { modifier = ship_has_touhou_action value != 0 } }
+        }
+        hidden_effect = {
+            remove_fleet_flag = enable_touhou_auto_action_player
+            owner = {
+                if = {
+                    limit = { NOT = { any_owned_fleet = { has_fleet_flag = enable_touhou_auto_action_player } } }
+                    remove_country_flag = enable_touhou_auto_action_player
+                }
+            }
+        }
+    }
+    # Leader Actions
+    option = {
+        name = touhou_ship_action_leader
+        trigger = { NOT = { has_fleet_flag = touhou_ship_action_menu_leader_expend } }
+        hidden_effect = {
+            set_fleet_flag = touhou_ship_action_menu_leader_expend
+            set_fleet_flag = should_not_close_touhou_ship_action_menu
+            fleet_event = { id = touhou_ship_actions.2 }
+        }
+    }
+    option = {
+        name = touhou_ship_action_leader_expend
+        trigger = { has_fleet_flag = touhou_ship_action_menu_leader_expend }
+        hidden_effect = {
+            remove_fleet_flag = touhou_ship_action_menu_leader_expend
+            set_fleet_flag = should_not_close_touhou_ship_action_menu
+            fleet_event = { id = touhou_ship_actions.2 }
+        }
+    }
+    option = {
+        inline_script = {
+            script = events/touhou_ship_action_leader_share
+            leader = yuyuko cooldown = 360 cost = 1000
+            modifier = ship_spth_yuyuko_ruler_effect_2
+        }
+        owner = { add_resource = { sr_fuka = -1000 } }
+        hidden_effect = {
+            spth_create_fleet = {
+                NAME = concept_spth_ship_skill_yuyuko
+                can_disband = no is_boss = yes
+                OWNER = root.owner can_change_leader = no
+                location = prev uses_naval_capacity = no
+                flag = spth_ship_skill_yuyuko_ghost_fleet
+                NAME_TH_battle_cruiser_ghost = 24
+                evt_target = spth_fleet_skill_yuyuko
+                fleet_action_delayed = spth_fleet.1006
+                DAYS = 12 DAYS_RANDOM = 0
+            }
+            event_target:spth_fleet_skill_yuyuko = {
+                every_owned_ship = { spth_create_jump_particle_effect = yes }
+            }
+        }
+    }
+    option = {
+        inline_script = {
+            script = events/touhou_ship_action_leader_single
+            leader = satori cooldown = 180 cost = 2000
+            modifier = ship_spth_satori_ruler_effect_2
+        }
+        owner = { add_resource = { sr_fuka = -2000 } }
+        hidden_effect = {
+            every_galaxy_fleet = {
+                limit = { is_cloaked = yes owner = { is_hostile_to = root.owner } distance = { source = root type = hyperlane max_jumps <= 2 } }
+                set_cloaking_active = no
+                every_owned_ship = {
+                    spth_reduce_shield_max = { percent = 0.5 }
+                    th_spawn_explosion_particle = { color = pink size = small }
+                }
+            }
+        }
+    }
+    option = {
+        name = concept_spth_ship_skill_reimu
+        custom_tooltip = concept_spth_ship_skill_reimu_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_leader_expend
+            any_owned_ship = { check_modifier_value = { modifier = ship_spth_reimu_ruler_effect_2 value != 0 } }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = spth_system_selector_opened
+                NOT = { owner = { has_country_flag = has_spth_system_selector_opened } }
+            }
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { has_fleet_flag = touhou_ship_action_leader_reimu_cooldown }
+            }
+            owner = { resource_stockpile_compare = { resource = sr_fuka value >= 3200 } }
+        }
+        hidden_effect = { set_timed_fleet_flag = { flag = touhou_ship_action_leader_reimu_cooldown days = 360 } }
+        owner = { add_resource = { sr_fuka = -3200 } }
+        fleet_event = { id = touhou_ship_actions.3 }
+    }
+    option = {
+        inline_script = {
+            script = events/touhou_ship_action_leader_share
+            leader = scarlet cooldown = 240 cost = 2400
+            modifier = ship_spth_scarlet_ruler_effect_2
+        }
+        owner = { add_resource = { sr_fuka = -2400 } }
+        hidden_effect = {
+            th_spawn_explosion_particle = { color = green size = large }
+            add_modifier = {
+                modifier = concept_spth_ship_skill_scarlet
+                mult = modifier:weapon_type_lingli_weapon_damage_mult
+            }
+        }
+    }
+    option = {
+        inline_script = {
+            script = events/touhou_ship_action_leader_share
+            leader = sanae cooldown = 270 cost = 5600
+            modifier = ship_spth_sanae_ruler_effect_2
+        }
+        owner = { add_resource = { sr_fuka = -5600 } }
+        hidden_effect = {
+            every_owned_ship = {
+                spth_reduce_shield_max = { percent = 0.5 }
+                th_spawn_explosion_particle = { color = green size = small }
+            }
+            every_combatant_fleet = {
+                every_owned_ship = {
+                    spth_reduce_shield_max = { percent = 1 }
+                    th_spawn_explosion_particle = { color = pink size = medium }
+                }
+                add_modifier = { modifier = concept_spth_ship_skill_sanae days = 5 }
+            }
+        }
+    }
+    option = {
+        name = concept_spth_ship_skill_sanae_shrine
+        custom_tooltip = concept_spth_ship_skill_sanae_shrine_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_leader_expend
+            any_owned_ship = { check_modifier_value = { modifier = ship_spth_sanae_ruler_effect_1 value != 0 } }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = allow_spth_space_shrine_station
+                any_owned_ship = { is_ship_size = spth_space_shrine_station }
+            }
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { owner = { has_country_flag = touhou_ship_action_leader_sanae_shrine_cooldown } }
+            }
+            owner = { resource_stockpile_compare = { resource = sr_fuka value >= 6400 } }
+        }
+        owner = { add_resource = { sr_fuka = -6400 } }
+        hidden_effect = {
+            if = {
+                limit = { is_cloaked = no }
+                set_cloaking_active = yes
+            } else = {
+                set_timed_fleet_flag = { flag = touhou_ship_action_leader_sanae_shrine_cooldown days = 360 }
+                set_cloaking_active = no
+            }
+        }
+    }
+    option = {
+        name = touhou_ship_action_exit
+        default_hide_option = yes
+    }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.3
+    title = touhou_ship_actions.3.name
+    desc = touhou_ship_actions.3.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_system_selector_window
+    custom_gui_option = spth_system_selector_option
+    immediate = {
+        owner = { set_country_flag = has_spth_system_selector_opened }
+        save_global_event_target_as = spth_system_selector_reimu_fleet_@owner
+    }
+    option = {
+        name = "spth_system_selector_target_confirm"
+        default_hide_option = yes
+        custom_gui = spth_system_selector_confirm_reimu_skill
+    }
+    option = {
+        name = "spth_system_selector_target_abort"
+        hidden_effect = { remove_fleet_flag = touhou_ship_action_leader_reimu_cooldown }
+        fleet_event = { id = touhou_ship_actions.2 }
+    }
+    after = {
+        hidden_effect = {
+            owner = { remove_country_flag = has_spth_system_selector_opened }
+        }
+    }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.4
+    is_triggered_only = yes
+    hide_window = yes
+    immediate = {
+        set_location = {
+            target = event_target:spth_system_selector_target.star
+            distance = 300
+            direction = in_system
+            angle = random
+        }
+    }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.5
+    is_triggered_only = yes
+    title = spth_system_selector_target_warning
+    desc = spth_system_selector_target_invalid
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_travel_room }
+    option = {
+        name = spth_system_selector_target_confirm
+        default_hide_option = yes
+    }
+    after = {
+        hidden_effect = {
+            remove_fleet_flag = spth_reason_reimu_fleet
+            remove_fleet_flag = spth_reason_super_carrier_eater_fleet
+        }
+    }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.6
+    title = touhou_ship_actions.3.name
+    desc = touhou_ship_actions.6.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_system_selector_window
+    custom_gui_option = spth_system_selector_option
+    immediate = {
+        owner = { set_country_flag = has_spth_system_selector_opened }
+        save_global_event_target_as = spth_system_selector_super_carrier_eater_fleet_@owner
+    }
+    option = {
+        name = "spth_system_selector_target_confirm"
+        default_hide_option = yes
+        custom_gui = spth_system_selector_confirm_super_carrier_eater
+    }
+    option = {
+        name = "spth_system_selector_target_abort"
+        hidden_effect = { owner = { remove_country_flag = touhou_ship_action_super_carrier_eater_cooldown } }
+        fleet_event = { id = touhou_ship_actions.2 }
+    }
+    after = {
+        hidden_effect = {
+            owner = { remove_country_flag = has_spth_system_selector_opened }
+        }
+    }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.7
+    is_triggered_only = yes
+    hide_window = yes
+    immediate = {
+        event_target:spth_system_selector_target = {
+            create_fleet = {
+                name = ship_spth_skill_super_carrier_eater_component
+                settings = {
+                    can_upgrade = no
+                    spawn_debris = no
+                    can_change_leader = no
+                    uses_naval_capacity = no
+                    is_boss = yes
+                    is_ultra_boss = yes
+                    garrison = no
+                    can_change_composition = no
+                }
+                effect = {
+                    set_owner = root.owner
+                    create_ship = {
+                        design = ship_spth_skill_super_carrier_eater_entity
+                        effect = {
+                            set_name = ship_spth_skill_super_carrier_eater_entity
+                            set_ship_flag = spth_invincible
+                            set_disable_at_health = 0.01
+                        }
+                    }
+                    set_location = {
+                        target = prev
+                        distance = 0
+                        angle = random
+                    }
+                    fleet_event = { id = spth_fleet.1006 days = 10 }
+                }
+            }
+            create_ambient_object = { type = "star_explosion" play_animation_once = yes location = this }
+            last_created_ambient_object = { set_location = { target = prev.star distance = 0 angle = random } }
+            every_fleet_in_system = {
+                every_owned_ship = { th_spawn_explosion_particle = { color = blue size = medium } }
+            }
+        }
+    }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.12
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_fleet_flag = enable_touhou_auto_action_player
+        exists = owner owner = { has_authority = auth_gensokyo }
+    }
+    immediate = {
+        owner = { save_event_target_as = touhou_auto_action_owner }
+        spth_invasion_fleet_action = {
+            ID = touhou_ship_actions
+            TYPE = spth_auto_combat_player
+            OWNER = touhou_auto_action_owner
+        }
+    }
+}
+# monthly check to prevent bugs
+event = {
+    id = touhou_ship_actions.13
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { any_playable_country = { is_ai = no has_authority = auth_gensokyo has_country_flag = enable_touhou_auto_action_player } }
+    immediate = {
+        every_playable_country = {
+            limit = { is_ai = no has_authority = auth_gensokyo has_country_flag = enable_touhou_auto_action_player }
+            every_owned_fleet = {
+                limit = {
+                    has_fleet_flag = enable_touhou_auto_action_player
+                    is_fleet_idle = yes
+                    NAND = {
+                        exists = orbit
+                        orbit = {
+                            NOT = { is_star = yes }
+                            exists = owner
+                            owner = { is_hostile = event_target:spth_kamikakushi_country }
+                            exists = controller
+                            controller = { is_hostile = event_target:spth_kamikakushi_country }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = touhou_ship_actions.12 days = 3 random = 2 }
+            }
+        }
+    }
+}
+# player fleet action on orbit planet.
+country_event = {
+    id = touhou_ship_actions.14
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = enable_touhou_auto_action_player
+        from = { has_fleet_flag = enable_touhou_auto_action_player }
+        fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
+    }
+    immediate = {
+        from = {
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = touhou_ship_actions.12 days = 3 random = 2 }
+        }
+    }
+}
+# player fleet action on win a space battle.
+country_event = {
+    id = touhou_ship_actions.15
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = enable_touhou_auto_action_player
+        fromfrom = { fleet = { has_fleet_flag = enable_touhou_auto_action_player } }
+        fromfromfrom = {
+            OR = {
+                is_ship_class = shipclass_starbase
+                is_ship_class = shipclass_military
+            }
+        }
+    }
+    after = {
+        fromfrom = {
+            solar_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        owner = { has_country_flag = enable_touhou_auto_action_player }
+                        has_fleet_flag = enable_touhou_auto_action_player
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = touhou_ship_actions.12 days = 3 random = 2 }
+                }
+            }
+        }
+    }
+}

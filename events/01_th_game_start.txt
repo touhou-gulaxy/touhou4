@@ -17,7 +17,7 @@ country_event = {
 		add_research_option = tech_spth_spirit_power_beginning
 		give_technology = { tech = "tech_th_weapon_mofashu" message = no }
 		capital_scope = {
-			while = { count = 4 create_pop_group = { species = owner.founder_species } }
+			create_pop_group = { species = owner.founder_species size = 400 }
 			spth_effect_establish_barrier = yes
 			add_building = building_spth_cloner
 			remove_building = building_commercial_zone
@@ -80,18 +80,18 @@ country_event = {
 				add_district = district_gensokyo_tushu
 			}
 		}
-		event_target:new_pc_gensokyo_city = {
-			create_ambient_object = {
-				type = "th_gensokyo_mofazhen_object"
-				entity_offset_height = { min = -35 max = -40 }
-				location = this
-			}
-			last_created_ambient_object = {
-				set_location = {
-					target = event_target:new_pc_gensokyo_city
-				}
-			}
-		}
+		# event_target:new_pc_gensokyo_city = {
+		# 	create_ambient_object = {
+		# 		type = "th_gensokyo_mofazhen_object"
+		# 		entity_offset_height = { min = -35 max = -40 }
+		# 		location = this
+		# 	}
+		# 	last_created_ambient_object = {
+		# 		set_location = {
+		# 			target = event_target:new_pc_gensokyo_city
+		# 		}
+		# 	}
+		# }
 		capital_scope = {
 			add_modifier = {
 				modifier = spth_gsk_start_grow
@@ -447,6 +447,10 @@ country_event = {
 				limit = { is_ai = no NOT = { has_authority = auth_gensokyo } }
 				country_event = { id = gensokyo_start.1144 }
 			}
+		}
+		if = {
+			limit = { NOT = { has_global_flag = has_touhou_mod } }
+			set_global_flag = has_touhou_mod
 		}
 		if = {
 			limit = { NOT = { has_country_flag = spth_settings_first_fired } }
@@ -1704,6 +1708,20 @@ country_event = {
 		}
 	}
 	option = {
+		name = gensokyo_start.1250.j
+		allow = { hidden_trigger = { NOT = { has_country_flag = close_space_shrine_storm } } }
+		hidden_effect = {
+			set_country_flag = close_space_shrine_storm
+		}
+	}
+	option = {
+		name = gensokyo_start.1250.k
+		allow = { hidden_trigger = { has_country_flag = close_space_shrine_storm } }
+		hidden_effect = {
+			remove_country_flag = close_space_shrine_storm
+		}
+	}
+	option = {
 		name = gensokyo_start.1250.h
 		allow = { hidden_trigger = { NOT = { has_global_flag = close_touhou_crisis_music } } }
 		hidden_effect = {
@@ -1769,6 +1787,7 @@ country_event = {
 			event_target:global_event_country = {
 				set_variable = { which = spth_lunar_capital_crisis_difficulty value = 8 }
 			}
+			touhou_changed_difficulty = yes
 		}
 	}
 	option = {
@@ -1778,6 +1797,7 @@ country_event = {
 			event_target:global_event_country = {
 				change_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 }
 			}
+			touhou_changed_difficulty = yes
 		}
 	}
 	option = {
@@ -1791,6 +1811,7 @@ country_event = {
 					limit = { check_variable = { which = spth_lunar_capital_crisis_difficulty value < 1 } }
 					set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 }
 				}
+				touhou_changed_difficulty = yes
 			}
 		}
 	}
@@ -1800,24 +1821,56 @@ country_event = {
 	}
 	option = {
 		name = gensokyo_start.1251.b
-		allow = { always = no }
+		allow = { NOT = { has_country_flag = gensokyo_start_1251_b_fired } }
+		set_country_flag = gensokyo_start_1251_b_fired
+		set_country_flag = touhou_debug_all_tech_flag
+		play_sound = choose_ascension_perk
+		add_modifier = { modifier = gensokyo_start_1251_b_fired }
+		spth_give_all_tradtions = yes
+		spth_give_all_ascension_perks = yes
+		spth_give_all_techs = yes
+		spth_give_all_dna = yes
 	}
 	option = {
 		name = gensokyo_start.1251.c
-		allow = { always = no }
+		allow = { NOT = { has_country_flag = gensokyo_start_1251_c_fired } }
+		set_country_flag = gensokyo_start_1251_c_fired
+		play_sound = choose_ascension_perk
+		spth_init_all_sp_leaders = yes
 	}
 	option = {
 		name = gensokyo_start.1251.d
-		add_resource = { sr_lingli = 114514 }
+		add_resource = { sr_lingli = 1145140 }
 	}
 	option = {
 		name = gensokyo_start.1251.e
-		add_resource = { sr_fuka = 114514 }
+		add_resource = { sr_fuka = 1145140 }
 	}
 	option = {
 		name = gensokyo_start.1251.f
 		trigger = { NOT = { has_modifier = touhou_cheat_modifier } }
 		add_modifier = { modifier = touhou_cheat_modifier }
+		add_resource = {
+			energy = 100000000
+			minerals = 100000000
+			food = 100000000
+			alloys = 100000000
+			consumer_goods = 100000000
+			volatile_motes = 100000000
+			exotic_gases = 100000000
+			rare_crystals = 100000000
+			sr_living_metal = 100000000
+			sr_dark_matter = 100000000
+			sr_zro = 100000000
+			nanites = 100000000
+			minor_artifacts = 100000000
+			astral_threads = 100000000
+			menace = 100000000
+			advanced_logic = 100000000
+			sr_lingli = 100000000
+			sr_fuka = 100000000
+		}
+		play_sound = choose_ascension_perk
 	}
 	option = {
 		name = gensokyo_start.1251.f_alt

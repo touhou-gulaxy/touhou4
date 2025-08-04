@@ -1,0 +1,212 @@
+# refresh crisis bonus
+touhou_changed_difficulty = {
+    optimize_memory
+    touhou_difficulty_bonus = yes
+}
+touhou_difficulty_bonus = {
+    optimize_memory
+    set_update_modifiers_batch = begin
+    if = {
+        limit = { exists = event_target:spth_kamikakushi_invader_country }
+        event_target:spth_kamikakushi_invader_country = {
+            every_controlled_fleet = {
+                every_owned_ship = {
+                    limit = { is_touhou_ship = yes }
+                    if = { limit = { NOT = { has_ship_flag = touhou_mod_crisis_ship } } set_ship_flag = touhou_mod_crisis_ship }
+                    touhou_remove_all_difficulty_modifier = yes
+                    touhou_difficulty_bonus_ship = { kamikakushi = yes }
+                }
+            }
+        }
+    }
+    if = {
+        limit = { exists = event_target:spth_kamikakushi_country }
+        event_target:spth_kamikakushi_country = {
+            every_controlled_fleet = {
+                every_owned_ship = {
+                    limit = { is_touhou_ship = yes }
+                    if = { limit = { NOT = { has_ship_flag = touhou_mod_crisis_ship } } set_ship_flag = touhou_mod_crisis_ship }
+                    touhou_remove_all_difficulty_modifier = yes
+                    touhou_difficulty_bonus_ship = { kamikakushi = yes }
+                }
+            }
+        }
+    }
+    if = {
+        limit = { exists = event_target:spth_lunar_capital_union_fleet_country }
+        event_target:spth_lunar_capital_union_fleet_country = {
+            every_controlled_fleet = {
+                every_owned_ship = {
+                    limit = { is_touhou_ship = yes }
+                    if = { limit = { NOT = { has_ship_flag = touhou_mod_crisis_ship } } set_ship_flag = touhou_mod_crisis_ship }
+                    touhou_remove_all_difficulty_modifier = yes
+                    touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                }
+            }
+        }
+    }
+    if = {
+        limit = { exists = event_target:spth_makai_defence_system_country }
+        event_target:spth_makai_defence_system_country = {
+            every_controlled_fleet = {
+                every_owned_ship = {
+                    limit = { is_touhou_ship = yes }
+                    if = { limit = { NOT = { has_ship_flag = touhou_mod_crisis_ship } } set_ship_flag = touhou_mod_crisis_ship }
+                    touhou_remove_all_difficulty_modifier = yes
+                    touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                }
+            }
+        }
+    }
+    every_playable_country = {
+        limit = { is_ai = no is_touhou_crisis_faction = no }
+        every_controlled_fleet = {
+            limit = { has_fleet_flag = spth_test_flag }
+            every_owned_ship = {
+                limit = { is_touhou_ship = yes }
+                if = { limit = { NOT = { has_ship_flag = touhou_mod_player_bonus_ship } } set_ship_flag = touhou_mod_player_bonus_ship }
+                touhou_remove_all_difficulty_modifier = yes
+                if = {
+                    limit = {
+                        OR = {
+                            is_ship_size = lunar_capital_battlship
+                            is_ship_size = lunar_capital_carrier
+                            is_ship_size = lunar_capital_escort
+                            is_ship_size = lunar_capital_frigate
+                        }
+                    }
+                    touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                } else = {
+                    touhou_difficulty_bonus_ship = { kamikakushi = yes }
+                }
+            }
+        }
+    }
+    set_update_modifiers_batch = end
+}
+touhou_difficulty_bonus_ship = {
+    optimize_memory
+    set_ship_flag = touhou_difficulty_bonus_fired
+    set_variable = { which = touhou_scaled_difficulty value = event_target:global_event_country.spth_lunar_capital_crisis_difficulty }
+    set_variable = { which = touhou_difficulty_shield_kamikakushi value = modifier:touhou_difficulty_shield_kamikakushi }
+    set_variable = { which = touhou_difficulty_armor_kamikakushi value = modifier:touhou_difficulty_armor_kamikakushi }
+    set_variable = { which = touhou_difficulty_shield_lunar_capital value = modifier:touhou_difficulty_shield_lunar_capital }
+    set_variable = { which = touhou_difficulty_armor_lunar_capital value = modifier:touhou_difficulty_armor_lunar_capital }
+    add_modifier = { modifier = touhou_difficulty_kamikakushi_shield mult = touhou_difficulty_shield_kamikakushi }
+    add_modifier = { modifier = touhou_difficulty_kamikakushi_armor mult = touhou_difficulty_armor_kamikakushi }
+    add_modifier = { modifier = touhou_difficulty_lunar_capital_shield mult = touhou_difficulty_shield_lunar_capital }
+    add_modifier = { modifier = touhou_difficulty_lunar_capital_armor mult = touhou_difficulty_armor_lunar_capital }
+    if = {
+        limit = { has_global_flag = spth_lunar_capital_crisis_phantasm }
+        if = { limit = { check_variable = { which = touhou_difficulty_shield_kamikakushi value > 0 } } add_modifier = { modifier = touhou_difficulty_kamikakushi_shield_phantasm } }
+        if = { limit = { check_variable = { which = touhou_difficulty_armor_kamikakushi value > 0 } } add_modifier = { modifier = touhou_difficulty_kamikakushi_armor_phantasm } }
+        if = { limit = { check_variable = { which = touhou_difficulty_shield_lunar_capital value > 0 } } add_modifier = { modifier = touhou_difficulty_lunar_capital_shield_phantasm } }
+        if = { limit = { check_variable = { which = touhou_difficulty_armor_lunar_capital value > 0 } } add_modifier = { modifier = touhou_difficulty_lunar_capital_armor_phantasm } }
+    }
+    if = {
+        limit = { spth_has_nyto_mod = yes }
+        set_variable = { which = touhou_scaled_difficulty_nyto value = value:touhou_scaled_difficulty_nyto }
+        add_modifier = { modifier = touhou_difficulty_mod_nyto mult = touhou_scaled_difficulty_nyto }
+    }
+    [[kamikakushi]
+        set_ship_flag = touhou_kamikakushi_bonus_fired
+        add_modifier = { modifier = touhou_difficulty_kamikakushi_basic mult = touhou_scaled_difficulty }
+        if = {
+            limit = { touhou_check_diffiulty_lteq = { value = 2 } }
+            add_modifier = { modifier = touhou_difficulty_kamikakushi_normal mult = touhou_scaled_difficulty }
+        }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+            add_modifier = { modifier = touhou_difficulty_kamikakushi_hard mult = touhou_scaled_difficulty }
+        }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 4 } }
+            add_modifier = { modifier = touhou_difficulty_kamikakushi_lunatic mult = touhou_scaled_difficulty }
+        }
+        if = {
+            limit = { has_global_flag = spth_lunar_capital_crisis_phantasm NOT = { is_ship_size = spth_kamikakushi_super_carrier } }
+            add_modifier = { modifier = touhou_difficulty_kamikakushi_phantasm_static }
+            add_modifier = { modifier = touhou_difficulty_kamikakushi_phantasm mult = touhou_scaled_difficulty }
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 8 } }
+                add_modifier = { modifier = touhou_difficulty_kamikakushi_wtf_static }
+                add_modifier = { modifier = touhou_difficulty_kamikakushi_wtf mult = touhou_scaled_difficulty }
+            }
+        }
+    ]
+    [[lunar_capital]
+        set_ship_flag = touhou_lunar_capital_bonus_fired
+        add_modifier = { modifier = touhou_difficulty_lunar_capital_basic mult = touhou_scaled_difficulty }
+        if = {
+            limit = { touhou_check_diffiulty_lteq = { value = 2 } }
+            add_modifier = { modifier = touhou_difficulty_lunar_capital_normal mult = touhou_scaled_difficulty }
+        }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+            add_modifier = { modifier = touhou_difficulty_lunar_capital_hard mult = touhou_scaled_difficulty }
+        }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 4 } }
+            add_modifier = { modifier = touhou_difficulty_lunar_capital_lunatic mult = touhou_scaled_difficulty }
+        }
+        if = {
+            limit = { has_global_flag = spth_lunar_capital_crisis_phantasm }
+            add_modifier = { modifier = touhou_difficulty_lunar_capital_phantasm_static }
+            add_modifier = { modifier = touhou_difficulty_lunar_capital_phantasm mult = touhou_scaled_difficulty }
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 8 } }
+                add_modifier = { modifier = touhou_difficulty_lunar_capital_wtf_static }
+                add_modifier = { modifier = touhou_difficulty_lunar_capital_wtf mult = touhou_scaled_difficulty }
+            }
+        }
+        if = {
+            limit = { is_ship_size = lunar_capital_carrier }
+            set_variable = { which = touhou_scaled_difficulty_damage_reduction value = value:touhou_difficulty_lunar_capital_titan_damage_recution }
+            add_modifier = { modifier = touhou_difficulty_lunar_capital_titan_damage_recution mult = touhou_scaled_difficulty_damage_reduction }
+            add_modifier = { modifier = touhou_difficulty_lunar_capital_titan mult = touhou_scaled_difficulty }
+        }
+    ]
+}
+touhou_remove_all_difficulty_modifier = {
+    optimize_memory
+    if = {
+        limit = { has_ship_flag = touhou_difficulty_bonus_fired }
+        if = {
+            limit = { spth_has_nyto_mod = yes }
+            remove_modifier = touhou_difficulty_mod_nyto
+        }
+        # always remove
+        remove_modifier = touhou_difficulty_kamikakushi_shield
+        remove_modifier = touhou_difficulty_kamikakushi_armor
+        remove_modifier = touhou_difficulty_kamikakushi_shield_phantasm
+        remove_modifier = touhou_difficulty_kamikakushi_armor_phantasm
+        remove_modifier = touhou_difficulty_lunar_capital_shield
+        remove_modifier = touhou_difficulty_lunar_capital_armor
+        remove_modifier = touhou_difficulty_lunar_capital_shield_phantasm
+        remove_modifier = touhou_difficulty_lunar_capital_armor_phantasm
+        if = {
+            limit = { has_ship_flag = touhou_kamikakushi_bonus_fired }
+            remove_modifier = touhou_difficulty_kamikakushi_basic
+            remove_modifier = touhou_difficulty_kamikakushi_normal
+            remove_modifier = touhou_difficulty_kamikakushi_hard
+            remove_modifier = touhou_difficulty_kamikakushi_lunatic
+            remove_modifier = touhou_difficulty_kamikakushi_phantasm
+            remove_modifier = touhou_difficulty_kamikakushi_phantasm_static
+            remove_modifier = touhou_difficulty_kamikakushi_wtf
+            remove_modifier = touhou_difficulty_kamikakushi_wtf_static
+        }
+        if = {
+            limit = { has_ship_flag = touhou_lunar_capital_bonus_fired }
+            remove_modifier = touhou_difficulty_lunar_capital_basic
+            remove_modifier = touhou_difficulty_lunar_capital_normal
+            remove_modifier = touhou_difficulty_lunar_capital_hard
+            remove_modifier = touhou_difficulty_lunar_capital_lunatic
+            remove_modifier = touhou_difficulty_lunar_capital_phantasm
+            remove_modifier = touhou_difficulty_lunar_capital_phantasm_static
+            remove_modifier = touhou_difficulty_lunar_capital_wtf
+            remove_modifier = touhou_difficulty_lunar_capital_wtf_static
+            remove_modifier = touhou_difficulty_lunar_capital_titan
+            remove_modifier = touhou_difficulty_lunar_capital_titan_damage_recution
+        }
+    }
+}

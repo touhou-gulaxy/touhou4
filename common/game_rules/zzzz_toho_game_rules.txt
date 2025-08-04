@@ -1,0 +1,338 @@
+#可进行轨道轰炸（来自小伞泛用规则兼容）
+#Root = fleet, potential attacker
+#From = planet, potential target
+can_orbital_bombard = {
+    exists = FROM.OWNER
+    ###_|绝对禁止|	+RSnf/阿夸/精灵	########################################
+    NOR = {
+        any_controlled_ship = {
+            is_ship_size = colossus
+        }
+        FROM = {
+            OR = {
+                is_planet_class = pc_hollow		# RSnf
+                is_ELF_can_not_be_orbital_bombard_planet = yes	# 精灵
+                OWNER = { is_country_type = kuat_fire_base_hositle }	# 阿夸
+                has_planet_flag = enable_kuat_shield
+                has_planet_flag = enable_spth_plantary_shield
+                has_planet_flag = spth_lunar_repair_barrier
+            }
+        }
+    }
+
+    ###_|基本条件|	########################################
+    OR = {
+        ##	AUP/HFE	####################	只要敌对都能炸
+        ROOT.CONTROLLER = { is_hostile = FROM.CONTROLLER }
+        #	TAC		---禁用|高能耗|
+        #ROOT = { has_component = AI_MATRICES }
+
+        ##	vanilla	####################
+        AND = {
+            ROOT.CONTROLLER = {
+                NOT = { has_communications = FROM.OWNER }
+            }
+            FROM.OWNER = {
+                NOT = { is_country_type = primitive }
+            }
+        }
+        AND = {
+            ROOT.CONTROLLER = {
+                NOR = {
+                    has_policy_flag = interference_not_allowed
+                    has_policy_flag = interference_subtle
+                }
+            }
+            FROM.OWNER = { is_country_type = primitive }
+        }
+        ROOT.CONTROLLER = { is_at_war_with = FROM.CONTROLLER }
+        #	V|可随意轰炸	+bwm
+        FROM = {
+            OR = {
+                is_planet_class = pc_infested
+                has_planet_flag = bwm_ancestor_world			# bwm
+            }
+        }
+        ##_|可被轰炸|	+古代帝国/SOFE/bwm/Giga/Ehof/阿夸/多彩
+        FROM.CONTROLLER = {
+            OR = {
+                #	UGRC通用
+                has_country_flag = UGRC_flg_cntr_RULE_can_be_bombed
+                #	VANILLA
+                is_country_type = swarm
+                is_country_type = ai_empire
+                is_country_type = cybrex_empire
+                AND = {
+                    is_country_type = awakened_marauders
+                    ROOT.CONTROLLER = { is_hostile = prev }
+                }
+
+                is_country_type = mem_ancestor_guardian			# bwm
+                is_country_type = original_empire				# SOFE
+                is_country_type = compound_empire				# Giga/Ehof
+                is_country_type = void_lifeforms_1				# Giga/ACOT
+                is_country_type = void_lifeforms_2				# Giga/ACOT
+                is_country_type = katzenartig_imperium			# Giga/ACOT
+                ag_can_be_orbital_bombardment_country = yes		# 古代帝国	安装=|has_ancient_empire_mod|
+                kuat_can_be_orbital_bombarment_country = yes	# 阿夸		安装=|install_kuat_mod|
+                is_country_type = ten_crisis_empire				# 多彩
+            }
+        }
+        ##_|可轰炸|	+ev/wsg/swg/阿夸/古代帝国/失落帝国历史	/bwm/ACOT/SOFE/MEM/SRA/SSNI/久远/多彩/精灵/thl
+        ROOT.CONTROLLER = {
+            OR = {
+                #	UGRC通用
+                has_country_flag = UGRC_flg_cntr_RULE_can_bomb
+                #	VANILLA
+                is_country_type = extradimensional
+                is_country_type = extradimensional_2
+                is_country_type = extradimensional_3
+                is_country_type = swarm
+                is_country_type = ai_empire
+                is_country_type = cybrex_empire					# <aup去除了此项>
+                is_country_type = synth_queen
+                is_country_type = awakened_synth_queen
+                is_country_type = synth_queen_convoys
+                is_country_type = synth_queen_outposts
+                is_country_type = dormant_marauders
+                is_country_type = marauder_raiders
+                is_country_type = ruined_marauders
+                is_country_type = debt_collectors
+                is_country_type = gray_goo
+                is_country_type = vol
+                AND = {
+                    is_country_type = frenzied_voidworms
+                    has_country_flag = can_bombard
+                    FROM.CONTROLLER = { has_country_flag = tormented_by_frenzied_voidworms }
+                }
+                AND = {
+                    OR = {
+                        is_country_type = awakened_marauders
+                        is_country_type = formless
+                    }
+                    FROM.CONTROLLER = { is_hostile = prev }
+                }
+                AND = {
+                    is_voidworms_hostile_country_type = yes
+                    ROOT = {
+                        is_ship_size = voidworms_titan
+                    }
+                }
+
+                is_country_type = ev_leviathans_crisis			# ev
+                is_country_type = afk_crisis_country			# swg
+                is_country_type = LsE_fallen_empire				# 失落帝国历史
+                #	wsg
+                is_country_type = wg_crisis_country
+                is_khan_country_type = yes
+                #	古代帝国
+                ag_can_do_orbital_bombardment_country = yes
+                #	阿夸
+                kuat_can_do_bombarment_country = yes
+
+                is_country_type = mem_ancestor_guardian			# bwm
+                is_country_type = original_empire				# SOFE
+                #	ACOT
+                is_country_type = compound_empire
+                is_country_type = katzenartig_imperium
+                is_country_type = void_lifeforms_1
+                is_country_type = void_lifeforms_2
+                is_country_type = acot_crazed_stellarite
+                #	MEM
+                is_country_type = mem_surveyor_country_red		# 瓦祖兰
+                is_country_type = mem_vazurans
+                #	SRA
+                SRA_can_do_orbital_bombardment_country = yes
+                #	SSNI
+                is_country_type = sentinel_hostile_expansion
+                #	久远
+                KZ_VOY_can_unconditional_bombarment_country = yes
+                #	多彩
+                is_country_type = ten_crisis_empire
+                #	精灵
+                is_ELF_can_orbital_bombard_country_type = yes
+                #	thl
+                is_country_type = koishi_berserk_fleet
+
+                #   fxl
+                is_touhou_crisis_faction = yes
+            }
+        }
+        ##	V|星球所有者轰炸被其他阵营占据的星球	-SOFE<去掉了此项>
+        AND = {
+            from.controller = {
+                is_country_type = faction
+                NOT = { is_same_value = ROOT.CONTROLLER }
+            }
+            from.owner = {
+                is_same_value = ROOT.CONTROLLER
+            }
+        }
+    }
+}
+
+###_|跃迁管制|	FW/AAR	/古代帝国/wsg/阿夸/SBTG/Giga/Ehof/seooc/多彩/精灵/TAC/莉莉/驴岛/IFE/spth	####################################
+# Root = country attempting to target system for movement
+# This = system being targeted
+can_enter_system_by_jump = {
+    custom_tooltip = {
+        success_text = "debug: can jump"
+        fail_text = cannot_jump_to_system
+        OR = {
+            ###	|绝对通行|	FW
+            root = {
+                OR = {
+                    has_country_flag = FW_flg_cntr_CHT_orrery_ON		# 璀璨星图
+                    has_country_flag = FW_flg_cntr_CHT_beacon_ON		# 永恒星炬
+                }
+            }
+            ##	|特殊通行|	+AAR/TAC/多彩
+            root = {
+                #	|通行|
+                OR = {
+                    has_country_flag = AAR_flg_cntr_WEBWAY_relic_ON		# |AAR|网道行者relic
+                    has_country_flag = TAC_traveler						# |TAC|
+                    has_country_flag = wtmnb_order						# |多彩|wtmnb
+                }
+                #	|限定|
+            }
+            ##	特殊通行_Giga
+            AND = { has_star_flag = ehof_system_created_by_@root
+                cohesive_system = yes
+                ROOT = { is_eager_explorer_empire = yes }
+                #	|限定|
+                NOT = { has_star_flag = formless_system }
+                OR = {
+                    NOT = { has_star_flag = sealed_system }
+                    AND = {
+                        root = { has_country_flag = entered_sealed_system }
+                        has_star_flag = sealed_system
+                    }
+                }
+            }
+
+            ###_|基础条件|
+            AND = {
+                ##_Sealed system
+                OR = {
+                    # vanilla
+                    NOT = { has_star_flag = sealed_system }
+                    AND = {
+                        root = { has_country_flag = entered_sealed_system }
+                        has_star_flag = sealed_system
+                    }
+                }
+
+                ##_特殊禁入星系		+wsg/古代帝国/阿夸/SBTG/Giga/Ehof/seooc/多彩/TAC/莉莉
+                NOR = {
+                    # vanilla
+                    has_star_flag = lcluster
+
+                    # wsg
+                    AND = { has_global_flag = has_wsg_mod	# 舰r激活
+                        OR = {
+                            has_star_flag = wg_sealed_system
+                            has_star_flag = wg_psionic_systems
+                            AND = { exists = space_owner
+                                space_owner = { is_country_type = monolith_crisis_country }
+                            }
+                        }
+                    }
+                    #	古代帝国
+                    has_star_flag = ag_no_jump_in_system
+                    #	阿夸
+                    has_star_flag = kuat_initial_system
+                    has_star_flag = Kuat_empire_system
+                    has_star_flag = ag_kae_e_area_system
+                    AND = {
+                        has_global_flag = starkillerbase_not_passed
+                        has_star_flag = starkiller_system
+                    }
+                    #	SBTG
+                    has_star_flag = outercluster
+                    #	Giga
+                    has_star_flag = ehof_compound_system
+                    has_star_flag = giga_core_03
+                    cohesive_system = yes
+                    urmazin_system = yes
+                    everchanging_system = yes
+                    katzen_jump_blocked_system = yes
+                    has_star_flag = maginot_anti_jump_star	# Maginot World subspace disruption
+                    has_star_flag = siegfried_anti_jump_star	# Katzen version
+                    #	seooc
+                    has_star_flag = nep_Krahen_cluster
+                    has_star_flag = nep_Scrus_cluster
+                    AND = {
+                        has_global_flag = nep_not_pass_Aemethms
+                        OR = {
+                            has_star_flag = nep_dragon_system
+                            has_star_flag = nep_heptagram_cluster
+                        }
+                    }
+                    #	|多彩|
+                    AND = { has_global_flag = love_between_us	# |安装|
+                        OR = {
+                            has_star_flag = ten_crisis_system
+                            any_neighbor_system = { has_star_flag = ten_crisis_system }
+                            AND = {
+                                exists = event_target:holylight_god_heaven_empire
+                                OR = {
+                                    has_star_flag = SUC_lustgod_ring_world_system
+                                    has_star_flag = init_sample_of_death
+                                    has_star_flag = init_sample_of_prosperity
+                                    has_star_flag = init_INN_holylight_god_system2
+                                }
+                            }
+                        }
+                    }
+                    #	|精灵|
+                    has_star_flag = ELF_Singularity_System
+                    has_star_flag = wtmnb_star_11th		# wtmnb
+                    #	莉莉
+                    has_star_flag = al_huge_home_bed
+                    #	驴岛
+                    has_star_flag = ark_isolated
+                    #	IFE
+                    has_star_flag = formless_system
+                    AND = { has_star_flag = scfe_shaded_colony_system		root = { scfe_can_jump_in_shaded_system = no } }
+                    #	spth
+                    has_star_flag = spth_no_jump_in_system
+                }
+            }
+        }
+    }
+}
+
+###_|物种组装|	+azl
+# This = Species
+# Root = Planet
+can_species_be_assembled = {
+    OR ={
+        is_robotic = yes
+
+        is_KANSEN_species = yes	#azl
+    }
+    is_sapient = yes
+    NOT = {
+        has_trait = trait_exd
+    }
+    NOT = {
+        AND = {
+            has_trait = trait_mechanical
+            root.owner = { is_individual_machine = yes }
+        }
+    }
+    NOT = {
+        AND = {
+            has_virtual_species_trait = yes
+            root.owner = {
+                is_fallen_empire = no
+                has_active_tradition = tr_virtuality_finish
+            }
+        }
+    }
+    has_population_control = {
+        type = no
+        country = root.owner
+    }
+}

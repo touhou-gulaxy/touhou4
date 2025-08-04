@@ -14,6 +14,7 @@ spth_create_jump_particle_effect = {
 
 #ETERNAL AND CONTRACTOR ACTION
 spth_invasion_jump_drive_planet_action = {
+    optimize_memory
     random_list = {
         80 = { prevprev = { auto_move_to_planet = { target = prev clear_auto_move_on_arrival = yes } } }
         20 = {
@@ -25,13 +26,22 @@ spth_invasion_jump_drive_planet_action = {
                 set_location = { target = prev distance = 300 angle = random }
                 every_owned_ship = { spth_create_jump_particle_effect = yes }
                 if = {
-                    limit = { NOT = { has_global_flag = touhou_kamikakushi_extra_12 } }
+                    limit = {
+                        has_global_flag = touhou_kamikakushi_extra_12
+                        exists = owner owner = {
+                            OR = {
+                                is_country_type = spth_kamikakushi_invader
+                                is_country_type = spth_makai_defence_system
+                                is_country_type = spth_makai_defence_system_crisis
+                                is_country_type = spth_kamikakushi_country
+                            }
+                        }
+                    }
                     while = {
                         limit = { any_owned_ship = { NOT = { has_ship_flag = ag_jump_drive_cooldown } } }
                         random_owned_ship = {
                             limit = { NOT = { has_ship_flag = ag_jump_drive_cooldown } }
-                            set_timed_ship_flag = { flag = ag_jump_drive_cooldown days = 200 }
-                            add_modifier = { modifier = "jump_drive_cooldown" days = 200 }
+                            set_timed_ship_flag = { flag = ag_jump_drive_cooldown days = 40 }
                         }
                     }
                 } else = {
@@ -39,7 +49,8 @@ spth_invasion_jump_drive_planet_action = {
                         limit = { any_owned_ship = { NOT = { has_ship_flag = ag_jump_drive_cooldown } } }
                         random_owned_ship = {
                             limit = { NOT = { has_ship_flag = ag_jump_drive_cooldown } }
-                            set_timed_ship_flag = { flag = ag_jump_drive_cooldown days = 40 }
+                            set_timed_ship_flag = { flag = ag_jump_drive_cooldown days = 200 }
+                            add_modifier = { modifier = "jump_drive_cooldown" days = 200 }
                         }
                     }
                 }
@@ -50,6 +61,7 @@ spth_invasion_jump_drive_planet_action = {
 }
 
 spth_invasion_jump_drive_fleet_action  = {
+    optimize_memory
     random_list = {
         75 = { prevprev = { auto_follow_fleet = { target = prev attack_fleet = yes } } }
         25 = {

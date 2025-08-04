@@ -65,32 +65,73 @@ spth_mod_menu = {
 	}
 	effect = { country_event = { id = gensokyo_start.1145 } }
 }
-spth_no_grow ={
-	icon = "GFX_edict_type_touhou"
+spth_auto_combat_all = {
 	length = -1
-	potential = { always = no }
-	modifier = {
-		logistic_growth_mult = -99999
+	icon = GFX_edict_type_touhou
+	potential = { is_ai = no has_authority = auth_gensokyo NOT = { has_country_flag = spth_auto_combat_all_enabled } }
+	effect = {
+		hidden_effect = {
+			set_country_flag = spth_auto_combat_all_enabled
+			every_owned_fleet = {
+				limit = {
+					is_disabled = no is_ship_class = shipclass_military
+					any_owned_ship = { check_modifier_value = { modifier = ship_has_touhou_action value > 0 } }
+				}
+				set_fleet_flag = enable_touhou_auto_action_player
+				clear_orders = yes
+				clear_fleet_actions = this
+				fleet_event = { id = touhou_ship_actions.12 days = 1 random = 2 }
+			}
+			if = {
+				limit = { NOT = { has_country_flag = enable_touhou_auto_action_player } }
+				set_country_flag = enable_touhou_auto_action_player
+			}
+		}
 	}
 }
-spth_no_assm ={
-	icon = "GFX_edict_type_touhou"
+spth_auto_combat_all_disable = {
 	length = -1
-	potential = { always = no }
-	modifier = {
-		planet_pop_assembly_mult = -99999
-		bonus_pop_growth_mult = -99999
+	icon = GFX_edict_type_touhou
+	potential = { is_ai = no has_authority = auth_gensokyo has_country_flag = spth_auto_combat_all_enabled }
+	effect = {
+		hidden_effect = {
+			remove_country_flag = spth_auto_combat_all_enabled
+			every_owned_fleet = {
+				limit = { has_fleet_flag = enable_touhou_auto_action_player }
+				remove_fleet_flag = enable_touhou_auto_action_player
+			}
+			remove_country_flag = enable_touhou_auto_action_player
+		}
 	}
 }
+# spth_no_grow ={
+# 	icon = "GFX_edict_type_touhou"
+# 	length = -1
+# 	potential = { always = no }
+# 	modifier = {
+# 		logistic_growth_mult = -99999
+# 	}
+# }
+# spth_no_assm ={
+# 	icon = "GFX_edict_type_touhou"
+# 	length = -1
+# 	potential = { always = no }
+# 	modifier = {
+# 		planet_pop_assembly_mult = -99999
+# 		bonus_pop_growth_mult = -99999
+# 	}
+# }
 spth_build_auto_ringworld = {
 	icon = GFX_edict_type_touhou
 	length = -1
 	resources = {
 		cost = {
 			sr_lingli = 10000
+			multiplier = value:edict_size_effect
 		}
 		upkeep = {
-			sr_lingli = 1250
+			sr_lingli = 500
+			multiplier = value:edict_size_effect
 		}
 	}
 	prerequisites = { tech_ring_world }
@@ -115,6 +156,80 @@ spth_build_auto_ringworld = {
 			}
 		}
 	}
+}
+spth_specimen_focus = {
+	icon = GFX_edict_type_touhou
+	length = -1
+	resources = {
+		cost = {
+			unity = 150
+			multiplier = value:edict_size_effect
+		}
+		upkeep = {
+			unity = 150
+			multiplier = value:edict_size_effect
+		}
+	}
+	prerequisites = { tech_galactic_archivism }
+	potential = {
+		is_ai = no
+		has_authority = auth_gensokyo
+	}
+	# allow = {
+	# 	custom_tooltip = {
+	# 		fail_text = edict_spth_specimen_focus_allow
+	# 		check_modifier_value = { modifier = specimen_has_touhou_item value > 0 }
+	# 	}
+	# }
+	modifier = {
+		specimen_spth_extra_produce_mult = 0.15
+	}
+}
+spth_spiritual_power_subsidies = {
+	length = -1
+	icon = GFX_edict_type_touhou
+	resources = {
+		category = edicts
+		cost = {
+			unity = 60
+			multiplier = value:edict_size_effect
+		}
+		upkeep = {
+			unity = 60
+			multiplier = value:edict_size_effect
+		}
+	}
+	modifier = {
+		planet_spth_monk_produces_mult = 0.25
+		planet_spth_monk_energy_upkeep_add = 1
+	}
+	potential = { has_authority = auth_gensokyo }
+	prerequisites = { tech_global_production_strategy }
+	show_tech_unlock_if = { has_authority = auth_gensokyo }
+	ai_weight = { weight = 10 }
+}
+spth_spellcard_subsidies = {
+	length = -1
+	icon = GFX_edict_type_touhou
+	resources = {
+		category = edicts
+		cost = {
+			unity = 60
+			multiplier = value:edict_size_effect
+		}
+		upkeep = {
+			unity = 60
+			multiplier = value:edict_size_effect
+		}
+	}
+	modifier = {
+		planet_spth_spellcard_specialist_produces_mult = 0.1
+		planet_spth_spellcard_specialist_sr_lingli_upkeep_add = 1
+	}
+	potential = { has_authority = auth_gensokyo }
+	prerequisites = { tech_global_production_strategy }
+	show_tech_unlock_if = { has_authority = auth_gensokyo }
+	ai_weight = { weight = 10 }
 }
 
 hmx_hellsing = {
@@ -216,10 +331,12 @@ imba_swcjswb = {
 	resources = {
 		category = edicts
 		cost = {
-			sr_fuka = 100000
+			sr_lingli = 20000
+			multiplier = value:edict_size_effect
 		}
 		upkeep = {
-			sr_fuka = 1000
+			sr_lingli = 200
+			multiplier = value:edict_size_effect
 		}
 	}
 	icon = GFX_edict_type_touhou
@@ -230,13 +347,43 @@ imba_swcjswb = {
 	modifier = {
 		custom_tooltip = edict_imba_swcjswb_tooltip
 		show_only_custom_tooltip = no
-		weapon_type_energy_weapon_damage_mult = 2.0
-		weapon_type_kinetic_weapon_damage_mult = 2.0
-		weapon_type_lingli_weapon_fire_rate_mult = 1.0
 		ship_spth_shield_efficiency = 0.1
 		ship_spth_armor_efficiency = 0.1
 		ship_th_has_swcjswb = 1
 	}
+	ai_weight = { weight = 10 }
+}
+spellcard_ship_enhance = {
+	length = -1
+	resources = {
+		category = edicts
+		cost = {
+			sr_fuka = 5000
+			multiplier = value:edict_size_effect
+		}
+		upkeep = {
+			sr_fuka = 100
+			multiplier = value:edict_size_effect
+		}
+	}
+	icon = GFX_edict_type_touhou
+	potential = {
+		is_ai = no
+		has_ascension_perk = ap_toho4
+	}
+	modifier = {
+		weapon_type_spark_weapon_damage_mult = 0.25
+		weapon_type_gungnir_weapon_damage_mult = 0.25
+		weapon_type_laevatain_weapon_damage_mult = 0.25
+		weapon_type_loukanken_weapon_damage_mult = 0.25
+		weapon_type_needle_weapon_damage_mult = 0.25
+		weapon_type_sanae_weapon_damage_mult = 0.25
+		weapon_type_xieshi_weapon_damage_mult = 0.25
+		weapon_type_yuzhu_weapon_damage_mult = 0.25
+		weapon_type_reimu_weapon_damage_mult = 0.25
+		weapon_type_lingli_weapon_fire_rate_mult = 0.25
+	}
+	ai_weight = { weight = 10 }
 }
 
 th_flagship_lumiya = {

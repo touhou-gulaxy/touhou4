@@ -1,5 +1,31 @@
+touhou_has_food_upkeep = {
+    optimize_memory
+    is_archetype = TOUHOUGIRLS
+}
+touhou_check_diffiulty = {
+    optimize_memory
+    event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value $relation$ $value$ } }
+}
+touhou_check_diffiulty_lteq = {
+    optimize_memory
+    touhou_check_diffiulty = { relation = "<=" value = $value$ }
+}
+touhou_check_diffiulty_gteq = {
+    optimize_memory
+    touhou_check_diffiulty = { relation = ">=" value = $value$ }
+}
+
+
 # planet scope
 spth_trigger_planet_barrier_capacity_can_hold = {
+    optimize_memory
+}
+
+touhou_has_ship_action = {
+    optimize_memory
+    spth_check_gensokyo_auth = yes
+    any_owned_ship = { check_modifier_value = { modifier = ship_has_touhou_action value > 0 } }
+    # any_owned_ship = { is_touhou_ship = yes }
 }
 
 spth_fleet_has_special_leader = {
@@ -64,6 +90,48 @@ spth_has_kamikakushi_crisis = {
     has_global_flag = spth_kamikaushi_crisis_start
     NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
 }
+spth_can_not_jump_in_system = {
+    optimize_memory
+    OR = {
+        has_star_flag = lcluster
+        has_star_flag = wg_sealed_system
+        has_star_flag = ag_no_jump_in_system
+        has_star_flag = Kuat_empire_system
+        has_star_flag = outercluster
+        has_star_flag = kuat_initial_system
+        has_star_flag = spth_enclave_system
+        has_star_flag = spth_precursor_capital_makai
+        has_star_flag = spth_system
+        has_star_flag = ag_ancient_system
+    }
+}
+spth_can_not_star_killer_hit_system = {
+    optimize_memory
+    OR = {
+        has_star_flag = spth_system
+        any_ship_in_system = { is_ship_size = dimensional_portal_ed }
+        any_system_planet = {
+            is_planet_class = pc_ai
+            exists = owner
+            owner = { is_country_type = ai_empire }
+        }
+        ag_is_ancient_system = yes
+        any_ship_in_system = {
+            OR = {
+                is_ship_size = ag_zeta_crisis_portal
+                is_ship_size = ag_zeta_crisis_psionic_storm
+                is_ship_size = ag_zeta_crisis_psionic_singularity
+            }
+        }
+        kuat_is_kuat_system = yes
+        has_star_flag = roz_outland_system
+        has_star_flag = roz_abyss_fleet_outpost_system
+        has_star_flag = spth_no_star_killer_target_system
+        has_star_flag = ag_no_star_killer_target_system
+        has_star_flag = kuat_cannot_be_hit_by_starkillerbase
+        has_star_flag = cannot_be_hit_by_aow_starfall_spear
+    }
+}
 
 is_touhou_army = {
     optimize_memory
@@ -84,11 +152,13 @@ check_touhou_army_tier = {
 }
 
 is_touhou_tier0_army = {
+    optimize_memory
     OR = {
         army_type = fxtz
     }
 }
 is_touhou_tier1_army = {
+    optimize_memory
     OR = {
         army_type = danmaku_army
         army_type = psi_danmaku_army
@@ -97,6 +167,7 @@ is_touhou_tier1_army = {
     }
 }
 is_touhou_tier2_army = {
+    optimize_memory
     OR = {
         army_type = fairy_army
         army_type = hellfairy_army
@@ -145,6 +216,9 @@ is_touhou_crisis_faction = {
         is_country_type = spth_makai_defence_system_crisis
         is_country_type = spth_crisis_lunar_outpost
         is_country_type = spth_fallen_empire
+        is_country_type = spth_fallen_empire_kamikakushi
+        is_country_type = spth_fallen_empire_hiffu
+        is_country_type = spth_awaken_empire_kamikakushi
         is_country_type = lunar_capital_remain_fleet
         is_country_type = spth_lunar_capital_union_fleet
     }
@@ -231,6 +305,9 @@ spth_always_remove_modifier_check = {
                 is_country_type = spth_country_type_container
                 is_country_type = spth_crisis_lunar_outpost
                 is_country_type = spth_fallen_empire
+                is_country_type = spth_fallen_empire_kamikakushi
+                is_country_type = spth_fallen_empire_hiffu
+                is_country_type = spth_awaken_empire_kamikakushi
                 is_country_type = spth_enclave
             }
         }
@@ -250,6 +327,7 @@ spth_has_precursor_intro = {
 }
 
 spth_is_touhou_deposit = {
+    optimize_memory
     OR = {
         is_deposit_type = d_zhulin
         is_deposit_type = d_yokai_mountain
@@ -277,6 +355,7 @@ spth_is_touhou_deposit = {
     }
 }
 spth_is_no_remove_deposit = {
+    optimize_memory
     OR = {
         spth_is_touhou_deposit = yes
         # original deposits
@@ -295,6 +374,7 @@ spth_is_no_remove_deposit = {
 }
 
 is_koishi_critical_factor_low = {
+    optimize_memory
     OR = {
         is_ship_size = frigate
         is_ship_size = corvette
@@ -304,6 +384,7 @@ is_koishi_critical_factor_low = {
     }
 }
 is_koishi_critical_factor_mid = {
+    optimize_memory
     OR = {
         is_ship_size = small_ship_fallen_empire
         is_ship_size = cruiser
@@ -312,6 +393,7 @@ is_koishi_critical_factor_mid = {
     }
 }
 is_koishi_critical_factor_high = {
+    optimize_memory
     OR = {
         is_ship_size = battleship
         is_ship_size = titan
@@ -323,6 +405,7 @@ is_koishi_critical_factor_high = {
     }
 }
 is_koishi_critical_factor_extra = {
+    optimize_memory
     OR = {
         is_ship_class = shipclass_starbase
         is_ship_size = spth_ur_didact_flagship
@@ -334,6 +417,7 @@ is_koishi_critical_factor_extra = {
     }
 }
 is_koishi_original_ships = {
+    optimize_memory
     OR = {
         is_ship_size = frigate
         is_ship_size = corvette
@@ -491,13 +575,43 @@ spth_subcapital_allow_pretrigger = {
     }
 }
 
+use_touhou_starting_district = {
+    optimize_memory
+    OR = {
+        is_planet_class = pc_gensokyo_city
+        is_planet_class = pc_gensokyo_planet
+        is_planet_class = pc_kamikakushi_planet
+        is_planet_class = pc_ringworld_th
+        has_planet_flag = use_touhou_starting_district
+    }
+}
+
+spth_is_regular_empire = {
+    optimize_memory
+    OR = {
+        is_country_type = default
+        #for checks in buildings and districts
+        is_country_type = awakened_marauders
+        is_country_type = fallen_empire
+        is_country_type = awakened_fallen_empire
+        is_country_type = spth_fallen_empire
+        is_country_type = spth_fallen_empire_kamikakushi
+        is_country_type = spth_awaken_empire_kamikakushi
+        is_country_type = spth_fallen_empire_hiffu
+    }
+    NOT = { has_ethic = ethic_gestalt_consciousness	}
+}
 # [CIVIC]
 # this: any scope that can has owner
 spth_check_gensokyo_auth = {
+    optimize_memory
     exists = owner
     owner = {
-        is_regular_empire = yes
-        has_authority = auth_gensokyo
+        spth_is_regular_empire = yes
+        OR = {
+            has_authority = auth_gensokyo
+            has_country_flag = touhou_mod_country
+        }
         [[CIVIC]
             has_civic = $CIVIC$
         ]

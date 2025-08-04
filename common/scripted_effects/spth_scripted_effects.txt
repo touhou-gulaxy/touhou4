@@ -1,4 +1,5 @@
 spth_effect_init_container_country_effect = {
+	optimize_memory
     if = {
         limit = { NOT = { exists = event_target:spth_container_country } }
         create_country = {
@@ -300,6 +301,7 @@ spth_create_fleet = {
 			spawn_debris = $spawn_debris|no$
 			can_disband = $can_disband$
 			is_boss = $is_boss$
+			can_change_leader = $can_change_leader|yes$
 		}
 		effect = {
 			set_owner = $OWNER$
@@ -355,11 +357,22 @@ spth_create_fleet = {
 			[[NAME_lunar_capital_frigate_crisis] while = { count = $NAME_lunar_capital_frigate_crisis$ create_ship = { name = random design = NAME_lunar_capital_frigate_crisis } } ]
 			[[NAME_lunar_capital_frigate_s_crisis] while = { count = $NAME_lunar_capital_frigate_s_crisis$ create_ship = { name = random design = NAME_lunar_capital_frigate_s_crisis } } ]
 
+			# sp
+			[[NAME_TH_battle_cruiser_ghost] while = { count = $NAME_TH_battle_cruiser_ghost$ create_ship = { name = random design = NAME_TH_battle_cruiser_ghost } } ]
+
+			# fe
+			[[spth_kamikakushi_fallen_battle_cruiser_g] while = { count = $spth_kamikakushi_fallen_battle_cruiser_g$ create_ship = { design = spth_kamikakushi_fallen_battle_cruiser_g } } ]
+			[[spth_kamikakushi_fallen_battle_cruiser_sk] while = { count = $spth_kamikakushi_fallen_battle_cruiser_sk$ create_ship = { design = spth_kamikakushi_fallen_battle_cruiser_sk } } ]
+			[[spth_kamikakushi_fallen_battle_cruiser_se] while = { count = $spth_kamikakushi_fallen_battle_cruiser_se$ create_ship = { design = spth_kamikakushi_fallen_battle_cruiser_se } } ]
+			[[spth_kamikakushi_fallen_battle_cruiser_ac] while = { count = $spth_kamikakushi_fallen_battle_cruiser_ac$ create_ship = { design = spth_kamikakushi_fallen_battle_cruiser_ac } } ]
+
 			[[fleet_action] fleet_event = { id = $fleet_action$ } ]
 			[[fleet_action_delayed] fleet_event = { id = $fleet_action_delayed$ days = $DAYS$ random = $DAYS_RANDOM$ } ]
 			[[modifier] add_modifier = { modifier = $modifier$ mult = $MUL$ days = $DURATION$ } ]
 			[[evt_target] save_event_target_as = $evt_target$ ]
 			spth_init_special_ship_flag = yes
+			[[kamikakushi_bonus] every_owned_ship = { limit = { is_touhou_ship = yes } touhou_difficulty_bonus_ship = { kamikakushi = yes } } ]
+			[[lunar_capital_bonus] every_owned_ship = { limit = { is_touhou_ship = yes } touhou_difficulty_bonus_ship = { lunar_capital = yes } } ]
 		}
 	}
 }
@@ -796,7 +809,7 @@ spth_spawn_kamikakushi_guard = {
 		}
 		spth_create_fleet = {
 			NAME = spth_kamikakushi_invader_titan
-			can_disband = no is_boss = yes
+			can_disband = no is_boss = no
 			OWNER = event_target:spth_kamikakushi_invader_country
 			location = prev uses_naval_capacity = no
 			flag = spth_kamikakushi_invader_fleet
@@ -805,11 +818,13 @@ spth_spawn_kamikakushi_guard = {
 			spth_kamikakushi_invader_bc_tmp = 20
 			spth_kamikakushi_invader_bc_tor = 20
 			spth_kamikakushi_invader_bc_ylx = 10
+			spth_kamikakushi_cruiser_1 = 5
 			evt_target = spth_kamikakushi_invader_fleet
+			kamikakushi_bonus = yes
 		}
 		spth_create_fleet = {
 			NAME = spth_kamikakushi_invader_bc_tlx
-			can_disband = no is_boss = yes
+			can_disband = no is_boss = no
 			OWNER = event_target:spth_kamikakushi_invader_country
 			location = event_target:spth_precursor_capital_makai_lunar
 			uses_naval_capacity = no
@@ -818,7 +833,9 @@ spth_spawn_kamikakushi_guard = {
 			spth_kamikakushi_invader_bc_tmp = 10
 			spth_kamikakushi_invader_bc_tor = 10
 			spth_kamikakushi_invader_bc_ylx = 5
+			spth_kamikakushi_cruiser_1 = 2
 			evt_target = spth_kamikakushi_invader_fleet
+			kamikakushi_bonus = yes
 		}
 	}
 	set_update_modifiers_batch = end
@@ -1030,6 +1047,7 @@ spth_kamikakushi_spawn_preview_fleet = {
 		spth_kamikakushi_invader_bc_tor = 7
 		spth_kamikakushi_invader_bc_ylx = 4
 		spth_kamikakushi_cruiser_1 = 2
+		kamikakushi_bonus = yes
 	}
 	spth_kamikakushi_add_fleet_counter = yes
 }
@@ -1048,6 +1066,7 @@ spth_kamikakushi_spawn_invader_fleet = {
 		spth_kamikakushi_invader_bc_tor = 13
 		spth_kamikakushi_invader_bc_ylx = 7
 		spth_kamikakushi_cruiser_1 = 5
+		kamikakushi_bonus = yes
 	}
 	spth_kamikakushi_add_fleet_counter = yes
 }
@@ -1066,6 +1085,7 @@ spth_kamikakushi_spawn_main_fleet = {
 		spth_kamikakushi_invader_bc_yyk_p = 25
 		spth_kamikakushi_cruiser_1 = 10
 		evt_target = spth_temp_main_fleet
+		kamikakushi_bonus = yes
 	}
 	event_target:spth_temp_main_fleet = { save_global_event_target_as = spth_kamikakushi_main_fleet_$id$ }
 	spth_kamikakushi_add_fleet_counter = yes
@@ -1086,6 +1106,7 @@ spth_kamikakushi_spawn_defence_fleet = {
 		spth_kamikakushi_invader_bc_ylx = 8
 		spth_kamikakushi_invader_bc_yyk_p = 2
 		spth_kamikakushi_cruiser_1 = 15
+		kamikakushi_bonus = yes
 	}
 	spth_kamikakushi_add_fleet_counter = yes
 }
@@ -1106,6 +1127,7 @@ spth_kamikakushi_spawn_super_carrier_fleet = {
 			spth_kamikakushi_invader_bc_yyk_g = 10
 			spth_kamikakushi_invader_bc_yyk_p = 10
 			spth_kamikakushi_cruiser_1 = 8
+			kamikakushi_bonus = yes
 		}
 		spth_kamikakushi_add_fleet_counter = yes
 	}
@@ -1122,6 +1144,7 @@ spth_kamikakushi_spawn_small_defence_fleet = {
 		spth_kamikakushi_invader_bc_tmp = 15
 		spth_kamikakushi_invader_bc_tor = 15
 		spth_kamikakushi_cruiser_1 = 10
+		kamikakushi_bonus = yes
 	}
 	spth_kamikakushi_add_fleet_counter = yes
 }
@@ -1140,6 +1163,7 @@ spth_kamikakushi_spawn_random_support_fleet = {
 				spth_kamikakushi_invader_bc_tmp = 2
 				spth_kamikakushi_invader_bc_tor = 2
 				spth_kamikakushi_cruiser_1 = 1
+				kamikakushi_bonus = yes
 			}
 		}
 		35 = {
@@ -1155,6 +1179,7 @@ spth_kamikakushi_spawn_random_support_fleet = {
 				spth_kamikakushi_invader_bc_tmp = 2
 				spth_kamikakushi_invader_bc_tor = 2
 				spth_kamikakushi_cruiser_1 = 2
+				kamikakushi_bonus = yes
 			}
 		}
 		15 = {
@@ -1170,6 +1195,7 @@ spth_kamikakushi_spawn_random_support_fleet = {
 				spth_kamikakushi_invader_bc_tmp = 3
 				spth_kamikakushi_invader_bc_tor = 3
 				spth_kamikakushi_cruiser_1 = 2
+				kamikakushi_bonus = yes
 			}
 		}
 	}
@@ -1184,6 +1210,7 @@ spth_kamikakushi_spawn_gate = {
 		flag = spth_kamikakushi_gate
 		spth_kamikakushi_gate = 1
 		evt_target = spth_kamikakushi_gate
+		kamikakushi_bonus = yes
 	}
 	every_country = {
 		limit = {
@@ -1368,6 +1395,7 @@ spth_spawn_test_fleet = {
 			NAME_lunar_capital_escort_crisis = 15
 			NAME_lunar_capital_frigate_crisis = 15
 			NAME_lunar_capital_frigate_s_crisis = 10
+			lunar_capital_bonus = yes
 		}
 		spth_create_fleet = {
 			NAME = NAME_spth_test_fleet
@@ -1379,6 +1407,7 @@ spth_spawn_test_fleet = {
 			NAME_lunar_capital_escort_crisis = 10
 			NAME_lunar_capital_frigate_crisis = 10
 			NAME_lunar_capital_frigate_s_crisis = 5
+			lunar_capital_bonus = yes
 		}
 		spth_create_fleet = {
 			NAME = NAME_spth_test_fleet
@@ -1390,6 +1419,7 @@ spth_spawn_test_fleet = {
 			NAME_lunar_capital_escort_crisis = 10
 			NAME_lunar_capital_frigate_crisis = 10
 			NAME_lunar_capital_frigate_s_crisis = 5
+			lunar_capital_bonus = yes
 		}
 		spth_create_fleet = {
 			NAME = NAME_spth_test_fleet
@@ -1399,6 +1429,7 @@ spth_spawn_test_fleet = {
 			flag = spth_test_fleet
 			NAME_lunar_capital_frigate_crisis = 12
 			NAME_lunar_capital_frigate_s_crisis = 5
+			lunar_capital_bonus = yes
 		}
 		spth_create_fleet = {
 			NAME = NAME_spth_test_fleet
@@ -1408,6 +1439,7 @@ spth_spawn_test_fleet = {
 			flag = spth_test_fleet
 			NAME_lunar_capital_frigate_crisis = 12
 			NAME_lunar_capital_frigate_s_crisis = 5
+			lunar_capital_bonus = yes
 		}
 		spth_create_fleet = {
 			NAME = NAME_spth_test_fleet
@@ -1417,6 +1449,7 @@ spth_spawn_test_fleet = {
 			flag = spth_test_fleet
 			NAME_lunar_capital_frigate_crisis = 12
 			NAME_lunar_capital_frigate_s_crisis = 5
+			lunar_capital_bonus = yes
 		}
 	}
 }
@@ -1454,6 +1487,110 @@ spth_astral_thread_small_reward = {
 			}
 			1 = {
 				add_resource_astral_threads = { VALUE = 60 ADD = $ADD$ }
+			}
+		}
+	}
+}
+
+spth_create_kamikakushi_fallen_empire = {
+	optimize_memory
+	create_species = {
+		name = species_kamikakushi
+		class = "THSC"
+		can_generate_leaders = yes
+		portrait = touhou2
+		pops_can_reproduce = yes
+		name_list = touhouchs
+		traits = {
+			trait = trait_touhou
+		}
+		extra_trait_points = 4
+		gender = female
+		immortal = yes
+		effect = {
+			save_global_event_target_as = spth_kamikakushi_fallen_empire_species
+		}
+	}
+	create_country = {
+		name = NAME_kamikakushi_real
+		species = event_target:spth_kamikakushi_fallen_empire_species
+		name_list = touhouchs
+		type = spth_fallen_empire_kamikakushi
+		flag = {
+			icon = {
+				category = "touhousp"
+				file = "kamikakushi_alt.dds"
+			}
+			background = {
+				category = "backgrounds"
+				file = "00_solid.dds"
+			}
+			colors = {
+				"light_orange"
+				"light_orange"
+				"light_orange"
+				"null"
+			}
+		}
+		ignore_initial_colony_error = yes
+		authority = auth_kamikakushi
+		civics = {
+			civic = civic_real_kamikakushi
+			civic = civic_kamikakushi_sigil
+		}
+		origin = "origin_real_kamikakushi"
+		ethos = { ethic = ethic_fanatic_spiritualist ethic = ethic_authoritarian }
+		effect = {
+			create_ship_design = { design = spth_kamikakushi_fallen_battle_cruiser_g }
+			add_ship_design = last_created_design
+			create_ship_design = { design = spth_kamikakushi_fallen_battle_cruiser_ac }
+			add_ship_design = last_created_design
+			create_ship_design = { design = spth_kamikakushi_fallen_battle_cruiser_se }
+			add_ship_design = last_created_design
+			create_ship_design = { design = spth_kamikakushi_fallen_battle_cruiser_sk }
+			add_ship_design = last_created_design
+			create_ship_design = { design = NAME_spth_kamikakushi_cruiser_1 }
+			add_ship_design = last_created_design
+			add_global_ship_design = "NAME_Cleanser"
+			add_global_ship_design = "NAME_Penitent"
+			add_global_ship_design = "NAME_Faith"
+			add_global_ship_design = "NAME_Pilgrim"
+			add_global_ship_design = "NAME_FE_Starbase"
+			save_global_event_target_as = spth_kamikakushi_fallen_empire
+			set_country_flag = protected_from_queen_storm
+			set_country_flag = spth_kamikakushi_fallen_empire
+			set_country_flag = touhou_mod_country
+			set_graphical_culture = strg_01
+			add_modifier = { modifier = spth_kamikakushi days = -1 }
+			add_resource = {
+				minerals = 1000000
+				energy = 1000000
+				food = 1000000
+				influence = 1000000
+				alloys = 1000000
+				consumer_goods = 1000000
+				sr_dark_matter = 1000000
+				sr_living_metal = 100000
+				sr_zro = 1000000
+				sr_fuka = 1000000
+				sr_lingli = 1000000
+			}
+			every_playable_country = {
+				limit = { NOT = { is_same_value = prev } }
+				establish_communications_no_message = prev
+				if = {
+					limit = { is_ai = no }
+					prev = {
+						set_closed_borders = {
+							who = prev
+							status = no
+						}
+					}
+				}
+				if = {
+					limit = { NOT = { has_country_flag = kamikakushi_fallen_empire_trigger_empire } }
+					country_event = { id = spth_precursor.203 }
+				}
 			}
 		}
 	}

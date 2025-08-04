@@ -192,6 +192,7 @@ spth_super_carrier_instant_jump = {
 # Scope = ship (target), from = ship (shooter)
 spth_super_carrier_on_hit_effect = {
     optimize_memory
+    th_spawn_explosion_particle = { color = blue size = large }
     reduce_shield = 922337203
     repair_armor_amount = -922337202
     set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_instant_kill_target days = 2 }
@@ -209,21 +210,21 @@ spth_super_carrier_on_hit_effect = {
         type = th_invisible_object
         location = this
         duration = 10
-        entity_offset = 32
+        entity_offset = 40
         entity_offset_angle = 0
         entity_offset_height = 0
         use_3d_location = yes
-        effect = { save_event_target_as = target_d_32 }
+        effect = { save_event_target_as = target_d_inner }
     }
     create_ambient_object = {
         type = th_invisible_object
         location = this
         duration = 10
-        entity_offset = 48
+        entity_offset = 100
         entity_offset_angle = 0
         entity_offset_height = 0
         use_3d_location = yes
-        effect = { save_event_target_as = target_d_48 }
+        effect = { save_event_target_as = target_d_outer }
     }
     from = {
         save_event_target_as = shooter
@@ -235,10 +236,11 @@ spth_super_carrier_on_hit_effect = {
                             event_target:target = {
                                 compare_distance = {
                                     closer_object = prev
-                                    further_object = event_target:target_d_32
+                                    further_object = event_target:target_d_inner
                                 }
                             }
                         }
+                        th_spawn_explosion_particle = { color = pink size = medium }
                         set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_damage_target days = 3 }
                     }
                     if = {
@@ -246,10 +248,11 @@ spth_super_carrier_on_hit_effect = {
                             event_target:target = {
                                 compare_distance = {
                                     closer_object = prev
-                                    further_object = event_target:target_d_48
+                                    further_object = event_target:target_d_outer
                                 }
                             }
                         }
+                        th_spawn_explosion_particle = { color = green size = medium }
                         spth_reduce_shield = { factor = 0.2 percent = 0.2 }
                         add_modifier = { modifier = spth_super_carrier_damage_modifier days = 8 }
                     }
@@ -294,6 +297,7 @@ spth_super_carrier_on_hit_effect = {
                     distance = 0
                     angle = random
                 }
+                set_event_locked = yes
                 fleet_event = { id = spth_fleet.1006 days = 3 }
             }
         }

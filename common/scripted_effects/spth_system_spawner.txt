@@ -134,3 +134,277 @@ spth_story_lunar_outpost_home_fleets = {
         }
     }
 }
+
+spth_spawn_kamikakushi_fallen_empire = {
+    optimize_memory
+    set_spawn_system_batch = begin
+    no_scope = {
+        if = {
+            limit = { galaxy_size = tiny }
+            spawn_system = {
+                min_distance = 235
+                max_distance = 240
+                min_orientation_angle = 44
+                max_orientation_angle = 46
+                initializer = "spth_real_kamikakushi_capital"
+                hyperlane = no
+            }
+        } else = {
+            if = {
+                limit = { galaxy_size = small }
+                spawn_system = {
+                    min_distance = 320
+                    max_distance = 325
+                    min_orientation_angle = 44
+                    max_orientation_angle = 46
+                    initializer = "spth_real_kamikakushi_capital"
+                    hyperlane = no
+                }
+            } else = {
+                if = {
+                    limit = { galaxy_size = medium }
+                    spawn_system = {
+                        min_distance = 480
+                        max_distance = 485
+                        min_orientation_angle = 44
+                        max_orientation_angle = 46
+                        initializer = "spth_real_kamikakushi_capital"
+                        hyperlane = no
+                    }
+                } else = {
+                    if = {
+                        limit = { galaxy_size = large }
+                        spawn_system = {
+                            min_distance = 500
+                            max_distance = 505
+                            min_orientation_angle = 44
+                            max_orientation_angle = 46
+                            initializer = "spth_real_kamikakushi_capital"
+                            hyperlane = no
+                        }
+                    } else = {
+                        spawn_system = {
+                            min_distance = 525
+                            max_distance = 530
+                            min_orientation_angle = 44
+                            max_orientation_angle = 46
+                            initializer = "spth_real_kamikakushi_capital"
+                            hyperlane = no
+                        }
+                    }
+                }
+            }
+        }
+    }
+    event_target:spth_real_kamikakushi_capital = {
+        spawn_system = {
+            min_distance = 25
+            max_distance = 40
+            min_orientation_angle = 54
+            max_orientation_angle = 96
+            initializer = "spth_real_kamikakushi_system_1"
+            hyperlane = no
+        }
+        spawn_system = {
+            min_distance = 32
+            max_distance = 48
+            min_orientation_angle = 94
+            max_orientation_angle = 136
+            initializer = "spth_real_kamikakushi_system_2"
+            hyperlane = no
+        }
+        spawn_system = {
+            min_distance = 20
+            max_distance = 30
+            min_orientation_angle = 164
+            max_orientation_angle = 206
+            initializer = "spth_real_kamikakushi_system_3"
+            hyperlane = yes
+        }
+        spawn_system = {
+            min_distance = 48
+            max_distance = 64
+            min_orientation_angle = 234
+            max_orientation_angle = 276
+            initializer = "spth_real_kamikakushi_system_4"
+            hyperlane = no
+        }
+        add_hyperlane = {
+            from = event_target:spth_real_kamikakushi_system_2
+            to = event_target:spth_real_kamikakushi_system_1
+        }
+        add_hyperlane = {
+            from = event_target:spth_real_kamikakushi_system_2
+            to = event_target:spth_real_kamikakushi_system_3
+        }
+        add_hyperlane = {
+            from = event_target:spth_real_kamikakushi_system_2
+            to = event_target:spth_real_kamikakushi_system_4
+        }
+        add_hyperlane = {
+            from = event_target:spth_real_kamikakushi_system_2
+            to = event_target:spth_real_kamikakushi_capital
+        }
+        add_hyperlane = {
+            from = event_target:spth_real_kamikakushi_system_4
+            to = event_target:spth_real_kamikakushi_capital
+        }
+    }
+    set_spawn_system_batch = end
+}
+spth_spawn_kamikakushi_setup_ringworld = {
+    optimize_memory
+    add_modifier = { modifier = planet_population_control }
+    set_owner = event_target:spth_kamikakushi_fallen_empire
+    while = { count = $district_spth_sp_produce$ add_district = district_spth_sp_produce }
+    add_zone = { district = district_spth_sp_produce zone = $zone1$ }
+    add_zone = { district = district_spth_sp_produce zone = $zone2$ }
+    [[tushu] while = { count = $tushu$ add_district = district_gensokyo_tushu } ]
+    [[renli] while = { count = $renli$ add_district = district_gensokyo_renli } ]
+    [[jinja] while = { count = $jinja$ add_district = district_gensokyo_jinja } ]
+    [[jiqiao] while = { count = $jiqiao$ add_district = district_gensokyo_jiqiao } ]
+    [[tushu_zone] add_zone = { district = district_gensokyo_tushu zone = $tushu_zone$ } ]
+    [[renli_zone] add_zone = { district = district_gensokyo_tushu zone = $renli_zone$ } ]
+    [[jinja_zone] add_zone = { district = district_gensokyo_tushu zone = $jinja_zone$ } ]
+    [[jiqiao_zone] add_zone = { district = district_gensokyo_tushu zone = $jiqiao_zone$ } ]
+    add_building = building_spth_planet_shirne
+    add_building = $subcapital$
+    add_building = building_spth_housing
+    [[bld_1] while = { count = $bld_1$ add_building = $bld_1_type$ } ]
+    [[bld_2] while = { count = $bld_2$ add_building = $bld_2_type$ } ]
+    [[bld_3] while = { count = $bld_3$ add_building = $bld_3_type$ } ]
+    [[bld_4] while = { count = $bld_4$ add_building = $bld_4_type$ } ]
+    create_pop_group = { species = owner_main_species size = $pop_num$ }
+    spth_effect_establish_barrier = yes
+    spth_effect_refresh_barrier_and_faith = yes
+}
+spth_spawn_kamikakushi_fallen_empire_fleet = {
+    optimize_memory
+    create_starbase = {
+        size = "starbase_citadel"
+        owner = event_target:spth_kamikakushi_fallen_empire
+        module = "shipyard"
+        module = "gun_battery"
+        module = "gun_battery"
+        module = "gun_battery"
+        module = "gun_battery"
+        module = "gun_battery"
+        building = "toho_yards"
+        building = "toho_yards"
+        building = "colossus_yards"
+        building = "titan_yards"
+    }
+    every_system_planet = {
+        limit = { has_planet_flag = kamikakushi_fallen_empire_spawnpoint }
+        save_event_target_as = spawnpoint
+        spth_create_fleet = {
+            NAME = NAME_kamikakushi_common_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:spth_kamikakushi_fallen_empire
+            location = event_target:spawnpoint
+            flag = spth_kamikakushi_fallen_empire_fleet
+            spth_kamikakushi_invader_titan = 2
+            spth_kamikakushi_fallen_battle_cruiser_g = 15
+            spth_kamikakushi_fallen_battle_cruiser_sk = 10
+            spth_kamikakushi_fallen_battle_cruiser_se = 10
+            spth_kamikakushi_fallen_battle_cruiser_ac = 15
+            spth_kamikakushi_cruiser_1 = 10
+        }
+    }
+}
+
+spth_make_kamikakushi_fallen_empire_awake = {
+    optimize_memory
+    set_country_flag = spth_awaken_empire_kamikakushi
+    set_country_type = spth_awaken_empire_kamikakushi
+    spth_refresh_kamikakushi_awaken_empire_fleets = yes
+    unlock_council_slots = 2
+    while = {
+        count = 2
+        create_leader = {
+            class = scientist
+            species = owner_main_species
+            name = random
+            skill = 10
+            leader_age_min = 25
+            leader_age_max = 45
+        }
+    }
+    # Establish communications
+    [[threat]
+        set_country_flag = spth_awaken_by_threat
+        $threat$ = { save_event_target_as = enemy_empire }
+    ]
+    every_country = {
+        limit = {
+            OR = {
+                is_country_type = default
+                is_country_type = fallen_empire
+                is_country_type = awakened_fallen_empire
+            }
+            NOT = { has_communications = root }
+        }
+        establish_communications_no_message = root
+        root = {
+            save_event_target_as = contact_empire
+        }
+        country_event = { id = spth_precursor.204 }
+    }
+}
+@kamikakushi_awaken_empire_fleets_max = 9
+spth_refresh_kamikakushi_awaken_empire_fleets = {
+    optimize_memory
+    if = {
+        limit = {
+            count_owned_fleet = {
+                count <= @kamikakushi_awaken_empire_fleets_max
+                limit = {
+                    has_fleet_flag = spth_kamikakushi_fallen_empire_fleet
+                    NOT = { has_fleet_flag = spth_kamikakushi_fallen_empire_super_fleet }
+                }
+            }
+        }
+        every_system_within_border = {
+            limit = { has_star_flag = spth_real_kamikakushi_system }
+            every_system_planet = {
+                limit = { has_planet_flag = kamikakushi_fallen_empire_spawnpoint }
+                spth_create_fleet = {
+                    NAME = NAME_kamikakushi_common_fleet
+                    can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+                    OWNER = event_target:spth_kamikakushi_fallen_empire
+                    location = prev
+                    flag = spth_kamikakushi_fallen_empire_fleet
+                    spth_kamikakushi_invader_titan = 2
+                    spth_kamikakushi_fallen_battle_cruiser_g = 15
+                    spth_kamikakushi_fallen_battle_cruiser_sk = 10
+                    spth_kamikakushi_fallen_battle_cruiser_se = 10
+                    spth_kamikakushi_fallen_battle_cruiser_ac = 15
+                    spth_kamikakushi_cruiser_1 = 10
+                }
+            }
+        }
+    }
+    if = {
+        limit = { NOT = { any_owned_fleet = { has_fleet_flag = spth_kamikakushi_fallen_empire_super_fleet } } }
+        event_target:spth_real_kamikakushi_capital = {
+            random_system_planet = {
+                limit = { has_planet_flag = kamikakushi_fallen_empire_spawnpoint_sp }
+                spth_create_fleet = {
+                    NAME = NAME_kamikakushi_supercarrier_fleet
+                    can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+                    OWNER = event_target:spth_kamikakushi_fallen_empire
+                    location = prev
+                    flag = spth_kamikakushi_fallen_empire_fleet
+                    flag1 = spth_kamikakushi_fallen_empire_super_fleet
+                    spth_kamikakushi_invader_titan = 2
+                    spth_kamikakushi_fallen_battle_cruiser_g = 12
+                    spth_kamikakushi_fallen_battle_cruiser_sk = 8
+                    spth_kamikakushi_fallen_battle_cruiser_se = 8
+                    spth_kamikakushi_fallen_battle_cruiser_ac = 12
+                    spth_kamikakushi_cruiser_1 = 15
+                    spth_kamikakushi_super_carrier = 1
+                }
+            }
+        }
+    }
+}

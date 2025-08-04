@@ -393,7 +393,7 @@ planet_event = {
                         limit = { is_colony = yes is_capital = no NOT = { has_planet_flag = is_spth_megastructure_planet } }
                         create_pop_group = {
                             species = owner_main_species size = 1
-                            effect = { add_pop_amount = spth_kamikakushi_colony_pops_avg add_pop_amount = -1 }
+                            effect = { add_pop_amount = prevprev.spth_kamikakushi_colony_pops_avg }
                         }
                     }
                 }
@@ -401,7 +401,7 @@ planet_event = {
                     limit = { is_colony = yes is_capital = no NOT = { has_planet_flag = is_spth_megastructure_planet } }
                     create_pop_group = {
                         species = owner_main_species size = 1
-                        effect = { add_pop_amount = spth_kamikakushi_colony_pops_temp add_pop_amount = -1 }
+                        effect = { add_pop_amount = prevprev.spth_kamikakushi_colony_pops_temp }
                     }
                 }
                 if = {
@@ -409,7 +409,7 @@ planet_event = {
                     capital_scope = {
                         create_pop_group = {
                             species = owner_main_species size = 1
-                            effect = { add_pop_amount = spth_kamikakushi_colony_pops_counter add_pop_amount = -1 }
+                            effect = { add_pop_amount = prevprev.spth_kamikakushi_colony_pops_counter }
                         }
                     }
                 } else = {
@@ -417,14 +417,14 @@ planet_event = {
                         limit = { is_colony = yes is_capital = no NOT = { has_planet_flag = is_spth_megastructure_planet } }
                         create_pop_group = {
                             species = owner_main_species size = 1
-                            effect = { add_pop_amount = spth_kamikakushi_colony_pops_avg add_pop_amount = -1 }
+                            effect = { add_pop_amount = prevprev.spth_kamikakushi_colony_pops_avg }
                         }
                     }
                     random_owned_planet = {
                         limit = { is_colony = yes is_capital = no NOT = { has_planet_flag = is_spth_megastructure_planet } }
                         create_pop_group = {
                             species = owner_main_species size = 1
-                            effect = { add_pop_amount = spth_kamikakushi_colony_pops_temp add_pop_amount = -1 }
+                            effect = { add_pop_amount = prevprev.spth_kamikakushi_colony_pops_temp }
                         }
                     }
                 }
@@ -534,6 +534,34 @@ planet_event = {
                         from = root
                     }
                 }
+            }
+        }
+
+        # auto combat script
+        solar_system = {
+            every_fleet_in_system = {
+                limit = {
+                    exists = owner
+                    owner = { has_country_flag = enable_touhou_auto_action_player }
+                    has_fleet_flag = enable_touhou_auto_action_player
+                    OR = {
+                        AND = { exists = orbit orbit = { is_same_value = root } }
+                        AND = {
+                            is_fleet_idle = yes
+                            NAND = {
+                                exists = orbit
+                                orbit = {
+                                    NOT = { is_star = yes }
+                                    exists = owner
+                                    owner = { is_hostile = event_target:spth_kamikakushi_country }
+                                }
+                            }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = touhou_ship_actions.12 days = 5 random = 15 }
             }
         }
     }
@@ -647,6 +675,7 @@ ship_event = {
             every_system = {
                 limit = { has_star_flag = space_shrine_station_system }
                 remove_star_flag = space_shrine_station_system
+                save_event_target_as = touhou_source_system
                 every_system_planet = {
                     limit = { has_modifier = space_shrine_planet_buff }
                     remove_modifier = space_shrine_planet_buff
@@ -690,12 +719,54 @@ ship_event = {
                 set_variable = { which = space_shrine_original_size value = trigger:planet_size }
                 set_planet_size = 1 set_planet_entity = { entity = spiritual_power_star_entity }
             }
-            spawn_random_storm = {
-                type = space_shrine_storm
-                cosmic_storm_start_position = this
-                immediate = yes
+            if = {
+                limit = { root.fleet.owner = { NOT = { has_country_flag = close_space_shrine_storm } } }
+                spawn_random_storm = {
+                    type = space_shrine_storm
+                    cosmic_storm_start_position = this
+                    immediate = yes
+                }
+                last_created_cosmic_storm = { set_storm_flag = spth_space_shrine_station_generated_storm_@prevprev }
             }
-            last_created_cosmic_storm = { set_storm_flag = spth_space_shrine_station_generated_storm_@prevprev }
+        }
+        if = {
+            limit = { has_ship_flag = touhou_ship_action_space_shrine_beacon_actived }
+            owner = {
+                set_timed_country_flag = { flag = touhou_ship_action_space_shrine_beacon_cooldown days = 200 }
+                remove_country_flag = touhou_ship_action_space_shrine_beacon_actived
+            }
+            remove_ship_flag = touhou_ship_action_space_shrine_beacon_actived
+            event_target:touhou_source_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        owner = { is_same_value = root.owner }
+                        any_controlled_ship = { is_disabled = no is_ship_class = shipclass_military }
+                        is_in_combat = no
+                    }
+                    reroll_random = yes
+                    random_list = {
+                        10 = { set_location = { target = root.from.star distance = 0 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 5 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 10 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 15 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 20 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 25 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 30 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 35 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 40 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 45 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 50 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 60 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 70 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 80 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 90 angle = random } }
+                        10 = { set_location = { target = root.from.star distance = 100 angle = random } }
+                    }
+                    reroll_random = yes
+                    every_owned_ship = { spth_create_jump_particle_effect = yes }
+                }
+            }
         }
     }
 }
@@ -841,6 +912,7 @@ ship_event = {
         spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 sh_perc = 1.0 }
         if = {
             limit = { has_touhou_invincible = yes }
+            th_spawn_disable_invincible_effect = yes
             set_disable_at_health = 0.01
             fire_on_action = {
                 on_action = on_disable_touhou_invincible
@@ -852,12 +924,14 @@ ship_event = {
             owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
             if = {
                 limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 4 } }
+                th_spawn_explosion_particle = { color = pink size = large }
                 set_disable_at_health = -1
                 fire_on_action = {
                     on_action = on_disable_touhou_supercarrier_ended
                     scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
                 }
             } else = {
+                th_spawn_disable_invincible_effect = yes
                 set_disable_at_health = 0.01
                 fire_on_action = {
                     on_action = on_disable_touhou_supercarrier
@@ -875,6 +949,7 @@ ship_event = {
                 limit = { check_modifier_value = { modifier = ship_spth_extra_life value > 1 } }
                 set_disable_at_health = 0.01
             } else = { set_disable_at_health = -1 }
+            th_spawn_disable_extra_life_effect = yes
             fire_on_action = {
                 on_action = on_trigger_spth_extra_life
                 scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
@@ -950,8 +1025,8 @@ ship_event = {
                 if = {
                     limit = { check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
                     random_list = {
-                        20 = { modifier = { add = modifier:ship_th_mokou_skill } }
-                        80 = {
+                        15 = { modifier = { add = modifier:ship_th_mokou_skill } }
+                        85 = {
                             modifier = { subtract = modifier:ship_th_mokou_skill }
                             if = {
                                 limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
@@ -1329,12 +1404,18 @@ country_event = {
                     limit = { NOT = { is_variable_set = resurrection_butterfly_kill_count } }
                     set_variable = { which = resurrection_butterfly_kill_count value = 0 }
                 }
-                change_variable = { which = resurrection_butterfly_kill_count value = 1 }
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_spth_yuyuko_ruler_effect_1 value != 0 } }
+                    change_variable = { which = resurrection_butterfly_kill_count value = 2 }
+                } else = {
+                    change_variable = { which = resurrection_butterfly_kill_count value = 1 }
+                }
                 remove_modifier = weapon_type_resurrection_butterfly_bouns
                 add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = resurrection_butterfly_kill_count }
                 random_list = {
                     0 = {
                         modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_count }
+                        modifier = { factor = 1 check_modifier_value = { modifier = ship_spth_yuyuko_ruler_effect_1 value != 0 } }
                         if = {
                             limit = { NOT = { is_variable_set = resurrection_butterfly_extra_count } }
                             set_variable = { which = resurrection_butterfly_extra_count value = 0 }
@@ -1343,7 +1424,11 @@ country_event = {
                         remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
                         add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = resurrection_butterfly_extra_count }
                     }
-                    0 = { modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_max } modifier = { subtract = modifier:ship_spth_yuyuko_fan_weapon_count } }
+                    0 = {
+                        modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_max }
+                        modifier = { subtract = modifier:ship_spth_yuyuko_fan_weapon_count }
+                        modifier = { factor = 0 check_modifier_value = { modifier = ship_spth_yuyuko_ruler_effect_1 value != 0 } }
+                    }
                 }
                 reroll_random = yes
             }
@@ -1649,9 +1734,11 @@ country_event = {
     is_triggered_only = yes
     trigger = { fromfrom = { has_ship_flag = has_toyohime_instant_kill } }
     immediate = {
-        if = {
-            limit = { is_variable_set = ship_toyohime_instant_kill_used }
-            change_variable = { which = ship_toyohime_instant_kill_used value = 1 }
+        fromfrom = {
+            if = {
+                limit = { is_variable_set = ship_toyohime_instant_kill_used }
+                change_variable = { which = ship_toyohime_instant_kill_used value = 1 }
+            }
         }
     }
 }
