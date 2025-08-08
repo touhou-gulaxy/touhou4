@@ -882,9 +882,21 @@ spth_spawn_kamikakushi_country = {
 	optimize_memory
 	if = {
 		limit = { NOT = { exists = event_target:spth_kamikakushi_country } }
+		create_species = {
+			name = "NAME_spth_kamikakushi_species"
+			class = THSC
+			portrait = touhou3
+			traits = random
+			immortal = yes
+			effect = {
+				save_global_event_target_as = spth_kamikakushi_species
+				set_global_flag = has_spth_kamikakushi_species
+			}
+		}
 		create_country = {
 			name = spth_kamikakushi_country
 			type = spth_kamikakushi_country
+			species = event_target:spth_kamikakushi_species
 			flag = {
 				icon = {
 					category = "touhousp"
@@ -919,6 +931,17 @@ spth_spawn_kamikakushi_country = {
 				save_global_event_target_as = spth_kamikakushi_country
 				every_playable_country = {
 					limit = { NOT = { is_same_value = prev } }
+					establish_communications_no_message = prev
+				}
+				every_country = {
+					limit = {
+						OR = {
+							is_country_type = default
+							is_country_type = fallen_empire
+							is_country_type = awakened_fallen_empire
+						}
+						NOT = { has_communications = prev }
+					}
 					establish_communications_no_message = prev
 				}
 				if = {
@@ -1022,6 +1045,98 @@ spth_kamikakushi_destroy_wedge = {
 	observer_event = { id = touhou_crisis.200 scopes = { from = this } }
 }
 
+spth_kamikakushi_init_crisis_leader = {
+	optimize_memory
+	if = {
+		limit = { has_global_flag = has_spth_kamikakushi_species }
+		event_target:spth_kamikakushi_country = {
+			create_leader = {
+				class = commander
+				species = event_target:has_spth_kamikakushi_species
+				name = random
+				skill = 4
+				traits = { trait = leader_trait_kamikakushi }
+				effect = {
+					set_leader_flag = spth_kamikakushi_leader
+					set_leader_flag = has_gained_level_trait
+					set_leader_flag = legendary_leader
+					add_trait = { trait = subclass_commander_admiral }
+				}
+			}
+			last_created_leader = {
+				# roll领袖级别
+				[[!force_raity]
+					random_list = {
+						60 = {
+							modifier = { factor = 0 touhou_check_diffiulty_gteq = { value = 3 } }
+							set_leader_flag = leader_kamikakushi_common
+						}
+						30 = {
+							modifier = { factor = 0 touhou_check_diffiulty_lteq = { value = 2 } }
+							set_leader_flag = leader_kamikakushi_rare
+						}
+						15 = {
+							modifier = { factor = 0 touhou_check_diffiulty_lteq = { value = 3 } }
+							set_leader_flag = leader_kamikakushi_master
+						}
+					}
+					reroll_random = yes
+				]
+				[[force_raity]
+					set_leader_flag = leader_kamikakushi_$force_raity$
+				]
+				# easy以上难度概率roll一个技能
+				[[!force_skill]
+					if = {
+						limit = { touhou_check_diffiulty_gteq = { value = 2 } }
+						random_list = {
+							25 = {
+								modifier = { add = -5 touhou_check_diffiulty_gteq = { value = 5 } }
+								add_trait = { trait = leader_trait_kamikakushi_spark }
+							}
+							10 = {
+								modifier = { add = 10 touhou_check_diffiulty_gteq = { value = 5 } }
+								add_trait = { trait = leader_trait_kamikakushi_sakura }
+							}
+							5 = {
+								modifier = { add = 5 touhou_check_diffiulty_gteq = { value = 5 } }
+								modifier = { add = 10 touhou_check_diffiulty_gteq = { value = 5 } }
+								add_trait = { trait = leader_trait_kamikakushi_gap }
+							}
+							40 = {
+								modifier = { add = -20 touhou_check_diffiulty_gteq = { value = 3 } }
+								modifier = { add = -20 touhou_check_diffiulty_gteq = { value = 5 } }
+								# 无事发生
+							}
+						}
+						reroll_random = yes
+					}
+				]
+				[[force_skill]
+					add_trait = { trait = $force_skill$ }
+				]
+				# 额外技能等级，仅HARD及以上
+				[[!force_level]
+					if = {
+						limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+						add_skill = 3
+						if = {
+							limit = { touhou_check_diffiulty_gteq = { value = 4 } }
+							add_skill = 170
+						}
+					}
+				]
+				[[force_level]
+					add_skill = $force_level$
+				]
+				save_event_target_as = last_created_spth_kamikakushi_leader
+			}
+			event_target:$fleet$ = {
+				assign_leader = event_target:last_created_spth_kamikakushi_leader
+			}
+		}
+	}
+}
 spth_kamikakushi_add_fleet_counter = {
 	optimize_memory
 	every_country = {
@@ -1037,7 +1152,7 @@ spth_kamikakushi_spawn_preview_fleet = {
 	optimize_memory
 	spth_create_fleet = {
 		NAME = NAME_spth_kamikakushi_preview
-		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+		can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
 		OWNER = event_target:spth_kamikakushi_country
 		location = event_target:spth_kamikakushi_spawnpoint
 		flag = spth_kamikakushi_preview_fleet
@@ -1055,7 +1170,7 @@ spth_kamikakushi_spawn_invader_fleet = {
 	optimize_memory
 	spth_create_fleet = {
 		NAME = NAME_spth_kamikakushi_invader
-		can_disband = no is_boss = yes bombardment = spth_kamikakushi_crisis
+		can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
 		OWNER = event_target:spth_kamikakushi_country
 		location = event_target:spth_kamikakushi_spawnpoint
 		flag = spth_kamikakushi_invader_fleet
@@ -1067,7 +1182,9 @@ spth_kamikakushi_spawn_invader_fleet = {
 		spth_kamikakushi_invader_bc_ylx = 7
 		spth_kamikakushi_cruiser_1 = 5
 		kamikakushi_bonus = yes
+		evt_target = spth_kamikakushi_invader
 	}
+	spth_kamikakushi_init_crisis_leader = { fleet = spth_kamikakushi_invader }
 	spth_kamikakushi_add_fleet_counter = yes
 }
 spth_kamikakushi_spawn_main_fleet = {
@@ -1087,6 +1204,7 @@ spth_kamikakushi_spawn_main_fleet = {
 		evt_target = spth_temp_main_fleet
 		kamikakushi_bonus = yes
 	}
+	spth_kamikakushi_init_crisis_leader = { fleet = spth_temp_main_fleet }
 	event_target:spth_temp_main_fleet = { save_global_event_target_as = spth_kamikakushi_main_fleet_$id$ }
 	spth_kamikakushi_add_fleet_counter = yes
 }
@@ -1107,7 +1225,9 @@ spth_kamikakushi_spawn_defence_fleet = {
 		spth_kamikakushi_invader_bc_yyk_p = 2
 		spth_kamikakushi_cruiser_1 = 15
 		kamikakushi_bonus = yes
+		evt_target = spth_kamikakushi_defence
 	}
+	spth_kamikakushi_init_crisis_leader = { fleet = spth_kamikakushi_defence }
 	spth_kamikakushi_add_fleet_counter = yes
 }
 spth_kamikakushi_spawn_super_carrier_fleet = {
@@ -1128,7 +1248,14 @@ spth_kamikakushi_spawn_super_carrier_fleet = {
 			spth_kamikakushi_invader_bc_yyk_p = 10
 			spth_kamikakushi_cruiser_1 = 8
 			kamikakushi_bonus = yes
+			evt_target = spth_kamikakushi_super_carrier
 		}
+		spth_kamikakushi_init_crisis_leader = {
+			fleet = spth_kamikakushi_super_carrier
+			force_raity = master
+			force_level = 999
+			force_skill = leader_trait_kamikakushi_gap
+ }
 		spth_kamikakushi_add_fleet_counter = yes
 	}
 }
@@ -1145,7 +1272,9 @@ spth_kamikakushi_spawn_small_defence_fleet = {
 		spth_kamikakushi_invader_bc_tor = 15
 		spth_kamikakushi_cruiser_1 = 10
 		kamikakushi_bonus = yes
+		evt_target = spth_kamikakushi_defence
 	}
+	spth_kamikakushi_init_crisis_leader = { fleet = spth_kamikakushi_defence }
 	spth_kamikakushi_add_fleet_counter = yes
 }
 spth_kamikakushi_spawn_random_support_fleet = {
