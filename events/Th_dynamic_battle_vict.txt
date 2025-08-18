@@ -954,8 +954,8 @@ country_event = {
                 }
             }
         }
-        # 为阿夸或者古代帝国时不启用护盾装甲效率
-        from = { spth_should_close_combat_system = no }
+        # 为古代帝国时不启用护盾装甲效率
+        from = { ag_is_ancient_country = no }
     }
     immediate = {
         # 硬化提升=护盾/装甲效率*100%
@@ -1017,23 +1017,27 @@ country_event = {
             }
         }
         fromfromfrom = {
+            # 为阿夸时不启用这部分压制
             if = {
-                limit = { NOT = { has_fleet_flag = has_triggered_spth_effiency_enemy } }
-                set_fleet_flag = has_triggered_spth_effiency_enemy
-                every_owned_ship = {
-                    limit = { NOT = { is_ship_size = spth_kamikakushi_cruiser } }
-                    set_variable = {
-                        which = spth_shield_damage_debuff
-                        value = root.fromfrom.spth_shield_damage_debuff
+                limit = { root.from = { is_invisable_faction = no } }
+                if = {
+                    limit = { NOT = { has_fleet_flag = has_triggered_spth_effiency_enemy } }
+                    set_fleet_flag = has_triggered_spth_effiency_enemy
+                    every_owned_ship = {
+                        limit = { NOT = { is_ship_size = spth_kamikakushi_cruiser } }
+                        set_variable = {
+                            which = spth_shield_damage_debuff
+                            value = root.fromfrom.spth_shield_damage_debuff
+                        }
+                        set_variable = {
+                            which = spth_armor_damage_debuff
+                            value = root.fromfrom.spth_armor_damage_debuff
+                        }
+                        add_modifier = { modifier = spth_shield_efficiency_debuff multiplier = value:spth_shield_damage_debuff_value }
+                        add_modifier = { modifier = spth_armor_efficiency_debuff multiplier = value:spth_armor_damage_debuff_value }
                     }
-                    set_variable = {
-                        which = spth_armor_damage_debuff
-                        value = root.fromfrom.spth_armor_damage_debuff
-                    }
-                    add_modifier = { modifier = spth_shield_efficiency_debuff multiplier = value:spth_shield_damage_debuff_value }
-                    add_modifier = { modifier = spth_armor_efficiency_debuff multiplier = value:spth_armor_damage_debuff_value }
+                    fleet_event = { id = Th_dynamic_battle_vict.23 }
                 }
-                fleet_event = { id = Th_dynamic_battle_vict.23 }
             }
         }
     }

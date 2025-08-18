@@ -675,7 +675,10 @@ ship_event = {
             every_system = {
                 limit = { has_star_flag = space_shrine_station_system }
                 remove_star_flag = space_shrine_station_system
-                save_event_target_as = touhou_source_system
+                if = {
+                    limit = { NOT = { exists = event_target:touhou_source_system_@root } }
+                    save_global_event_target_as = touhou_source_system_@root
+                }
                 every_system_planet = {
                     limit = { has_modifier = space_shrine_planet_buff }
                     remove_modifier = space_shrine_planet_buff
@@ -720,7 +723,7 @@ ship_event = {
                 set_planet_size = 1 set_planet_entity = { entity = spiritual_power_star_entity }
             }
             if = {
-                limit = { root.fleet.owner = { NOT = { has_country_flag = close_space_shrine_storm } } }
+                limit = { spth_should_close_space_shrine_storm = no }
                 spawn_random_storm = {
                     type = space_shrine_storm
                     cosmic_storm_start_position = this
@@ -736,7 +739,7 @@ ship_event = {
                 remove_country_flag = touhou_ship_action_space_shrine_beacon_actived
             }
             remove_ship_flag = touhou_ship_action_space_shrine_beacon_actived
-            event_target:touhou_source_system = {
+            event_target:touhou_source_system_@root = {
                 every_fleet_in_system = {
                     limit = {
                         exists = owner
@@ -767,6 +770,7 @@ ship_event = {
                     every_owned_ship = { spth_create_jump_particle_effect = yes }
                 }
             }
+            clear_global_event_target = touhou_source_system_@root
         }
     }
 }

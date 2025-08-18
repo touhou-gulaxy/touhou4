@@ -1623,8 +1623,16 @@ country_event = {
 	mean_time_to_happen = { years = 5 }
 	trigger = {
 		NOT = { has_country_flag = touhou_eientei_start }
-		spth_check_gensokyo_auth = { CIVIC = civic_moon_science }
 		years_passed >= 20 has_relic = r_th_latency
+		spth_is_regular_empire = yes
+		OR = {
+			has_authority = auth_gensokyo
+			has_country_flag = touhou_mod_country
+		}
+		OR = {
+			has_civic = civic_moon_science
+			has_civic = civic_yagokoro_medical
+		}
 	}
 	immediate = {
 		set_country_flag = touhou_eientei_start
@@ -1638,12 +1646,15 @@ country_event = {
 	is_triggered_only = yes
 	trigger = {
 		has_country_flag = touhou_eientei_start
-		spth_check_gensokyo_auth = { CIVIC = civic_moon_science }
+		OR = {
+			spth_check_gensokyo_auth = { CIVIC = civic_moon_science }
+			spth_check_gensokyo_auth = { CIVIC = civic_yagokoro_medical }
+		}
 	}
 	diplomatic = yes
 	custom_gui = spth_event_large_window
 	custom_gui_option = spth_event_large_ui_option
-	picture_event_data = { room = spth_ship_in_orbit_room }
+	picture_event_data = { room = spth_star_chart_room }
 	option = {
 		name = toho.8021.a
 		default_hide_option = yes
@@ -1915,6 +1926,89 @@ country_event = {
 		event_target:toho_8103_target_@root = { remove_modifier = touhou_kokoro_planet_modifier_2 }
 		clear_global_event_target = toho_8103_target_@root
 	}
+}
+
+# 时尚小垃圾
+country_event = {
+	id = toho.8108
+	title = toho.8108.name
+	desc = toho.8108.desc
+	is_triggered_only = yes
+	location = event_target:spth_rw_system
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ringworld_room }
+	option = { name = TH_ACKNOWLEDGED }
+}
+# From = Megastructure
+# FromFrom = System
+country_event = {
+	id = toho.8109
+	title = toho.8109.name
+	desc = toho.8109.desc
+	is_triggered_only = yes
+	location = fromfrom
+	trigger = {
+		from = {
+			OR = {
+				is_megastructure_type = spth_story_ring_world_3_gensokyo
+				is_megastructure_type = spth_story_ring_world_3_common
+			}
+		}
+		from = {
+			NOT = {
+				any_system_megastructure = {
+					OR = {
+						is_megastructure_type = spth_story_ring_world_2_gensokyo
+						is_megastructure_type = spth_story_ring_world_2_common
+					}
+				}
+			}
+		}
+	}
+	immediate = { fromfrom = { save_event_target_as = spth_rw_system } }
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ringworld_room }
+	option = { name = TH_ACKNOWLEDGED }
+}
+planet_event = {
+	id = toho.8110
+	title = toho.8110.name
+	desc = toho.8110.desc
+	is_triggered_only = yes
+	location = this
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_city_planet_room }
+	option = { name = TH_ACKNOWLEDGED }
+}
+planet_event = {
+	id = toho.8111
+	title = toho.8111.name
+	desc = toho.8111.desc
+	is_triggered_only = yes
+	location = this
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ringworld_room }
+	option = { name = TH_ACKNOWLEDGED }
+}
+planet_event = {
+	id = toho.8112
+	title = toho.8112.name
+	desc = toho.8112.desc
+	is_triggered_only = yes
+	location = this
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_gensokyo_city_room }
+	option = { name = TH_ACKNOWLEDGED }
 }
 
 ########################################
@@ -2450,7 +2544,7 @@ country_event = {
 	immediate = {
 		create_country = {
 			name = NAME_torifune_monster
-			type = spth_country_type_container
+			type = spth_country_type_empty
 			name_list = root
 			flag = root
 			species = root
@@ -2902,7 +2996,7 @@ planet_event = {
 	title = toho.3015
 	desc = toho.3015.desc
 	is_triggered_only = yes
-	trigger = { owner = { has_origin = origin_spth_story_gensokyo } }
+	trigger = { owner = { OR = { has_origin = origin_spth_story_gensokyo has_origin = origin_gensokyo_ringworld } } }
 	diplomatic = yes
 	force_open = yes
 	custom_gui = spth_leader_function_ui
