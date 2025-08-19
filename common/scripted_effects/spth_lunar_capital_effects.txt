@@ -94,3 +94,507 @@ spth_cluster34_psi_mark_upgrade = {
 spth_cluster34_psi_mark_effect = {
     optimize_memory
 }
+
+spth_lunar_psi_crisis_setup_sub_gate = {
+    optimize_memory
+    reroll_random = yes
+    random_rim_system = {
+        limit = { spth_is_no_spawn_crisis_system = no }
+        set_name = { key = spth_blue_this_name variable_string = "\[This.GetName\]" }
+        set_star_flag = spth_no_jump_in_system
+        set_star_flag = ag_no_jump_in_system
+        set_star_flag = spth_lunar_capital_psi_sub_gate_in_system
+        set_star_flag = spth_lunar_capital_psi_sub_gate_$spth_id$
+        set_global_flag = spth_lunar_capital_psi_gate_$spth_id$_spawned
+        every_system_planet = {
+            limit = { is_primary_star = yes }
+            change_pc = pc_spiritual_power_star
+            create_ambient_object = {
+                type = shroud_storm
+                location = this
+            }
+        }
+        every_country = {
+            limit = { has_event_chain = spth_lunar_capital_psi_invasion }
+            create_point_of_interest = {
+                event_chain = spth_lunar_capital_psi_invasion
+                id = spth_lunar_capital_psi_sub_gate_$spth_id$
+                name = spth_lunar_capital_psi_sub_gate_$spth_id$
+                location = prev
+                desc = spth_lunar_capital_psi_sub_gate_desc
+                picture = GFX_evt_shrouded_planet
+            }
+        }
+    }
+}
+spth_lunar_psi_create_country = {
+    optimize_memory
+    if = {
+        limit = { NOT = { exists = event_target:spth_lunar_capital_psi_country } }
+        create_species = {
+            name = "NAME_spth_lunar_capital_sp"
+            class = THSC
+            name_list = touhouchs
+            portrait = spth_touhou
+            traits = random
+            immortal = yes
+            effect = {
+                save_global_event_target_as = spth_lunar_capital_psi_species
+                set_global_flag = has_spth_lunar_capital_psi_species
+            }
+        }
+        create_country = {
+            name = lunar_cluster34_shroud_country
+            type = spth_lunar_capital_psi_fleet
+            species = event_target:spth_lunar_capital_psi_species
+            flag = {
+                icon = {
+                    category = "touhousp"
+                    file = "lunar_capital_alt.dds"
+                }
+                colors = {
+                    "purple"
+                    "purple"
+                    "purple"
+                    "null"
+                }
+                background = {
+                    category = "backgrounds"
+                    file = "00_solid.dds"
+                }
+            }
+            name_list = touhouchs
+            effect = {
+                set_graphical_culture = strg_01
+                set_country_flag = touhou_mod_country
+                set_country_flag = touhou_crisis_country
+                set_country_flag = spth_lunar_capital_psi_country
+                set_country_flag = protected_from_queen_storm
+                if = {
+                    limit = { NOT = { has_country_flag = has_given_starbase_lunar_capital_psi_designs } }
+                    create_ship_design = { design = NAME_starbase_lunar_capital_psi }
+                    add_ship_design = last_created_design
+                }
+                [[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
+                save_global_event_target_as = spth_lunar_capital_psi_country
+                activate_fog_machine = spth_lunar_capital_psi_cloud
+                fog_machine_auto_tracking = yes
+                every_playable_country = {
+                    limit = { NOT = { is_same_value = prev } }
+                    establish_communications_no_message = prev
+                    add_intel = { who = prev amount = 70 }
+                }
+                every_country = {
+                    limit = {
+                        OR = {
+                            is_country_type = default
+                            is_country_type = fallen_empire
+                            is_country_type = awakened_fallen_empire
+                        }
+                        NOT = { has_communications = prev }
+                    }
+                    establish_communications_no_message = prev
+                }
+                country_event = { id = lunar_capital_psi.1 days = 3 random = 2 }
+            }
+        }
+    }
+}
+spth_lunar_psi_create_army_country = {
+    optimize_memory
+}
+spth_lunar_psi_add_fleet_counter = {
+    optimize_memory
+    every_country = {
+        limit = { has_event_chain = spth_lunar_capital_psi_invasion }
+        add_event_chain_counter = {
+            event_chain = spth_lunar_capital_psi_invasion
+            counter = spth_lunar_capital_psi_invasion_ships
+            amount = event_target:spth_lunar_fleet.trigger:num_ships
+        }
+    }
+}
+spth_lunar_psi_create_small_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_touhou_lunar_psi_extra_small_fleet
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        flag = spth_lunar_psi_preview_fleet
+        flag2 = spth_lunar_psi_fleet
+        flag3 = spth_lunar_psi_enable_move
+        lunar_capital_psi_battleship = 2
+        lunar_capital_psi_cruiser = 6
+        lunar_capital_psi_frigate = 8
+        lunar_capital_psi_frigate_1 = 8
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+}
+spth_lunar_psi_create_convert_t1_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_touhou_lunar_psi_extra_12
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        distance = 30
+        flag = spth_lunar_psi_preview_fleet
+        flag2 = spth_lunar_psi_fleet
+        flag3 = spth_lunar_psi_enable_move
+        lunar_capital_psi_frigate_1 = 1
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+    event_target:spth_lunar_fleet = {
+        every_owned_ship = { set_ship_flag = spth_lunar_psi_tmp_ship }
+    }
+}
+spth_lunar_psi_create_convert_t2_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_touhou_lunar_psi_extra_12
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        distance = 45
+        flag = spth_lunar_psi_preview_fleet
+        flag2 = spth_lunar_psi_fleet
+        flag3 = spth_lunar_psi_enable_move
+        lunar_capital_psi_cruiser = 1
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+    event_target:spth_lunar_fleet = {
+        every_owned_ship = { set_ship_flag = spth_lunar_psi_tmp_ship }
+    }
+}
+spth_lunar_psi_create_convert_t3_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_touhou_lunar_psi_extra_12
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        distance = 60
+        flag = spth_lunar_psi_preview_fleet
+        flag2 = spth_lunar_psi_fleet
+        flag3 = spth_lunar_psi_enable_move
+        lunar_capital_psi_battleship = 1
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+    event_target:spth_lunar_fleet = {
+        every_owned_ship = { set_ship_flag = spth_lunar_psi_tmp_ship }
+    }
+}
+spth_lunar_psi_create_medium_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_touhou_lunar_psi_extra_medium_fleet
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        flag = spth_lunar_psi_preview_fleet
+        flag2 = spth_lunar_psi_fleet
+        flag3 = spth_lunar_psi_enable_move
+        lunar_capital_psi_battleship = 6
+        lunar_capital_psi_cruiser = 12
+        lunar_capital_psi_frigate = 10
+        lunar_capital_psi_frigate_1 = 10
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+}
+spth_lunar_psi_create_large_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_touhou_lunar_psi_extra_large_fleet
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        flag = spth_lunar_psi_preview_fleet
+        flag2 = spth_lunar_psi_fleet
+        flag3 = spth_lunar_psi_enable_move
+        lunar_capital_psi_battleship = 12
+        lunar_capital_psi_cruiser = 24
+        lunar_capital_psi_frigate = 12
+        lunar_capital_psi_frigate_1 = 12
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+}
+spth_lunar_psi_create_preview_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_lunar_capital_psi_preview_fleet
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        flag = spth_lunar_psi_preview_fleet
+        flag2 = spth_lunar_psi_fleet
+        flag3 = spth_lunar_psi_enable_move
+        lunar_capital_psi_battleship = 5
+        lunar_capital_psi_cruiser = 10
+        lunar_capital_psi_frigate = 10
+        lunar_capital_psi_frigate_1 = 10
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+    spth_lunar_psi_add_fleet_counter = yes
+}
+spth_lunar_psi_create_attack_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_lunar_capital_psi_attack_fleet
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        flag = spth_lunar_psi_attack_fleet
+        flag2 = spth_lunar_psi_fleet
+        flag3 = spth_lunar_psi_enable_move
+        lunar_capital_psi_carrier = 1
+        lunar_capital_psi_battleship = 20
+        lunar_capital_psi_cruiser = 20
+        lunar_capital_psi_frigate = 15
+        lunar_capital_psi_frigate_1 = 15
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+    spth_lunar_psi_add_fleet_counter = yes
+}
+spth_lunar_psi_create_main_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_lunar_capital_psi_main_fleet
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        flag = spth_lunar_psi_main_fleet
+        flag2 = spth_lunar_psi_fleet
+        flag3 = spth_lunar_psi_enable_move
+        lunar_capital_psi_carrier = 2
+        lunar_capital_psi_battleship = 30
+        lunar_capital_psi_cruiser = 30
+        lunar_capital_psi_frigate = 15
+        lunar_capital_psi_frigate_1 = 15
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+    spth_lunar_psi_add_fleet_counter = yes
+}
+spth_lunar_psi_create_defence_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_lunar_capital_psi_defence_fleet
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint
+        flag = spth_lunar_psi_defence_fleet
+        flag2 = spth_lunar_psi_fleet
+        lunar_capital_psi_carrier = 2
+        lunar_capital_psi_battleship = 30
+        lunar_capital_psi_cruiser = 40
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+    spth_lunar_psi_add_fleet_counter = yes
+}
+spth_lunar_psi_create_gate = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_lunar_capital_psi_gate_ship
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_lunar_capital_psi_country
+        location = event_target:spth_lunar_spawnpoint.solar_system.star
+        flag = spth_lunar_psi_gate_fleet
+        flag2 = spth_lunar_psi_fleet
+        lunar_capital_psi_gate = 1
+        lunar_capital_bonus = yes
+        evt_target = spth_lunar_fleet
+    }
+    spth_lunar_psi_add_fleet_counter = yes
+    event_target:spth_lunar_fleet = {
+        save_global_event_target_as = spth_lunar_psi_gate_fleet_$spth_id$
+        set_event_locked = yes
+    }
+}
+
+spth_lunar_psi_spawn_fleets_sub_gate = {
+    optimize_memory
+    if = {
+        limit = {
+            has_global_flag = spth_lunar_capital_psi_gate_$spth_id$_spawned
+            NOT = { has_global_flag = spth_lunar_capital_psi_gate_$spth_id$_killed }
+        }
+        random_system = {
+            limit = { has_star_flag = spth_lunar_capital_psi_sub_gate_$spth_id$ }
+            random_system_planet = {
+                limit = { is_primary_star = yes }
+                save_event_target_as = spth_lunar_spawnpoint
+                if = {
+                    limit = { prev = { NOT = { has_star_flag = spth_lunar_capital_psi_gate_$spth_id$_gate_spawned } } }
+                    prev = { set_star_flag = spth_lunar_capital_psi_gate_$spth_id$_gate_spawned }
+                    spth_lunar_psi_create_defence_fleet = yes
+                    spth_lunar_psi_create_defence_fleet = yes
+                    spth_lunar_psi_create_defence_fleet = yes
+                    spth_lunar_psi_create_defence_fleet = yes
+                    spth_lunar_psi_create_gate = { spth_id = $spth_id$ }
+                    spth_lunar_psi_spawn_starbase = yes
+                }
+                planet_event = { id = lunar_capital_psi.2 days = 5 }
+            }
+        }
+    }
+}
+spth_lunar_psi_unlock_bypass = {
+    optimize_memory
+    remove_global_flag = lunar_jumpdrive_gateway_blocked
+    set_global_flag = spth_lunar_capital_psi_main_gate_bypass
+}
+spth_lunar_psi_spawn_starbase = {
+    optimize_memory
+    if = {
+        limit = { NOT = { exists = starbase } }
+        event_target:spth_lunar_capital_psi_country = {
+            if = {
+                limit = { NOT = { has_country_flag = has_given_starbase_lunar_capital_psi_designs } }
+                create_ship_design = { design = NAME_starbase_lunar_capital_psi }
+                add_ship_design = last_created_design
+            }
+        }
+        create_starbase = {
+            size = starbase_lunar_capital_psi
+            owner = event_target:spth_lunar_capital_psi_country
+            effect = {
+                fleet = {
+                    set_name = random
+                }
+            }
+        }
+    }
+}
+spth_lunar_psi_frac_ship = {
+    optimize_memory
+    reroll_random = yes
+    random_list = {
+        10 = {
+            modifier = { mult = $battleship|1$ }
+            fleet = {
+                create_ship = {
+                    design = NAME_lunar_capital_psi_battleship
+                    effect = { set_ship_flag = spth_lunar_psi_tmp_ship }
+                }
+            }
+        }
+        30 = {
+            modifier = { mult = $cruiser|1$ }
+            fleet = {
+                create_ship = {
+                    design = NAME_lunar_capital_psi_cruiser
+                    effect = { set_ship_flag = spth_lunar_psi_tmp_ship }
+                }
+            }
+        }
+        30 = {
+            modifier = { mult = $frigate|1$ }
+            fleet = {
+                create_ship = {
+                    design = NAME_lunar_capital_psi_frigate
+                    effect = { set_ship_flag = spth_lunar_psi_tmp_ship }
+                }
+            }
+        }
+        30 = {
+            modifier = { mult = $frigate|1$ }
+            fleet = {
+                create_ship = {
+                    design = NAME_lunar_capital_psi_frigate_1
+                    effect = { set_ship_flag = spth_lunar_psi_tmp_ship }
+                }
+            }
+        }
+    }
+}
+
+touhou_lunar_psi_extra_expand_page = {
+    optimize_memory
+    hidden_effect = {
+        remove_country_flag = touhou_lunar_psi_extra_1
+        remove_country_flag = touhou_lunar_psi_extra_2
+        remove_country_flag = touhou_lunar_psi_extra_3
+        remove_country_flag = touhou_lunar_psi_extra_4
+        set_country_flag = touhou_lunar_psi_extra_$spth_id$
+    }
+}
+touhou_lunar_psi_extra_page_1_off = {
+    optimize_memory
+    hidden_effect = {
+        remove_global_flag = touhou_lunar_psi_extra_11
+        remove_global_flag = touhou_lunar_psi_extra_12
+        remove_global_flag = touhou_lunar_psi_extra_13
+        remove_global_flag = touhou_lunar_psi_extra_14
+    }
+}
+touhou_lunar_psi_extra_page_2_off = {
+    optimize_memory
+    hidden_effect = {
+        remove_global_flag = touhou_lunar_psi_extra_21
+        remove_global_flag = touhou_lunar_psi_extra_22
+        remove_global_flag = touhou_lunar_psi_extra_23
+        remove_global_flag = touhou_lunar_psi_extra_24
+    }
+}
+touhou_lunar_psi_extra_page_3_off = {
+    optimize_memory
+    hidden_effect = {
+        remove_global_flag = touhou_lunar_psi_extra_31
+        remove_global_flag = touhou_lunar_psi_extra_32
+        remove_global_flag = touhou_lunar_psi_extra_33
+        remove_global_flag = touhou_lunar_psi_extra_34
+    }
+}
+touhou_lunar_psi_extra_page_4_off = {
+    optimize_memory
+    hidden_effect = {
+        remove_global_flag = touhou_lunar_psi_extra_41
+        remove_global_flag = touhou_lunar_psi_extra_42
+        remove_global_flag = touhou_lunar_psi_extra_43
+    }
+}
+touhou_lunar_psi_extra_page_1_on = {
+    optimize_memory
+    hidden_effect = {
+        set_global_flag = touhou_lunar_psi_extra_11
+        set_global_flag = touhou_lunar_psi_extra_12
+        set_global_flag = touhou_lunar_psi_extra_13
+        set_global_flag = touhou_lunar_psi_extra_14
+    }
+}
+touhou_lunar_psi_extra_page_2_on = {
+    optimize_memory
+    hidden_effect = {
+        set_global_flag = touhou_lunar_psi_extra_21
+        set_global_flag = touhou_lunar_psi_extra_22
+        set_global_flag = touhou_lunar_psi_extra_23
+        set_global_flag = touhou_lunar_psi_extra_24
+    }
+}
+touhou_lunar_psi_extra_page_3_on = {
+    optimize_memory
+    hidden_effect = {
+        set_global_flag = touhou_lunar_psi_extra_31
+        set_global_flag = touhou_lunar_psi_extra_32
+        set_global_flag = touhou_lunar_psi_extra_33
+        set_global_flag = touhou_lunar_psi_extra_34
+    }
+}
+touhou_lunar_psi_extra_page_4_on = {
+    optimize_memory
+    hidden_effect = {
+        set_global_flag = touhou_lunar_psi_extra_41
+        set_global_flag = touhou_lunar_psi_extra_42
+        set_global_flag = touhou_lunar_psi_extra_43
+    }
+}

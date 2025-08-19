@@ -1935,6 +1935,36 @@ country_event = {
 		spth_spawn_kamikakushi_guard = { debug_spawn_flag = yes }
 	}
 	option = {
+		name = gensokyo_start.1251.k
+		hidden_effect = {
+			if = {
+				limit = { NOT = { exists = event_target:spth_story_lunar_capital_area_toyohime } }
+				set_global_flag = spth_story_lunar_capital_toyohime_spawned
+				random_system_within_border = {
+					set_spawn_system_batch = begin
+					spawn_system = {
+						initializer = spth_story_lunar_capital_area_toyohime
+						hyperlane = no
+					}
+					set_spawn_system_batch = end
+					spawn_megastructure = {
+						type = spth_lunar_jumpdrive_gateway
+						coords_from = event_target:spth_story_lunar_capital_aethon_planet_1
+						owner = event_target:spth_disappear_barrier_player
+						orbit_distance = 0
+						orbit_angle = 0
+						graphical_culture = event_target:spth_disappear_barrier_player
+						init_effect = {
+							set_megastructure_flag = is_spth_lunar_jumpdrive_gateway
+							set_megastructure_flag = spth_lunar_jumpdrive_gateway_debug
+						}
+					}
+				}
+			}
+		}
+		country_event = { id = disappear_barrier.1026 }
+	}
+	option = {
 		name = gensokyo_start.1251.i
 		allow = { NOT = { has_global_flag = spth_kamikaushi_crisis_start } }
 		country_event = { id = touhou_crisis.108 }
@@ -1970,7 +2000,11 @@ country_event = {
 	}
 	option = {
 		name = touhou_kamikakushi_extra
-		country_event = { id =gensokyo_start.1253 }
+		country_event = { id = gensokyo_start.1253 }
+	}
+	option = {
+		name = touhou_lunar_psi_extra
+		country_event = { id = gensokyo_start.1255 }
 	}
 }
 country_event = {
@@ -2054,4 +2088,52 @@ country_event = {
 		default_hide_option = yes
 		remove_country_flag = spth_test_ship_spawner_window_opened
 	}
+}
+
+country_event = {
+	id = gensokyo_start.1255
+	title = touhou_lunar_psi_extra
+	desc = touhou_lunar_psi_extra_desc
+	is_triggered_only = yes
+	trigger = { NOT = { has_country_flag = gensokyo_start_1255_opened } }
+	diplomatic = yes
+	custom_gui = spth_leader_function_ui
+	custom_gui_option = spth_leader_function_button
+	picture_event_data = { room = lunar_capital_1_room }
+	immediate = { set_country_flag = gensokyo_start_1255_opened }
+	after = {
+		hidden_effect = {
+			remove_country_flag = gensokyo_start_1255_opened
+			if = {
+				limit = { has_country_flag = gensokyo_start_1255_exit }
+				remove_country_flag = gensokyo_start_1255_exit
+			} else = { country_event = { id = gensokyo_start.1255 } }
+		}
+	}
+	option = {
+		name = gensokyo_start.1251.exit
+		default_hide_option = yes
+		hidden_effect = { set_country_flag = gensokyo_start_1255_exit }
+	}
+	option = {
+		name = touhou_kamikakushi_extra_all_open
+		touhou_lunar_psi_extra_page_1_on = yes
+		touhou_lunar_psi_extra_page_2_on = yes
+		touhou_lunar_psi_extra_page_3_on = yes
+		touhou_lunar_psi_extra_page_4_on = yes
+	}
+	option = {
+		name = touhou_kamikakushi_extra_all_close
+		touhou_lunar_psi_extra_page_1_off = yes
+		touhou_lunar_psi_extra_page_2_off = yes
+		touhou_lunar_psi_extra_page_3_off = yes
+		touhou_lunar_psi_extra_page_4_off = yes
+	}
+	inline_script = { script = events/touhou_difficulty_extra_page type = lunar_psi page_id = 1 }
+	inline_script = { script = events/touhou_difficulty_extra_page_item type = lunar_psi page_id = 1 item_id = 4 }
+	inline_script = { script = events/touhou_difficulty_extra_page type = lunar_psi page_id = 2 }
+	inline_script = { script = events/touhou_difficulty_extra_page_item type = lunar_psi page_id = 2 item_id = 4 }
+	inline_script = { script = events/touhou_difficulty_extra_page type = lunar_psi page_id = 3 }
+	inline_script = { script = events/touhou_difficulty_extra_page_item type = lunar_psi page_id = 3 item_id = 4 }
+	inline_script = { script = events/touhou_difficulty_extra_page type = lunar_psi page_id = 4 }
 }

@@ -1,0 +1,1094 @@
+namespace = lunar_capital_psi
+
+# 刷船循环
+country_event = {
+    id = lunar_capital_psi.1
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+    }
+    immediate = {
+        spth_lunar_psi_spawn_fleets_sub_gate = { spth_id = 1 }
+        spth_lunar_psi_spawn_fleets_sub_gate = { spth_id = 2 }
+        if = {
+            limit = { has_global_flag = touhou_lunar_psi_extra_21 }
+            every_playable_country = {
+                limit = { is_ai = no exists = capital_scope }
+                capital_scope = { save_event_target_as = spth_lunar_spawnpoint }
+                spth_lunar_psi_create_large_fleet = yes
+                if = {
+                    limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                    spth_lunar_psi_create_large_fleet = yes
+                }
+                if = {
+                    limit = { touhou_check_diffiulty_gteq = { value = 8 } }
+                    spth_lunar_psi_create_large_fleet = yes
+                    spth_lunar_psi_create_large_fleet = yes
+                }
+                if = {
+                    limit = { has_global_flag = spth_lunar_capital_crisis_phantasm }
+
+                    spth_lunar_psi_create_main_fleet = yes
+                }
+            }
+        }
+        country_event = { id = lunar_capital_psi.1 days = 400 random = 100 }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.2
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+    }
+    immediate = {
+        # E/N刷4队，3+1
+        # H刷8队，6+2
+        # L刷10队，6+4
+        # OD刷12队，8+4
+        # 只有H/L以上会刷主力舰队
+        spth_lunar_psi_create_preview_fleet = yes
+        spth_lunar_psi_create_preview_fleet = yes
+        spth_lunar_psi_create_preview_fleet = yes
+        spth_lunar_psi_create_attack_fleet = yes
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+            spth_lunar_psi_create_preview_fleet = yes
+            spth_lunar_psi_create_preview_fleet = yes
+            spth_lunar_psi_create_preview_fleet = yes
+            spth_lunar_psi_create_attack_fleet = yes
+            spth_lunar_psi_create_main_fleet = yes
+        }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 4 } }
+            spth_lunar_psi_create_attack_fleet = yes
+            spth_lunar_psi_create_attack_fleet = yes
+        }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 8 } }
+            spth_lunar_psi_create_preview_fleet = yes
+            spth_lunar_psi_create_preview_fleet = yes
+        }
+        event_target:spth_lunar_capital_psi_country = {
+            every_owned_fleet = {
+                limit = { has_fleet_flag = spth_lunar_psi_enable_move is_fleet_idle = yes }
+                fleet_event = { id = lunar_capital_psi.12 days = 1 random = 2  }
+            }
+        }
+    }
+}
+
+# 天灾炸球
+planet_event = {
+    id = lunar_capital_psi.3
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        has_orbital_bombardment = yes
+        planet_devastation >= 90
+        from = { is_country_type = spth_lunar_capital_psi_fleet }
+    }
+    immediate = {
+        owner = {
+            country_event = {
+                id = lunar_capital_psi.28
+                scopes = { from = root fromfrom = event_target:spth_lunar_capital_psi_country }
+            }
+        }
+        every_country = {
+            limit = { has_event_chain = spth_lunar_capital_psi_invasion }
+            add_event_chain_counter = {
+                event_chain = spth_lunar_capital_psi_invasion
+                counter = spth_lunar_capital_psi_invasion_planet
+                amount = 1
+            }
+        }
+        set_variable = { which = touhou_crisis_13_districts_count value = trigger:num_districts }
+        reroll_random = yes
+        random_list = {
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.1 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.2 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.3 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.4 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.5 } }
+        }
+        reroll_random = yes
+        floor_variable = touhou_crisis_13_districts_count
+        while = { count = touhou_crisis_13_districts_count add_deposit = d_ruined_district }
+        clear_variable = touhou_crisis_13_districts_count
+        add_deposit = d_ruined_building_blocker
+        add_deposit = d_ruined_building_blocker
+        spth_planet_kill_all_pop = yes
+        destroy_colony = yes
+        if = {
+            limit = { is_ringworld = yes }
+            spawn_ringworld_cracker_effect = yes
+            change_pc = pc_ringworld_habitable_damaged
+            set_planet_entity = { entity = ringworld_habitable_damaged_entity }
+        } else_if = {
+            limit = { spth_is_habitat = yes }
+            spth_spawn_habitat_cracker_effect = yes
+        } else_if = {
+            limit = { has_modifier = "holy_planet" }
+            change_pc = pc_shattered
+            remove_modifier = "holy_planet"
+        }
+        solar_system = {
+            every_fleet_in_system = {
+                limit = {
+                    exists = owner
+                    owner = { is_touhou_crisis_faction = yes }
+                    has_fleet_flag = spth_lunar_psi_enable_move
+                    OR = {
+                        AND = { exists = orbit orbit = { is_same_value = root } }
+                        AND = {
+                            is_fleet_idle = yes
+                            NAND = {
+                                exists = orbit
+                                orbit = {
+                                    NOT = { is_star = yes }
+                                    exists = owner
+                                    owner = { is_hostile = event_target:spth_lunar_capital_psi_country }
+                                }
+                            }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = lunar_capital_psi.12 days = 5 random = 15 }
+            }
+            if = {
+                limit = { count_system_colony = { count = 0 } }
+                system_event = { id = lunar_capital_psi.31 days = 2 }
+            }
+            if = {
+                limit = { has_global_flag = touhou_lunar_psi_extra_24 }
+                star = { save_event_target_as = spth_lunar_spawnpoint }
+                if = {
+                    limit = { touhou_check_diffiulty_lteq = { value = 2 } }
+                    spth_lunar_psi_create_small_fleet = yes
+                }
+                if = {
+                    limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                    spth_lunar_psi_create_medium_fleet = yes
+                }
+                if = {
+                    limit = { touhou_check_diffiulty_gteq = { value = 8 } }
+                    spth_lunar_psi_create_small_fleet = yes
+                    spth_lunar_psi_create_small_fleet = yes
+                }
+            }
+        }
+    }
+}
+
+@ship_touhou_psi_ship_lvl_carrier = 4
+@ship_touhou_psi_ship_lvl_batteship = 3
+@ship_touhou_psi_ship_lvl_cruiser = 2
+@ship_touhou_psi_ship_lvl_frigate = 1
+# 击杀灵能舰船，分裂
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = lunar_capital_psi.4
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        has_global_flag = touhou_lunar_psi_extra_13
+        is_touhou_crisis_faction = yes
+        fromfrom = {
+            check_modifier_value = { modifier = ship_is_touhou_psi_ship value != 0 }
+            check_modifier_value = { modifier = ship_touhou_psi_ship_lvl value > @ship_touhou_psi_ship_lvl_frigate }
+            exists = fleet fleet = { num_ships > 0 }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            th_spawn_explosion_particle = { color = purple size = medium }
+            if = {
+                limit = { touhou_check_diffiulty_lteq = { value = 2 } }
+                spth_lunar_psi_frac_ship = { battleship = 0 cruiser = 0 }
+            } else_if = {
+                limit = { touhou_check_diffiulty_lteq = { value = 3 } }
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_touhou_psi_ship_lvl value = @ship_touhou_psi_ship_lvl_carrier } }
+                    spth_lunar_psi_frac_ship = { frigate = 0 }
+                } else_if = {
+                    limit = { check_modifier_value = { modifier = ship_touhou_psi_ship_lvl value = @ship_touhou_psi_ship_lvl_batteship } }
+                    spth_lunar_psi_frac_ship = { battleship = 0 cruiser = 0 }
+                } else = {
+                    spth_lunar_psi_frac_ship = { battleship = 0 cruiser = 0 }
+                }
+            } else = {
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_touhou_psi_ship_lvl value = @ship_touhou_psi_ship_lvl_carrier } }
+                    while = { count = 2 spth_lunar_psi_frac_ship = { frigate = 0 } }
+                } else_if = {
+                    limit = { check_modifier_value = { modifier = ship_touhou_psi_ship_lvl value = @ship_touhou_psi_ship_lvl_batteship } }
+                    while = { count = 2 spth_lunar_psi_frac_ship = { battleship = 0 } }
+                } else = {
+                    while = { count = 2 spth_lunar_psi_frac_ship = { battleship = 0 cruiser = 0 } }
+                }
+            }
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 5 } }
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_touhou_psi_ship_lvl value = @ship_touhou_psi_ship_lvl_carrier } }
+                    while = { count = 2 spth_lunar_psi_frac_ship = { frigate = 0 cruiser = 0 } }
+                } else_if = {
+                    limit = { check_modifier_value = { modifier = ship_touhou_psi_ship_lvl value = @ship_touhou_psi_ship_lvl_batteship } }
+                    while = { count = 2 spth_lunar_psi_frac_ship = { battleship = 0 frigate = 0 } }
+                } else = {
+                    while = { count = 2 spth_lunar_psi_frac_ship = { battleship = 0 cruiser = 0 } }
+                }
+            }
+            if = {
+                limit = { has_global_flag = spth_lunar_capital_crisis_phantasm }
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_touhou_psi_ship_lvl value = @ship_touhou_psi_ship_lvl_carrier } }
+                    while = { count = 2 spth_lunar_psi_frac_ship = { frigate = 0 cruiser = 0 } }
+                } else_if = {
+                    limit = { check_modifier_value = { modifier = ship_touhou_psi_ship_lvl value = @ship_touhou_psi_ship_lvl_batteship } }
+                    while = { count = 2 spth_lunar_psi_frac_ship = { battleship = 0 frigate = 0 } }
+                } else = {
+                    while = { count = 2 spth_lunar_psi_frac_ship = { battleship = 0 cruiser = 0 } }
+                }
+            }
+        }
+    }
+}
+
+# 跃迁折跃舰队
+ship_event = {
+    id = lunar_capital_psi.5
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        has_global_flag = touhou_lunar_psi_extra_22
+        exists = owner owner = { is_hostile_to = event_target:spth_lunar_capital_psi_country }
+        fleet = { NOT = { has_fleet_flag = lunar_capital_psi_5_fired } }
+    }
+    immediate = {
+        fleet = { set_timed_fleet_flag = { flag = lunar_capital_psi_5_fired days = 30 } }
+        solar_system.star = { save_event_target_as = spth_lunar_spawnpoint }
+        reroll_random = yes
+        random_list = {
+            20 = {
+                if = {
+                    limit = { touhou_check_diffiulty_lteq = { value = 2 } }
+                    spth_lunar_psi_create_small_fleet = yes
+                }
+                if = {
+                    limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                    spth_lunar_psi_create_medium_fleet = yes
+                }
+                if = {
+                    limit = { touhou_check_diffiulty_gteq = { value = 8 } }
+                    spth_lunar_psi_create_small_fleet = yes
+                    spth_lunar_psi_create_small_fleet = yes
+                }
+            }
+            80 = {
+                modifier = { factor = 0 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                # 无事发生
+            }
+        }
+    }
+}
+
+# 打赢了，折跃舰队
+# This = owner of fleet 1 (combatant)
+# From = owner of fleet 2 (destroyed)
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = lunar_capital_psi.6
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        has_global_flag = touhou_lunar_psi_extra_23
+        fromfrom = { has_fleet_flag = spth_lunar_psi_fleet }
+        is_touhou_crisis_faction = yes
+        NOT = { has_country_flag = lunar_capital_psi_6_fired }
+    }
+    after = {
+        if = {
+            limit = { has_global_flag = spth_lunar_capital_crisis_phantasm }
+            set_timed_country_flag = { flag = lunar_capital_psi_6_fired days = 30 }
+        } else = {
+            set_timed_country_flag = { flag = lunar_capital_psi_6_fired days = 90 }
+        }
+        fromfrom.solar_system = {
+            star = { save_event_target_as = spth_lunar_spawnpoint }
+            reroll_random = yes
+            random_list = {
+                50 = {
+                    if = {
+                        limit = { touhou_check_diffiulty_lteq = { value = 2 } }
+                        spth_lunar_psi_create_small_fleet = yes
+                    }
+                    if = {
+                        limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                        spth_lunar_psi_create_medium_fleet = yes
+                    }
+                    if = {
+                        limit = { touhou_check_diffiulty_gteq = { value = 8 } }
+                        spth_lunar_psi_create_small_fleet = yes
+                        spth_lunar_psi_create_small_fleet = yes
+                    }
+                }
+                50 = {
+                    modifier = { factor = 0 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                    # 无事发生
+                }
+            }
+        }
+    }
+}
+
+# 交战extra
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = lunar_capital_psi.7
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        has_global_flag = touhou_lunar_psi_extra_14
+        fromfrom = { has_fleet_flag = spth_lunar_psi_fleet }
+        is_touhou_crisis_faction = yes
+        NOT = { has_country_flag = lunar_capital_psi_7_fired }
+    }
+    immediate = {
+        set_timed_country_flag = { flag = lunar_capital_psi_7_fired days = 30 }
+        fromfrom = {
+            set_variable = { which = lunar_capital_psi_7_value value = root.from.modifier:weapon_type_lingli_weapon_fire_rate_mult }
+            add_modifier = { modifier = touhou_lunar_psi_extra_14 days = 15 mult = lunar_capital_psi_7_value }
+            clear_variable = lunar_capital_psi_7_value
+        }
+    }
+}
+
+# 击杀敌方舰船，转化灵能舰船
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = lunar_capital_psi.8
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        has_global_flag = touhou_lunar_psi_extra_12
+        from = { is_touhou_crisis_faction = yes }
+        fromfromfrom.fleet = { has_fleet_flag = spth_lunar_psi_fleet }
+    }
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            25 = {
+                if = {
+                    limit = {
+                        OR = {
+                            has_global_flag = spth_lunar_capital_crisis_phantasm
+                            fromfrom = { ship_size_multiplier >= 4 }
+                        }
+                    }
+                    if = {
+                        limit = { fromfrom = { exists = fleet } }
+                        fromfrom.fleet = { save_event_target_as = spth_lunar_spawnpoint }
+                    } else_if = {
+                        limit = { fromfrom = { exists = solar_system } }
+                        fromfrom.solar_system = {
+                            random_system_planet = {
+                                limit = { is_star = yes }
+                                save_event_target_as = spth_lunar_spawnpoint
+                            }
+                        }
+                    } else = {
+                        fromfromfrom.fleet = { save_event_target_as = spth_lunar_spawnpoint }
+                    }
+                    reroll_random = yes
+                    if = {
+                        limit = { fromfrom = { ship_size_multiplier >= 16 } }
+                        random_list = {
+                            20 = {
+                                modifier = { add = -10 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                                spth_lunar_psi_create_convert_t2_fleet = yes
+                            }
+                            5 = {
+                                modifier = { add = 10 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                                spth_lunar_psi_create_convert_t3_fleet = yes
+                            }
+                            75 = {
+                                modifier = {
+                                    factor = 0.8
+                                    event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 2 } }
+                                }
+                            }
+                        }
+                    } else_if = {
+                        limit = { fromfrom = { ship_size_multiplier >= 8 } }
+                        random_list = {
+                            20 = {
+                                modifier = { add = -15 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                                spth_lunar_psi_create_convert_t1_fleet = yes
+                            }
+                            5 = {
+                                modifier = { add = 10 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                                spth_lunar_psi_create_convert_t2_fleet = yes
+                            }
+                            0 = {
+                                modifier = { add = 5 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                                spth_lunar_psi_create_convert_t3_fleet = yes
+                            }
+                            70 = {
+                                modifier = {
+                                    factor = 0.8
+                                    event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 2 } }
+                                }
+                            }
+                        }
+                    } else = {
+                        random_list = {
+                            20 = {
+                                modifier = { add = -10 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                                spth_lunar_psi_create_convert_t1_fleet = yes
+                            }
+                            0 = {
+                                modifier = { add = 8 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                                spth_lunar_psi_create_convert_t2_fleet = yes
+                            }
+                            0 = {
+                                modifier = { add = 2 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                                spth_lunar_psi_create_convert_t3_fleet = yes
+                            }
+                            75 = {
+                                modifier = {
+                                    factor = 0.8
+                                    event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 2 } }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            75 = {
+                modifier = {
+                    factor = 0.9
+                    event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 2 } }
+                }
+            }
+        }
+    }
+}
+
+# 同一星系杀得越多debuff越严重 - 结束战斗
+# This = owner of fleet 1 (combatant)
+# From = owner of fleet 2 (destroyed)
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = lunar_capital_psi.9
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        has_global_flag = touhou_lunar_psi_extra_11
+        exists = fromfrom fromfrom = { exists = solar_system }
+        OR = { is_country_type = default is_ai = yes }
+        fromfromfrom = { has_fleet_flag = spth_lunar_psi_fleet }
+        from = { is_touhou_crisis_faction = yes }
+    }
+    immediate = {
+        fromfrom = {
+            solar_system = {
+                if = {
+                    limit = { NOT = { is_variable_set = lunar_capital_psi_9_count } }
+                    set_variable = { which = lunar_capital_psi_9_count value = 0 }
+                }
+                if = {
+                    limit = { NOT = { has_star_flag = lunar_capital_psi_9_fired_on_@root.fromfromfrom } }
+                    set_timed_star_flag = { flag = lunar_capital_psi_9_fired_on_@root.fromfromfrom days = 1 }
+                    change_variable = { which = lunar_capital_psi_9_count value = 1 }
+                }
+            }
+            if = {
+                limit = { NOT = { is_variable_set = lunar_capital_psi_9_count_fleet } }
+                set_variable = { which = lunar_capital_psi_9_count_fleet value = 0 }
+            }
+            if = {
+                limit = {
+                    solar_system = { is_variable_set = lunar_capital_psi_9_count }
+                    check_variable = {
+                        which = lunar_capital_psi_9_count_fleet
+                        value != solar_system.lunar_capital_psi_9_count
+                    }
+                }
+                set_fleet_flag = touhou_lunar_psi_extra_11
+                set_variable = {
+                    which = lunar_capital_psi_9_count_fleet
+                    value = solar_system.lunar_capital_psi_9_count
+                }
+                every_owned_ship = {
+                    set_variable = { which = lunar_capital_psi_9_count value = prev.lunar_capital_psi_9_count_fleet }
+                    remove_modifier = touhou_lunar_psi_extra_11
+                    add_modifier = {
+                        modifier = touhou_lunar_psi_extra_11
+                        mult = lunar_capital_psi_9_count
+                    }
+                }
+            }
+        }
+    }
+}
+# 同一星系杀得越多debuff越严重 - 进入星系
+fleet_event = {
+    id = lunar_capital_psi.10
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        has_global_flag = touhou_lunar_psi_extra_11
+        from = { is_variable_set = lunar_capital_psi_9_count }
+        check_variable = { which = lunar_capital_psi_9_count_fleet value != from.lunar_capital_psi_9_count }
+        exists = owner owner = { OR = { is_country_type = default is_ai = yes } }
+    }
+    immediate = {
+        set_fleet_flag = touhou_lunar_psi_extra_11
+        set_variable = {
+            which = lunar_capital_psi_9_count_fleet
+            value = from.lunar_capital_psi_9_count
+        }
+        every_owned_ship = {
+            set_variable = { which = lunar_capital_psi_9_count value = prev.lunar_capital_psi_9_count_fleet }
+            remove_modifier = touhou_lunar_psi_extra_11
+            add_modifier = {
+                modifier = touhou_lunar_psi_extra_11
+                mult = lunar_capital_psi_9_count
+            }
+        }
+    }
+}
+
+# 天灾寻路
+fleet_event = {
+    id = lunar_capital_psi.12
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+    }
+    immediate = { spth_invasion_fleet_action = { ID = lunar_capital_psi TYPE = spth_lunar_psi OWNER = spth_lunar_capital_psi_country } }
+}
+
+# Invasion fleet action on orbit planet.
+country_event = {
+    id = lunar_capital_psi.13
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        is_touhou_crisis_faction = yes
+        from = { has_fleet_flag = spth_lunar_psi_enable_move }
+        fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
+    }
+    immediate = {
+        from = {
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = lunar_capital_psi.12 days = 3 random = 2 }
+        }
+    }
+}
+# Invasion fleet action on win a space battle.
+country_event = {
+    id = lunar_capital_psi.14
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        is_touhou_crisis_faction = yes
+        fromfrom = { fleet = { has_fleet_flag = spth_lunar_psi_enable_move } }
+        fromfromfrom = {
+            OR = {
+                is_ship_class = shipclass_starbase
+                is_ship_class = shipclass_military
+            }
+        }
+    }
+    after = {
+        fromfrom = {
+            solar_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        owner = { is_touhou_crisis_faction = yes }
+                        has_fleet_flag = spth_lunar_psi_enable_move
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = lunar_capital_psi.12 days = 3 random = 2 }
+                }
+            }
+        }
+    }
+}
+# Check every month to prevent bugs.
+event = {
+    id = lunar_capital_psi.15
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        exists = event_target:spth_lunar_capital_psi_country
+        event_target:spth_lunar_capital_psi_country = {
+            any_owned_fleet = {
+                exists = this
+                is_fleet_idle = yes
+                has_fleet_flag = spth_lunar_psi_enable_move
+                NAND = {
+                    exists = orbit
+                    orbit = {
+                        NOT = { is_star = yes }
+                        exists = owner
+                        owner = { is_hostile = event_target:spth_lunar_capital_psi_country }
+                        exists = controller
+                        controller = { is_hostile = event_target:spth_lunar_capital_psi_country }
+                    }
+                }
+            }
+        }
+    }
+    immediate = {
+        event_target:spth_lunar_capital_psi_country = {
+            every_owned_fleet = {
+                limit = {
+                    exists = this
+                    is_fleet_idle = yes
+                    has_fleet_flag = spth_lunar_psi_enable_move
+                    NAND = {
+                        exists = orbit
+                        orbit = {
+                            NOT = { is_star = yes }
+                            exists = owner
+                            owner = { is_hostile = event_target:spth_lunar_capital_psi_country }
+                            exists = controller
+                            controller = { is_hostile = event_target:spth_lunar_capital_psi_country }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = lunar_capital_psi.12 days = 3 random = 2 }
+            }
+        }
+    }
+}
+# 是还不给进的时候，直接mia
+fleet_event = {
+    id = lunar_capital_psi.16
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_main_gate_bypass }
+        from = { has_star_flag = spth_story_lunar_capital_toyohime }
+    }
+    immediate = {
+        if = {
+            limit = { owner = { is_touhou_player_faction = yes } }
+            set_mia = mia_return_home
+        } else = {
+            set_mia = mia_emergency_ftl
+        }
+        set_mia_return_delay = 10
+    }
+}
+fleet_event = {
+    id = lunar_capital_psi.17
+    title = lunar_capital_psi.17.name
+    desc = lunar_capital_psi.17.desc
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        from = { has_star_flag = spth_story_lunar_capital_toyohime }
+        is_cloaked = yes
+    }
+    immediate = { set_cloaking_active = no }
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+}
+
+# 击杀灵能舰船
+country_event = {
+    id = lunar_capital_psi.20
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { is_country_type = spth_lunar_capital_psi_fleet fromfrom = { NOT = { has_ship_flag = spth_lunar_psi_tmp_ship } } }
+    immediate = {
+        every_country = {
+            limit = { has_event_chain = spth_lunar_capital_psi_invasion NOT = { is_same_value = root.from } }
+            add_event_chain_counter = {
+                event_chain = spth_lunar_capital_psi_invasion
+                counter = spth_lunar_capital_psi_invasion_ships
+                amount = -1
+            }
+            add_event_chain_counter = {
+                event_chain = spth_lunar_capital_psi_invasion
+                counter = spth_lunar_capital_psi_invasion_killed_others
+                amount = 1
+            }
+        }
+        from = {
+            if = {
+                limit = { has_event_chain = spth_lunar_capital_psi_invasion }
+                add_event_chain_counter = {
+                    event_chain = spth_lunar_capital_psi_invasion
+                    counter = spth_lunar_capital_psi_invasion_ships
+                    amount = -1
+                }
+                add_event_chain_counter = {
+                    event_chain = spth_lunar_capital_psi_invasion
+                    counter = spth_lunar_capital_psi_invasion_killed_us
+                    amount = 1
+                }
+            }
+            if = {
+                limit = { country_has_situation = { SITUATION = situation_spth_lunar_psi_crisis } }
+                random_situation = {
+                    limit = { is_situation_type = situation_spth_lunar_psi_crisis }
+                    add_situation_progress = value:situation_spth_lunar_psi_crisis_add
+                }
+            }
+        }
+    }
+}
+# 被灵能舰船击杀
+country_event = {
+    id = lunar_capital_psi.21
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_country_type = spth_lunar_capital_psi_fleet
+        from = { NOT = { is_country_type = spth_lunar_capital_psi_fleet } }
+    }
+    immediate = {
+        every_country = {
+            limit = { has_event_chain = spth_lunar_capital_psi_invasion }
+            add_event_chain_counter = {
+                event_chain = spth_lunar_capital_psi_invasion
+                counter = spth_lunar_capital_psi_invasion_killed_enm
+                amount = 1
+            }
+        }
+    }
+}
+# 杀够了 给研究项目
+situation_event = {
+    id = lunar_capital_psi.22
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { owner = { is_ai = no } }
+    immediate = {
+        owner = { country_event = { id = lunar_capital_psi.23 } }
+        destroy_situation = this
+    }
+}
+country_event = {
+    id = lunar_capital_psi.23
+    title = lunar_capital_psi.23.name
+    desc = lunar_capital_psi.23.desc
+    is_triggered_only = yes
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+    after = {
+        every_system = {
+            limit = { has_star_flag = spth_lunar_capital_psi_sub_gate_in_system }
+            enable_special_project = {
+                name = lunar_capital_psi_close_sub_gate
+                location = this.star owner = root
+            }
+        }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.24
+    title = lunar_capital_psi.24.name
+    desc = lunar_capital_psi.24.desc
+    is_triggered_only = yes
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+    after = {
+        hidden_effect = {
+            if = {
+                limit = {
+                    AND = {
+                        has_global_flag = spth_lunar_capital_psi_sub_gate_1_killed
+                        has_global_flag = spth_lunar_capital_psi_sub_gate_2_killed
+                    }
+                }
+                country_event = { id = lunar_capital_psi.25 days = 1 }
+            }
+        }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.25
+    title = lunar_capital_psi.25.name
+    desc = lunar_capital_psi.25.desc
+    is_triggered_only = yes
+    immediate = { spth_lunar_psi_unlock_bypass = yes }
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+    after = {
+        event_target:spth_story_lunar_capital_area_toyohime = {
+            enable_special_project = {
+                name = lunar_capital_psi_close_main_gate
+                location = this.star owner = root
+            }
+        }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.26
+    title = lunar_capital_psi.26.name
+    desc = lunar_capital_psi.26.desc
+    is_triggered_only = yes
+    option = {
+        name = TH_DAMN_PSI
+        default_hide_option = yes
+        hidden_effect = {
+            set_country_flag = tech_lunar_capital_ships
+            set_country_flag = tech_lunar_capital_parts
+        }
+        give_technology = { tech = tech_lunar_capital_ships }
+        give_technology = { tech = tech_lunar_capital_parts }
+        hidden_effect = {
+            create_ship_design = { design = NAME_lunar_capital_carrier_player }
+            add_ship_design = last_created_design
+        }
+    }
+    after = {
+        hidden_effect = { country_event = { id = lunar_capital_psi.27 days = 45 random = 45 } }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.27
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        set_global_flag = spth_lunar_capital_psi_crisis_ended
+        every_system = {
+            limit = { is_variable_set = lunar_capital_psi_9_count }
+            clear_variable = lunar_capital_psi_9_count
+        }
+        every_owned_fleet = {
+            limit = { has_fleet_flag = touhou_lunar_psi_extra_11 }
+            every_owned_ship = {
+                clear_variable = lunar_capital_psi_9_count
+                remove_modifier = touhou_lunar_psi_extra_11
+            }
+        }
+        event_target:spth_lunar_capital_psi_country = {
+            every_owned_fleet = { delete_fleet = this }
+            destroy_country = yes
+        }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.28
+    title =lunar_capital_psi.28.name
+    desc = lunar_capital_psi.28.desc
+    is_triggered_only = yes
+    location = from
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_nuclear_explosion_room }
+    show_sound = event_super_explosion
+    option = { name = lunar_capital_psi.28.a ai_chance = { weight = 100 } }
+    option = { name = lunar_capital_psi.28.b }
+}
+
+# 刷星基，拉史！
+starbase_event = {
+    id = lunar_capital_psi.30
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        from.owner = { is_country_type = spth_lunar_capital_psi_fleet }
+        NOT = { solar_system = { any_system_planet = { is_colony = yes } } }
+    }
+    immediate = { solar_system = { system_event = { id = lunar_capital_psi.31 days = 2 } } }
+}
+system_event = {
+    id = lunar_capital_psi.31
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { NOT = { exists = starbase } }
+    immediate = { spth_lunar_psi_spawn_starbase = yes }
+}
+fleet_event = {
+    id = lunar_capital_psi.32
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_fleet_flag = spth_lunar_psi_fleet
+        from = {
+            NOT = { exists = starbase }
+            count_system_colony = { count = 0 }
+        }
+    }
+    immediate = { solar_system = { system_event = { id = lunar_capital_psi.31 days = 2 } } }
+}
+
+# 月之都-灵能派
+# 灵能舰船设定为月之都中的升格派
+# 被灵能污染的月之都AI引发的入侵
+# 开始后随机选两个星系开个门刷怪
+# 主门星系进入就mia
+# 要求击杀足够数量的灵能月都舰船，走项目关闭传送门
+# 全部关闭后，可以进入并关闭主门
+# 刷怪间隔400+100d，刷的比隙间人少
+# global:
+#   spth_lunar_capital_psi_crisis_begin: 天灾开始
+#   spth_lunar_capital_psi_crisis_ended: 天灾结束
+#   spth_lunar_capital_psi_gate_[1-2]_spawned: 第xx传送门已生成
+#   spth_lunar_capital_psi_gate_[1-2]_killed: 第xx传送门已摧毁
+# star:
+#   spth_lunar_capital_psi_sub_gate_[1-2]: 小传送门
+#   spth_lunar_capital_psi_main_gate: 大传送门
+
+
+country_event = {
+    id = lunar_capital_psi.100
+    title = lunar_capital_psi.100.name
+    desc = lunar_capital_psi.100.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_databank_room }
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+    after = {
+        enable_special_project = {
+            name = spth_lunar_toyohime_unlock_shield
+            location = event_target:lunar_toyohime_event_rw
+            owner = root
+        }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.101
+    title = lunar_capital_psi.101.name
+    desc = lunar_capital_psi.101.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_black_needle_base_room }
+    immediate = {
+        event_target:lunar_toyohime_event_rw = {
+            change_pc = pc_ringworld_seam_damaged
+            remove_planet_flag = lunar_toyohime_event_rw_shielded
+            set_planet_flag = lunar_toyohime_event_rw_unlocked
+        }
+    }
+    option = {
+        name = TH_INTERESTRING
+        default_hide_option = yes
+        event_target:lunar_toyohime_event_rw = {
+            create_archaeological_site = site_lunar_capital_toyohime_rw
+        }
+    }
+}
+
+country_event = {
+    id = lunar_capital_psi.149
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        set_global_flag = spth_lunar_capital_psi_crisis_begin
+        set_global_flag = lunar_jumpdrive_gateway_blocked
+        spth_lunar_psi_crisis_setup_sub_gate = { spth_id = 1 }
+        spth_lunar_psi_crisis_setup_sub_gate = { spth_id = 2 }
+        spth_lunar_psi_create_country = yes
+        while = { count = 5 spth_lunar_psi_create_defence_fleet = yes }
+        spth_lunar_psi_spawn_starbase = yes
+        spth_lunar_psi_create_gate = { spth_id = 0 }
+        every_playable_country = { country_event = { id = lunar_capital_psi.150 } }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.150
+    title = lunar_capital_psi.150.name
+    desc = lunar_capital_psi.150.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_shrouded_planet_room }
+    option = {
+        name = TH_PREPARE_WAR
+        default_hide_option = yes
+    }
+}
+fleet_event = {
+    id = lunar_capital_psi.151
+    title = lunar_capital_psi.151.name
+    desc = lunar_capital_psi.151.desc
+    is_triggered_only = yes
+    trigger = {
+        NOT = { owner = { has_country_flag = lunar_capital_psi_151_fired } }
+        from = { has_star_flag = spth_lunar_capital_psi_sub_gate_in_system }
+    }
+    immediate = {
+        owner = { set_country_flag = lunar_capital_psi_151_fired }
+    }
+    option = {
+        name = TH_ACKNOWLEDGED
+        default_hide_option = yes
+    }
+}

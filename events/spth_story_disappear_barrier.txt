@@ -863,11 +863,11 @@ country_event = {
                 }
             }
             set_country_flag = spth_unlock_aethon_gate
-            set_global_flag = spth_story_lunar_capital_cluster34_spawned
+            set_global_flag = spth_story_lunar_capital_toyohime_spawned
             random_system_within_border = {
                 set_spawn_system_batch = begin
                 spawn_system = {
-                    initializer = spth_story_lunar_capital_cluster34
+                    initializer = spth_story_lunar_capital_area_toyohime
                     hyperlane = no
                 }
                 set_spawn_system_batch = end
@@ -880,13 +880,13 @@ country_event = {
         }
         create_point_of_interest = {
             event_chain = spth_event_chain_past_legacy
-            id = spth_story_lunar_capital_cluster34
+            id = spth_story_lunar_capital_area_toyohime
             picture = GFX_evt_star_chart
-            name = spth_lunar_cluster34
-            location = event_target:spth_story_lunar_capital_cluster34
-            desc = sc_spth_cluster34_desc
+            name = spth_lunar_area_toyohime
+            location = event_target:spth_story_lunar_capital_area_toyohime
+            desc = spth_lunar_area_toyohime_desc
         }
-        country_event = { id = disappear_barrier.1020 days = 60 random = 30 }
+        # country_event = { id = disappear_barrier.1020 days = 60 random = 30 }
     }
 }
 country_event = {
@@ -905,6 +905,66 @@ country_event = {
         begin_event_chain = { event_chain = disappear_barrier_cluster34_psi_signal target = root }
         custom_tooltip = disappear_barrier_cluster34_psi_worlds_tt
         owned_planet_list_tooltip = { limit = { has_planet_flag = disappear_barrier_cluster34_psi_mark } }
+    }
+}
+
+fleet_event = {
+    id = disappear_barrier.1021
+    title = disappear_barrier.1021.name
+    desc = disappear_barrier.1021.desc
+    is_triggered_only = yes
+    trigger = {
+        owner = { NOT = { has_country_flag = disappear_barrier_1021_fired } }
+        from = { has_star_flag = spth_story_lunar_capital_toyohime }
+    }
+    immediate = { owner = { set_country_flag = disappear_barrier_1021_fired } }
+    option = {
+        name = TH_SO_INTERESTRING
+        default_hide_option = yes
+        # TODO: enable special project here.
+    }
+}
+
+country_event = {
+    id = disappear_barrier.1025
+    hide_window = yes
+    is_triggered_only = yes
+}
+
+country_event = {
+    id = disappear_barrier.1026
+    title = disappear_barrier.1026.name
+    desc = disappear_barrier.1026.desc
+    is_triggered_only = yes
+    immediate = {
+        every_country = {
+            begin_event_chain = {
+                event_chain = spth_lunar_capital_psi_invasion
+                target = this
+            }
+            start_situation = {
+                type = situation_spth_lunar_psi_crisis
+                target = this
+            }
+        }
+        event_target:spth_story_lunar_capital_area_toyohime = {
+            star = { change_pc = pc_spiritual_power_star save_event_target_as = spth_lunar_spawnpoint }
+            set_star_class = sc_spiritual_power_star
+        }
+    }
+    location = event_target:spth_story_lunar_capital_area_toyohime
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_evil_room }
+    option = {
+        name = disappear_barrier.1026.a
+        default_hide_option = yes
+        tooltip = {
+            begin_event_chain = { event_chain = spth_lunar_capital_psi_invasion target = this }
+            start_situation = { type = situation_spth_lunar_psi_crisis target = this }
+        }
+        hidden_effect = { country_event = { id = lunar_capital_psi.149 days = 5 } }
     }
 }
 
