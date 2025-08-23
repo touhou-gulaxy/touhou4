@@ -13,16 +13,21 @@ namespace = Th_dynamic_battle_vict
 ####################### 舰船动修 #######################
 #######################################################
 # Sakuya
-ship_event = {
+fleet_event = {
     id = Th_dynamic_battle_vict.1
     hide_window = yes
     is_triggered_only = yes
     immediate = {
         if = {
-            limit = { has_ship_flag = TH_sakuya_the_world_dynamic_vict }
-            sakuya_the_world_dynamic = { interval = @interval_the_world_first }
+            limit = { has_fleet_flag = TH_sakuya_the_world_dynamic_vict }
+            every_owned_ship = {
+                sakuya_the_world_dynamic = { interval = @interval_the_world_first }
+            }
+            fleet_event = { id = Th_dynamic_battle_vict.1 days = 1 }
         } else = {
-            TH_clear_all_dynamic_modifier = yes
+            every_owned_ship = {
+                TH_clear_all_dynamic_modifier = yes
+            }
         }
     }
 }
@@ -731,65 +736,48 @@ country_event = {
     trigger = {
         always = no
         fromfrom = {
-            any_owned_ship = {
-                OR = {
-                    has_component = th_ship_part_yueshiji
-                    has_component = th_ship_part_yueshiji_story
-                    has_component = th_ship_part_yueshiji_story_2
-                }
-            }
+            any_owned_ship = { check_modifier_value = { modifier = ship_has_th_sakuya value > 0 } }
         }
         NOT = {
             fromfromfrom = {
-                any_owned_ship = {
-                    OR = {
-                        has_component = th_ship_part_yueshiji
-                        has_component = th_ship_part_yueshiji_story
-                        has_component = th_ship_part_yueshiji_story_2
-                    }
-                }
+                any_owned_ship = { check_modifier_value = { modifier = ship_has_th_sakuya value > 0 } }
             }
         }
     }
 
     immediate = {
         fromfrom = {
-            fleet_event = { id = Th_dynamic_battle_vict.102 }
+            # fleet_event = { id = Th_dynamic_battle_vict.102 }
             if = {
-                limit = {
-                    any_owned_ship = {
-                        has_component = th_ship_part_yueshiji_story_2
-                    }
-                }
+                limit = { any_owned_ship = { check_modifier_value = { modifier = ship_has_th_sakuya_lvl value = 1 } } }
                 fromfromfrom = {
+                    set_timed_fleet_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t1 }
                     every_owned_ship = {
                         limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
-                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t3 }
-                        ship_event = { id = Th_dynamic_battle_vict.1 }
+                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t1 }
                     }
+                    fleet_event = { id = Th_dynamic_battle_vict.1 }
                 }
             }
             else_if = {
-                limit = {
-                    any_owned_ship = {
-                        has_component = th_ship_part_yueshiji_story
-                    }
-                }
+                limit = { any_owned_ship = { check_modifier_value = { modifier = ship_has_th_sakuya_lvl value = 2 } } }
                 fromfromfrom = {
+                    set_timed_fleet_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t2 }
                     every_owned_ship = {
                         limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
                         set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t2 }
-                        ship_event = { id = Th_dynamic_battle_vict.1 }
                     }
+                    fleet_event = { id = Th_dynamic_battle_vict.1 }
                 }
             }
             else = {
                 fromfromfrom = {
+                    set_timed_fleet_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t3 }
                     every_owned_ship = {
                         limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
-                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t1 }
-                        ship_event = { id = Th_dynamic_battle_vict.1 }
+                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t3 }
                     }
+                    fleet_event = { id = Th_dynamic_battle_vict.1 }
                 }
             }
         }
