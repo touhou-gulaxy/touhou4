@@ -51,11 +51,25 @@ TH_timed_check_modifier = {
 
 sakuya_the_world_dynamic = {
     optimize_memory
-    TH_dynamic_modifier_conditional = { modifier = ship_weapon_range_mult relation = ">" limit_value = -1 value = -1 }
-    TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = ">" limit_value = -1 value = -1 }
-    TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = ">" limit_value = -1 value = -1 }
-    TH_dynamic_modifier_conditional = { modifier = ship_speed_mult relation = ">" limit_value = -1 value = -1 }
-    TH_dynamic_modifier_conditional = { modifier = ship_fire_rate_mult relation = ">" limit_value = -1 value = -1 }
+    if = {
+        limit = { is_in_combat = yes }
+        every_owned_ship = {
+            TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = ">" limit_value = -1 value = -1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = ">" limit_value = -1 value = -1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_weapon_range_mult relation = ">" limit_value = -1 value = -1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_speed_mult relation = ">" limit_value = -1 value = -1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_base_speed_mult relation = ">" limit_value = -1 value = -1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_fire_rate_mult relation = ">" limit_value = -10000 value = -10000 }
+        }
+        fleet_event = { id = Th_dynamic_battle_vict.1 days = $interval$ }
+    } else = {
+        remove_fleet_flag = TH_sakuya_the_world_dynamic_vict
+        every_owned_ship = {
+            TH_clear_all_dynamic_modifier = yes
+            remove_ship_flag = TH_sakuya_the_world_dynamic_vict
+        }
+    }
+
 }
 
 spth_dynamic_battle_init = {
@@ -123,12 +137,14 @@ satori_dynamic_boost = {
     optimize_memory
     if = {
         limit = { is_in_combat = yes }
-        every_owned_ship = {
-            limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
-            TH_dynamic_modifier_conditional = { modifier = ship_accuracy_add relation = "<" limit_value = 100 value = 100 }
-            TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = "<" limit_value = 1 value = 1 }
-            TH_dynamic_modifier_conditional = { modifier = ship_tracking_add relation = "<" limit_value = 100 value = 100 }
-            TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = "<" limit_value = 1 value = 1 }
+        if = {
+            limit = { satori_dynamic_boost_close = no }
+            every_owned_ship = {
+                TH_dynamic_modifier_conditional = { modifier = ship_accuracy_add relation = "<" limit_value = 100 value = 100 }
+                TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = "<" limit_value = 1 value = 1 }
+                TH_dynamic_modifier_conditional = { modifier = ship_tracking_add relation = "<" limit_value = 100 value = 100 }
+                TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = "<" limit_value = 1 value = 1 }
+            }
         }
         fleet_event = { id = Th_dynamic_battle_vict.3 days = $interval$ }
     }
@@ -996,13 +1012,19 @@ spth_kamikakushi_cruiser_arua_protect_item = {
 }
 spth_kamikakushi_cruiser_arua_protect_effect = {
     optimize_memory
-    every_owned_ship = {
-        spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_damage }
-        spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_fire_rate_mult }
-        spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_tracking_mult }
-        spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_accuracy_mult }
-        spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_range_mult }
-        spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_evasion_mult }
+    if = {
+        limit = { spth_kamikakushi_cruiser_arua_protect_close = no }
+        log = "启动protect for [This.GetName]"
+        every_owned_ship = {
+            spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_damage }
+            spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_fire_rate_mult }
+            spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_tracking_mult }
+            spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_accuracy_mult }
+            spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_range_mult }
+            spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_evasion_mult }
+        }
+    } else = {
+        log = "未启动protect for [This.GetName]"
     }
 }
 
