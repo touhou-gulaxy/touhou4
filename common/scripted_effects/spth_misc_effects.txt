@@ -1,0 +1,69 @@
+touhou_flower_incident_damage_planet = {
+    optimize_memory
+}
+touhou_flower_incident_colony_modifier = {
+    optimize_memory
+}
+touhou_flower_incident_system = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_star_flag = affect_by_touhou_flower_incident } }
+        set_star_flag = affect_by_touhou_flower_incident
+        add_event_chain_counter = {
+            event_chain = touhou_flower_incident
+            counter = touhou_flower_incident_our_affect_system
+            amount = 1
+        }
+        add_event_chain_counter = {
+            event_chain = touhou_flower_incident
+            counter = touhou_flower_incident_our_ghost_affect_planet
+            amount = trigger:count_system_colony
+        }
+    }
+    remove_star_flag = touhou_flower_incident_stage_1
+    remove_star_flag = touhou_flower_incident_stage_2
+    remove_star_flag = touhou_flower_incident_stage_3
+    set_star_flag = touhou_flower_incident_stage_$level$
+    every_system_colony = {
+        limit = { NOT = { has_planet_flag = touhou_flower_incident_stage_$level$ } }
+        remove_planet_flag = touhou_flower_incident_stage_1
+        remove_planet_flag = touhou_flower_incident_stage_2
+        remove_planet_flag = touhou_flower_incident_stage_3
+        set_planet_flag = touhou_flower_incident_stage_$level$
+        touhou_flower_incident_colony_modifier = { level = $level$ }
+    }
+}
+touhou_flower_incident_spread = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_country_flag = touhou_flower_incident_spreaded } }
+        set_country_flag = touhou_flower_incident_spreaded
+    }
+    reroll_random = yes
+    random_list = {
+        75 = {
+            every_system_within_border = {
+                limit = {
+                    NOT = { has_star_flag = touhou_flower_incident_stage_3 }
+                    any_neighbor_system = { has_star_flag = affect_by_touhou_flower_incident }
+                }
+                if = {
+                    limit = { has_star_flag = touhou_flower_incident_stage_2 }
+                    touhou_flower_incident_system = { level = 3 }
+                } else_if = {
+                    limit = { has_star_flag = touhou_flower_incident_stage_1 }
+                    touhou_flower_incident_system = { level = 2 }
+                }
+            }
+        }
+        25 = {}
+    }
+    reroll_random = yes
+    random_system_within_border = {
+        limit = {
+            NOT = { has_star_flag = affect_by_touhou_flower_incident }
+            any_neighbor_system = { has_star_flag = affect_by_touhou_flower_incident }
+        }
+        touhou_flower_incident_system = { level = 1 }
+    }
+}

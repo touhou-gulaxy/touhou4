@@ -1755,6 +1755,127 @@ country_event = {
 	}
 }
 
+country_event = {
+	id = toho.8025
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		always = no # 别急
+		NOT = { has_country_flag = toho_8025_fired }
+		is_ai = no
+		OR = {
+			has_authority = auth_gensokyo
+			has_country_flag = touhou_mod_country
+		}
+		end_game_years_passed >= 0
+		OR = {
+			touhou_crisis_happened_and_defeated = yes # 打了天灾=我死了好多好多人
+			years_passed >= 175										# 这时候还不打天灾直接保底得了
+		}
+		# 同时还是只存在一个实例吧
+		NOT = {
+			any_playable_country = {
+				has_country_flag = touhou_flower_incident_begin
+				NOT = { has_country_flag = touhou_flower_incident_ended }
+				has_authority = auth_gensokyo
+			}
+		}
+	}
+	immediate = {
+		set_country_flag = toho_8025_fired
+		country_event = { id = toho.8026 days = 90 random = 90 }
+	}
+}
+
+country_event = {
+	id = toho.8026
+	title = toho.8026.name
+	desc = toho.8026.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hakuri_shrine_night_room }
+	option = {
+		name = TH_SO_INTERESTRING
+	}
+	after = { hidden_effect = { country_event = { id = toho.8027 days = 90 random = 90 } } }
+}
+
+country_event = {
+	id = toho.8027
+	title = toho.8027.name
+	desc = toho.8027.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hakuri_shrine_night_room }
+	option = {
+		name = TH_WORYING
+	}
+	after = { hidden_effect = { country_event = { id = toho.8028 days = 90 random = 90 } } }
+}
+
+country_event = {
+	id = toho.8028
+	title = toho.8028.name
+	desc = toho.8028.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hakuri_shrine_night_room }
+	option = {
+		name = TH_BE_CAREFULE
+	}
+	after = { hidden_effect = { country_event = { id = toho.8029 days = 180 random = 180 } } }
+}
+
+country_event = {
+	id = toho.8029
+	title = toho.8029.name
+	desc = toho.8029.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_announcement_room }
+	show_sound = event_announcement
+	immediate = {
+		set_country_flag = touhou_flower_incident_begin
+		begin_event_chain = {
+			event_chain = touhou_flower_incident
+			target = root
+		}
+		capital_scope.solar_system = { touhou_flower_incident_system = { level = 3 } }
+		touhou_flower_incident_spread = yes
+		country_event = { id = toho.8046 days = 90 random = 30 }
+	}
+	option = {
+		name = TH_OK
+		custom_tooltip = toho.8029.affect
+		owned_planet_list_tooltip = {
+			limit = { has_planet_flag = affect_by_touhou_flower_incident }
+		}
+	}
+}
+
+# 每半年沿超空间航道传播一次
+country_event = {
+	id = toho.8046
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_country_flag = touhou_flower_incident_begin
+		NOT = { has_country_flag = touhou_flower_incident_ended }
+	}
+	immediate = {
+		touhou_flower_incident_spread = yes
+		country_event = { id = toho.8046 days = 180 random = 30 }
+	}
+}
+
 # gatekeeper
 country_event = {
 	id = toho.8090
