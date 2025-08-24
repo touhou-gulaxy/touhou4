@@ -1636,7 +1636,7 @@ country_event = {
                                             modifier = {
                                                 factor = 0.5
                                                 leader = { OR = {
-                                                    has_trait_tier1or2 = { TRAIT = leader_trait_cautious }
+                                                    has_trait = leader_trait_cautious
                                                     has_trait = leader_trait_foredoomed_to_a_rendezvous
                                                     has_trait = leader_trait_dragonslayer
                                                 } }
@@ -1758,6 +1758,61 @@ ship_event = {
             add_modifier = { modifier = spth_super_carrier_damage_modifier_disable days = 4 }
         } else = {
             add_modifier = { modifier = spth_super_carrier_damage_modifier_disable days = 2 }
+        }
+    }
+}
+
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.1209
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = spth_fleet_1209_fired }
+            any_owned_ship = { has_ship_flag = is_spth_space_shrine_station }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_fleet_flag = spth_fleet_1209_fired
+            random_owned_ship = {
+                limit = { has_ship_flag = is_spth_space_shrine_station }
+                set_ship_flag = spth_invincible
+                ship_event = { id = spth_fleet.1210 days = 4 }
+            }
+        }
+    }
+}
+ship_event = {
+    id = spth_fleet.1210
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            if = {
+                limit = {
+                    fleet.solar_system = {
+                        any_fleet_in_system = {
+                            exists = owner
+                            OR = { owner = { is_same_value = root.owner } is_alliance_fleet = yes }
+                        }
+                    }
+                }
+                if = { limit = { NOT = { has_ship_flag = spth_invincible } } set_ship_flag = spth_invincible }
+                ship_event = { id = spth_fleet.1210 days = 4 }
+            } else = {
+                fleet = { remove_fleet_flag = spth_fleet_1209_fired }
+                remove_ship_flag = spth_invincible
+            }
+        } else = {
+            fleet = { remove_fleet_flag = spth_fleet_1209_fired }
+            remove_ship_flag = spth_invincible
         }
     }
 }
