@@ -80,6 +80,8 @@ spth_num_pops = {
 	base = 0
 	add = trigger:pop_amount
 	divide = 100
+	[[minus] subtract = $minus$ ]
+	[[sqrt] square_root = yes ]
 	ceiling = yes
 	min = 1
 }
@@ -101,7 +103,7 @@ planet_available_barrier_capacity = {
 	max = 1
 }
 # scope: planet
-planet_base_faith_strength = {
+planet_base_faith_strength_1 = {
 	base = 0
 	add = value:spth_num_pops
 	modifier = {
@@ -121,6 +123,46 @@ planet_base_faith_strength = {
 			has_touhou_ascension_tier_4 = yes
 		}
 		multiply = 1.2
+	}
+}
+planet_base_faith_strength_2 = {
+	base = 0
+	add = 10000
+	add = value:spth_num_pops|minus|10000|sqrt|yes|
+	modifier = {
+		owner = {
+			has_touhou_ascension_tier_2 = yes
+		}
+		multiply = 1.2
+	}
+	modifier = {
+		owner = {
+			has_touhou_ascension_tier_3 = yes
+		}
+		multiply = 1.2
+	}
+	modifier = {
+		owner = {
+			has_touhou_ascension_tier_4 = yes
+		}
+		multiply = 1.2
+	}
+}
+planet_base_faith_strength = {
+	base = 0
+	modifier = {
+		add = value:planet_base_faith_strength_1
+		check_variable_arithmetic = {
+			which = value:spth_num_pops
+			value <= 10000
+		}
+	}
+	modifier = {
+		add = value:planet_base_faith_strength_2
+		check_variable_arithmetic = {
+			which = value:spth_num_pops
+			value > 10000
+		}
 	}
 	min = 0
 }
@@ -547,8 +589,9 @@ gensokyo_planet_drp_mult = {
 		planet = { is_variable_set = gensokyo_planet_drp_factor }
 		add = planet.gensokyo_planet_drp_factor
 	}
+	add = modifier:pop_bonus_workforce_add
 	mult = value:gensokyo_planet_drp_mult_genso
-	mult = 0.5
+	mult = modifier:pop_bonus_workforce_mult
 }
 
 gensokyo_planet_upkeep_mult = {
@@ -594,8 +637,9 @@ gensokyo_planet_upkeep_mult = {
 		planet = { is_variable_set = gensokyo_planet_drp_factor }
 		add = planet.gensokyo_planet_drp_factor
 	}
+	add = modifier:pop_bonus_workforce_add
 	mult = value:gensokyo_planet_upkeep_mult_genso
-	mult = 0.5
+	mult = modifier:pop_bonus_workforce_mult
 }
 gensokyo_planet_district_upkeep_value = {
 	base = 0
