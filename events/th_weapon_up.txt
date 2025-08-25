@@ -298,14 +298,6 @@ country_event = {
 	}
 }
 
-@th_weapon_up_research_gungnir = 1
-@th_weapon_up_research_knife = 2
-@th_weapon_up_research_xianzhe = 3
-@th_weapon_up_research_spark = 4
-@th_weapon_up_research_needle = 5
-@th_weapon_up_research_reimu = 6
-@th_weapon_up_research_sanae = 7
-@th_weapon_up_research_laevatain = 8
 country_event = {
 	id = th_weapon_up.11
 	title = "th_weapon_up.10.name"
@@ -326,6 +318,7 @@ country_event = {
 			has_technology = tech_th_weapon_gungnir
 		}
 		name = th_weapon_up.11.a
+		custom_tooltip = th_weapon_up.11.a.tooltip
 		hidden_effect = {
 			set_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_gungnir }
 			set_country_flag = th_weapon_up_research_begin
@@ -340,6 +333,7 @@ country_event = {
 			has_technology = tech_th_weapon_knife
 		}
 		name = th_weapon_up.11.b
+		custom_tooltip = th_weapon_up.11.b.tooltip
 		hidden_effect = {
 			set_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_knife }
 			set_country_flag = th_weapon_up_research_begin
@@ -353,6 +347,7 @@ country_event = {
 			has_technology = tech_th_weapon_xianzhe
 		}
 		name = th_weapon_up.11.c
+		custom_tooltip = th_weapon_up.11.c.tooltip
 		hidden_effect = {
 			set_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_xianzhe }
 			set_country_flag = th_weapon_up_research_begin
@@ -366,6 +361,7 @@ country_event = {
 			has_technology = tech_th_weapon_spark_2
 		}
 		name = th_weapon_up.11.d
+		custom_tooltip = th_weapon_up.11.d.tooltip
 		hidden_effect = {
 			set_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_spark }
 			set_country_flag = th_weapon_up_research_begin
@@ -378,6 +374,7 @@ country_event = {
 			has_technology = tech_th_weapon_needle
 		}
 		name = th_weapon_up.11.e
+		custom_tooltip = th_weapon_up.11.e.tooltip
 		hidden_effect = {
 			set_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_needle }
 			set_country_flag = th_weapon_up_research_begin
@@ -390,6 +387,7 @@ country_event = {
 			has_technology = tech_th_weapon_muso
 		}
 		name = th_weapon_up.11.f
+		custom_tooltip = th_weapon_up.11.f.tooltip
 		hidden_effect = {
 			set_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_reimu }
 			set_country_flag = th_weapon_up_research_begin
@@ -402,6 +400,7 @@ country_event = {
 			has_technology = tech_th_weapon_sanae
 		}
 		name = th_weapon_up.11.g
+		custom_tooltip = th_weapon_up.11.g.tooltip
 		hidden_effect = {
 			set_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_sanae }
 			set_country_flag = th_weapon_up_research_begin
@@ -414,8 +413,22 @@ country_event = {
 			has_technology = tech_spth_weapon_laevatain
 		}
 		name = th_weapon_up.11.h
+		custom_tooltip = th_weapon_up.11.h.tooltip
 		hidden_effect = {
 			set_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_laevatain }
+			set_country_flag = th_weapon_up_research_begin
+			country_event = { id = th_weapon_up.21 }
+		}
+	}
+	option = {
+		trigger = {
+			OR = { has_modifier = spth_p_max has_modifier = spth_p_max_ex }
+			has_technology = tech_th_kappa_torpedo
+		}
+		name = th_weapon_up.11.i
+		custom_tooltip = th_weapon_up.11.i.tooltip
+		hidden_effect = {
+			set_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_kappa }
 			set_country_flag = th_weapon_up_research_begin
 			country_event = { id = th_weapon_up.21 }
 		}
@@ -497,69 +510,85 @@ country_event = {
 	}
 }
 
-# check monthly, 80% chance to +1, 20% to +0.5, give tech when progress at 10.
+# Triggers when trying to open the diplomacy view for countries with custom diplomacy.
+# Country scope
+# This = target country (player)
+# From = source country
+country_event = {
+	id = th_weapon_up.103
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		from = { is_country_type = touhou_ac_research_country }
+		NOT = { has_country_flag = th_weapon_up_lock }
+		OR = {
+			has_country_flag = th_weapon_up_start
+			NOT = { has_country_flag = th_weapon_up_edict_time }
+		}
+		is_ai = no has_ascension_perk = ap_hm6
+	}
+	immediate = {
+		set_country_flag = th_weapon_up_lock
+		country_event = { id = th_weapon_up.10 }
+	}
+}
+country_event = {
+	id = th_weapon_up.104
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = { exists = event_target:touhou_ac_research_country_@root }
+		OR = {
+			has_country_flag = th_weapon_up_start
+			NOT = { has_country_flag = th_weapon_up_edict_time }
+		}
+		is_ai = no has_ascension_perk = ap_hm6
+	}
+	immediate = { touhou_ac_research_spawn_country = yes }
+}
+event = {
+	id = th_weapon_up.105
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		every_playable_country = {
+			limit = {
+				is_ai = no has_ascension_perk = ap_hm6
+				OR = {
+					has_country_flag = th_weapon_up_start
+					NOT = { has_country_flag = th_weapon_up_edict_time }
+				}
+				NOT = { exists = event_target:touhou_ac_research_country_@this }
+			}
+			country_event = { id = th_weapon_up.104 }
+		}
+	}
+}
+
+# check monthly, perform technology research
 country_event = {
 	id = th_weapon_up.200
 	hide_window = yes
 	is_triggered_only = yes
 	trigger = { has_country_flag = th_weapon_up_research_begin is_ai = no }
 	immediate = {
+		set_country_flag = th_weapon_up_lock
 		if = {
 			limit = { NOT = { is_variable_set = th_weapon_up_research_progress } }
 			set_variable = { which = th_weapon_up_research_progress value = 0 }
 		}
-		reroll_random = yes
-		random_list = {
-			20 = { change_variable = { which = th_weapon_up_research_progress value = 0.5 } }
-			8 = {
-				modifier = { exists = ruler mult = ruler.trigger:has_total_skill }
-				change_variable = { which = th_weapon_up_research_progress value = 1 }
-			}
-			1 = {
-				modifier = { exists = ruler mult = ruler.trigger:has_total_skill }
-				change_variable = { which = th_weapon_up_research_progress value = 2 }
-			}
-		}
-		if = {
-			limit = { check_variable = { which = th_weapon_up_research_progress value >= 10 } }
-			set_variable = { which = th_weapon_up_research_progress value = 0 }
-			create_message = {
-				type = th_weapon_up_research_finished
-				days = 30 target = root recipient = root
-				localization = MESSAGE_th_weapon_up_research_finished_DESC
-			}
-			if = {
-				limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_gungnir } }
-				give_technology = { tech = tech_repeatable_improved_gungnir }
-			}
-			else_if = {
-				limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_knife } }
-				give_technology = { tech = tech_repeatable_improved_knife }
-			}
-			else_if = {
-				limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_xianzhe } }
-				give_technology = { tech = tech_repeatable_improved_xianzhe }
-			}
-			else_if = {
-				limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_spark } }
-				give_technology = { tech = tech_repeatable_improved_spark }
-			}
-			else_if = {
-				limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_needle } }
-				give_technology = { tech = tech_repeatable_improved_needle }
-			}
-			else_if = {
-				limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_reimu } }
-				give_technology = { tech = tech_repeatable_improved_reimu }
-			}
-			else_if = {
-				limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_sanae } }
-				give_technology = { tech = tech_repeatable_improved_sanae }
-			}
-			else_if = {
-				limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_laevatain } }
-				give_technology = { tech = tech_repeatable_improved_laevatain }
-			}
-		}
+		touhou_ac_research_technology = yes
+		remove_country_flag = th_weapon_up_lock
+	}
+}
+country_event = {
+	id = th_weapon_up.201
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { has_country_flag = th_weapon_up_research_begin is_ai = no }
+	immediate = {
+		touhou_ac_refresh_research_point_using = { type = physics factor = 0.2 }
+		touhou_ac_refresh_research_point_using = { type = society factor = 0.2 }
+		touhou_ac_refresh_research_point_using = { type = engineering factor = 0.1 }
 	}
 }

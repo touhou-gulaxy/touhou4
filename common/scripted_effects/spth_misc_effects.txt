@@ -67,3 +67,172 @@ touhou_flower_incident_spread = {
         touhou_flower_incident_system = { level = 1 }
     }
 }
+touhou_ac_research_spawn_country = {
+    optimize_memory
+    if = {
+        limit = { NOT = { exists = event_target:touhou_ac_research_country_@root } }
+        create_country = {
+            name = touhou_ac_research_country
+            type = touhou_ac_research_country
+            flag = root
+            species = root
+            effect = {
+                save_global_event_target_as = touhou_ac_research_country_@root
+                set_country_flag = touhou_ac_research_country
+                set_country_flag = touhou_ac_research_country_of_@root
+                set_country_flag = protected_from_queen_storm
+                set_country_flag = touhou_mod_country
+            }
+        }
+        establish_communications_no_message = event_target:touhou_ac_research_country_@root
+    }
+}
+touhou_ac_research_technology = {
+    optimize_memory
+    if = {
+        limit = {
+            check_variable_arithmetic = {
+                which = value:touhou_ac_research_cost
+                subtract = value:touhou_ac_research_base_normalized
+                value > th_weapon_up_research_progress
+            }
+        }
+        change_variable = { which = th_weapon_up_research_progress value = value:touhou_ac_research_base_normalized }
+    } else = {
+        subtract_variable = { which = th_weapon_up_research_progress value = value:touhou_ac_research_cost }
+        change_variable = { which = th_weapon_up_research_progress value = value:touhou_ac_research_base_normalized }
+        if = {
+            limit = { check_variable = { which = th_weapon_up_research_progress value > 0 } }
+            touhou_ac_research_technology_item = yes
+            if = {
+                limit = {
+                    check_variable_arithmetic = {
+                        which = value:touhou_ac_research_cost
+                        subtract = value:touhou_ac_research_base_normalized
+                        value > th_weapon_up_research_progress
+                    }
+                }
+                set_variable = { which = th_weapon_up_research_progress value = 0 }
+                touhou_ac_research_technology_item = yes
+            } else = { set_variable = { which = th_weapon_up_research_progress value = 0 } }
+        } else = { set_variable = { which = th_weapon_up_research_progress value = 0 } }
+    }
+}
+touhou_ac_research_technology_item = {
+    optimize_memory
+    if = {
+        limit = { NOT = { is_variable_set = th_weapon_up_research_all_count } }
+        set_variable = { which = th_weapon_up_research_all_count value = 0 }
+    }
+    change_variable = { which = th_weapon_up_research_all_count value = 1 }
+    touhou_ac_give_technology = yes
+    create_message = {
+        type = th_weapon_up_research_finished
+        days = 30 target = root recipient = root
+        localization = MESSAGE_th_weapon_up_research_finished_DESC
+    }
+}
+touhou_ac_give_technology = {
+    optimize_memory
+    if = {
+        limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_gungnir } }
+        if = {
+            limit = { NOT = { is_variable_set = th_weapon_up_research_count_all } }
+            set_variable = { which = th_weapon_up_research_count_all value = 0 }
+        }
+        change_variable = { which = th_weapon_up_research_count_all value = 1 }
+        remove_modifier = tech_repeatable_improved_gungnir
+        add_modifier = { modifier = tech_repeatable_improved_gungnir mult = th_weapon_up_research_count_all }
+    } else_if = {
+        limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_knife } }
+        if = {
+            limit = { NOT = { is_variable_set = th_weapon_up_research_count_all } }
+            set_variable = { which = th_weapon_up_research_count_all value = 0 }
+        }
+        change_variable = { which = th_weapon_up_research_count_all value = 1 }
+        remove_modifier = tech_repeatable_improved_knife
+        add_modifier = { modifier = tech_repeatable_improved_knife mult = th_weapon_up_research_count_all }
+    } else_if = {
+        limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_xianzhe } }
+        if = {
+            limit = { NOT = { is_variable_set = th_weapon_up_research_count_all } }
+            set_variable = { which = th_weapon_up_research_count_all value = 0 }
+        }
+        change_variable = { which = th_weapon_up_research_count_all value = 1 }
+        remove_modifier = tech_repeatable_improved_xianzhe
+        add_modifier = { modifier = tech_repeatable_improved_xianzhe mult = th_weapon_up_research_count_all }
+    } else_if = {
+        limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_spark } }
+        if = {
+            limit = { NOT = { is_variable_set = th_weapon_up_research_count_all } }
+            set_variable = { which = th_weapon_up_research_count_all value = 0 }
+        }
+        change_variable = { which = th_weapon_up_research_count_all value = 1 }
+        remove_modifier = tech_repeatable_improved_spark
+        add_modifier = { modifier = tech_repeatable_improved_spark mult = th_weapon_up_research_count_all }
+    } else_if = {
+        limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_needle } }
+        if = {
+            limit = { NOT = { is_variable_set = th_weapon_up_research_count_all } }
+            set_variable = { which = th_weapon_up_research_count_all value = 0 }
+        }
+        change_variable = { which = th_weapon_up_research_count_all value = 1 }
+        remove_modifier = tech_repeatable_improved_needle
+        add_modifier = { modifier = tech_repeatable_improved_needle mult = th_weapon_up_research_count_all }
+    } else_if = {
+        limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_reimu } }
+        if = {
+            limit = { NOT = { is_variable_set = th_weapon_up_research_count_all } }
+            set_variable = { which = th_weapon_up_research_count_all value = 0 }
+        }
+        change_variable = { which = th_weapon_up_research_count_all value = 1 }
+        remove_modifier = tech_repeatable_improved_reimu
+        add_modifier = { modifier = tech_repeatable_improved_reimu mult = th_weapon_up_research_count_all }
+    } else_if = {
+        limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_sanae } }
+        if = {
+            limit = { NOT = { is_variable_set = th_weapon_up_research_count_all } }
+            set_variable = { which = th_weapon_up_research_count_all value = 0 }
+        }
+        change_variable = { which = th_weapon_up_research_count_all value = 1 }
+        remove_modifier = tech_repeatable_improved_sanae
+        add_modifier = { modifier = tech_repeatable_improved_sanae mult = th_weapon_up_research_count_all }
+    } else_if = {
+        limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_laevatain } }
+        if = {
+            limit = { NOT = { is_variable_set = th_weapon_up_research_count_all } }
+            set_variable = { which = th_weapon_up_research_count_all value = 0 }
+        }
+        change_variable = { which = th_weapon_up_research_count_all value = 1 }
+        remove_modifier = tech_repeatable_improved_laevatain
+        add_modifier = { modifier = tech_repeatable_improved_laevatain mult = th_weapon_up_research_count_all }
+    } else_if = {
+        limit = { check_variable = { which = th_weapon_up_research_type value = @th_weapon_up_research_kappa } }
+        if = {
+            limit = { NOT = { is_variable_set = th_weapon_up_research_count_all } }
+            set_variable = { which = th_weapon_up_research_count_all value = 0 }
+        }
+        change_variable = { which = th_weapon_up_research_count_all value = 1 }
+        remove_modifier = tech_repeatable_improved_laevatain
+        add_modifier = { modifier = tech_repeatable_improved_laevatain mult = th_weapon_up_research_count_all }
+    }
+}
+touhou_ac_refresh_research_point_using = {
+    optimize_memory
+    if = {
+        limit = { NOT = { is_variable_set = touhou_ac_$type$_research_using } }
+        set_variable = { which = touhou_ac_$type$_research_using value = 0 }
+        export_resource_income_to_variable = { resource = $type$_research variable = touhou_ac_$type$_research_using }
+        multiply_variable = { which = touhou_ac_$type$_research_using value = $factor$ }
+        add_modifier = { modifier = touhou_ac_$type$_research_using days = -1 mult = touhou_ac_$type$_research_using }
+    } else = {
+        set_variable = { which = touhou_ac_$type$_research_using_alt value = 0 }
+        export_resource_income_to_variable = { resource = $type$_research variable = touhou_ac_$type$_research_using_alt }
+        change_variable = { which = touhou_ac_$type$_research_using_alt value = touhou_ac_$type$_research_using }
+        set_variable = { which = touhou_ac_$type$_research_using value = touhou_ac_$type$_research_using_alt }
+        clear_variable = touhou_ac_$type$_research_using_alt
+        multiply_variable = { which = touhou_ac_$type$_research_using value = $factor$ }
+        while = { limit = { has_modifier = touhou_ac_$type$_research_using } remove_modifier = touhou_ac_$type$_research_using }
+        add_modifier = { modifier = touhou_ac_$type$_research_using days = -1 mult = touhou_ac_$type$_research_using }
+    }
+}
