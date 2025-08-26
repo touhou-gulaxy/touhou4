@@ -915,13 +915,43 @@ fleet_event = {
     is_triggered_only = yes
     trigger = {
         owner = { NOT = { has_country_flag = disappear_barrier_1021_fired } }
-        from = { has_star_flag = spth_story_lunar_capital_toyohime }
+        from = {
+            has_star_flag = spth_story_lunar_capital_toyohime
+            NOT = { has_star_flag = spth_debug_spawn }
+        }
     }
-    immediate = { owner = { set_country_flag = disappear_barrier_1021_fired } }
+    immediate = {
+        owner = { set_country_flag = disappear_barrier_1021_fired }
+        if = {
+            limit = { NOT = { exists = event_target:lunar_toyohime_event_rw } }
+            from = {
+                random_system_planet = {
+                    limit = { has_planet_flag = lunar_toyohime_event_rw }
+                    save_global_event_target_as = lunar_toyohime_event_rw
+                }
+            }
+        }
+    }
     option = {
         name = TH_SO_INTERESTRING
         default_hide_option = yes
-        # TODO: enable special project here.
+        tooltip = {
+            enable_special_project = {
+                name = spth_lunar_toyohime_shield_data
+                location = event_target:lunar_toyohime_event_rw
+                owner = event_target:spth_disappear_barrier_player
+            }
+        }
+        hidden_effect = {
+            if = {
+                limit = { root.owner = { is_same_value = event_target:spth_disappear_barrier_player } }
+                enable_special_project = {
+                    name = spth_lunar_toyohime_shield_data
+                    location = event_target:lunar_toyohime_event_rw
+                    owner = event_target:spth_disappear_barrier_player
+                }
+            }
+        }
     }
 }
 
