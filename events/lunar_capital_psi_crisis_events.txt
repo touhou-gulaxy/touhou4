@@ -374,17 +374,27 @@ country_event = {
     trigger = {
         has_global_flag = spth_lunar_capital_psi_crisis_begin
         NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
-        has_global_flag = touhou_lunar_psi_extra_14
+        OR = {
+            has_global_flag = touhou_lunar_psi_extra_14
+            has_global_flag = touhou_lunar_psi_extra_32
+        }
         fromfrom = { has_fleet_flag = spth_lunar_psi_fleet }
         is_touhou_crisis_faction = yes
-        NOT = { has_country_flag = lunar_capital_psi_7_fired }
     }
     immediate = {
-        set_timed_country_flag = { flag = lunar_capital_psi_7_fired days = 30 }
-        fromfrom = {
-            set_variable = { which = lunar_capital_psi_7_value value = root.from.modifier:weapon_type_lingli_weapon_fire_rate_mult }
-            add_modifier = { modifier = touhou_lunar_psi_extra_14 days = 15 mult = lunar_capital_psi_7_value }
-            clear_variable = lunar_capital_psi_7_value
+        if = {
+            limit = { has_global_flag = touhou_lunar_psi_extra_32 NOT = { has_country_flag = lunar_capital_psi_7_32_fired } }
+            set_timed_country_flag = { flag = lunar_capital_psi_7_32_fired days = 30 }
+            TH_dynamic_modifier_conditional = { modifier = ship_damage_reduction_mult relation = "<" limit_value = 0.25 value = 0.25 }
+        }
+        if = {
+            limit = { has_global_flag = touhou_lunar_psi_extra_14 NOT = { has_country_flag = lunar_capital_psi_7_14_fired } }
+            set_timed_country_flag = { flag = lunar_capital_psi_7_14_fired days = 30 }
+            fromfrom = {
+                set_variable = { which = lunar_capital_psi_7_value value = root.from.modifier:weapon_type_lingli_weapon_fire_rate_mult }
+                add_modifier = { modifier = touhou_lunar_psi_extra_14 days = 15 mult = lunar_capital_psi_7_value }
+                clear_variable = lunar_capital_psi_7_value
+            }
         }
     }
 }
@@ -442,12 +452,7 @@ country_event = {
                                 modifier = { add = 10 has_global_flag = spth_lunar_capital_crisis_phantasm }
                                 spth_lunar_psi_create_convert_t3_fleet = yes
                             }
-                            75 = {
-                                modifier = {
-                                    factor = 0.8
-                                    event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 2 } }
-                                }
-                            }
+                            25 = {}
                         }
                     } else_if = {
                         limit = { fromfrom = { ship_size_multiplier >= 8 } }
@@ -464,12 +469,7 @@ country_event = {
                                 modifier = { add = 5 has_global_flag = spth_lunar_capital_crisis_phantasm }
                                 spth_lunar_psi_create_convert_t3_fleet = yes
                             }
-                            70 = {
-                                modifier = {
-                                    factor = 0.8
-                                    event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 2 } }
-                                }
-                            }
+                            25 = {}
                         }
                     } else = {
                         random_list = {
@@ -485,19 +485,14 @@ country_event = {
                                 modifier = { add = 2 has_global_flag = spth_lunar_capital_crisis_phantasm }
                                 spth_lunar_psi_create_convert_t3_fleet = yes
                             }
-                            75 = {
-                                modifier = {
-                                    factor = 0.8
-                                    event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 2 } }
-                                }
-                            }
+                            40 = {}
                         }
                     }
                 }
             }
             75 = {
                 modifier = {
-                    factor = 0.9
+                    factor = 0.75
                     event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 2 } }
                 }
             }
@@ -742,12 +737,15 @@ fleet_event = {
     trigger = {
         has_global_flag = spth_lunar_capital_psi_crisis_begin
         NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
-        from = { has_star_flag = spth_story_lunar_capital_toyohime }
-        is_cloaked = yes
+        NOT = { has_fleet_flag = th_disable_cloaking_cooldown }
+        is_touhou_crisis_faction = no is_cloaked = yes
     }
-    immediate = { set_cloaking_active = no }
+    immediate = {
+        set_cloaking_active = no set_timed_fleet_flag = { flag = th_disable_cloaking_cooldown days = 180 }
+        every_owned_ship = { add_modifier = { modifier = th_disable_cloaking days = 180 } }
+    }
     option = {
-        name = TH_OK
+        name = TH_WHAT_HAPPENED
         default_hide_option = yes
     }
 }
@@ -996,6 +994,22 @@ fleet_event = {
     immediate = { solar_system = { system_event = { id = lunar_capital_psi.31 days = 2 } } }
 }
 
+# 古代帝国联动 - 与虚境侵军结盟通知
+country_event = {
+    id = lunar_capital_psi.33
+    title = touhou_lunar_psi_extra_ag_evt_name
+    desc = touhou_lunar_psi_extra_ag_evt_desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ag_excited_shroud_room }
+    option = {
+        name = touhou_lunar_psi_extra_ag_evt_opt
+        custom_tooltip = touhou_lunar_psi_extra_ag_evt_effect
+    }
+}
+
 # 月之都-升格派
 # 灵能舰船设定为月之都中的升格派
 # 被灵能污染的月之都AI引发的入侵
@@ -1222,8 +1236,10 @@ country_event = {
         spth_lunar_psi_crisis_setup_sub_gate = { spth_id = 1 }
         spth_lunar_psi_crisis_setup_sub_gate = { spth_id = 2 }
         spth_lunar_psi_create_country = yes
+        event_target:spth_story_lunar_capital_area_toyohime = {
+            spth_lunar_psi_spawn_starbase = yes
+        }
         while = { count = 5 spth_lunar_psi_create_defence_fleet = yes }
-        spth_lunar_psi_spawn_starbase = yes
         spth_lunar_psi_create_gate = { spth_id = 0 }
         every_playable_country = { country_event = { id = lunar_capital_psi.150 } }
     }

@@ -1017,6 +1017,38 @@ ship_event = {
                 }
                 reroll_random = yes
             }
+        } else_if = {
+            limit = {
+                exists = fromfrom
+                fromfrom = { has_fleet_flag = spth_lunar_psi_fleet }
+                OR = { has_global_flag = touhou_lunar_psi_extra_31 has_global_flag = touhou_lunar_psi_extra_34 }
+            }
+            if = {
+                limit = { has_global_flag = touhou_lunar_psi_extra_31 }
+                reroll_random = yes
+                random_list = {
+                    15 = {  }
+                    85 = {
+                        if = {
+                            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+                            change_variable = { which = spth_extra_life_used value = 1 }
+                            remove_modifier = ship_spth_extra_life_lose
+                            if = {
+                                limit = { has_global_flag = touhou_lunar_psi_extra_34 }
+                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 90 }
+                                ship_event = { id = spth_fleet.1105 days = 90 }
+                            } else = {
+                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+                                ship_event = { id = spth_fleet.1105 days = 180 }
+                            }
+                        }
+                        set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+                        add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+                        clear_variable = ship_spth_extra_life_reduce
+                    }
+                }
+                reroll_random = yes
+            }
         } else = {
             if = {
                 limit = {
