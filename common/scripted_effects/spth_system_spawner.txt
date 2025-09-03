@@ -40,8 +40,8 @@ spth_story_lunar_outpost_system = {
             hyperlane = no
             max_orientation_angle = 0
             min_orientation_angle = 0
-            max_distance = 501
-            min_distance = 501
+            max_distance = 1000
+            min_distance = 1000
         }
         last_created_system = { save_event_target_as = spth_lunar_temp_system }
         event_target:spth_lunar_temp_system = {
@@ -104,13 +104,24 @@ spth_story_lunar_outpost_system = {
         }
         every_playable_country = {
             limit = { is_ai = no is_country_type = default }
-            random_system_within_border = {
-                limit = { is_capital_system = no }
-                spawn_megastructure = {
-                    type = spth_lunar_outpost_portal
-                    random_pos = yes
+            if = {
+                limit = { count_system_within_border = { limit = { is_capital_system = no } count > 1 } }
+                random_system_within_border = {
+                    limit = { is_capital_system = no }
+                    spawn_megastructure = {
+                        type = spth_lunar_outpost_portal
+                        random_pos = yes
+                    }
+                    set_star_flag = spth_lunar_portal_points
                 }
-                set_star_flag = spth_lunar_portal_points
+            } else = {
+                random_system_within_border = {
+                    spawn_megastructure = {
+                        type = spth_lunar_outpost_portal
+                        random_pos = yes
+                    }
+                    set_star_flag = spth_lunar_portal_points
+                }
             }
         }
         every_country = {
@@ -124,13 +135,18 @@ spth_story_lunar_outpost_home_fleets = {
     optimize_memory
     every_system_planet = {
         limit = { has_planet_flag = spth_story_crisis_outpost_defence_fleet }
-        create_lunar_capital_fleet = {
+        spth_create_fleet = {
             NAME = NAME_spth_lunar_capital_home_fleet
-            can_disband = no
-            is_boss = yes
-            star_sector_flagship = 1
-            OWNER = event_target:spth_story_lunar_outpost_country
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:spth_kamikakushi_fallen_empire
             location = prev
+            flag = spth_kamikakushi_fallen_empire_fleet
+            lunar_capital_psi_carrier = 2
+            lunar_capital_psi_battleship = 30
+            lunar_capital_psi_cruiser = 40
+            lunar_capital_psi_frigate = 20
+            lunar_capital_psi_frigate_1 = 20
+            lunar_capital_bonus = yes
         }
     }
 }
