@@ -95,6 +95,66 @@ spth_cluster34_psi_mark_effect = {
     optimize_memory
 }
 
+spth_lunar_psi_setup_commander = {
+    optimize_memory
+    if = {
+        limit = { has_global_flag = has_spth_lunar_capital_psi_species }
+        event_target:spth_lunar_capital_psi_country = {
+            create_leader = {
+                name = NAME_lunar_capital_shroud
+                class = commander
+                species = event_target:spth_lunar_capital_psi_species
+                skip_background_generation = yes
+                custom_catch_phrase = lunar_capital_shroud_catch
+                custom_description = lunar_capital_shroud_bg
+                skill = 4
+                traits = {
+                    trait = leader_trait_lunar_capital
+                    trait = leader_trait_lunar_capital_psionic
+                }
+                effect = {
+                    set_leader_flag = spth_lunar_capital_leader
+                    set_leader_flag = touhou_shroud_leader
+                    set_leader_flag = has_gained_level_trait
+                    set_leader_flag = legendary_leader
+                    add_trait = { trait = subclass_commander_admiral }
+                }
+            }
+            last_created_leader = {
+                add_trait = { trait = leader_trait_artillery_specialization_2 show_message = no }
+                add_trait = { trait = leader_trait_artillerist_2 show_message = no }
+                # 额外技能等级，仅HARD及以上
+                [[!force_level]
+                    if = {
+                        limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                        add_skill = 3
+                        if = {
+                            limit = { touhou_check_diffiulty_gteq = { value = 4 } }
+                            add_skill = 170
+                        }
+                    }
+                ]
+                [[force_level]
+                    add_skill = $force_level$
+                ]
+                if = {
+                    limit = { has_total_skill >= 8 }
+                    reroll_random = yes
+                    random_list = {
+                        10 = { add_trait = { trait = leader_trait_survivalist show_message = no } }
+                        10 = { add_trait = { trait = leader_trait_guerilla_tactics show_message = no } }
+                        10 = { add_trait = { trait = leader_trait_master_gunner show_message = no } }
+                        10 = { add_trait = { trait = leader_trait_destiny_engineer show_message = no } }
+                    }
+                }
+                save_event_target_as = last_created_touhou_crisis_leader
+            }
+            event_target:$fleet$ = {
+                assign_leader = event_target:last_created_touhou_crisis_leader
+            }
+        }
+    }
+}
 spth_lunar_psi_crisis_setup_sub_gate = {
     optimize_memory
     reroll_random = yes
@@ -135,7 +195,7 @@ spth_lunar_psi_create_country = {
             name = "NAME_spth_lunar_capital_sp"
             class = THSC
             name_list = touhouchs
-            portrait = spth_touhou
+            portrait = touhou_shroud
             traits = random
             immortal = yes
             effect = {
@@ -376,6 +436,7 @@ spth_lunar_psi_create_preview_fleet = {
         evt_target = spth_lunar_fleet
     }
     spth_lunar_psi_add_fleet_counter = yes
+    spth_lunar_psi_setup_commander = { fleet = spth_lunar_fleet }
 }
 spth_lunar_psi_create_attack_fleet = {
     optimize_memory
@@ -396,6 +457,7 @@ spth_lunar_psi_create_attack_fleet = {
         evt_target = spth_lunar_fleet
     }
     spth_lunar_psi_add_fleet_counter = yes
+    spth_lunar_psi_setup_commander = { fleet = spth_lunar_fleet }
 }
 spth_lunar_psi_create_main_fleet = {
     optimize_memory
@@ -416,6 +478,7 @@ spth_lunar_psi_create_main_fleet = {
         evt_target = spth_lunar_fleet
     }
     spth_lunar_psi_add_fleet_counter = yes
+    spth_lunar_psi_setup_commander = { fleet = spth_lunar_fleet }
 }
 spth_lunar_psi_create_defence_fleet = {
     optimize_memory
@@ -433,6 +496,7 @@ spth_lunar_psi_create_defence_fleet = {
         evt_target = spth_lunar_fleet
     }
     spth_lunar_psi_add_fleet_counter = yes
+    spth_lunar_psi_setup_commander = { fleet = spth_lunar_fleet }
 }
 spth_lunar_psi_create_gate = {
     optimize_memory
