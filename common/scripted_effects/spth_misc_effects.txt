@@ -67,6 +67,7 @@ touhou_flower_incident_spread = {
         touhou_flower_incident_system = { level = 1 }
     }
 }
+
 touhou_ac_research_spawn_country = {
     optimize_memory
     if = {
@@ -234,5 +235,60 @@ touhou_ac_refresh_research_point_using = {
         multiply_variable = { which = touhou_ac_$type$_research_using value = $factor$ }
         while = { limit = { has_modifier = touhou_ac_$type$_research_using } remove_modifier = touhou_ac_$type$_research_using }
         add_modifier = { modifier = touhou_ac_$type$_research_using days = -1 mult = touhou_ac_$type$_research_using }
+    }
+}
+
+touhou_destory_crisis_shpere = {
+    optimize_memory
+    if = {
+        limit = { has_global_flag = touhou_lunar_psi_extra_33 }
+        every_megastructure = {
+            limit = {
+                OR = {
+                    is_megastructure_type = crisis_sphere_0
+                    is_megastructure_type = crisis_sphere_1
+                    is_megastructure_type = crisis_sphere_2
+                    is_megastructure_type = crisis_sphere_3
+                    is_megastructure_type = crisis_sphere_4
+                    is_megastructure_type = crisis_sphere_ruined
+                }
+            }
+            solar_system = {
+                every_system_ambient_object = {
+                    limit = {
+                        OR = {
+                            is_ambient_object_type = crisis_sphere_1
+                            is_ambient_object_type = crisis_sphere_2
+                            is_ambient_object_type = crisis_sphere_3
+                        }
+                    }
+                    destroy_ambient_object = this
+                }
+            }
+            if = {
+                limit = { exists = owner }
+                solar_system = {
+                    spawn_megastructure = {
+                        type = touhou_dummy_crisis_sphere_ruined
+                        coords_from = prev
+                        owner = prev.owner
+                    }
+                    save_event_target_as = spth_target_system
+                }
+                if = {
+                    limit = { NAND = { is_megastructure_type = crisis_sphere_ruined owner = { NOT = { has_crisis_level = crisis_level_5 } } } }
+                    owner = { country_event = { id = lunar_capital_psi.34 days = 2 random = 2 } }
+                }
+            } else = {
+                solar_system = {
+                    spawn_megastructure = {
+                        type = touhou_dummy_crisis_sphere_ruined
+                        coords_from = prev
+                    }
+                }
+            }
+            th_spawn_explosion_particle = { size = extra color = purple }
+            remove_megastructure = this
+        }
     }
 }
