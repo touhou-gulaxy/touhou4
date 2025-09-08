@@ -554,3 +554,91 @@ special_project = {
     }
     on_fail = {}
 }
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_ancient_databank
+    key = spth_lunar_toyohime_shield_data
+    days_to_research = 180
+    tech_department = physics_technology
+    requirements = { shipclass_science_ship = 1 leader = scientist skill >= 7 }
+    event_scope = ship_event
+    on_start = {}
+    on_success = { owner = { country_event = { id = lunar_capital_psi.100 } } }
+    on_fail = {}
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_ship_in_orbit
+    key = spth_lunar_toyohime_unlock_shield
+    days_to_research = 90
+    tech_department = physics_technology
+    requirements = { shipclass_science_ship = 1 leader = scientist skill >= 7 }
+    event_scope = ship_event
+    on_start = {}
+    on_success = { owner = { country_event = { id = lunar_capital_psi.101 } } }
+    on_fail = {}
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_drifting_gateway
+    key = lunar_capital_psi_close_sub_gate
+    days_to_research = 90
+    tech_department = physics_technology
+    requirements = { shipclass_military >= 1 fleet_power >= 10000 }
+    event_scope = ship_event
+    on_start = {}
+    on_success = {
+        if = {
+            limit = { fleet.solar_system = { has_star_flag = spth_lunar_capital_psi_sub_gate_1 } }
+            fleet.solar_system = {
+                set_global_flag = spth_lunar_capital_psi_gate_1_killed
+                set_global_flag = spth_lunar_capital_psi_sub_gate_1_killed
+                every_fleet_in_system = { limit = { is_cloaked = yes } set_cloaking_active = no }
+                event_target:spth_lunar_psi_gate_fleet_1 = { set_event_locked = no }
+                star = { th_spawn_explosion_particle = { color = green size = extra } }
+                save_event_target_as = spth_system
+            }
+        } else = {
+            fleet.solar_system = {
+                set_global_flag = spth_lunar_capital_psi_gate_2_killed
+                set_global_flag = spth_lunar_capital_psi_sub_gate_2_killed
+                every_fleet_in_system = { limit = { is_cloaked = yes } set_cloaking_active = no }
+                event_target:spth_lunar_psi_gate_fleet_2 = { set_event_locked = no }
+                star = { th_spawn_explosion_particle = { color = green size = extra } }
+                save_event_target_as = spth_system
+            }
+        }
+        owner = { country_event = { id = lunar_capital_psi.24 days = 1 } }
+    }
+    on_fail = {}
+}
+special_project = {
+    icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
+    picture = GFX_evt_supernova
+    key = lunar_capital_psi_close_main_gate
+    days_to_research = 90
+    tech_department = physics_technology
+    requirements = { shipclass_military >= 1 }
+    event_scope = ship_event
+    on_start = {}
+    on_success = {
+        fleet.solar_system = {
+            every_fleet_in_system = { limit = { is_cloaked = yes } set_cloaking_active = no }
+            event_target:spth_lunar_psi_gate_fleet_0 = { set_event_locked = no }
+            create_ambient_object = {
+                type = "star_explosion"
+                play_animation_once = yes
+                location = this.star
+            }
+            last_created_ambient_object = {
+                set_location = { target = this.star distance = 0 angle = random }
+            }
+            every_system_ambient_object = {
+                limit = { is_ambient_object_type = shroud_storm }
+                destroy_ambient_object = this
+            }
+        }
+        owner = { country_event = { id = lunar_capital_psi.26 days = 1 } }
+    }
+    on_fail = {}
+}

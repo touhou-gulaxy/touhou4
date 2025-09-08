@@ -1,0 +1,90 @@
+touhou_ac_research_point_income = {
+    base = 0
+    modifier = { add = touhou_ac_$area$_research_using is_variable_set = touhou_ac_$area$_research_using }
+    complex_trigger_modifier = {
+        trigger = resource_income_compare
+        trigger_scope = this
+        parameters = { resource = $area$_research }
+        mode = add
+    }
+    min = 0
+}
+touhou_ac_research_point_normalized = {
+    base = 0
+    add = $base$
+    mult = value:touhou_ac_research_point_income
+    min = 0
+}
+touhou_ac_research_point_all_normalized = {
+    base = 0
+    add = value:touhou_ac_research_point_normalized|area|physics|base|0.2|
+    add = value:touhou_ac_research_point_normalized|area|society|base|0.2|
+    add = value:touhou_ac_research_point_normalized|area|engineering|base|0.1|
+    mult = 0.30
+    max = 1000000000
+    min = 0
+}
+touhou_ac_research_base_normalized = {
+    base = 0
+    add = value:touhou_ac_research_point_all_normalized
+    [[tech_type] mult = modifier:$tech_type$_research_speed_mult ]
+    [[spirit_power] mult = modifier:category_spirit_power_research_speed_mult ]
+    max = 1000000000
+    min = 0
+}
+touhou_ac_tech_cost_empire_size_effect = {
+    base = 0
+    add = trigger:empire_size
+    subtract = 100
+    min = 0
+    mult = 0.002
+    mult = value:touhou_ac_tech_cost_empire_size_effect_1
+    add = 1
+}
+touhou_ac_tech_cost_empire_size_effect_1 = {
+    base = 0
+    add = 1
+    add = modifier:tech_cost_empire_size_mult
+}
+touhou_ac_research_cost_modifier = {
+    base = 0
+    add = modifier:physics_tech_cost_mult
+    add = modifier:engineering_tech_cost_mult
+    add = modifier:society_tech_cost_mult
+    divide = 3
+    min = 0.01
+}
+touhou_ac_research_cost = {
+    base = 0
+    add = 1
+    add = @spth_improved_repeatable_tech_level_cost
+    mult = th_weapon_up_research_all_count
+    add = @spth_improved_repeatable_tech_cost
+    mult = value:touhou_ac_research_cost_modifier
+    mult = value:touhou_ac_tech_cost_empire_size_effect
+    complex_trigger_modifier = {
+        trigger = check_galaxy_setup_value
+        trigger_scope = this
+        parameters = { setting = tech_costs_scale }
+        mode = mult
+    }
+    min = 1
+    max = 2100000000
+}
+touhou_ac_research_progress = {
+    base = 0
+    add = value:touhou_ac_research_base_normalized
+    modifier = { add = th_weapon_up_research_progress is_variable_set = th_weapon_up_research_progress }
+}
+touhou_ac_research_point_using = {
+    base = 0
+    add = $base$
+    complex_trigger_modifier = {
+        trigger = resource_income_compare
+        trigger_scope = this
+        parameters = { resource = $area$_research }
+        mode = mult
+    }
+    min = 0
+    [[max] max = $max$ ]
+}

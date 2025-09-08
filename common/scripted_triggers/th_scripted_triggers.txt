@@ -2,6 +2,110 @@ touhou_has_food_upkeep = {
     optimize_memory
     is_archetype = TOUHOUGIRLS
 }
+touhou_has_psionic = {
+    optimize_memory
+    OR = {
+        owner_species = { has_trait = trait_psionic }
+        owner = { has_psionic_ascension = yes }
+    }
+}
+has_touhou_ascension_tier = {
+    optimize_memory
+    has_touhou_ascension_tier_$tier$ = yes
+}
+has_touhou_ascension_tier_2 = {
+    optimize_memory
+    OR = {
+        has_ascension_perk = ap_toho2
+        has_ascension_perk = ap_hm2
+    }
+}
+has_touhou_ascension_tier_3 = {
+    optimize_memory
+    OR = {
+        has_ascension_perk = ap_toho3
+        has_ascension_perk = ap_hm3
+    }
+}
+has_touhou_ascension_tier_4 = {
+    optimize_memory
+    OR = {
+        has_ascension_perk = ap_toho4
+        has_ascension_perk = ap_hm4
+    }
+}
+has_touhou_major_civic = {
+    optimize_memory
+    [[valid]
+        OR = {
+            has_valid_civic = civic_gensokyo
+            has_valid_civic = civic_scarlet_devil
+        }
+    ]
+    [[!valid]
+        OR = {
+            has_civic = civic_gensokyo
+            has_civic = civic_scarlet_devil
+        }
+    ]
+}
+touhou_crisis_happened_and_defeated = {
+    optimize_memory
+    OR = {
+        AND = {
+            has_global_flag = ai_invasion_happened
+            has_global_flag = ai_invasion_defeated
+        }
+        AND = {
+            has_global_flag = extradimensional_invasion_happened
+            has_global_flag = extradimensional_invasion_defeated
+        }
+        AND = {
+            has_global_flag = prethoryn_invasion_happened
+            has_global_flag = prethoryn_invasion_defeated
+        }
+        AND = {
+            has_global_flag = synth_queen_happened
+            has_global_flag = synth_queen_defeated
+        }
+        AND = {
+            has_global_flag = spth_kamikaushi_crisis_start
+            has_global_flag = spth_kamikaushi_crisis_ended
+        }
+        AND = {
+            has_global_flag = spth_lunar_capital_psi_crisis_begin
+            has_global_flag = spth_lunar_capital_psi_crisis_ended
+        }
+        AND = {
+            has_global_flag = ag_gamma_crisis_began
+            has_global_flag = ag_gamma_crisis_ended
+        }
+        AND = {
+            has_global_flag = ag_zeta_crisis_stage_1
+            has_global_flag = ag_zeta_crisis_ended
+        }
+        AND = {
+            has_global_flag = kuat_extramonster_begin
+            has_global_flag = kuat_extramonster_ended
+        }
+        AND = {
+            has_global_flag = ag_kae_ge_invasion_begin
+            has_global_flag = ag_kae_ge_invasion_ended
+        }
+        AND = {
+            has_global_flag = Kuat_Rakata_invasion_happened
+            has_global_flag = kuat_final_crisis_events_rakata_ended
+        }
+        AND = {
+            has_global_flag = exe_invasion_begin
+            has_global_flag = exe_invasion_ended
+        }
+        AND = {
+            has_global_flag = ag_aneient_beta_psionic_effect_begins
+            NOT = { has_global_flag = ag_aneient_beta_psionic_effect_ended }
+        }
+    }
+}
 touhou_check_diffiulty = {
     optimize_memory
     event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value $relation$ $value$ } }
@@ -13,6 +117,16 @@ touhou_check_diffiulty_lteq = {
 touhou_check_diffiulty_gteq = {
     optimize_memory
     touhou_check_diffiulty = { relation = ">=" value = $value$ }
+}
+
+spth_should_close_space_shrine_storm = {
+    optimize_memory
+    root.fleet = {
+        OR = {
+            has_fleet_flag = kuat_mega_starbase_stormed_activated
+            owner = { has_country_flag = close_space_shrine_storm }
+        }
+    }
 }
 
 
@@ -96,6 +210,7 @@ spth_can_not_jump_in_system = {
         has_star_flag = lcluster
         has_star_flag = wg_sealed_system
         has_star_flag = ag_no_jump_in_system
+        has_star_flag = spth_no_jump_in_system
         has_star_flag = Kuat_empire_system
         has_star_flag = outercluster
         has_star_flag = kuat_initial_system
@@ -207,6 +322,24 @@ is_touhou_player_faction = {
     optimize_memory
     has_authority = auth_gensokyo
 }
+is_touhou_common_country = {
+    optimize_memory
+    OR = {
+        is_country_type = default
+        is_country_type = fallen_empire
+        is_country_type = awakened_fallen_empire
+        is_country_type = awakened_marauders
+        is_country_type = primitive
+        is_country_type = ratlings
+        is_country_type = prikki
+
+        is_country_type = default_ev
+
+        is_country_type = ascended_empire
+        is_country_type = lost_empire
+        has_authority = auth_gensokyo
+    }
+}
 is_touhou_crisis_faction = {
     optimize_memory
     OR = {
@@ -221,6 +354,7 @@ is_touhou_crisis_faction = {
         is_country_type = spth_awaken_empire_kamikakushi
         is_country_type = lunar_capital_remain_fleet
         is_country_type = spth_lunar_capital_union_fleet
+        is_country_type = spth_lunar_capital_psi_fleet
     }
 }
 is_touhou_other_faction = {
@@ -245,7 +379,7 @@ has_touhou_disable = {
             check_variable = { which = spth_super_carrier_inv_counter value <= 4 }
         }
         has_touhou_invincible = yes
-        check_modifier_value = { modifier = ship_spth_extra_life value >= 1 }
+        check_modifier_value = { modifier = ship_spth_extra_life value >= 0.01 }
     }
 }
 has_touhou_invincible = {
@@ -337,6 +471,7 @@ spth_is_touhou_deposit = {
         is_deposit_type = d_wifi_tower
         is_deposit_type = d_mosen
         is_deposit_type = d_spirit_power_spring
+        is_deposit_type = d_spirit_power_spring_city
         is_deposit_type = d_hakurei_barrier
         is_deposit_type = d_hakurajinjia
         is_deposit_type = d_spth_lunar_capital_ruins
@@ -352,6 +487,9 @@ spth_is_touhou_deposit = {
         is_deposit_type = d_makai_alice_ruin_m
         is_deposit_type = d_lunar_aethon_ruin
         is_deposit_type = d_lunar_aethon_obelisk
+        is_deposit_type = d_gensokyo_ringworld
+        is_deposit_type = d_gensokyo_ringworld_ruin
+        is_deposit_type = d_gensokyo_ringworld_city
     }
 }
 spth_is_no_remove_deposit = {
@@ -633,5 +771,21 @@ spth_puzzle_solving_check_char = {
     check_variable = {
         which = spth_puzzle_solving_word_$spth_index$_$spth_pos$
         value = $char$
+    }
+}
+
+spth_kamikakushi_cruiser_arua_protect_close = {
+    optimize_memory
+    OR = {
+        has_fleet_flag = TH_sakuya_the_world_dynamic_vict
+        has_fleet_flag = TH_koishi_dynamic_vict
+        has_fleet_flag = TH_satori_dynamic_vict
+    }
+}
+satori_dynamic_boost_close = {
+    optimize_memory
+    OR = {
+        has_fleet_flag = TH_sakuya_the_world_dynamic_vict
+        has_fleet_flag = TH_koishi_dynamic_vict
     }
 }

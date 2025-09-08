@@ -712,8 +712,20 @@ country_event = {
 		has_civic = civic_gensokyo
 	}
 	immediate = {
-		country_event = {
-			id = toho.491
+		switch = {
+			trigger = has_origin
+			origin_gensokyo_koishi = { country_event = { id = toho.503 } }
+			origin_th_hiff = {
+				set_country_flag = toho_select_ruler_reimu
+				spth_effect_init_reimu_effect = yes
+				spth_effect_init_keine_effect = yes
+				spth_effect_init_marisa_effect = yes
+				change_variable = { which = spth_card_current_leader value = 2 }
+				spth_effect_init_maribel_hearn_effect = yes
+				spth_effect_init_renko_effect = yes
+				country_event = { id = touhou_hiff.1 }
+			}
+			default = { country_event = { id = toho.491 } }
 		}
 	}
 }
@@ -1076,6 +1088,8 @@ country_event = {
 				flag_cirno = { root = { spth_effect_init_cirno_effect = yes } }
 				flag_eirin = { root = { spth_effect_init_eirin_effect = yes } }
 				flag_kaguya = { root = { spth_effect_init_kaguya_effect = yes } }
+				flag_renko = { root = { spth_effect_init_renko_effect = yes } }
+				flag_maribel_hearn = { root = { spth_effect_init_maribel_hearn_effect = yes } }
 				flag_remilia = {
 					root = {
 						spth_effect_respawn_ruler_leader = { ID = remilia }
@@ -1616,8 +1630,16 @@ country_event = {
 	mean_time_to_happen = { years = 5 }
 	trigger = {
 		NOT = { has_country_flag = touhou_eientei_start }
-		spth_check_gensokyo_auth = { CIVIC = civic_moon_science }
 		years_passed >= 20 has_relic = r_th_latency
+		spth_is_regular_empire = yes
+		OR = {
+			has_authority = auth_gensokyo
+			has_country_flag = touhou_mod_country
+		}
+		OR = {
+			has_civic = civic_moon_science
+			has_civic = civic_yagokoro_medical
+		}
 	}
 	immediate = {
 		set_country_flag = touhou_eientei_start
@@ -1631,12 +1653,15 @@ country_event = {
 	is_triggered_only = yes
 	trigger = {
 		has_country_flag = touhou_eientei_start
-		spth_check_gensokyo_auth = { CIVIC = civic_moon_science }
+		OR = {
+			spth_check_gensokyo_auth = { CIVIC = civic_moon_science }
+			spth_check_gensokyo_auth = { CIVIC = civic_yagokoro_medical }
+		}
 	}
 	diplomatic = yes
 	custom_gui = spth_event_large_window
 	custom_gui_option = spth_event_large_ui_option
-	picture_event_data = { room = spth_ship_in_orbit_room }
+	picture_event_data = { room = spth_star_chart_room }
 	option = {
 		name = toho.8021.a
 		default_hide_option = yes
@@ -1734,6 +1759,127 @@ country_event = {
 	picture_event_data = { room = spth_ship_in_orbit_room }
 	option = {
 		name = toho.8024.a
+	}
+}
+
+country_event = {
+	id = toho.8025
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		always = no # 别急
+		NOT = { has_country_flag = toho_8025_fired }
+		is_ai = no
+		OR = {
+			has_authority = auth_gensokyo
+			has_country_flag = touhou_mod_country
+		}
+		end_game_years_passed >= 0
+		OR = {
+			touhou_crisis_happened_and_defeated = yes # 打了天灾=我死了好多好多人
+			years_passed >= 175										# 这时候还不打天灾直接保底得了
+		}
+		# 同时还是只存在一个实例吧
+		NOT = {
+			any_playable_country = {
+				has_country_flag = touhou_flower_incident_begin
+				NOT = { has_country_flag = touhou_flower_incident_ended }
+				has_authority = auth_gensokyo
+			}
+		}
+	}
+	immediate = {
+		set_country_flag = toho_8025_fired
+		country_event = { id = toho.8026 days = 90 random = 90 }
+	}
+}
+
+country_event = {
+	id = toho.8026
+	title = toho.8026.name
+	desc = toho.8026.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hakuri_shrine_night_room }
+	option = {
+		name = TH_SO_INTERESTRING
+	}
+	after = { hidden_effect = { country_event = { id = toho.8027 days = 90 random = 90 } } }
+}
+
+country_event = {
+	id = toho.8027
+	title = toho.8027.name
+	desc = toho.8027.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hakuri_shrine_night_room }
+	option = {
+		name = TH_WORYING
+	}
+	after = { hidden_effect = { country_event = { id = toho.8028 days = 90 random = 90 } } }
+}
+
+country_event = {
+	id = toho.8028
+	title = toho.8028.name
+	desc = toho.8028.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = hakuri_shrine_night_room }
+	option = {
+		name = TH_BE_CAREFULE
+	}
+	after = { hidden_effect = { country_event = { id = toho.8029 days = 180 random = 180 } } }
+}
+
+country_event = {
+	id = toho.8029
+	title = toho.8029.name
+	desc = toho.8029.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_announcement_room }
+	show_sound = event_announcement
+	immediate = {
+		set_country_flag = touhou_flower_incident_begin
+		begin_event_chain = {
+			event_chain = touhou_flower_incident
+			target = root
+		}
+		capital_scope.solar_system = { touhou_flower_incident_system = { level = 3 } }
+		touhou_flower_incident_spread = yes
+		country_event = { id = toho.8046 days = 90 random = 30 }
+	}
+	option = {
+		name = TH_OK
+		custom_tooltip = toho.8029.affect
+		owned_planet_list_tooltip = {
+			limit = { has_planet_flag = affect_by_touhou_flower_incident }
+		}
+	}
+}
+
+# 每半年沿超空间航道传播一次
+country_event = {
+	id = toho.8046
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_country_flag = touhou_flower_incident_begin
+		NOT = { has_country_flag = touhou_flower_incident_ended }
+	}
+	immediate = {
+		touhou_flower_incident_spread = yes
+		country_event = { id = toho.8046 days = 180 random = 30 }
 	}
 }
 
@@ -1908,6 +2054,89 @@ country_event = {
 		event_target:toho_8103_target_@root = { remove_modifier = touhou_kokoro_planet_modifier_2 }
 		clear_global_event_target = toho_8103_target_@root
 	}
+}
+
+# 时尚小垃圾
+country_event = {
+	id = toho.8108
+	title = toho.8108.name
+	desc = toho.8108.desc
+	is_triggered_only = yes
+	location = event_target:spth_rw_system
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ringworld_room }
+	option = { name = TH_ACKNOWLEDGED }
+}
+# From = Megastructure
+# FromFrom = System
+country_event = {
+	id = toho.8109
+	title = toho.8109.name
+	desc = toho.8109.desc
+	is_triggered_only = yes
+	location = fromfrom
+	trigger = {
+		from = {
+			OR = {
+				is_megastructure_type = spth_story_ring_world_3_gensokyo
+				is_megastructure_type = spth_story_ring_world_3_common
+			}
+		}
+		from = {
+			NOT = {
+				any_system_megastructure = {
+					OR = {
+						is_megastructure_type = spth_story_ring_world_2_gensokyo
+						is_megastructure_type = spth_story_ring_world_2_common
+					}
+				}
+			}
+		}
+	}
+	immediate = { fromfrom = { save_event_target_as = spth_rw_system } }
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ringworld_room }
+	option = { name = TH_ACKNOWLEDGED }
+}
+planet_event = {
+	id = toho.8110
+	title = toho.8110.name
+	desc = toho.8110.desc
+	is_triggered_only = yes
+	location = this
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_city_planet_room }
+	option = { name = TH_ACKNOWLEDGED }
+}
+planet_event = {
+	id = toho.8111
+	title = toho.8111.name
+	desc = toho.8111.desc
+	is_triggered_only = yes
+	location = this
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ringworld_room }
+	option = { name = TH_ACKNOWLEDGED }
+}
+planet_event = {
+	id = toho.8112
+	title = toho.8112.name
+	desc = toho.8112.desc
+	is_triggered_only = yes
+	location = this
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_gensokyo_city_room }
+	option = { name = TH_ACKNOWLEDGED }
 }
 
 ########################################
@@ -2351,10 +2580,14 @@ country_event = {
 	trigger = {
 		has_origin = origin_spth_story_gensokyo
 		NOT = { has_country_flag = triggered_torifune_habitat_story }
-		has_technology = tech_th_shield_jiejie2
+		OR = {
+			has_technology = tech_th_shield_jiejie2
+			has_technology = tech_th_armor_scarlet2
+		}
 	}
 	immediate = {
 		set_country_flag = triggered_torifune_habitat_story
+		country_event = { id = spth_timeline.3 }
 	}
 	show_sound = event_wind_ruins
 	location = root
@@ -2443,7 +2676,7 @@ country_event = {
 	immediate = {
 		create_country = {
 			name = NAME_torifune_monster
-			type = spth_country_type_container
+			type = spth_country_type_empty
 			name_list = root
 			flag = root
 			species = root
@@ -2895,7 +3128,7 @@ planet_event = {
 	title = toho.3015
 	desc = toho.3015.desc
 	is_triggered_only = yes
-	trigger = { owner = { has_origin = origin_spth_story_gensokyo } }
+	trigger = { owner = { OR = { has_origin = origin_spth_story_gensokyo has_origin = origin_gensokyo_ringworld } } }
 	diplomatic = yes
 	force_open = yes
 	custom_gui = spth_leader_function_ui

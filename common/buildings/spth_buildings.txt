@@ -14,7 +14,7 @@ building_spth_cloner = {
 				owner = { is_ai = yes }
 				num_buildings = {
 					type = building_spth_cloner
-					value < 1
+					value <= 1
 				}
 			}
 		}
@@ -47,7 +47,6 @@ building_spth_cloner = {
 			planet_barrier_capacity_use = 1
 		}
 	}
-
 	triggered_planet_modifier = {
 		potential = {
 			spth_check_gensokyo_auth = yes
@@ -57,6 +56,7 @@ building_spth_cloner = {
 		}
 		mult = planet.value:planet_genso_cloner_modifier
 	}
+	additional_ai_weight = 2000
 }
 
 building_spth_construction_bureau = {
@@ -107,10 +107,11 @@ building_spth_construction_bureau = {
 			job_genso_construction_worker_add = 100
 		}
 	}
-	triggered_desc = {
-		trigger = { always = yes }
-		text = job_genso_construction_worker_effect
-	}
+	# triggered_desc = {
+	# 	trigger = { always = yes }
+	# 	text = job_genso_construction_worker_effect
+	# }
+	additional_ai_weight = 2000
 }
 
 building_spth_entertainment_forum = {
@@ -215,10 +216,10 @@ building_spth_clinic = {
 			job_genso_healthcare_add = 100
 		}
 	}
-	triggered_desc = {
-		trigger = { always = yes }
-		text = job_genso_healthcare_effect
-	}
+	# triggered_desc = {
+	# 	trigger = { always = yes }
+	# 	text = job_genso_healthcare_effect
+	# }
 }
 
 building_spth_police_station = {
@@ -253,7 +254,7 @@ building_spth_police_station = {
 			multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
 		}
 	}
-
+	planetary_ftl_inhibitor = yes
 	triggered_planet_modifier = {
 		modifier = {
 			planet_barrier_capacity_use = 0.5
@@ -266,6 +267,8 @@ building_spth_police_station = {
 			spth_check_gensokyo_auth = yes
 		}
 		modifier = {
+			planet_orbital_bombardment_damage = -1
+			planet_storm_devastation_mult = -1
 			job_genso_enforcer_add = 100
 		}
 	}
@@ -274,10 +277,10 @@ building_spth_police_station = {
 		country_naval_cap_add = 6.4
 		mult = value:spth_police_station_factor
 	}
-	triggered_desc = {
-		trigger = { always = yes }
-		text = job_genso_enforcer_effect
-	}
+	# triggered_desc = {
+	# 	trigger = { always = yes }
+	# 	text = job_genso_enforcer_effect
+	# }
 }
 
 building_spth_stronghold = {
@@ -330,10 +333,10 @@ building_spth_stronghold = {
 			job_genso_soldier_add = 100
 		}
 	}
-	triggered_desc = {
-		trigger = { always = yes }
-		text = job_genso_soldier_effect
-	}
+	# triggered_desc = {
+	# 	trigger = { always = yes }
+	# 	text = job_genso_soldier_effect
+	# }
 }
 
 building_spth_tavern = {
@@ -397,7 +400,7 @@ building_spth_tavern = {
 				is_ai = no
 				is_regular_empire = yes
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho3
+				has_touhou_ascension_tier_3 = yes
 			}
 		}
 		modifier = {
@@ -412,7 +415,7 @@ building_spth_tavern = {
 				is_ai = no
 				is_regular_empire = yes
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho4
+				has_touhou_ascension_tier_4 = yes
 			}
 		}
 		modifier = {
@@ -462,12 +465,21 @@ building_spth_barrier_manager = {
 	prerequisites = { tech_spth_sub_capitals }
 
 	planet_modifier = {
-		custom_tooltip = building_spth_subcapital_tooltip
-		show_only_custom_tooltip = no
 		planet_housing_add = 1000
 		planet_barrier_capacity_add = 1.0
-		job_genso_foundry_per_pop = 0.02
 		job_genso_foundry_add = 200
+	}
+	triggered_planet_modifier = {
+		potential = { pop_amount < 80000 }
+		modifier = {
+			job_genso_foundry_per_pop = 0.02
+		}
+	}
+	triggered_planet_modifier = {
+		potential = { pop_amount >= 80000 }
+		modifier = {
+			job_genso_foundry_add = 1600
+		}
 	}
 	triggered_planet_modifier = {
 		potential = {
@@ -476,12 +488,28 @@ building_spth_barrier_manager = {
 				is_ai = no
 				is_regular_empire = yes
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho3
+				has_touhou_ascension_tier_3 = yes
 			}
+			pop_amount < 80000
 		}
 		modifier = {
 			job_genso_foundry_per_pop = 0.02
 			job_genso_foundry_add = 100
+		}
+	}
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = {
+				is_ai = no
+				is_regular_empire = yes
+				has_authority = auth_gensokyo
+				has_touhou_ascension_tier_3 = yes
+			}
+			pop_amount >= 80000
+		}
+		modifier = {
+			job_genso_foundry_add = 1700
 		}
 	}
 
@@ -501,15 +529,20 @@ building_spth_barrier_manager = {
 			sr_lingli = 4
 			sr_fuka = 2
 		}
+		upkeep = {
+			sr_lingli = 2
+			multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
+		}
 	}
 	triggered_desc = { trigger = { spth_has_high_prority_freelancer_swap = no } text = swap_spth_freelancer_to_sub_scarlet }
-	triggered_desc = { trigger = { always = yes } text = job_spth_freelancer_effect }
+	# triggered_desc = { trigger = { always = yes } text = job_spth_freelancer_effect }
 	triggered_desc = { trigger = { always = yes } text = job_spth_freelancer_ethic_effect }
 	triggered_desc = { trigger = { always = yes } text = job_spth_freelancer_swap_effect }
-	triggered_desc = {
-		trigger = { always = yes }
-		text = job_genso_foundry_effect
-	}
+	# triggered_desc = {
+	# 	trigger = { always = yes }
+	# 	text = job_genso_foundry_effect
+	# }
+	additional_ai_weight = 3000
 }
 
 building_spth_kamikakushi_planet_terraformer = {
@@ -598,11 +631,15 @@ building_spth_lunar_databank = {
 			society_research = 12
 			engineering_research = 12
 			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
+				owner = { has_touhou_ascension_tier_4 = yes }
 			}
 		}
 		upkeep = {
 			energy = 4
+		}
+		upkeep = {
+			sr_lingli = 4
+			multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
 		}
 	}
 }
@@ -659,7 +696,7 @@ building_spth_torifune_shrine = {
 	}
 	triggered_country_modifier = {
 		all_technology_research_speed = 0.15
-		ship_jumpdrive_cooldown_mult = -0.2
+		ship_jumpdrive_cooldown_mult = -0.05
 		ship_ftl_jumpdrive_range_mult = 1.0
 		# 完成遗址
 		potential = { has_deposit = d_spth_torifune_control_centre }
@@ -687,7 +724,7 @@ building_spth_torifune_shrine = {
 			consumer_goods = 4
 			multiplier = value:spth_num_pops
 			trigger = {
-				owner = { has_ascension_perk = ap_toho4 }
+				owner = { has_touhou_ascension_tier_4 = yes }
 			}
 		}
 		upkeep = {
@@ -796,7 +833,7 @@ building_spth_housing = {
 				is_ai = no
 				is_regular_empire = yes
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho3
+				has_touhou_ascension_tier_3 = yes
 			}
 		}
 		modifier = {
@@ -811,7 +848,7 @@ building_spth_housing = {
 				is_ai = no
 				is_regular_empire = yes
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho3
+				has_touhou_ascension_tier_3 = yes
 			}
 			spth_is_touhou_planet = yes
 		}
@@ -824,7 +861,7 @@ building_spth_housing = {
 				is_ai = no
 				is_regular_empire = yes
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho4
+				has_touhou_ascension_tier_4 = yes
 			}
 		}
 		modifier = {
@@ -839,7 +876,7 @@ building_spth_housing = {
 				is_ai = no
 				is_regular_empire = yes
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho4
+				has_touhou_ascension_tier_4 = yes
 			}
 			spth_is_touhou_planet = yes
 		}
@@ -909,6 +946,7 @@ building_spth_old_shirne = {
 	can_be_ruined = no
 	can_be_disabled = no
 	position_priority = 0
+	capital_tier = 5
 	icon = building_bl
 	category = government
 	building_sets = {
@@ -1001,14 +1039,18 @@ building_spth_old_shirne = {
 		}
 		upkeep = {
 			energy = @b4_upkeep
-			sr_lingli = 1
+			sr_lingli = 1.5
+		}
+		upkeep = {
+			sr_lingli = 1.5
+			multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
 		}
 	}
 
-	triggered_desc = {
-		trigger = { always = yes }
-		text = job_miko_effect
-	}
+	# triggered_desc = {
+	# 	trigger = { always = yes }
+	# 	text = job_miko_effect
+	# }
 
 	upgrades = {
 		building_spth_planet_shirne
@@ -1022,6 +1064,7 @@ building_spth_planet_shirne = {
 	can_be_ruined = no
 	can_be_disabled = no
 	position_priority = 0
+	capital_tier = 6
 	icon = building_bl
 	category = government
 	building_sets = {
@@ -1063,8 +1106,7 @@ building_spth_planet_shirne = {
 		pop_bonus_workforce_mult = 0.20
 		planet_defense_armies_add = 24
 		planet_max_branch_office_buildings_add = 4
-		job_spth_story_chief_researcher_per_pop = 0.01
-		job_spth_story_researcher_per_pop = 0.01
+		job_spth_story_researcher_per_pop = 0.02
 	}
 
 	triggered_planet_modifier = {
@@ -1113,14 +1155,18 @@ building_spth_planet_shirne = {
 		}
 		upkeep = {
 			energy = @b4_upkeep
-			sr_lingli = 1
+			sr_lingli = 2
+		}
+		upkeep = {
+			sr_lingli = 2
+			multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
 		}
 	}
 
-	triggered_desc = {
-		trigger = { always = yes }
-		text = job_miko_effect
-	}
+	# triggered_desc = {
+	# 	trigger = { always = yes }
+	# 	text = job_miko_effect
+	# }
 
 	upgrades = {
 	}
@@ -1160,7 +1206,7 @@ building_kamikakushi_silo = {
 			exists = owner
 			owner = {
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho2
+				has_touhou_ascension_tier_2 = yes
 			}
 		}
 		job_spth_human_trader_add = 100
@@ -1170,7 +1216,7 @@ building_kamikakushi_silo = {
 			exists = owner
 			owner = {
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho3
+				has_touhou_ascension_tier_3 = yes
 			}
 		}
 		job_spth_human_trader_add = 100
@@ -1180,7 +1226,7 @@ building_kamikakushi_silo = {
 			exists = owner
 			owner = {
 				has_authority = auth_gensokyo
-				has_ascension_perk = ap_toho4
+				has_touhou_ascension_tier_4 = yes
 			}
 		}
 		job_spth_human_trader_add = 100
@@ -1218,10 +1264,10 @@ building_kamikakushi_silo = {
 			multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
 		}
 	}
-	triggered_desc = {
-		trigger = { always = yes }
-		text = job_spth_human_trader_effect_desc
-	}
+	# triggered_desc = {
+	# 	trigger = { always = yes }
+	# 	text = job_spth_human_trader_effect_desc
+	# }
 }
 
 th_doll_factor = {
@@ -1250,9 +1296,12 @@ th_doll_factor = {
 			sr_fuka = 50
 		}
 		upkeep = {
-			sr_lingli = 2
 			energy = 1
 			alloys = 0.5
+		}
+		upkeep = {
+			sr_lingli = 2
+			multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
 		}
 	}
 	triggered_planet_modifier = {
@@ -1260,10 +1309,10 @@ th_doll_factor = {
 		job_th_doll_master_add = 100
 		auto_mod_monthly_add = 2
 	}
-	triggered_desc = {
-		trigger = { exists = owner owner = { spth_check_gensokyo_auth = yes } }
-		text = th_doll_factor_effect
-	}
+	# triggered_desc = {
+	# 	trigger = { exists = owner owner = { spth_check_gensokyo_auth = yes } }
+	# 	text = th_doll_factor_effect
+	# }
 }
 
 # 突触机
@@ -1302,7 +1351,7 @@ building_spth_cosmogenesis_world_sp_produce = {
 	triggered_planet_modifier = {
 		potential = { always = yes }
 		planet_neural_chips_sr_lingli_produces_add = @spth_neural_chips_sr_lingli_produces_add
-		planet_jobs_energy_upkeep_add = @spth_neural_chips_energy_upkeep_add
+		# planet_jobs_energy_upkeep_add = @spth_neural_chips_energy_upkeep_add
 		planet_neural_chips_physics_research_produces_add = @spth_neural_chips_research_produces_minus
 		planet_neural_chips_engineering_research_produces_add = @spth_neural_chips_research_produces_minus
 		planet_neural_chips_society_research_produces_add = @spth_neural_chips_research_produces_minus

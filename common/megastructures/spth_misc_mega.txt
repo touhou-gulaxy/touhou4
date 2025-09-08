@@ -1,0 +1,46 @@
+touhou_dummy_crisis_sphere_ruined = {
+    entity = "dyson_sphere_destroyed_entity"
+    portrait = "GFX_megastructure_construction_background"
+    potential = { always = no }
+}
+touhou_dummy_crisis_sphere_restored = {
+    entity = "dyson_sphere_phase_01_entity"
+    portrait = "GFX_megastructure_construction_background"
+    potential = {
+        has_crisis_level = crisis_level_5
+        NOT = {
+            any_owned_megastructure = {
+                OR = {
+                    has_megastructure_flag = crisis_sphere
+                    AND = {
+                        is_megastructure_type = crisis_sphere_ruined
+                        is_upgrading = yes
+                    }
+                }
+            }
+        }
+    }
+    possible = {
+        custom_tooltip = { fail_text = "touhou_crisis_sphere_failed_lunar_psi" NAND = { has_global_flag = spth_lunar_capital_psi_crisis_begin NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended } } }
+        custom_tooltip = { fail_text = "touhou_crisis_sphere_failed_gamma_crisis" NAND = { has_global_flag = ag_gamma_crisis_began NOT = { has_global_flag = ag_gamma_crisis_ended } } }
+        custom_tooltip = { fail_text = "touhou_crisis_sphere_failed_eta_crisis" NAND = { has_global_flag = ag_eta_titan_spawned NOT = { has_global_flag = ag_eta_titan_event_ended } } }
+        custom_tooltip = { fail_text = "touhou_crisis_sphere_failed_zeta_crisis" NAND = { has_global_flag = ag_zeta_crisis_stage_1 NOT = { has_global_flag = ag_zeta_crisis_ended } } }
+    }
+    upgrade_from = { touhou_dummy_crisis_sphere_ruined }
+    resources = {
+        category = megastructures
+        cost = { sr_dark_matter = 20000 }
+        produces = { minerals = 250 energy = 100 }
+    }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        spawn_megastructure = {
+            type = crisis_sphere_0
+            coords_from = fromfrom
+            owner = from
+        }
+        remove_megastructure = fromfrom
+    }
+    ai_weight = { weight = 1000 }
+}

@@ -57,6 +57,7 @@ fleet_event = {
             fleet_event = { id = touhou_ship_actions.2 }
         }
     }
+    # 跨星系打击
     option = {
         name = concept_spth_ship_skill_super_carrier_eater
         custom_tooltip = concept_spth_ship_skill_super_carrier_eater_desc
@@ -89,6 +90,7 @@ fleet_event = {
         }
         fleet_event = { id = touhou_ship_actions.6 }
     }
+    # 堡垒跃迁超频
     option = {
         name = concept_spth_ship_skill_space_shrine_drive
         custom_tooltip = concept_spth_ship_skill_space_shrine_drive_desc
@@ -120,6 +122,7 @@ fleet_event = {
             add_modifier = { modifier = concept_spth_ship_skill_space_shrine_drive days = 90 }
         }
     }
+    # 堡垒跃迁
     option = {
         name = concept_spth_ship_skill_space_shrine_beacon
         custom_tooltip = concept_spth_ship_skill_space_shrine_beacon_desc
@@ -152,6 +155,7 @@ fleet_event = {
             set_ship_flag = touhou_ship_action_space_shrine_beacon_actived
         }
     }
+    # 自动作战脚本 开
     option = {
         name = touhou_auto_combat_action_player
         custom_tooltip = touhou_auto_combat_action_player_desc
@@ -173,6 +177,7 @@ fleet_event = {
             }
         }
     }
+    # 自动作战脚本 关
     option = {
         name = touhou_auto_combat_action_player_alt
         custom_tooltip = touhou_auto_combat_action_player_alt_desc
@@ -188,6 +193,283 @@ fleet_event = {
                     limit = { NOT = { any_owned_fleet = { has_fleet_flag = enable_touhou_auto_action_player } } }
                     remove_country_flag = enable_touhou_auto_action_player
                 }
+            }
+        }
+    }
+    # 夸特联动
+    option = {
+        name = {
+            trigger = { NOT = { has_fleet_flag = kuat_mega_starbase_stormed_activated } }
+            text = touhou_kuat_mega_starbase_stormed
+        }
+        name = {
+            trigger = { has_fleet_flag = kuat_mega_starbase_stormed_activated }
+            text = touhou_kuat_mega_starbase_stormed_alt
+        }
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = { is_ship_size = spth_space_shrine_station }
+        }
+        allow = {
+            spth_has_kuat_mod = yes
+            custom_tooltip = {
+                fail_text = touhou_requires_no_special_block
+                NOT = { has_fleet_flag = has_triggered_space_shrine_change_system }
+            }
+        }
+        custom_tooltip = touhou_kuat_mega_starbase_stormed_desc
+        hidden_effect = {
+            if = {
+                limit = { has_fleet_flag = kuat_mega_starbase_stormed_activated }
+                remove_fleet_flag = kuat_mega_starbase_stormed_activated
+                random_owned_ship = {
+                    limit = { kuat_is_mega_starbase = yes }
+                    every_cosmic_storm = {
+                        limit = { has_storm_flag = storm_kuat_support_nexus_storm_random_list_@prev }
+                        destroy_cosmic_storm = yes
+                    }
+                }
+            } else = {
+                set_fleet_flag = kuat_mega_starbase_stormed_activated
+                if = {
+                    limit = { has_fleet_flag = kuat_mega_starbase_stormed_activated }
+                    kuat_battle_clear_all_storm = yes
+                    random_owned_ship = {
+                        limit = { kuat_is_mega_starbase = yes }
+                        kuat_battle_spawn_system_suppliment_storm = yes
+                    }
+                }
+            }
+        }
+    }
+    option = {
+        name = touhou_kuat_mega_starbase_stormed_larged
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = { is_ship_size = spth_space_shrine_station }
+        }
+        allow = {
+            spth_has_kuat_mod = yes
+            custom_tooltip = {
+                fail_text = touhou_kuat_mega_starbase_stormed_larged_allow
+                has_fleet_flag = kuat_mega_starbase_stormed_activated
+            }
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                has_fleet_flag = touhou_kuat_mega_starbase_stormed_larged_fired
+            }
+        }
+        custom_tooltip = touhou_kuat_mega_starbase_stormed_larged_desc
+        owner = { add_resource = { alloys = -3000000 } }
+        hidden_effect = {
+            set_timed_fleet_flag = { flag = touhou_kuat_mega_starbase_stormed_larged_fired days = 720 }
+            random_owned_ship = {
+                every_cosmic_storm = {
+                    limit = { has_storm_flag = storm_kuat_support_nexus_storm_random_list_@prev }
+                    every_system_within_storm = { set_timed_star_flag = { flag = kuat_mega_starbase_stormed_larged days = 360 } }
+                }
+            }
+        }
+    }
+    # 夸特联动: 喊舰队
+    option = {
+        name = touhou_kuat_mega_starbase_stormed_closed
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = { is_ship_size = spth_space_shrine_station }
+        }
+        allow = {
+            spth_has_kuat_mod = yes
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { has_fleet_flag = touhou_kuat_mega_starbase_stormed_closed_fired }
+            }
+        }
+        custom_tooltip = touhou_kuat_mega_starbase_stormed_closed_desc
+        owner = { add_resource = { alloys = -2000000 sr_fuka = -500000 sr_lingli = -100000 } }
+        hidden_effect = {
+            set_timed_fleet_flag = { flag = touhou_kuat_mega_starbase_stormed_closed_fired days = 720 }
+            create_starbase_super_invasion_battle_fleet = yes
+        }
+    }
+    option = {
+        name = touhou_kuat_mega_starbase_stormed_calling
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = { is_ship_size = spth_space_shrine_station }
+        }
+        allow = {
+            spth_has_kuat_mod = yes
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { has_fleet_flag = touhou_kuat_mega_starbase_stormed_calling_fired }
+            }
+        }
+        custom_tooltip = touhou_kuat_mega_starbase_stormed_calling_desc
+        owner = { add_resource = { alloys = -1000000 sr_fuka = -500000 sr_lingli = -100000 } }
+        hidden_effect = {
+            set_timed_fleet_flag = { flag = touhou_kuat_mega_starbase_stormed_calling_fired days = 480 }
+            if = {
+                limit = { owner = { has_technology = tech_spth_kamikakushi_cruiser } }
+                owner = { save_event_target_as = spth_fleet_calling_owner }
+                if = {
+                    limit = { owner = { has_technology = tech_lunar_capital_frigate } }
+                    # 16x+4y+2z=3840 -> x=220 y=60 z=40
+                    spth_create_kuat_fleet = {
+                        OWNER = event_target:spth_fleet_calling_owner
+                        location = prev
+                        kamikakushi_titan = 1
+                        hv_bomb = 2
+                        gunpower_marisa = 110
+                        gunpower_scarlet = 110
+                        kamikakushi_cruiser = 60
+                        lunar_frigate_p = 40
+                        modifier = touhou_being_kuat_fleet
+                    }
+                } else = {
+                    # 16x+4y=3840 -> x=224 y=64
+                    spth_create_kuat_fleet = {
+                        OWNER = event_target:spth_fleet_calling_owner
+                        location = prev
+                        kamikakushi_titan = 1
+                        hv_bomb = 2
+                        gunpower_marisa = 112
+                        gunpower_scarlet = 112
+                        kamikakushi_cruiser = 64
+                        modifier = touhou_being_kuat_fleet
+                    }
+                }
+            } else = {
+                create_starbase_gunpower_invasion_battle_fleet = yes
+            }
+        }
+    }
+    option = {
+        name = touhou_kuat_mega_starbase_stormed_calling_1
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = { is_ship_size = spth_space_shrine_station }
+        }
+        allow = {
+            spth_has_kuat_mod = yes
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { has_fleet_flag = touhou_kuat_mega_starbase_stormed_calling_1_fired }
+            }
+        }
+        custom_tooltip = touhou_kuat_mega_starbase_stormed_calling_1_desc
+        owner = { add_resource = { alloys = -1000000 sr_fuka = -500000 sr_lingli = -100000 } }
+        hidden_effect = {
+            set_timed_fleet_flag = { flag = touhou_kuat_mega_starbase_stormed_calling_1_fired days = 480 }
+            if = {
+                limit = { owner = { has_technology = tech_spth_kamikakushi_cruiser } }
+                owner = { save_event_target_as = spth_fleet_calling_owner }
+                if = {
+                    limit = { owner = { has_technology = tech_lunar_capital_frigate } }
+                    # 16x+4y+2z=3840 -> x=220 y=60 z=40
+                    spth_create_kuat_fleet = {
+                        OWNER = event_target:spth_fleet_calling_owner
+                        location = prev
+                        kamikakushi_titan = 1
+                        hv_bomb = 2
+                        carrier = 220
+                        kamikakushi_cruiser = 60
+                        lunar_frigate_p = 40
+                        modifier = touhou_being_kuat_fleet
+                    }
+                } else = {
+                    # 16x+4y=3840 -> x=225 y=60
+                    spth_create_kuat_fleet = {
+                        OWNER = event_target:spth_fleet_calling_owner
+                        location = prev
+                        kamikakushi_titan = 1
+                        hv_bomb = 2
+                        carrier = 225
+                        kamikakushi_cruiser = 60
+                        modifier = touhou_being_kuat_fleet
+                    }
+                }
+            } else = {
+                create_starbase_carrier_invasion_battle_fleet = yes
+            }
+        }
+    }
+    option = {
+        name = touhou_kuat_mega_starbase_stormed_calling_2
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = { is_ship_size = spth_space_shrine_station }
+        }
+        allow = {
+            spth_has_kuat_mod = yes
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { has_fleet_flag = touhou_kuat_mega_starbase_stormed_calling_2_fired }
+            }
+        }
+        custom_tooltip = touhou_kuat_mega_starbase_stormed_calling_2_desc
+        owner = { add_resource = { alloys = -1000000 sr_fuka = -500000 sr_lingli = -100000 } }
+        hidden_effect = {
+            set_timed_fleet_flag = { flag = touhou_kuat_mega_starbase_stormed_calling_2_fired days = 480 }
+            if = {
+                limit = { owner = { has_technology = tech_spth_kamikakushi_cruiser } }
+                owner = { save_event_target_as = spth_fleet_calling_owner }
+                if = {
+                    limit = { owner = { has_origin = origin_spth_story_gensokyo } }
+                    if = {
+                        limit = { owner = { has_technology = tech_lunar_capital_frigate } }
+                        # 16x+4y+2z=3840 -> x=220 y=60 z=40
+                        spth_create_kuat_fleet = {
+                            OWNER = event_target:spth_fleet_calling_owner
+                            location = prev
+                            kamikakushi_titan = 1
+                            hv_bomb = 2
+                            missile_story = 220
+                            kamikakushi_cruiser = 60
+                            lunar_frigate_s = 40
+                            modifier = touhou_being_kuat_fleet
+                        }
+                    } else = {
+                        # 16x+4y=3840 -> x=225 y=60
+                        spth_create_kuat_fleet = {
+                            OWNER = event_target:spth_fleet_calling_owner
+                            location = prev
+                            kamikakushi_titan = 1
+                            hv_bomb = 2
+                            missile_story = 225
+                            kamikakushi_cruiser = 60
+                            modifier = touhou_being_kuat_fleet
+                        }
+                    }
+                } else = {
+                    if = {
+                        limit = { owner = { has_technology = tech_lunar_capital_frigate } }
+                        # 16x+4y+2z=3840 -> x=220 y=60 z=40
+                        spth_create_kuat_fleet = {
+                            OWNER = event_target:spth_fleet_calling_owner
+                            location = prev
+                            kamikakushi_titan = 1
+                            hv_bomb = 2
+                            missile = 220
+                            kamikakushi_cruiser = 60
+                            lunar_frigate_s = 40
+                            modifier = touhou_being_kuat_fleet
+                        }
+                    } else = {
+                        # 16x+4y=3840 -> x=225 y=60
+                        spth_create_kuat_fleet = {
+                            OWNER = event_target:spth_fleet_calling_owner
+                            location = prev
+                            kamikakushi_titan = 1
+                            hv_bomb = 2
+                            missile = 225
+                            kamikakushi_cruiser = 60
+                            modifier = touhou_being_kuat_fleet
+                        }
+                    }
+                }
+            } else = {
+                create_starbase_missle_invasion_battle_fleet = yes
             }
         }
     }
@@ -210,6 +492,7 @@ fleet_event = {
             fleet_event = { id = touhou_ship_actions.2 }
         }
     }
+    # 华胥的永眠
     option = {
         inline_script = {
             script = events/touhou_ship_action_leader_share
@@ -234,6 +517,7 @@ fleet_event = {
             }
         }
     }
+    # 真实之视
     option = {
         inline_script = {
             script = events/touhou_ship_action_leader_single
@@ -252,6 +536,7 @@ fleet_event = {
             }
         }
     }
+    # 梦想亚空穴
     option = {
         name = concept_spth_ship_skill_reimu
         custom_tooltip = concept_spth_ship_skill_reimu_desc
@@ -274,6 +559,7 @@ fleet_event = {
         owner = { add_resource = { sr_fuka = -3200 } }
         fleet_event = { id = touhou_ship_actions.3 }
     }
+    # 绯红星辰之枪
     option = {
         inline_script = {
             script = events/touhou_ship_action_leader_share
@@ -289,6 +575,7 @@ fleet_event = {
             }
         }
     }
+    # 客星璀璨之夜
     option = {
         inline_script = {
             script = events/touhou_ship_action_leader_share
@@ -310,6 +597,7 @@ fleet_event = {
             }
         }
     }
+    # 维度隐形系统
     option = {
         name = concept_spth_ship_skill_sanae_shrine
         custom_tooltip = concept_spth_ship_skill_sanae_shrine_desc
@@ -466,6 +754,7 @@ fleet_event = {
                             set_disable_at_health = 0.01
                         }
                     }
+                    set_event_locked = yes
                     set_location = {
                         target = prev
                         distance = 0

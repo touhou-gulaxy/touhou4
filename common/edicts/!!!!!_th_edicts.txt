@@ -143,15 +143,32 @@ spth_build_auto_ringworld = {
 		custom_tooltip = edict_spth_build_auto_ringworld_tooltip
 		hidden_effect = {
 			if = {
-				limit = { has_origin = origin_spth_story_gensokyo }
-				every_system_within_border = {
-					limit = { spth_auto_ringworld_limit = yes }
-					spth_auto_ringworld_build_story = yes
+				limit = {
+					OR = {
+						has_origin = origin_spth_story_gensokyo
+						has_origin = origin_gensokyo_ringworld
+					}
+				}
+				if = {
+					limit = { any_system_within_border = { spth_auto_ringworld_limit = yes } }
+					while = {
+						count = 2 reroll_random = yes
+						random_system_within_border = {
+							limit = { spth_auto_ringworld_limit = yes }
+							spth_auto_ringworld_build_story = yes
+						}
+					}
 				}
 			} else = {
-				every_system_within_border = {
-					limit = { spth_auto_ringworld_limit = yes }
-					spth_auto_ringworld_build_common = yes
+				if = {
+					limit = { any_system_within_border = { spth_auto_ringworld_limit = yes } }
+					while = {
+						count = 2 reroll_random = yes
+						random_system_within_border = {
+							limit = { spth_auto_ringworld_limit = yes }
+							spth_auto_ringworld_build_common = yes
+						}
+					}
 				}
 			}
 		}
@@ -236,6 +253,7 @@ hmx_hellsing = {
 	length = 1
 	icon = GFX_edict_type_touhou
 	potential = {
+		always = no
 		is_ai = no
 		has_ascension_perk = ap_hm3
 	}
@@ -248,30 +266,26 @@ hmx_hellsing = {
 	}
 }
 
-hmx_p_up = {
-	length = 1
-	icon = GFX_edict_type_touhou
-	potential = {
-		is_ai = no
-		has_ascension_perk = ap_hm6
-		NOT = {
-			has_country_flag = hmx_p_up_ing
-		}
-		OR = {
-			has_country_flag = th_weapon_up_start
-			NOT = {
-				has_country_flag = th_weapon_up_edict_time
-			}
-		}
-	}
-	effect = {
-		hidden_effect = {
-			country_event = {
-				id = th_weapon_up.10
-			}
-		}
-	}
-}
+# hmx_p_up = {
+# 	length = 1
+# 	icon = GFX_edict_type_touhou
+# 	potential = {
+# 		is_ai = no
+# 		has_ascension_perk = ap_hm6
+# 		NOT = { has_country_flag = th_weapon_up_lock }
+# 		OR = {
+# 			has_country_flag = th_weapon_up_start
+# 			NOT = { has_country_flag = th_weapon_up_edict_time }
+# 		}
+# 	}
+# 	effect = {
+# 		hidden_effect = {
+# 			country_event = {
+# 				id = th_weapon_up.10
+# 			}
+# 		}
+# 	}
+# }
 
 spth_rpg_gugu_system = {
 	length = 1
@@ -315,6 +329,7 @@ imba_ycshycx = {
 	}
 	icon = GFX_edict_type_touhou
 	potential = {
+		always = no
 		is_ai = no
 		has_ascension_perk = ap_hm4
 	}
@@ -342,7 +357,7 @@ imba_swcjswb = {
 	icon = GFX_edict_type_touhou
 	potential = {
 		is_ai = no
-		has_ascension_perk = ap_toho4
+		has_touhou_ascension_tier_4 = yes
 	}
 	modifier = {
 		custom_tooltip = edict_imba_swcjswb_tooltip
@@ -369,7 +384,7 @@ spellcard_ship_enhance = {
 	icon = GFX_edict_type_touhou
 	potential = {
 		is_ai = no
-		has_ascension_perk = ap_toho4
+		has_touhou_ascension_tier_4 = yes
 	}
 	modifier = {
 		weapon_type_spark_weapon_damage_mult = 0.25

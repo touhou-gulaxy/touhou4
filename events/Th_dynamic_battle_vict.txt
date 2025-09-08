@@ -4,7 +4,7 @@ namespace = Th_dynamic_battle_vict
 @last_the_world_t3 = 20
 @last_satori_eye = 15
 @last_koishi_eye = 15
-@interval_the_world_first = 2
+@interval_the_world_first = 1
 @interval_the_world_final = 3
 @interval_satori_eye = 3
 @interval_koishi_eye = 2
@@ -13,16 +13,19 @@ namespace = Th_dynamic_battle_vict
 ####################### 舰船动修 #######################
 #######################################################
 # Sakuya
-ship_event = {
+fleet_event = {
     id = Th_dynamic_battle_vict.1
     hide_window = yes
     is_triggered_only = yes
     immediate = {
         if = {
-            limit = { has_ship_flag = TH_sakuya_the_world_dynamic_vict }
+            limit = { has_fleet_flag = TH_sakuya_the_world_dynamic_vict }
             sakuya_the_world_dynamic = { interval = @interval_the_world_first }
         } else = {
-            TH_clear_all_dynamic_modifier = yes
+            every_owned_ship = {
+                TH_clear_all_dynamic_modifier = yes
+                remove_ship_flag = TH_sakuya_the_world_dynamic_vict
+            }
         }
     }
 }
@@ -729,66 +732,57 @@ country_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        always = no
         fromfrom = {
-            any_owned_ship = {
-                OR = {
-                    has_component = th_ship_part_yueshiji
-                    has_component = th_ship_part_yueshiji_story
-                    has_component = th_ship_part_yueshiji_story_2
-                }
-            }
+            any_owned_ship = { check_modifier_value = { modifier = ship_has_th_sakuya value > 0 } }
         }
         NOT = {
             fromfromfrom = {
-                any_owned_ship = {
-                    OR = {
-                        has_component = th_ship_part_yueshiji
-                        has_component = th_ship_part_yueshiji_story
-                        has_component = th_ship_part_yueshiji_story_2
-                    }
-                }
+                any_owned_ship = { check_modifier_value = { modifier = ship_has_th_sakuya value > 0 } }
             }
         }
     }
 
     immediate = {
         fromfrom = {
-            fleet_event = { id = Th_dynamic_battle_vict.102 }
+            # fleet_event = { id = Th_dynamic_battle_vict.102 }
             if = {
-                limit = {
-                    any_owned_ship = {
-                        has_component = th_ship_part_yueshiji_story_2
-                    }
-                }
+                limit = { any_owned_ship = { check_modifier_value = { modifier = ship_has_th_sakuya_lvl value = 1 } } }
                 fromfromfrom = {
-                    every_owned_ship = {
-                        limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
-                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t3 }
-                        ship_event = { id = Th_dynamic_battle_vict.1 }
+                    if = {
+                        limit = { NOT = { has_fleet_flag = TH_sakuya_the_world_dynamic_vict } }
+                        set_timed_fleet_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t1 }
+                        every_owned_ship = {
+                            limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
+                            set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t1 }
+                        }
+                        fleet_event = { id = Th_dynamic_battle_vict.1 }
                     }
                 }
             }
             else_if = {
-                limit = {
-                    any_owned_ship = {
-                        has_component = th_ship_part_yueshiji_story
-                    }
-                }
+                limit = { any_owned_ship = { check_modifier_value = { modifier = ship_has_th_sakuya_lvl value = 2 } } }
                 fromfromfrom = {
-                    every_owned_ship = {
-                        limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
-                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t2 }
-                        ship_event = { id = Th_dynamic_battle_vict.1 }
+                    if = {
+                        limit = { NOT = { has_fleet_flag = TH_sakuya_the_world_dynamic_vict } }
+                        set_timed_fleet_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t2 }
+                        every_owned_ship = {
+                            limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
+                            set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t2 }
+                        }
+                        fleet_event = { id = Th_dynamic_battle_vict.1 }
                     }
                 }
             }
             else = {
                 fromfromfrom = {
-                    every_owned_ship = {
-                        limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
-                        set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t1 }
-                        ship_event = { id = Th_dynamic_battle_vict.1 }
+                    if = {
+                        limit = { NOT = { has_fleet_flag = TH_sakuya_the_world_dynamic_vict } }
+                        set_timed_fleet_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t3 }
+                        every_owned_ship = {
+                            limit = { NOT = { has_ship_flag = TH_sakuya_the_world_dynamic_vict } }
+                            set_timed_ship_flag = { flag = TH_sakuya_the_world_dynamic_vict days = @last_the_world_t3 }
+                        }
+                        fleet_event = { id = Th_dynamic_battle_vict.1 }
                     }
                 }
             }
@@ -954,8 +948,8 @@ country_event = {
                 }
             }
         }
-        # 为阿夸或者古代帝国时不启用护盾装甲效率
-        from = { spth_should_close_combat_system = no }
+        # 为古代帝国时不启用护盾装甲效率
+        from = { ag_is_ancient_country = no }
     }
     immediate = {
         # 硬化提升=护盾/装甲效率*100%
@@ -1017,23 +1011,27 @@ country_event = {
             }
         }
         fromfromfrom = {
+            # 为阿夸时不启用这部分压制
             if = {
-                limit = { NOT = { has_fleet_flag = has_triggered_spth_effiency_enemy } }
-                set_fleet_flag = has_triggered_spth_effiency_enemy
-                every_owned_ship = {
-                    limit = { NOT = { is_ship_size = spth_kamikakushi_cruiser } }
-                    set_variable = {
-                        which = spth_shield_damage_debuff
-                        value = root.fromfrom.spth_shield_damage_debuff
+                limit = { root.from = { is_invisable_faction = no } }
+                if = {
+                    limit = { NOT = { has_fleet_flag = has_triggered_spth_effiency_enemy } }
+                    set_fleet_flag = has_triggered_spth_effiency_enemy
+                    every_owned_ship = {
+                        limit = { NOT = { is_ship_size = spth_kamikakushi_cruiser } }
+                        set_variable = {
+                            which = spth_shield_damage_debuff
+                            value = root.fromfrom.spth_shield_damage_debuff
+                        }
+                        set_variable = {
+                            which = spth_armor_damage_debuff
+                            value = root.fromfrom.spth_armor_damage_debuff
+                        }
+                        add_modifier = { modifier = spth_shield_efficiency_debuff multiplier = value:spth_shield_damage_debuff_value }
+                        add_modifier = { modifier = spth_armor_efficiency_debuff multiplier = value:spth_armor_damage_debuff_value }
                     }
-                    set_variable = {
-                        which = spth_armor_damage_debuff
-                        value = root.fromfrom.spth_armor_damage_debuff
-                    }
-                    add_modifier = { modifier = spth_shield_efficiency_debuff multiplier = value:spth_shield_damage_debuff_value }
-                    add_modifier = { modifier = spth_armor_efficiency_debuff multiplier = value:spth_armor_damage_debuff_value }
+                    fleet_event = { id = Th_dynamic_battle_vict.23 }
                 }
-                fleet_event = { id = Th_dynamic_battle_vict.23 }
             }
         }
     }
