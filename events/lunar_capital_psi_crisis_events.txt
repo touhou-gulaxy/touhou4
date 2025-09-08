@@ -718,10 +718,11 @@ fleet_event = {
         has_global_flag = spth_lunar_capital_psi_crisis_begin
         NOT = { has_global_flag = spth_lunar_capital_psi_main_gate_bypass }
         from = { has_star_flag = spth_story_lunar_capital_toyohime }
+        NOT = { has_fleet_flag = spth_lunar_psi_fleet }
     }
     immediate = {
         if = {
-            limit = { owner = { is_touhou_player_faction = yes } }
+            limit = { owner = { is_touhou_common_country = yes } }
             set_mia = mia_return_home
         } else = {
             set_mia = mia_emergency_ftl
@@ -1026,6 +1027,177 @@ country_event = {
     }
 }
 
+# extra - 灵能攻击
+country_event = {
+    id = lunar_capital_psi.35
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_main_gate_bypass }
+        is_touhou_common_country = yes
+    }
+    immediate = {
+        if = {
+            limit = { has_global_flag = touhou_lunar_psi_extra_33 }
+            reroll_random = yes
+            # 巨船
+            random_list = {
+                25 = {
+                    modifier = { factor = 0 touhou_check_diffiulty_lteq = { value = 1 } NOT = { has_global_flag = spth_lunar_capital_crisis_phantasm } }
+                    if = {
+                        limit = { NOT = { has_country_flag = touhou_lunar_psi_extra_33_mega_shipyard_fired } }
+                        set_country_flag = touhou_lunar_psi_extra_33_mega_shipyard_fired
+                        random_owned_megastructure = {
+                            limit = {
+                                OR = {
+                                    is_megastructure_type = mega_shipyard_0
+                                    is_megastructure_type = mega_shipyard_1
+                                    is_megastructure_type = mega_shipyard_2
+                                    is_megastructure_type = mega_shipyard_3
+                                    is_megastructure_type = mega_shipyard_restored
+                                }
+                            }
+                            set_variable = { which = touhou_lunar_psi_extra_33_mega_shipyard_val value = 0 }
+                            export_modifier_to_variable = {
+                                modifier = starbase_shipyard_build_speed_mult
+                                variable = touhou_lunar_psi_extra_33_mega_shipyard_val
+                            }
+                            multiply_variable = { which = touhou_lunar_psi_extra_33_mega_shipyard_val value = 0.60 }
+                            add_modifier = {
+                                modifier = touhou_lunar_psi_mega_shipyard
+                                mult = touhou_lunar_psi_extra_33_mega_shipyard_val
+                                days = 3600
+                            }
+                            solar_system = { save_event_target_as = spth_shipyard_system }
+                            clear_variable = touhou_lunar_psi_extra_33_mega_shipyard_val
+                        }
+                        country_event = { id = lunar_capital_psi.38 }
+                    }
+                }
+                75 = {
+                    modifier = { add = -25 touhou_check_diffiulty_gteq = { value = 3 } }
+                    modifier = { add = -25 touhou_check_diffiulty_gteq = { value = 4 } }
+                    modifier = { factor = 0 touhou_check_diffiulty_gteq = { value = 8 } }
+                }
+            }
+            reroll_random = yes
+            # 舰队
+            random_list = {
+                10 = {
+                    modifier = { factor = 0 touhou_check_diffiulty_lteq = { value = 1 } NOT = { has_global_flag = spth_lunar_capital_crisis_phantasm } }
+                    set_variable = { which = touhou_lunar_psi_fleet_upkeep value = 0 }
+                    export_modifier_to_variable = { modifier = ships_upkeep_mult variable = touhou_lunar_psi_fleet_upkeep }
+                    if = {
+                        limit = { check_variable = { which = touhou_lunar_psi_fleet_upkeep value < 1 } }
+                        set_variable = { which = touhou_lunar_psi_fleet_upkeep value = 1 }
+                    }
+                    add_modifier = { modifier = touhou_lunar_psi_fleet_upkeep mult = touhou_lunar_psi_fleet_upkeep days = 900 }
+                    country_event = { id = lunar_capital_psi.45 }
+                    clear_variable = touhou_lunar_psi_fleet_upkeep
+                }
+                90 = {
+                    modifier = { add = -20 touhou_check_diffiulty_gteq = { value = 3 } }
+                    modifier = { add = -20 touhou_check_diffiulty_gteq = { value = 4 } }
+                    modifier = { add = -20 touhou_check_diffiulty_gteq = { value = 8 } }
+                    modifier = { factor = 0 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                }
+            }
+            reroll_random = yes
+            random_list = {
+                10 = {
+                    modifier = { factor = 0 touhou_check_diffiulty_lteq = { value = 1 } NOT = { has_global_flag = spth_lunar_capital_crisis_phantasm } }
+                    set_variable = { which = touhou_lunar_psi_fleet_energy_dmg value = modifier:weapon_type_energy_weapon_damage_mult }
+                    set_variable = { which = touhou_lunar_psi_fleet_sp_dmg value = modifier:weapon_type_lingli_weapon_damage_mult }
+                    reroll_random = yes
+                    random_system_within_border = {
+                        limit = { any_fleet_in_system = { is_ship_class = shipclass_military } }
+                        save_event_target_as = spth_target_system
+                        every_fleet_in_system = {
+                            limit = { is_ship_class = shipclass_military }
+                            every_owned_ship = {
+                                limit = { NOT = { is_ship_size = TH_super_carrier } }
+                                add_modifier = { modifier = touhou_lunar_psi_fleet_energy_dmg mult = root.touhou_lunar_psi_fleet_energy_dmg }
+                                add_modifier = { modifier = touhou_lunar_psi_fleet_sp_dmg mult = root.touhou_lunar_psi_fleet_sp_dmg }
+                            }
+                        }
+                    }
+                    country_event = { id = lunar_capital_psi.46 }
+                    clear_variable = touhou_lunar_psi_fleet_energy_dmg
+                    clear_variable = touhou_lunar_psi_fleet_sp_dmg
+                }
+                90 = {
+                    modifier = { add = -10 touhou_check_diffiulty_gteq = { value = 4 } }
+                    modifier = { add = -10 touhou_check_diffiulty_gteq = { value = 8 } }
+                    modifier = { factor = 0 has_global_flag = spth_lunar_capital_crisis_phantasm }
+                }
+            }
+        }
+        # 传感器禁用
+        set_timed_country_flag = { flag = FW_flg_cntr_FULL_sensor_off days = 3600 }
+        set_timed_country_flag = { flag = ag_no_full_sensor_range days = 3600 }
+        country_event = { id = lunar_capital_psi.40 }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.38
+    title = lunar_capital_psi.38.name
+    desc = lunar_capital_psi.38.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ag_excited_shroud_room }
+    option = {
+        name = lunar_capital_psi.38.a
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = lunar_capital_psi.40
+    title = lunar_capital_psi.40.name
+    desc = lunar_capital_psi.40.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ag_excited_shroud_room }
+    option = {
+        name = lunar_capital_psi.40.a
+        custom_tooltip = lunar_capital_psi.40.a.effect
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = lunar_capital_psi.45
+    title = lunar_capital_psi.45.name
+    desc = lunar_capital_psi.45.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ag_excited_shroud_room }
+    option = {
+        name = lunar_capital_psi.45.a
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = lunar_capital_psi.46
+    title = lunar_capital_psi.46.name
+    desc = lunar_capital_psi.46.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ag_excited_shroud_room }
+    option = {
+        name = lunar_capital_psi.46.a
+        custom_tooltip = lunar_capital_psi.46.a.effect
+        default_hide_option = yes
+    }
+}
+
 # 月之都-升格派
 # 灵能舰船设定为月之都中的升格派
 # 被灵能污染的月之都AI引发的入侵
@@ -1261,7 +1433,10 @@ country_event = {
         }
         while = { count = 5 spth_lunar_psi_create_defence_fleet = yes }
         spth_lunar_psi_create_gate = { spth_id = 0 }
-        every_playable_country = { country_event = { id = lunar_capital_psi.150 } }
+        every_playable_country = {
+            country_event = { id = lunar_capital_psi.150 }
+            country_event = { id = lunar_capital_psi.35 }
+        }
     }
 }
 country_event = {
