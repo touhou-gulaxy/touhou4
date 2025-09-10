@@ -1,0 +1,174 @@
+namespace = touhou_kedama
+
+# spawn kedama
+event = {
+    id = touhou_kedama.1
+    is_triggered_only = yes
+    hide_window = yes
+    immediate = {
+        touhou_create_kedama_country = yes
+    }
+}
+
+country_event = {
+    id = touhou_kedama.2
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = { NOT = { has_global_flag = touhou_kedama_respawn_cooldown } }
+    immediate = {
+        set_timed_global_flag = { flag = touhou_kedama_respawn_cooldown days = 3600 }
+        event_target:kedama_home_system = {
+            random_system_planet = {
+                limit = { has_planet_flag = kedama }
+                save_event_target_as = kedama_spawn_location
+            }
+        }
+        if = {
+            limit = { count_owned_fleet = { limit = { has_fleet_flag = kedama_large } count < 6 } }
+            touhou_create_kedama_fleet_large = yes
+        }
+        if = {
+            limit = { count_owned_fleet = { limit = { has_fleet_flag = kedama_mid } count < 18 } }
+            touhou_create_kedama_fleet_mid = yes
+        }
+        if = {
+            limit = { count_owned_fleet = { limit = { has_fleet_flag = kedama_small } count < 36 } }
+            touhou_create_kedama_fleet_small = yes
+        }
+        touhou_create_kedama_fleet_small = yes
+    }
+}
+event = {
+    id = touhou_kedama.3
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = { NOT = { has_global_flag = touhou_kedama_respawn_cooldown } }
+    immediate = {
+        set_timed_global_flag = { flag = touhou_kedama_respawn_cooldown days = 3600 }
+        event_target:kedama_home_system = {
+            random_system_planet = {
+                limit = { has_planet_flag = kedama }
+                save_event_target_as = kedama_spawn_location
+            }
+        }
+        if = {
+            limit = { count_owned_fleet = { limit = { has_fleet_flag = kedama_large } count < 6 } }
+            touhou_create_kedama_fleet_large = yes
+        }
+        if = {
+            limit = { count_owned_fleet = { limit = { has_fleet_flag = kedama_mid } count < 18 } }
+            touhou_create_kedama_fleet_mid = yes
+        }
+        if = {
+            limit = { count_owned_fleet = { limit = { has_fleet_flag = kedama_small } count < 36 } }
+            touhou_create_kedama_fleet_small = yes
+        }
+        touhou_create_kedama_fleet_small = yes
+    }
+}
+
+first_contact_event = {
+    id = touhou_kedama.9
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = contact_country
+        contact_country = {
+            is_country_type = kedama
+        }
+    }
+    immediate = {
+        setup_first_contact_path = { TYPE = kedama }
+        set_first_contact_flag = spth_first_contact_kedama
+    }
+}
+
+first_contact_event = {
+    id = touhou_kedama.10
+    title = touhou_kedama.10.name
+    desc = touhou_kedama.10.desc
+    picture = GFX_evt_satellite_in_orbit
+    show_sound = event_mysterious_signal
+    is_triggered_only = yes
+    first_contact = yes
+    immediate = {
+        set_site_progress_locked = yes
+    }
+
+    after = {
+        set_site_progress_locked = no
+    }
+
+    option = {
+        name = touhou_kedama.10.a
+        set_first_contact_stage = spth_enclave_curator_stage_2
+    }
+}
+first_contact_event = {
+    id = touhou_kedama.11
+    title = touhou_kedama.11.name
+    desc = {
+        trigger = { owner = { has_authority = auth_gensokyo } }
+        text = touhou_kedama.11.desc
+    }
+    desc = {
+        trigger = { owner = { NOT = { has_authority = auth_gensokyo } } }
+        text = touhou_kedama.11.prefix
+    }
+    picture = GFX_evt_fleet_evil
+    show_sound = event_mysterious_signal
+    is_triggered_only = yes
+    first_contact = yes
+    immediate = {
+        set_site_progress_locked = yes
+    }
+
+    option = { name = touhou_kedama.11.a }
+    option = {
+        name = touhou_kedama.11.a.dld
+        trigger = {
+            owner = {
+                OR = {
+                    has_civic = civic_chireiden
+                    any_owned_leader = { has_trait = leader_trait_satori }
+                }
+            }
+        }
+        owner = {
+            set_faction_hostility = {
+                target = event_target:kedama_country
+                set_neutral = yes
+            }
+        }
+    }
+    after = {
+        set_site_progress_locked = no
+        finish_first_contact_effect = yes
+    }
+}
+
+country_event = {
+    id = touhou_kedama.12
+    title = touhou_kedama.12.name
+    desc = touhou_kedama.12.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = th_satori_1_room }
+    trigger = {
+        exists = event_target:kedama_country
+        has_authority = auth_gensokyo
+        OR = {
+            has_civic = civic_chireiden
+            has_country_flag = th_satori_get
+        }
+    }
+    option = { name = touhou_kedama.12.a }
+    after = {
+        set_faction_hostility = {
+            target = event_target:kedama_country
+            set_neutral = yes
+        }
+    }
+}

@@ -379,13 +379,17 @@ country_event = {
             has_global_flag = touhou_lunar_psi_extra_32
         }
         fromfrom = { has_fleet_flag = spth_lunar_psi_fleet }
-        is_touhou_crisis_faction = yes
+        # is_touhou_crisis_faction = yes
     }
     immediate = {
         if = {
             limit = { has_global_flag = touhou_lunar_psi_extra_32 NOT = { has_country_flag = lunar_capital_psi_7_32_fired } }
             set_timed_country_flag = { flag = lunar_capital_psi_7_32_fired days = 30 }
-            TH_dynamic_modifier_conditional = { modifier = ship_damage_reduction_mult relation = "<" limit_value = 0.25 value = 0.25 }
+            fromfrom = {
+                every_owned_ship = {
+                    TH_dynamic_modifier_conditional = { modifier = ship_damage_reduction_mult relation = "<" limit_value = 0.3 value = 0.3 }
+                }
+            }
         }
         if = {
             limit = { has_global_flag = touhou_lunar_psi_extra_14 NOT = { has_country_flag = lunar_capital_psi_7_14_fired } }
@@ -418,7 +422,7 @@ country_event = {
     immediate = {
         reroll_random = yes
         random_list = {
-            25 = {
+            30 = {
                 if = {
                     limit = {
                         OR = {
@@ -490,10 +494,14 @@ country_event = {
                     }
                 }
             }
-            75 = {
+            70 = {
                 modifier = {
                     factor = 0.75
                     event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 2 } }
+                }
+                modifier = {
+                    factor = 0.5
+                    event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value >= 8 } }
                 }
             }
         }

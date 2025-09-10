@@ -1,17 +1,3 @@
-# utility_component_template = {
-#     key = "SPTH_BIO_PROPULSION"
-#     size = small
-#     icon = "GFX_ship_part_bio_thruster_1"
-#     icon_frame = 1
-#     power = 114514
-#
-#     component_set = "thruster_components_bio"
-#
-#     size_restriction = {
-#         spth_kedama_small
-#     }
-# }
-
 utility_component_template = {
     key = "SPTH_BIO_FTL"
     size = small
@@ -80,21 +66,1529 @@ utility_component_template = {
     icon_frame = 1
     resources = {
         category = ship_components
-        # inline_script = {
-        #     script = "grand_archive/mutations/component_dynamic_cost"
-        #     COST = @cost0
-        # }
+        cost = { food = 5 minerals = 5 sr_lingli = 1 sr_fuka = 2 }
     }
     ship_behavior = "swarm"
     is_default_component = yes
-
     potential = { ship_is_spth_bioship = yes }
     component_set = "neurochips"
-    # upgrades_to = "NEUROCHIPS_SWARM_BASIC"
     ai_tags = { gunship }
-    ai_tag_weight = 0
+    ai_tag_weight = 10
+    ai_weight = { weight = 114514 }
+}
+utility_component_template = {
+    key = "SPTH_NEUROCHIPS_SWARM"
+    size = small
+    icon = "GFX_neurochips_swarm_precog"
+    icon_frame = 1
+    resources = {
+        category = ship_components
+        cost = { food = 5 minerals = 5 sr_lingli = 1 sr_fuka = 2 }
+    }
+    ship_behavior = "spth_swarm_attack"
+    modifier = {
+        ship_evasion_mult = 0.32
+    }
+    ship_modifier = {
+        ship_fire_rate_mult = 0.15
+        weapon_type_lingli_weapon_fire_rate_mult = 0.15
+        weapon_type_lingli_weapon_damage_mult = 0.15
+    }
+    prerequisites = { "tech_spth_old_shrine_construct" }
+    is_default_component = yes
+    potential = { ship_is_spth_bioship = yes }
+    component_set = "neurochips"
+    ai_tags = { gunship }
+    ai_tag_weight = 10
+    ai_weight = { weight = 114514 }
+}
+utility_component_template = {
+    key = "SPTH_NEUROCHIPS_LINE"
+    size = small
+    icon = "GFX_neurochips_line_precog"
+    icon_frame = 1
+    resources = {
+        category = ship_components
+        cost = { food = 5 minerals = 5 sr_lingli = 1 sr_fuka = 2 }
+    }
+    modifier = {
+        ship_fire_rate_mult = 0.2
+        ship_accuracy_mult = 0.15
+        ship_tracking_mult = 0.15
+    }
+    prerequisites = { "tech_spth_moon_computer" }
+    ship_behavior = "spth_line"
+    is_default_component = yes
+    potential = { ship_is_spth_bioship = yes }
+    component_set = "neurochips"
+    ai_tags = { artillery }
+    ai_tag_weight = 10
+    ai_weight = { weight = 114514 }
+}
+utility_component_template = {
+    key = "SPTH_NEUROCHIPS_ARTILLERY"
+    size = small
+    icon = "GFX_neurochips_artillery_precog"
+    icon_frame = 1
+    resources = {
+        category = ship_components
+        cost = { food = 5 minerals = 5 sr_lingli = 1 sr_fuka = 2 }
+    }
+    modifier = {
+        ship_fire_rate_mult = 0.40
+        ship_tracking_add = 10
+        ship_accuracy_mult = 0.1
+        ship_tracking_mult = 0.1
+        ship_engagement_range_mult = 0.75
+    }
+    prerequisites = { "tech_spth_moon_computer" }
+    ship_behavior = "spth_artillery_attack"
+    is_default_component = yes
+    potential = { ship_is_spth_bioship = yes }
+    component_set = "neurochips"
+    ai_tags = { artillery }
+    ai_tag_weight = 10
+    ai_weight = { weight = 114514 }
+}
+utility_component_template = {
+    key = "SPTH_NEUROCHIPS_BATTLE_CRUISER"
+    size = small
+    icon = "GFX_neurochips_carrier_precog"
+    icon_frame = 1
+    resources = {
+        category = ship_components
+        cost = { food = 5 minerals = 5 sr_lingli = 1 sr_fuka = 2 }
+    }
+    modifier = {
+    }
+    ship_modifier = {
+        ship_weapon_damage = 1
+        ship_speed_mult = 0.20
+    }
+    prerequisites = { "tech_th_battle_cruiser" }
+    ship_behavior = "spth_battle_line_attack"
+    is_default_component = yes
+    potential = { ship_is_spth_bioship = yes }
+    component_set = "neurochips"
+    ai_tags = { carrier }
+    ai_tag_weight = 10
+    ai_weight = { weight = 114514 }
+}
 
+# aux
+utility_component_template = {
+    key = "th_ghost_of_damaku_mutation"
+    icon = "GFX_ship_part_th_ghost_of_damaku"
+    size = aux
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    prerequisites = { tech_th_ship_part_yuyuko }
+    ship_modifier = {
+        custom_tooltip = th_ghost_of_damaku_tt
+        show_only_custom_tooltip = no
+        ship_spth_extra_life = 1
+        ship_damage_reduction_add = 2
+        ship_spth_extra_life_power_down = 0.1
+        ship_spth_yuyuko_fan_display = 1
+        ship_spth_ghost_of_ghost_count = 1
+    }
+    component_set = "th_ghost_of_damaku_mutation"
     ai_weight = {
-        weight = 1
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_lingli_afterburner_mutation"
+    icon = "GFX_ship_part_spth_afterburner"
+    size = aux
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = afterburner }
+    modifier = {
+        ship_evasion_add = 15
+        ship_speed_mult = 0.40
+        ship_reactor_power_mult = 0.50
+        ship_reactor_power_add = 100
+    }
+    ship_modifier = {
+        ship_weapon_damage = 0.15
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_lingli_afterburner_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_outworld_protector_mutation"
+    icon = "GFX_ship_part_spth_ship_shrine"
+    size = aux
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+    modifier = {
+        ship_shield_mult = 0.2
+        ship_armor_mult = 0.2
+    }
+    custom_tooltip = spth_combat_system_close_cond
+    ship_modifier = {
+        ship_spth_shield_efficiency = 0.3
+        ship_spth_armor_efficiency = 0.3
+    }
+    triggered_ship_modifier = {
+        potential = { check_modifier_value = { modifier = ship_spth_reimu_ruler_effect_1 value != 0 } }
+        ship_damage_reduction_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_outworld_protector_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_moon_repairer_mutation"
+    icon = "GFX_ship_part_spth_moon_repairer"
+    size = aux
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    ship_modifier = {
+        ship_hull_regen_add_perc = 0.25
+        ship_armor_regen_add_perc = 0.5
+        ship_shield_regen_add_perc = 0.5
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_moon_repairer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "TH_phase_stealth_generator_mutation"
+    size = aux
+    icon = "GFX_ship_part_cloak_psi"
+    icon_frame = 1
+    ship_limit = 1
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 100
+            sr_lingli = 50
+        }
+        upkeep = {
+            energy = 10
+            sr_lingli = 1
+        }
+    }
+    modifier = {
+        ship_cloaking_strength_add = 16
+    }
+    triggered_ship_modifier = {
+        potential = {
+            is_cloaked = yes
+        }
+        modifier = {
+            ship_base_speed_mult = -0.5
+        }
+    }
+    prerequisites = { "tech_th_battle_cruiser" "tech_cloaking_3" }
+    component_set = "TH_phase_stealth_generator_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_ran_computer_mutation"
+    icon = "GFX_ship_part_spth_ran_computer"
+    size = aux
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ran_computer }
+    modifier = {
+        ship_evasion_mult = 0.25
+        ship_accuracy_add = 10
+        ship_tracking_add = 10
+    }
+    ship_modifier = {
+        ship_disengage_opportunities_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_ran_computer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "th_ghost_of_damaku_mutation_small"
+    icon = "GFX_ship_part_th_ghost_of_damaku"
+    size = small
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    prerequisites = { tech_th_ship_part_yuyuko }
+    ship_modifier = {
+        custom_tooltip = th_ghost_of_damaku_tt
+        show_only_custom_tooltip = no
+        ship_spth_extra_life = 1
+        ship_damage_reduction_add = 2
+        ship_spth_extra_life_power_down = 0.1
+        ship_spth_yuyuko_fan_display = 1
+        ship_spth_ghost_of_ghost_count = 1
+    }
+    component_set = "th_ghost_of_damaku_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_lingli_afterburner_mutation_small"
+    icon = "GFX_ship_part_spth_afterburner"
+    size = small
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = afterburner }
+    modifier = {
+        ship_evasion_add = 15
+        ship_speed_mult = 0.40
+        ship_reactor_power_mult = 0.50
+        ship_reactor_power_add = 100
+    }
+    ship_modifier = {
+        ship_weapon_damage = 0.15
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_lingli_afterburner_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_outworld_protector_mutation_small"
+    icon = "GFX_ship_part_spth_ship_shrine"
+    size = small
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+    modifier = {
+        ship_shield_mult = 0.2
+        ship_armor_mult = 0.2
+    }
+    custom_tooltip = spth_combat_system_close_cond
+    ship_modifier = {
+        ship_spth_shield_efficiency = 0.3
+        ship_spth_armor_efficiency = 0.3
+    }
+    triggered_ship_modifier = {
+        potential = { check_modifier_value = { modifier = ship_spth_reimu_ruler_effect_1 value != 0 } }
+        ship_damage_reduction_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_outworld_protector_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_moon_repairer_mutation_small"
+    icon = "GFX_ship_part_spth_moon_repairer"
+    size = small
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    ship_modifier = {
+        ship_hull_regen_add_perc = 0.25
+        ship_armor_regen_add_perc = 0.5
+        ship_shield_regen_add_perc = 0.5
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_moon_repairer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "TH_phase_stealth_generator_mutation_small"
+    size = small
+    icon = "GFX_ship_part_cloak_psi"
+    icon_frame = 1
+    ship_limit = 1
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 100
+            sr_lingli = 50
+        }
+        upkeep = {
+            energy = 10
+            sr_lingli = 1
+        }
+    }
+    modifier = {
+        ship_cloaking_strength_add = 16
+    }
+    triggered_ship_modifier = {
+        potential = {
+            is_cloaked = yes
+        }
+        modifier = {
+            ship_base_speed_mult = -0.5
+        }
+    }
+    prerequisites = { "tech_th_battle_cruiser" "tech_cloaking_3" }
+    component_set = "TH_phase_stealth_generator_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_ran_computer_mutation_small"
+    icon = "GFX_ship_part_spth_ran_computer"
+    size = small
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ran_computer }
+    modifier = {
+        ship_evasion_mult = 0.25
+        ship_accuracy_add = 10
+        ship_tracking_add = 10
+    }
+    ship_modifier = {
+        ship_disengage_opportunities_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_ran_computer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "th_ghost_of_damaku_mutation_medium"
+    icon = "GFX_ship_part_th_ghost_of_damaku"
+    size = medium
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    prerequisites = { tech_th_ship_part_yuyuko }
+    ship_modifier = {
+        custom_tooltip = th_ghost_of_damaku_tt
+        show_only_custom_tooltip = no
+        ship_spth_extra_life = 1
+        ship_damage_reduction_add = 2
+        ship_spth_extra_life_power_down = 0.1
+        ship_spth_yuyuko_fan_display = 1
+        ship_spth_ghost_of_ghost_count = 1
+    }
+    component_set = "th_ghost_of_damaku_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_lingli_afterburner_mutation_medium"
+    icon = "GFX_ship_part_spth_afterburner"
+    size = medium
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = afterburner }
+    modifier = {
+        ship_evasion_add = 15
+        ship_speed_mult = 0.40
+        ship_reactor_power_mult = 0.50
+        ship_reactor_power_add = 100
+    }
+    ship_modifier = {
+        ship_weapon_damage = 0.15
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_lingli_afterburner_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_outworld_protector_mutation_medium"
+    icon = "GFX_ship_part_spth_ship_shrine"
+    size = medium
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+    modifier = {
+        ship_shield_mult = 0.2
+        ship_armor_mult = 0.2
+    }
+    custom_tooltip = spth_combat_system_close_cond
+    ship_modifier = {
+        ship_spth_shield_efficiency = 0.3
+        ship_spth_armor_efficiency = 0.3
+    }
+    triggered_ship_modifier = {
+        potential = { check_modifier_value = { modifier = ship_spth_reimu_ruler_effect_1 value != 0 } }
+        ship_damage_reduction_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_outworld_protector_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_moon_repairer_mutation_medium"
+    icon = "GFX_ship_part_spth_moon_repairer"
+    size = medium
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    ship_modifier = {
+        ship_hull_regen_add_perc = 0.25
+        ship_armor_regen_add_perc = 0.5
+        ship_shield_regen_add_perc = 0.5
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_moon_repairer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "TH_phase_stealth_generator_mutation_medium"
+    size = medium
+    icon = "GFX_ship_part_cloak_psi"
+    icon_frame = 1
+    ship_limit = 1
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 100
+            sr_lingli = 50
+        }
+        upkeep = {
+            energy = 10
+            sr_lingli = 1
+        }
+    }
+    modifier = {
+        ship_cloaking_strength_add = 16
+    }
+    triggered_ship_modifier = {
+        potential = {
+            is_cloaked = yes
+        }
+        modifier = {
+            ship_base_speed_mult = -0.5
+        }
+    }
+    prerequisites = { "tech_th_battle_cruiser" "tech_cloaking_3" }
+    component_set = "TH_phase_stealth_generator_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_ran_computer_mutation_medium"
+    icon = "GFX_ship_part_spth_ran_computer"
+    size = medium
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ran_computer }
+    modifier = {
+        ship_evasion_mult = 0.25
+        ship_accuracy_add = 10
+        ship_tracking_add = 10
+    }
+    ship_modifier = {
+        ship_disengage_opportunities_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_ran_computer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "th_ghost_of_damaku_mutation_large"
+    icon = "GFX_ship_part_th_ghost_of_damaku"
+    size = large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    prerequisites = { tech_th_ship_part_yuyuko }
+    ship_modifier = {
+        custom_tooltip = th_ghost_of_damaku_tt
+        show_only_custom_tooltip = no
+        ship_spth_extra_life = 1
+        ship_damage_reduction_add = 2
+        ship_spth_extra_life_power_down = 0.1
+        ship_spth_yuyuko_fan_display = 1
+        ship_spth_ghost_of_ghost_count = 1
+    }
+    component_set = "th_ghost_of_damaku_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_lingli_afterburner_mutation_large"
+    icon = "GFX_ship_part_spth_afterburner"
+    size = large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = afterburner }
+    modifier = {
+        ship_evasion_add = 15
+        ship_speed_mult = 0.40
+        ship_reactor_power_mult = 0.50
+        ship_reactor_power_add = 100
+    }
+    ship_modifier = {
+        ship_weapon_damage = 0.15
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_lingli_afterburner_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_outworld_protector_mutation_large"
+    icon = "GFX_ship_part_spth_ship_shrine"
+    size = large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+    modifier = {
+        ship_shield_mult = 0.2
+        ship_armor_mult = 0.2
+    }
+    custom_tooltip = spth_combat_system_close_cond
+    ship_modifier = {
+        ship_spth_shield_efficiency = 0.3
+        ship_spth_armor_efficiency = 0.3
+    }
+    triggered_ship_modifier = {
+        potential = { check_modifier_value = { modifier = ship_spth_reimu_ruler_effect_1 value != 0 } }
+        ship_damage_reduction_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_outworld_protector_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_moon_repairer_mutation_large"
+    icon = "GFX_ship_part_spth_moon_repairer"
+    size = large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    ship_modifier = {
+        ship_hull_regen_add_perc = 0.25
+        ship_armor_regen_add_perc = 0.5
+        ship_shield_regen_add_perc = 0.5
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_moon_repairer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "TH_phase_stealth_generator_mutation_large"
+    size = large
+    icon = "GFX_ship_part_cloak_psi"
+    icon_frame = 1
+    ship_limit = 1
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 100
+            sr_lingli = 50
+        }
+        upkeep = {
+            energy = 10
+            sr_lingli = 1
+        }
+    }
+    modifier = {
+        ship_cloaking_strength_add = 16
+    }
+    triggered_ship_modifier = {
+        potential = {
+            is_cloaked = yes
+        }
+        modifier = {
+            ship_base_speed_mult = -0.5
+        }
+    }
+    prerequisites = { "tech_th_battle_cruiser" "tech_cloaking_3" }
+    component_set = "TH_phase_stealth_generator_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_ran_computer_mutation_large"
+    icon = "GFX_ship_part_spth_ran_computer"
+    size = large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ran_computer }
+    modifier = {
+        ship_evasion_mult = 0.25
+        ship_accuracy_add = 10
+        ship_tracking_add = 10
+    }
+    ship_modifier = {
+        ship_disengage_opportunities_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_ran_computer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "th_ghost_of_damaku_mutation_ex_large"
+    icon = "GFX_ship_part_th_ghost_of_damaku"
+    size = extra_large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    prerequisites = { tech_th_ship_part_yuyuko }
+    ship_modifier = {
+        custom_tooltip = th_ghost_of_damaku_tt
+        show_only_custom_tooltip = no
+        ship_spth_extra_life = 1
+        ship_damage_reduction_add = 2
+        ship_spth_extra_life_power_down = 0.1
+        ship_spth_yuyuko_fan_display = 1
+        ship_spth_ghost_of_ghost_count = 1
+    }
+    component_set = "th_ghost_of_damaku_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_lingli_afterburner_mutation_ex_large"
+    icon = "GFX_ship_part_spth_afterburner"
+    size = extra_large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = afterburner }
+    modifier = {
+        ship_evasion_add = 15
+        ship_speed_mult = 0.40
+        ship_reactor_power_mult = 0.50
+        ship_reactor_power_add = 100
+    }
+    ship_modifier = {
+        ship_weapon_damage = 0.15
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_lingli_afterburner_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_outworld_protector_mutation_ex_large"
+    icon = "GFX_ship_part_spth_ship_shrine"
+    size = extra_large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+    modifier = {
+        ship_shield_mult = 0.2
+        ship_armor_mult = 0.2
+    }
+    custom_tooltip = spth_combat_system_close_cond
+    ship_modifier = {
+        ship_spth_shield_efficiency = 0.3
+        ship_spth_armor_efficiency = 0.3
+    }
+    triggered_ship_modifier = {
+        potential = { check_modifier_value = { modifier = ship_spth_reimu_ruler_effect_1 value != 0 } }
+        ship_damage_reduction_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_outworld_protector_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_moon_repairer_mutation_ex_large"
+    icon = "GFX_ship_part_spth_moon_repairer"
+    size = extra_large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    ship_modifier = {
+        ship_hull_regen_add_perc = 0.25
+        ship_armor_regen_add_perc = 0.5
+        ship_shield_regen_add_perc = 0.5
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_moon_repairer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "TH_phase_stealth_generator_mutation_ex_large"
+    size = extra_large
+    icon = "GFX_ship_part_cloak_psi"
+    icon_frame = 1
+    ship_limit = 1
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 100
+            sr_lingli = 50
+        }
+        upkeep = {
+            energy = 10
+            sr_lingli = 1
+        }
+    }
+    modifier = {
+        ship_cloaking_strength_add = 16
+    }
+    triggered_ship_modifier = {
+        potential = {
+            is_cloaked = yes
+        }
+        modifier = {
+            ship_base_speed_mult = -0.5
+        }
+    }
+    prerequisites = { "tech_th_battle_cruiser" "tech_cloaking_3" }
+    component_set = "TH_phase_stealth_generator_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "spth_ship_part_ran_computer_mutation_ex_large"
+    icon = "GFX_ship_part_spth_ran_computer"
+    size = extra_large
+    icon_frame = 1
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ran_computer }
+    modifier = {
+        ship_evasion_mult = 0.25
+        ship_accuracy_add = 10
+        ship_tracking_add = 10
+    }
+    ship_modifier = {
+        ship_disengage_opportunities_add = 2
+    }
+    potential = { ship_from_touhou_country = yes }
+    prerequisites = { tech_th_weapon_mofashu }
+    component_set = "spth_ship_part_ran_computer_mutation"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+
+# defensive
+utility_component_template = {
+    key = "th_shield_jiejie1_mutation_SMALL"
+    size = small
+    icon = "GFX_th_shield_jiejie1"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 440
+        ship_shield_regen_add_static = 12.5
+        ship_armor_add = 440
+        ship_armor_regen_add_static = 5
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.2
+    }
+
+    prerequisites = { "tech_th_shield_jiejie1" }
+    component_set = "th_shield_jiejie1_mutation"
+        resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 0.5
+            alloys = 4
+        }
+        upkeep = {
+            energy = 0.06
+            alloys = 0.02
+        }
+    }
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_shield_jiejie1_mutation_MEDIUM"
+    size = medium
+    icon = "GFX_th_shield_jiejie1"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 1100
+        ship_shield_regen_add_static = 26
+        ship_armor_add = 1100
+        ship_armor_regen_add_static = 9
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.4
+    }
+
+    prerequisites = { "tech_th_shield_jiejie1" }
+    component_set = "th_shield_jiejie1_mutation"
+        resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 1
+            alloys = 8
+        }
+        upkeep = {
+            energy = 0.12
+            alloys = 0.04
+        }
+    }
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_shield_jiejie1_mutation_LARGE"
+    size = large
+    icon = "GFX_th_shield_jiejie1"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 1600
+        ship_shield_regen_add_static = 32
+        ship_armor_add = 1600
+        ship_armor_regen_add_static = 12
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.6
+    }
+
+    prerequisites = { "tech_th_shield_jiejie1" }
+    component_set = "th_shield_jiejie1_mutation"
+        resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 1
+            alloys = 16
+        }
+        upkeep = {
+            energy = 0.12
+            alloys = 0.04
+        }
+    }
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_shield_jiejie1_mutation_EX_LARGE"
+    size = extra_large
+    icon = "GFX_th_shield_jiejie1"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 3000
+        ship_shield_regen_add_static = 50
+        ship_armor_add = 3000
+        ship_armor_regen_add_static = 12
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.8
+    }
+
+    prerequisites = { "tech_th_shield_jiejie1" }
+    component_set = "th_shield_jiejie1_mutation"
+        resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 1
+            alloys = 16
+        }
+        upkeep = {
+            energy = 0.12
+            alloys = 0.04
+        }
+    }
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_shield_jiejie2_mutation_SMALL"
+    size = small
+    icon = "GFX_th_shield_jiejie2"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 600
+        ship_shield_regen_add_static = 15
+        ship_armor_add = 600
+        ship_armor_regen_add_static = 7
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.25
+    }
+
+    prerequisites = { "tech_th_shield_jiejie2" }
+    component_set = "th_shield_jiejie2_mutation"
+    resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 0.7
+            alloys = 8
+        }
+        upkeep = {
+            energy = 0.08
+            alloys = 0.04
+        }
+    }
+    ai_weight = {
+        weight = 1000
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_shield_jiejie2_mutation_MEDIUM"
+    size = medium
+    icon = "GFX_th_shield_jiejie2"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 2000
+        ship_shield_regen_add_static = 35
+        ship_armor_add = 2000
+        ship_armor_regen_add_static = 10
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.5
+    }
+
+    prerequisites = { "tech_th_shield_jiejie2" }
+    component_set = "th_shield_jiejie2_mutation"
+    resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 1.5
+            alloys = 16
+        }
+        upkeep = {
+            energy = 0.24
+            alloys = 0.08
+        }
+    }
+    ai_weight = {
+        weight = 1000
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_shield_jiejie2_mutation_LARGE"
+    size = large
+    icon = "GFX_th_shield_jiejie2"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 3200
+        ship_shield_regen_add_static = 40
+        ship_armor_add = 3200
+        ship_armor_regen_add_static = 12
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.75
+    }
+
+    prerequisites = { "tech_th_shield_jiejie2" }
+    component_set = "th_shield_jiejie2_mutation"
+    resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 2
+            alloys = 30
+        }
+        upkeep = {
+            energy = 0.24
+            alloys = 0.08
+        }
+    }
+    ai_weight = {
+        weight = 1000
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_shield_jiejie2_mutation_EX_LARGE"
+    size = extra_large
+    icon = "GFX_th_shield_jiejie2"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 4800
+        ship_shield_regen_add_static = 60
+        ship_armor_add = 4800
+        ship_armor_regen_add_static = 15
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 1
+    }
+
+    prerequisites = { "tech_th_shield_jiejie2" }
+    component_set = "th_shield_jiejie2_mutation"
+    resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 2
+            alloys = 30
+        }
+        upkeep = {
+            energy = 0.24
+            alloys = 0.08
+        }
+    }
+    ai_weight = {
+        weight = 1000
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_armor_scarlet1_mutation_SMALL"
+    size = small
+    icon = "GFX_th_armor_scarlet1"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 360
+        ship_shield_regen_add_static = 10
+        ship_armor_add = 360
+        ship_armor_regen_add_static = 5
+        ship_hull_add = 180
+        ship_armor_regen_add_static = 5
+    }
+
+    prerequisites = { "tech_th_armor_scarlet1" }
+    component_set = "th_armor_scarlet1_mutation"
+        resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 0.4
+            alloys = 4
+        }
+        upkeep = {
+            energy = 0.06
+            alloys = 0.02
+        }
+    }
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_armor_scarlet1_mutation_MEDIUM"
+    size = medium
+    icon = "GFX_th_armor_scarlet1"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 900
+        ship_shield_regen_add_static = 15
+        ship_armor_add = 900
+        ship_armor_regen_add_static = 7.5
+        ship_hull_add = 450
+        ship_armor_regen_add_static = 7.5
+    }
+
+    prerequisites = { "tech_th_armor_scarlet1" }
+    component_set = "th_armor_scarlet1_mutation"
+        resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 1
+            alloys = 8
+        }
+        upkeep = {
+            energy = 0.12
+            alloys = 0.04
+        }
+    }
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_armor_scarlet1_mutation_LARGE"
+    size = large
+    icon = "GFX_th_armor_scarlet1"
+    icon_frame = 1
+    modifier = {
+        ship_shield_add = 1600
+        ship_shield_regen_add_static = 16
+        ship_armor_add = 1600
+        ship_armor_regen_add_static = 16
+        ship_hull_add = 800
+        ship_armor_regen_add_static = 8
+    }
+
+    prerequisites = { "tech_th_armor_scarlet1" }
+    component_set = "th_armor_scarlet1_mutation"
+        resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 1
+            alloys = 16
+        }
+        upkeep = {
+            energy = 0.12
+            alloys = 0.04
+        }
+    }
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_armor_scarlet1_mutation_EX_LARGE"
+    size = extra_large
+    icon = "GFX_th_armor_scarlet1"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 2500
+        ship_shield_regen_add_static = 20
+        ship_armor_add = 2500
+        ship_armor_regen_add_static = 10
+        ship_hull_add = 1250
+        ship_armor_regen_add_static = 10
+    }
+
+    prerequisites = { "tech_th_armor_scarlet1" }
+    component_set = "th_armor_scarlet1_mutation"
+        resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 1
+            alloys = 16
+        }
+        upkeep = {
+            energy = 0.12
+            alloys = 0.04
+        }
+    }
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_armor_scarlet2_mutation_SMALL"
+    size = small
+    icon = "GFX_th_armor_scarlet2"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 900
+        ship_shield_regen_add_static = 9
+        ship_armor_add = 900
+        ship_armor_regen_add_static = 9
+        ship_hull_add = 200
+        ship_armor_regen_add_static = 2
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.5
+    }
+
+    prerequisites = { "tech_th_armor_scarlet2" }
+    component_set = "th_armor_scarlet2_mutation"
+    resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 0.6
+            alloys = 8
+        }
+        upkeep = {
+            energy = 0.08
+            alloys = 0.04
+        }
+    }
+    ai_weight = {
+        weight = 1000
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_armor_scarlet2_mutation_MEDIUM"
+    size = medium
+    icon = "GFX_th_armor_scarlet2"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 2200
+        ship_shield_regen_add_static = 22
+        ship_armor_add = 2200
+        ship_armor_regen_add_static = 22
+        ship_hull_add = 800
+        ship_armor_regen_add_static = 8
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.75
+    }
+
+    prerequisites = { "tech_th_armor_scarlet2" }
+    component_set = "th_armor_scarlet2_mutation"
+    resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 1.5
+            alloys = 16
+        }
+        upkeep = {
+            energy = 0.24
+            alloys = 0.08
+        }
+    }
+    ai_weight = {
+        weight = 1000
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_armor_scarlet2_mutation_LARGE"
+    size = large
+    icon = "GFX_th_armor_scarlet2"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 3200
+        ship_shield_regen_add_static = 32
+        ship_armor_add = 3200
+        ship_armor_regen_add_static = 32
+        ship_hull_add = 1200
+        ship_armor_regen_add_static = 12
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 0.75
+    }
+
+    prerequisites = { "tech_th_armor_scarlet2" }
+    component_set = "th_armor_scarlet2_mutation"
+    resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 2
+            alloys = 30
+        }
+        upkeep = {
+            energy = 0.24
+            alloys = 0.08
+        }
+    }
+    ai_weight = {
+        weight = 1000
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "th_armor_scarlet2_mutation_EX_LARGE"
+    size = extra_large
+    icon = "GFX_th_armor_scarlet2"
+    icon_frame = 1
+        modifier = {
+        ship_shield_add = 4800
+        ship_shield_regen_add_static = 48
+        ship_armor_add = 4800
+        ship_armor_regen_add_static = 48
+        ship_hull_add = 1600
+        ship_armor_regen_add_static = 16
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = 1.0
+    }
+
+    prerequisites = { "tech_th_armor_scarlet2" }
+    component_set = "th_armor_scarlet2_mutation"
+    resources = {
+        category = ship_components
+        cost = {
+            sr_lingli = 2
+            alloys = 30
+        }
+        upkeep = {
+            energy = 0.24
+            alloys = 0.08
+        }
+    }
+    ai_weight = {
+        weight = 1000
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
     }
 }
