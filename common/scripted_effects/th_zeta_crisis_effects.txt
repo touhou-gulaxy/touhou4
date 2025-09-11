@@ -1,0 +1,67 @@
+# usage: spth_kedama_small = { zeta_crisis_touhou_kedama_swap = yes }
+zeta_crisis_touhou_kedama_swap = {
+    optimize_memory
+    switch = {
+        trigger = has_ship_flag
+        NAME_spth_kedama_small_titan = {
+            prevprev = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_5 effect = { ag_difficulty_bonus = yes } } }
+        }
+        NAME_spth_kedama_small_rare_sp = {
+            prevprev = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_4 effect = { ag_difficulty_bonus = yes } } }
+        }
+        NAME_spth_kedama_small_rare = {
+            prevprev = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_3 effect = { ag_difficulty_bonus = yes } } }
+        }
+        NAME_spth_kedama_small_common_sp = {
+            prevprev = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_2 effect = { ag_difficulty_bonus = yes } } }
+        }
+        NAME_spth_kedama_small_common = {
+            prevprev = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_1 effect = { ag_difficulty_bonus = yes } } }
+        }
+        default = {
+            prevprev = {
+                random_list = {
+                    50 = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_1 effect = { ag_difficulty_bonus = yes } } }
+                    50 = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_2 effect = { ag_difficulty_bonus = yes } } }
+                    30 = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_3 effect = { ag_difficulty_bonus = yes } } }
+                    30 = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_4 effect = { ag_difficulty_bonus = yes } } }
+                    10 = { create_ship = { name = NAME_spth_kedama_small_shrouded design = NAME_spth_kedama_small_shrouded_5 effect = { ag_difficulty_bonus = yes } } }
+                }
+                reroll_random = yes
+            }
+        }
+    }
+}
+
+th_zeta_crisis_space_monster_swap = {
+    optimize_memory
+    if = {
+        limit = { any_owned_ship = { is_ship_size = spth_kedama_small } }
+        create_fleet = {
+            settings = { spawn_debris = no }
+            effect = {
+                set_name = prev
+                set_owner = event_target:kedama_country
+                set_fleet_flag = ag_zeta_space_monster_fleet
+                prev = {
+                    every_owned_ship = {
+                        limit = { is_ship_size = spth_kedama_small }
+                        switch = {
+                            trigger = is_ship_size
+                            spth_kedama_small = { zeta_crisis_touhou_kedama_swap = yes }
+                        }
+                        delete_ship = this
+                    }
+                }
+                set_location = { target = prev distance = 0 angle = 0 }
+            }
+        }
+    }
+}
+th_zeta_crisis_swap_test = {
+    optimize_memory
+    every_galaxy_fleet = {
+        limit = { any_owned_ship = { is_ship_size = spth_kedama_small } }
+        th_zeta_crisis_space_monster_swap = yes
+    }
+}
