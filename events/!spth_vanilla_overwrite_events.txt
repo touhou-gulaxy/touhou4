@@ -1,0 +1,205 @@
+namespace = first_contact_critters
+first_contact_event = {
+    id = first_contact_critters.25
+    title = first_contact_critters.25.name
+    desc = {
+        trigger = {
+            hidden:owner = {
+                switch = {
+                    trigger = has_ethic
+                    ethic_fanatic_xenophile = { text = story.101.desc.phile }
+                    ethic_fanatic_xenophobe = { text = story.101.desc.phobe }
+                    ethic_fanatic_militarist = { text = story.101.desc.milit }
+                    ethic_fanatic_pacifist = { text = story.101.desc.pacif }
+                    ethic_fanatic_materialist = { text = story.101.desc.mater }
+                    ethic_xenophile = { text = story.101.desc.phile }
+                    ethic_xenophobe = { text = story.101.desc.phobe}
+                    ethic_militarist = { text = story.101.desc.milit }
+                    ethic_pacifist = { text = story.101.desc.pacif }
+                    ethic_materialist = { text = story.101.desc.mater }
+                    ethic_gestalt_consciousness = { text = story.101.desc.gesta }
+                    default = { text = first_contact_critters.25.desc }
+                }
+            }
+            text = newline
+            success_text = {
+                text = story.101.desc.fruitful
+                hidden:owner = { has_origin = origin_fruitful }
+            }
+            success_text = {
+                text = first_contact_critters.25.desc.primal_calling
+                hidden:owner = { has_origin = origin_primal_calling }
+            }
+        }
+    }
+
+    picture = GFX_evt_friendly_amoeba
+    show_sound = event_space_amoeba
+
+    is_triggered_only = yes
+    first_contact = yes
+
+    immediate = {
+        set_site_progress_locked = yes
+    }
+
+    after = {
+        set_site_progress_locked = no
+        hidden_effect = {
+            fire_on_action = { on_action = on_first_contact_finished_amoeba }
+            owner = {
+                country_event = {
+                    id = grand_archive.200
+                    scopes = {
+                        from = event_target:amoeba_country
+                        fromfrom = root.solar_system
+                    }
+                }
+            }
+        }
+    }
+
+    option = {
+        name = story.101.aa
+        trigger = {
+            owner = {
+                OR = {
+                    is_xenophobe = yes
+                    is_militarist = yes
+                    is_homicidal = yes
+                }
+            }
+        }
+        owner = {
+            add_modifier = {
+                modifier = amoeba_hunting_buff
+                days = -1
+            }
+            increase_hunted_fauna_count = yes
+        }
+        custom_tooltip = story.101.aa.amoebahunt
+        finish_first_contact_effect = yes
+    }
+
+    option = {
+        name = story.101.bb
+        trigger = {
+            owner = {
+                NOT = { has_civic = civic_machine_terminator }
+            }
+        }
+        owner = {
+            capital_scope = {
+                enable_special_project = {
+                    name = "AMOEBAS_PROJECT"
+                    location = this
+                    owner = root.owner
+                }
+            }
+        }
+        finish_first_contact_effect = yes
+    }
+
+    option = {
+        name = story.101.bb.exter
+        trigger = {
+            owner = {
+                has_civic = civic_machine_terminator
+            }
+        }
+        owner = {
+            capital_scope = {
+                enable_special_project = {
+                    name = "AMOEBAS_PROJECT"
+                    location = this
+                    owner = root.owner
+                }
+            }
+        }
+        finish_first_contact_effect = yes
+    }
+
+    option = {
+        name = story.101.cc
+        trigger = {
+            owner = {
+                OR = {
+                    values_others = yes
+                    is_pacifist = yes
+                }
+            }
+        }
+        owner = {
+            capital_scope = {
+                enable_special_project = {
+                    name = "AMOEBAS_PACIFICATION_PROJECT"
+                    location = this
+                    owner = root.owner
+                }
+            }
+        }
+        ai_chance = {
+            factor = 10
+        }
+        finish_first_contact_effect = yes
+    }
+}
+
+# namespace = biocrisis
+#
+# # 75 - Behemoth rage check - fired from biocrisis.1 and the yearly pulse then from itself.
+# fleet_event = {
+#     id = biocrisis.75
+#
+#     is_triggered_only = yes
+#     hide_window = yes
+#
+#     immediate = {
+#         #rage check again
+#         fleet_event = { id = biocrisis.75 days = 540 random = 270 }
+#         random_owned_ship = {
+#             set_timed_ship_flag = { flag = rage_checked days = 540 }
+#         }
+#
+#         #actual check
+#         if = {
+#             limit = {
+#                 any_owned_ship = {
+#                     NOT = {
+#                         has_ship_flag = raging
+#                         has_ship_flag = recently_raged
+#                         has_ship_flag = recently_fed
+#                         is_ship_size = behemoth_03
+#                         is_growth_complete = yes
+#                         owner = {
+#                             has_menace_perk	= menp_behemoth_mind_meld
+#                         }
+#                     }
+#                 }
+#
+#             }
+#             random_list = { #effect of cyber mutation
+#                 75 = {
+#                     enrage_behemoth = yes
+#                     random_owned_ship = { save_event_target_as = spth_ship_target }
+#                     fire_on_action = {
+#                         on_action = on_bio_crisis_enrage_behemoth
+#                         scopes = {
+#                             from = event_target:spth_ship_target
+#                             fromfrom = owner
+#                         }
+#                     }
+#                 }
+#
+#                 25 = {
+#                     modifier = {
+#                         factor = 0
+#                         owner = {
+#                             NOT = { has_country_flag = behemoth_mutation_cyber }
+#                         }
+#                     }
+#                 }
+#             }
+#         }
+#     }
+# }

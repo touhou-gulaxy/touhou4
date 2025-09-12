@@ -2139,6 +2139,97 @@ planet_event = {
 	option = { name = TH_ACKNOWLEDGED }
 }
 
+
+first_contact_event = {
+	id = toho.8113
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		contact_country = { is_same_value = event_target:amoeba_country  } exists = owner
+		owner = {
+			OR = { has_valid_civic = civic_chireiden has_country_flag = th_satori_get }
+			NOT = { has_country_flag = touhou_satori_amoeba_fired has_special_project = AMOEBAS_PACIFICATION_PROJECT }
+			has_communications = root.contact_country
+			is_hostile = root.contact_country
+		}
+	}
+	immediate = {
+		log = "toho.8113 fired."
+		owner = { country_event = { id = toho.8115 days = 15 random = 15 } }
+	}
+}
+country_event = {
+	id = toho.8114
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = { has_country_flag = toho_8114_fired }
+		OR = { has_valid_civic = civic_chireiden has_country_flag = th_satori_get }
+		exists = event_target:amoeba_country
+		has_communications = event_target:amoeba_country
+		is_hostile = event_target:amoeba_country
+	}
+	immediate = {
+		set_country_flag = toho_8114_fired
+		country_event = { id = toho.8115 days = 30 random = 45 }
+	}
+}
+country_event = {
+	id = toho.8115
+	title = toho.8115.name
+	desc = toho.8115.desc
+	trigger = {
+		NOT = {
+			has_country_flag = touhou_satori_amoeba_fired
+			has_special_project = AMOEBAS_PACIFICATION_PROJECT
+		}
+		OR = { has_valid_civic = civic_chireiden has_country_flag = th_satori_get }
+		exists = event_target:amoeba_country
+		has_communications = event_target:amoeba_country
+		is_hostile = event_target:amoeba_country
+	}
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_satori_1_room }
+	immediate = { set_country_flag = touhou_satori_amoeba_fired }
+	option = {
+		name = toho.8115.a
+		default_hide_option = yes
+		capital_scope = {
+			enable_special_project = {
+				name = "AMOEBAS_PACIFICATION_PROJECT"
+				location = this
+				owner = root.owner
+			}
+		}
+	}
+}
+fleet_event = {
+	id = toho.8116
+	title = toho.8116.name
+	desc = toho.8116.desc
+	trigger = {
+		exists = from from = { has_ship_flag = raging is_growth_complete = no }
+		fromfrom = { has_menace_perk = menp_behemoth_mind_meld }
+	}
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_satori_1_room }
+	option = {
+		name = toho.8116.a
+		ai_chance = { base = 0 }
+	}
+	option = {
+		name = toho.8116.b
+		ai_chance = { base = 10 }
+	}
+}
+
+
 ########################################
 #                                      #
 #   巨像   #############################
