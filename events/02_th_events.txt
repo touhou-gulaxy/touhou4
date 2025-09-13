@@ -1090,6 +1090,9 @@ country_event = {
 				flag_kaguya = { root = { spth_effect_init_kaguya_effect = yes } }
 				flag_renko = { root = { spth_effect_init_renko_effect = yes } }
 				flag_maribel_hearn = { root = { spth_effect_init_maribel_hearn_effect = yes } }
+				flag_shikieiki = { root = { spth_effect_init_shikieiki_effect = yes } }
+				flag_yuza = { root = { spth_effect_init_yuza_effect = yes } }
+				flag_komachi = { root = { spth_effect_init_komachi_effect = yes } }
 				flag_remilia = {
 					root = {
 						spth_effect_respawn_ruler_leader = { ID = remilia }
@@ -1620,7 +1623,12 @@ country_event = {
 	custom_gui = spth_event_large_window
 	custom_gui_option = spth_event_large_ui_option
 	picture_event_data = { room = spth_partition_room }
-	option = { name = toho.8013.a default_hide_option = yes custom_tooltip = toho.8013.a.tooltip }
+	option = {
+		name = toho.8013.a
+		default_hide_option = yes
+		custom_tooltip = toho.8013.a.tooltip
+		give_specimen = { key = touhou_fumo origin = toho.8013.name }
+	}
 	after = { set_country_flag = fumo_deploy }
 }
 
@@ -1767,9 +1775,8 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	trigger = {
-		always = no # 别急
 		NOT = { has_country_flag = toho_8025_fired }
-		is_ai = no
+		is_ai = no has_country_flag = th_yukari_get
 		OR = {
 			has_authority = auth_gensokyo
 			has_country_flag = touhou_mod_country
@@ -1778,14 +1785,6 @@ country_event = {
 		OR = {
 			touhou_crisis_happened_and_defeated = yes # 打了天灾=我死了好多好多人
 			years_passed >= 175										# 这时候还不打天灾直接保底得了
-		}
-		# 同时还是只存在一个实例吧
-		NOT = {
-			any_playable_country = {
-				has_country_flag = touhou_flower_incident_begin
-				NOT = { has_country_flag = touhou_flower_incident_ended }
-				has_authority = auth_gensokyo
-			}
 		}
 	}
 	immediate = {
@@ -1803,8 +1802,14 @@ country_event = {
 	custom_gui = spth_event_large_window
 	custom_gui_option = spth_event_large_ui_option
 	picture_event_data = { room = hakuri_shrine_night_room }
+	immediate = {
+		capital_scope = {
+			add_modifier = { modifier = touhou_flower_incident_stage_1 days = -1 }
+		}
+	}
 	option = {
 		name = TH_SO_INTERESTRING
+		default_hide_option = yes
 	}
 	after = { hidden_effect = { country_event = { id = toho.8027 days = 90 random = 90 } } }
 }
@@ -1818,6 +1823,12 @@ country_event = {
 	custom_gui = spth_event_large_window
 	custom_gui_option = spth_event_large_ui_option
 	picture_event_data = { room = hakuri_shrine_night_room }
+	immediate = {
+		capital_scope = {
+			remove_modifier = touhou_flower_incident_stage_1
+			add_modifier = { modifier = touhou_flower_incident_stage_2 days = -1 }
+		}
+	}
 	option = {
 		name = TH_WORYING
 	}
@@ -1833,6 +1844,12 @@ country_event = {
 	custom_gui = spth_event_large_window
 	custom_gui_option = spth_event_large_ui_option
 	picture_event_data = { room = hakuri_shrine_night_room }
+	immediate = {
+		capital_scope = {
+			remove_modifier = touhou_flower_incident_stage_2
+			add_modifier = { modifier = touhou_flower_incident_stage_3 days = -1 }
+		}
+	}
 	option = {
 		name = TH_BE_CAREFULE
 	}
@@ -1851,35 +1868,253 @@ country_event = {
 	show_sound = event_announcement
 	immediate = {
 		set_country_flag = touhou_flower_incident_begin
-		begin_event_chain = {
-			event_chain = touhou_flower_incident
-			target = root
-		}
-		capital_scope.solar_system = { touhou_flower_incident_system = { level = 3 } }
-		touhou_flower_incident_spread = yes
-		country_event = { id = toho.8046 days = 90 random = 30 }
+		# begin_event_chain = {
+		# 	event_chain = touhou_flower_incident
+		# 	target = root
+		# }
+		# capital_scope.solar_system = { touhou_flower_incident_system = { level = 3 } }
+		# touhou_flower_incident_spread = yes
+		# country_event = { id = toho.8046 days = 90 random = 30 }
 	}
 	option = {
 		name = TH_OK
-		custom_tooltip = toho.8029.affect
-		owned_planet_list_tooltip = {
-			limit = { has_planet_flag = affect_by_touhou_flower_incident }
-		}
+		default_hide_option = yes
+		start_situation = { type = situation_touhou_flower_incident target = root }
+		# custom_tooltip = toho.8029.affect
+		# owned_planet_list_tooltip = {
+		# 	limit = { has_planet_flag = affect_by_touhou_flower_incident }
+		# }
 	}
 }
 
 # 每半年沿超空间航道传播一次
+# country_event = {
+# 	id = toho.8046
+# 	hide_window = yes
+# 	is_triggered_only = yes
+# 	trigger = {
+# 		has_country_flag = touhou_flower_incident_begin
+# 		NOT = { has_country_flag = touhou_flower_incident_ended }
+# 	}
+# 	immediate = {
+# 		touhou_flower_incident_spread = yes
+# 		country_event = { id = toho.8046 days = 180 random = 30 }
+# 	}
+# }
+
+situation_event = {
+	id = toho.8039
+	title = toho.8039.name
+	desc = toho.8039.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_komachi_on_river_room }
+	show_sound = event_wind_ruins
+	option = {
+		name = TH_INTERESTRING
+		default_hide_option = yes
+		custom_tooltip = toho.8039.a.effect
+		hidden_effect = { spth_effect_init_komachi_effect = yes }
+	}
+}
+situation_event = {
+	id = toho.8040
+	title = toho.8040.name
+	desc = toho.8040.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_star_chart_room }
+	show_sound = event_wind_ruins
+	option = {
+		name = TH_WORYING
+		default_hide_option = yes
+	}
+}
+situation_event = {
+	id = toho.8041
+	title = toho.8041.name
+	desc = toho.8041.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_yuza_1_room }
+	show_sound = event_wind_ruins
+	option = {
+		name = TH_WORYING
+		default_hide_option = yes
+		custom_tooltip = toho.8041.a.effect
+		hidden_effect = { spth_effect_init_yuza_effect = yes }
+	}
+}
+situation_event = {
+	id = toho.8042
+	title = toho.8042.name
+	desc = toho.8042.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_yuza_1_room }
+	show_sound = event_wind_ruins
+	option = {
+		name = toho.8042.a
+		default_hide_option = yes
+	}
+	after = {
+		hidden_effect = {
+			spth_effect_init_shikieiki_effect = yes
+			owner = { country_event = { id = toho.8043 } }
+		}
+	}
+}
+country_event = {
+	id = toho.8043
+	title = toho.8043.name
+	desc = toho.8043.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	picture_event_data = { room = ethic_touhou_room portrait = spth_por_shikieiki }
+	option = {
+		name = toho.8043.a
+		is_dialog_only = yes
+		response_text = toho.8043.a.response
+	}
+	option = {
+		name = toho.8043.b
+		is_dialog_only = yes
+		response_text = toho.8043.b.response
+	}
+	option = {
+		name = toho.8043.c
+		is_dialog_only = yes
+		response_text = toho.8043.c.response
+	}
+	option = {
+		name = toho.8043.final
+		response_text = toho.8043.final.response
+	}
+	after = {
+		country_event = { id = toho.8044 days = 30 random = 30 }
+	}
+}
+country_event = {
+	id = toho.8044
+	title = toho.8044.name
+	desc = toho.8044.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_yukari_lake_room }
+	show_sound = event_wind_ruins
+	immediate = {
+		capital_scope = {
+			remove_modifier = touhou_flower_incident_stage_3
+			add_modifier = { modifier = touhou_flower_incident_stage_2 days = -1 }
+		}
+	}
+	option = {
+		name = toho.8044.a
+		default_hide_option = yes
+	}
+	after = {
+		hidden_effect = {
+			owner = { country_event = { id = toho.8045 } }
+		}
+	}
+}
+country_event = {
+	id = toho.8045
+	title = toho.8045.name
+	desc = toho.8045.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	picture_event_data = { room = spth_hifu_genso_city_room portrait = spth_por_yukari_1 }
+	option = {
+		name = toho.8045.a
+		is_dialog_only = yes
+		response_text = toho.8045.a.response
+	}
+	option = {
+		name = toho.8045.b
+		is_dialog_only = yes
+		response_text = toho.8045.b.response
+	}
+	option = {
+		name = toho.8045.c
+		is_dialog_only = yes
+		response_text = toho.8045.c.response
+	}
+	option = {
+		name = toho.8045.d
+		is_dialog_only = yes
+		response_text = toho.8045.d.response
+	}
+	option = {
+		name = toho.8045.e
+		is_dialog_only = yes
+		response_text = toho.8045.e.response
+	}
+	option = {
+		name = toho.8045.f
+		default_hide_option = yes
+	}
+	after = {
+		country_event = { id = toho.8046 days = 30 random = 30 }
+	}
+}
 country_event = {
 	id = toho.8046
-	hide_window = yes
+	title = toho.8045.name
+	desc = toho.8045.desc
 	is_triggered_only = yes
-	trigger = {
-		has_country_flag = touhou_flower_incident_begin
-		NOT = { has_country_flag = touhou_flower_incident_ended }
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = th_yukari_lake_room }
+	option = {
+		name = toho.8046.a
+		default_hide_option = yes
 	}
+	option = {
+		name = toho.8046.b
+	}
+	after = {
+		country_event = { id = toho.8047 days = 30 random = 30 }
+	}
+}
+country_event = {
+	id = toho.8047
+	title = toho.8047.name
+	desc = toho.8047.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_yuza_1_room }
+	show_sound = event_wind_ruins
 	immediate = {
-		touhou_flower_incident_spread = yes
-		country_event = { id = toho.8046 days = 180 random = 30 }
+		capital_scope = {
+			remove_modifier = touhou_flower_incident_stage_2
+		}
+	}
+	option = {
+		name = TH_OK
+		default_hide_option = yes
+		give_specimen = { key = touhou_spider_lily origin = touhou_flower_incident }
 	}
 }
 
