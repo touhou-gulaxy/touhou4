@@ -83,9 +83,26 @@ spth_system_selector_confirm_super_carrier_eater = {
                             fleet_event = { id = touhou_ship_actions.5 }
                         }
                     } else = {
+                        star = {
+                            create_ambient_object = {
+                                type = spth_star_killer_star_windup_in_range
+                                location = this
+                                duration = -1
+                                use_3d_location = yes
+                                entity_offset = { min = 0 max = 0 }
+                                entity_offset_angle = { min = 0 max = 0 }
+                                entity_offset_height = { min = 0 max = 0 }
+                                entity_scale_to_size = yes
+                                scale = 0.032
+                            }
+                            last_created_ambient_object = {
+                                set_ambient_object_flag = spth_star_killer_star_windup_in_range_supar_carrier
+                            }
+                        }
                         event_target:spth_system_selector_super_carrier_eater_fleet_@from = {
                             every_owned_ship = {
                                 limit = { is_ship_size = TH_super_carrier }
+                                add_modifier = { modifier = ship_spth_skill_super_carrier_eater_running days = 10 }
                                 create_ambient_object = {
                                     type = th_star_killer_winup_effect
                                     location = this
@@ -102,6 +119,82 @@ spth_system_selector_confirm_super_carrier_eater = {
                             fleet_event = { id = touhou_ship_actions.7 days = 10 random = 5 }
                             clear_global_event_target = spth_system_selector_super_carrier_eater_fleet_@owner
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+spth_system_selector_confirm_fleet_project = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            if = {
+                limit = { is_scope_type = galactic_object }
+                save_event_target_as = spth_system_selector_target
+            } else_if = {
+                limit = { exists = solar_system }
+                solar_system = {
+                    save_event_target_as = spth_system_selector_target
+                }
+            } else = {
+                event_target:spth_system_selector_project_root_fleet_@from = {
+                    fleet_event = { id = touhou_ship_actions.8 }
+                    fleet_event = { id = touhou_ship_actions.5 }
+                }
+            }
+            if = {
+                limit = { exists = event_target:spth_system_selector_target }
+                event_target:spth_system_selector_target = {
+                    log = "选中了星系[This.GetName]QAQ"
+                    event_target:spth_system_selector_project_root_fleet_@from = {
+                        event_target:spth_system_selector_target = {
+                            star = {
+                                create_fleet = {
+                                    name = NAME_touhou_project_fleet
+                                    settings = {
+                                        is_boss = yes
+                                        spawn_debris = no
+                                        can_upgrade = no
+                                        can_disband = no
+                                        can_change_composition = no
+                                        can_change_leader = no
+                                        uses_naval_capacity = no
+                                    }
+                                    effect = {
+                                        set_owner = root.from
+                                        set_fleet_flag = spth_yukari_proj_fleet
+                                        copy_flags_and_variables_from = event_target:spth_system_selector_project_root_fleet_@root.from
+                                        event_target:spth_system_selector_project_root_fleet_@root.from = {
+                                            set_timed_fleet_flag = { flag = spth_yukari_proj_fleet_root days = 45 }
+                                            every_owned_ship = {
+                                                set_timed_ship_flag = { flag = spth_yukari_proj_ship_root days = 45 }
+                                                prevprev = {
+                                                    create_ship = {
+                                                        name = prev
+                                                        design = prev.design
+                                                        effect = {
+                                                            copy_flags_and_variables_from = prevprev
+                                                            set_ship_flag = spth_yukari_proj_ship_target
+                                                            # 古代帝国 兼容
+                                                            ag_difficulty_bonus = yes
+                                                        }
+                                                    }
+                                                    last_created_ship = { set_ship_flag = spth_yukari_proj_ship_@prevprev }
+                                                }
+                                            }
+                                        }
+                                        set_location = { target = prev distance = 25 angle = 0 }
+                                        set_fleet_stance = aggressive
+                                        set_aggro_range = 500
+                                        set_aggro_range_measure_from = self
+                                        fleet_event = { id = spth_fleet.2000 days = 45 }
+                                    }
+                                }
+                            }
+                        }
+                        clear_global_event_target = spth_system_selector_project_root_fleet_@owner
                     }
                 }
             }

@@ -1753,6 +1753,36 @@ country_event = {
                             }
                         }
                     }
+                    leader_trait_komachi = {
+                        prev = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_komachi_cooldown } }
+                                set_timed_fleet_flag = { flag = leader_trait_komachi_cooldown days = 180 }
+                                save_event_target_as = leader_trait_komachi_location
+                                set_variable = { which = leader_trait_komachi_ghost_count value = 2 }
+                                multiply_variable = { which = leader_trait_komachi value = prev.trigger:has_total_skill }
+                                if = {
+                                    limit = { check_variable = { which = leader_trait_komachi value > 30 } }
+                                    set_variable = { which = leader_trait_komachi value = 30 }
+                                }
+                                spth_create_fleet = {
+                                    NAME = NAME_TH_battle_cruiser_ghost
+                                    can_disband = no is_boss = yes
+                                    OWNER = root can_change_leader = no
+                                    location = event_target:leader_trait_komachi_location
+                                    uses_naval_capacity = no
+                                    flag = leader_trait_komachi_ghost_fleet
+                                    NAME_TH_battle_cruiser_ghost = leader_trait_komachi
+                                    evt_target = spth_leader_skill_komachi_fleet
+                                    fleet_action_delayed = spth_fleet.1006
+                                    DAYS = 20 DAYS_RANDOM = 0
+                                }
+                                event_target:spth_leader_skill_komachi_fleet = {
+                                    every_owned_ship = { spth_create_jump_particle_effect = yes }
+                                }
+                            }
+                        }
+                    }
                     default = {}
                 }
             }
@@ -1905,6 +1935,20 @@ ship_event = {
         } else = {
             fleet = { remove_fleet_flag = spth_fleet_1209_fired }
             remove_ship_flag = spth_invincible
+        }
+    }
+}
+
+fleet_event = {
+    id = spth_fleet.2000
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { exists = this }
+    immediate = {
+        delete_fleet = {
+            target = this
+            kill_leader = yes
+            destroy_template = yes
         }
     }
 }
