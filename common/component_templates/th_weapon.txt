@@ -344,9 +344,10 @@ weapon_component_template = {
     armor_damage = 1
     hull_damage = 1
     power = -30
-    prerequisites = { "tech_th_weapon_mofashu" }
+    prerequisites = { "tech_lunar_capital_never" }
     component_set = "th_weapon_mofashu"
     projectile_gfx = "spth_losing_hometown_red_laser_ballistic"
+    hidden = yes
     tags = { weapon_type_point_defense weapon_type_energy weapon_type_lingli }
     ai_tags = { weapon_role_point_defense }
     point_defence_targets = { "missile" "strike_craft" }
@@ -401,7 +402,7 @@ weapon_component_template = {
 weapon_component_template = {
     key = "th_weapon_yuzhu_ultra"
     icon = "GFX_th_weapon_yuzhu"
-    firing_arc = 10.0
+    firing_arc = 30.0
     should_ai_use = no
     ship_limit = 1
     # (15 + 63985) / 10 = 6400
@@ -969,6 +970,71 @@ weapon_component_template = {
 }
 
 # 返魂蝶
+weapon_component_template = {
+    key = "th_yuyuko_butterfly_titanic_sp"
+    icon = "GFX_ship_part_spth_yuyuko_van"
+    prerequisites = { "tech_touhou_command_dreadnought" }
+    component_set = "th_yuyuko_butterfly_titanic_sp"
+    projectile_gfx = "spth_yuyuko_butterfly_titanic_sp_laser"
+    size_damage_factor = @spth_yuyuko_butterfly_damage_factor_sp
+    tags = { weapon_type_kinetic weapon_type_lingli weapon_type_resurrection_butterfly t_slot artillery weapon_type_resurrection_butterfly_sp }
+    ai_tags = { artillery weapon_role_anti_hull }
+    ai_tag_weight = 1000
+    ship_modifier = {
+        custom_tooltip = th_yuyuko_butterfly_titanic_sp_tt
+        show_only_custom_tooltip = yes
+        component_lifesteal_add = 0.5
+        weapon_type_resurrection_butterfly_sp_weapon_fire_rate_mult = 800
+    }
+    firing_arc = 45
+    hide_damage_values_from_tooltip = yes
+    potential = { ship_uses_touhou_command_dreadnought = yes }
+    inline_script = { script = ship_components/spth_component_basic size = titanic }
+    inline_script = { script = ship_components/spth_component_attributes name = special tag = butterfly type = titanic }
+    inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = titanic }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
+    on_hit = {
+        custom_tooltip = th_yuyuko_butterfly_titanic_sp_on_hit
+        hidden_effect = {
+            from = {
+                if = {
+                    limit = { NOT = { is_variable_set = th_yuyuko_butterfly_sp_shoot_counter } }
+                    set_variable = { which = th_yuyuko_butterfly_sp_shoot_counter value = 0 }
+                } else_if = {
+                    limit = { check_variable = { which = th_yuyuko_butterfly_sp_shoot_counter value >= 5140000 } }
+                    set_variable = { which = th_yuyuko_butterfly_sp_shoot_counter value = 0 }
+                }
+                # 160000->16*0.5倍, multiply=0.0001
+                if = {
+                    limit = {
+                        check_variable_arithmetic = {
+                            which = th_yuyuko_butterfly_sp_shoot_counter
+                            modulo = 2
+                            value = 1
+                        }
+                    }
+                    # 下次攻击为偶数，基于自身船体值算修正
+                    set_variable = { which = th_yuyuko_butterfly_sp_buff value = value:th_yuyuko_butterfly_sp_extra_dmg_even|multiply|0.0001| }
+                } else = {
+                    # 下次攻击为奇数，基于自身损失船体值算修正
+                    set_variable = { which = th_yuyuko_butterfly_sp_buff value = value:th_yuyuko_butterfly_sp_extra_dmg_odd|multiply|0.0001| }
+                }
+                remove_modifier = th_yuyuko_butterfly_titanic_sp
+                add_modifier = { modifier = th_yuyuko_butterfly_titanic_sp mult = th_yuyuko_butterfly_sp_buff }
+                change_variable = { which = th_yuyuko_butterfly_sp_shoot_counter value = 1 }
+            }
+            reroll_random = yes
+            random_list = {
+                25 = {
+                    add_modifier = { modifier = th_yuyuko_butterfly_titanic_sp_on_hit days = 4 }
+                }
+                75 = {
+                }
+            }
+        }
+    }
+}
 weapon_component_template = {
     key = "th_yuyuko_butterfly_titanic"
     icon = "GFX_ship_part_spth_yuyuko_van"
