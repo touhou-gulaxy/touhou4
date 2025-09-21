@@ -1,0 +1,109 @@
+# 160000->16倍
+th_yuyuko_butterfly_sp_extra_dmg_factor = {
+    base = 0
+    add = modifier:weapon_type_kinetic_weapon_damage_mult
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    min = 0.25
+}
+th_yuyuko_butterfly_sp_extra_dmg_even = {
+    base = 0
+    add = trigger:has_hp
+    mult = $multiply$
+    mult = value:th_yuyuko_butterfly_sp_extra_dmg_factor
+    min = 0
+}
+th_yuyuko_butterfly_sp_extra_dmg_odd = {
+    base = 0
+    add = trigger:has_max_hp
+    subtract = trigger:has_hp
+    mult = $multiply$
+    add = 1
+    mult = value:th_yuyuko_butterfly_sp_extra_dmg_factor
+    min = 0
+}
+
+# 基础*(ship_weapon_damage+能量+灵力+修正)*(1+船体伤害)*(1+大小倍率计算)=final
+# 修正 = final/(1+大小倍率计算)/(1+船体伤害)/基础 - ship_weapon_damage - 能量 - 灵力
+th_instant_kill_hull_damage = {
+    base = 0
+    add = 1
+    add = modifier:ship_hull_damage_mult
+    add = $weapon_hull_damage$
+    min = 1
+}
+th_instant_kill_size_factor = {
+    base = 0
+    add = $size_damage_factor$
+    mult = 8
+    add = 1
+}
+th_instant_kill_value = {
+    base = 0
+    add = $final_dmg$
+    divide = value:th_instant_kill_size_factor|size_damage_factor|$size_damage_factor$|
+    divide = value:th_instant_kill_hull_damage|weapon_hull_damage|$weapon_hull_damage|0$|
+    divide = $base_dmg$
+    subtract = modifier:ship_weapon_damage
+    subtract = modifier:weapon_type_$tag1|energy$_weapon_damage_mult
+    subtract = modifier:weapon_type_$tag2|lingli$_weapon_damage_mult
+    [[tag3] subtract = modifier:weapon_type_$tag3$_weapon_damage_mult ]
+    [[tag4] subtract = modifier:weapon_type_$tag4$_weapon_damage_mult ]
+    abs = yes
+}
+
+th_kappa_torpedo_modifier_value = {
+    base = 0
+    add = modifier:strike_craft_regeneration_mult
+    subtract = $sub$
+}
+th_kappa_torpedo_hit_buff = {
+    base = 1
+    add = modifier:weapon_type_explosive_weapon_damage_mult
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:s_slot_weapon_damage_mult
+    add = modifier:weapon_type_kappa_weapon_damage_mult
+}
+th_kappa_torpedo_hit_min_damage = {
+    base = 0
+    add = @spth_special_kappa_small_damage_min
+    mult = value:th_kappa_torpedo_hit_buff
+    mult = $perc$
+    [[factor] mult = $factor$ ]
+    min = $min|0$
+}
+th_kappa_torpedo_hit_common_damage = {
+    base = 0
+    add = @spth_special_kappa_medium_damage_min
+    mult = value:th_kappa_torpedo_hit_buff
+    mult = $perc$
+    [[factor] mult = $factor$ ]
+    min = $min|0$
+}
+th_kappa_torpedo_hit_max_damage = {
+    base = 0
+    add = @spth_special_kappa_large_damage_max
+    mult = value:th_kappa_torpedo_hit_buff
+    mult = $perc$
+    [[factor] mult = $factor$ ]
+    min = $min|0$
+}
+
+touhou_ship_action_super_carrier_eater_cooldown_factor = {
+    base = 0
+    add = owner.modifier:ship_fire_rate_mult
+    add = owner.modifier:weapon_type_kinetic_weapon_fire_rate_mult
+    add = owner.modifier:weapon_type_lingli_weapon_fire_rate_mult
+    mult = 0.25
+    add = 1
+    min = 0.25
+    max = 360
+}
+touhou_ship_action_super_carrier_eater_cooldown = {
+    base = 0
+    modifier = { add = 720 NOT = { is_variable_set = spth_super_carrier_remote_base_time } }
+    modifier = { add = spth_super_carrier_remote_base_time is_variable_set = spth_super_carrier_remote_base_time }
+    divide = value:touhou_ship_action_super_carrier_eater_cooldown_factor
+    add = 30
+    min = 60
+    max = 1800
+}

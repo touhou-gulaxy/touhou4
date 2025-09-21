@@ -1038,3 +1038,60 @@ spth_create_kuat_fleet = {
 		}
 	}
 }
+
+touhou_destroy_orbital_ring = {
+	optimize_memory
+	if = {
+		limit = { exists = orbital_defence }
+		destroy_fleet = orbital_defence
+		if = {
+			limit = { always = $spawn_debris|no$ }
+			planet = {
+				set_planet_flag = ruined_orbital_ring_planet
+				remove_planet_flag = has_megastructure
+				save_event_target_as = ruined_orbital_ring_planet
+			}
+			solar_system = {
+				spawn_megastructure = {
+					type = "orbital_ring_ruined"
+					planet = event_target:ruined_orbital_ring_planet
+					init_effect = {
+						set_owner = prev.owner
+						create_ambient_object = { type = "medium_debris_01_object" location = this }
+						last_created_ambient_object = { set_location = { target = prev distance = 8 angle = 90 } }
+						create_ambient_object = { type = "medium_debris_02_object" location = this }
+						last_created_ambient_object = { set_location = { target = prev distance = 3 angle = 270 } }
+					}
+				}
+			}
+		}
+	}
+}
+touhou_spawn_lathe_cracker_effect = {
+	optimize_memory
+	create_ambient_object = {
+		location = this
+		type = habitat_cracker_object
+		duration = 5
+		use_3d_location = yes
+		base_angle_towards = star
+		entity_face_object = star
+		entity_offset = { min = 0 max = 0 }
+		entity_scale_to_size = yes
+		scale = 0.10
+	}
+	save_event_target_as = target_lathe
+	solar_system = {
+		spawn_megastructure = { type = cosmogenesis_world_ruined owner = this.owner coords_from = prev }
+		random_system_planet = {
+			limit = { has_planet_flag = has_cosmogenesis_world }
+			remove_planet_flag = has_cosmogenesis_world
+			remove_planet_flag = has_megastructure
+		}
+	}
+	remove_planet = yes
+}
+touhou_destroy_habitable_ringworld = {
+	optimize_memory
+	change_pc = pc_ringworld_habitable_damaged
+}

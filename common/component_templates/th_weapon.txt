@@ -333,7 +333,7 @@ weapon_component_template = {
 }
 weapon_component_template = {
     key = "th_toyohime_weapon_pd"
-    icon = "GFX_th_weapon_mofashu"
+    icon = "GFX_ship_part_touhou_psionic_lunar_lighting_pd"
     damage = { min = 20 max = 30 }
     windup = { min = 0 max = 0 }
     total_fire_time = 7.5
@@ -345,8 +345,8 @@ weapon_component_template = {
     hull_damage = 1
     power = -30
     prerequisites = { "tech_lunar_capital_never" }
-    component_set = "th_weapon_mofashu"
-    projectile_gfx = "spth_losing_hometown_red_laser_ballistic"
+    component_set = "th_toyohime_weapon_pd"
+    projectile_gfx = "touhou_psionic_lighting_pd_pink"
     hidden = yes
     tags = { weapon_type_point_defense weapon_type_energy weapon_type_lingli }
     ai_tags = { weapon_role_point_defense }
@@ -382,7 +382,7 @@ weapon_component_template = {
     key = "th_weapon_yuzhu_sp"
     icon = "GFX_th_weapon_yuzhu"
     should_ai_use = no
-    firing_arc = 35.0
+    firing_arc = 90.0
     prerequisites = { "tech_th_weapon_yuzhu" }
     component_set = "th_weapon_yuzhu_sp"
     projectile_gfx = "spth_yuzhu_ballistic"
@@ -402,7 +402,7 @@ weapon_component_template = {
 weapon_component_template = {
     key = "th_weapon_yuzhu_ultra"
     icon = "GFX_th_weapon_yuzhu"
-    firing_arc = 30.0
+    firing_arc = 45.0
     should_ai_use = no
     ship_limit = 1
     # (15 + 63985) / 10 = 6400
@@ -915,6 +915,32 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = kappa type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = LARGE_th_kappa_torpedo_on_hit
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = th_kappa_torpedo_clear_flag } }
+                set_timed_ship_flag = { flag = th_kappa_torpedo_clear_flag days = 3 }
+                add_modifier = {
+                    modifier = th_kappa_torpedo_clear
+                    mult = value:th_kappa_torpedo_modifier_value|sub|1|
+                    days = 3
+                }
+            }
+            if = {
+                limit = {
+                    check_variable_arithmetic = {
+                        which = from.modifier:ship_shield_penetration_add add = 4.25
+                        multiply = from.modifier:ship_shield_penetration_mult
+                        value > modifier:ship_shield_hardening_add
+                    }
+                }
+                reduce_shield = from.value:th_kappa_torpedo_hit_max_damage|perc|0.10|
+            } else = {
+                repair_armor_amount = from.value:th_kappa_torpedo_hit_max_damage|perc|0.10|factor|-1|
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_kappa_torpedo"
@@ -941,6 +967,32 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = kappa type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = MEDIUM_th_kappa_torpedo_on_hit
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = th_kappa_torpedo_clear_flag } }
+                set_timed_ship_flag = { flag = th_kappa_torpedo_clear_flag days = 3 }
+                add_modifier = {
+                    modifier = th_kappa_torpedo_clear
+                    mult = value:th_kappa_torpedo_modifier_value|sub|0.5|
+                    days = 3
+                }
+            }
+            if = {
+                limit = {
+                    check_variable_arithmetic = {
+                        which = from.modifier:ship_shield_penetration_add add = 4.25
+                        multiply = from.modifier:ship_shield_penetration_mult
+                        value > modifier:ship_shield_hardening_add
+                    }
+                }
+                reduce_shield = from.value:th_kappa_torpedo_hit_common_damage|perc|0.10|
+            } else = {
+                repair_armor_amount = from.value:th_kappa_torpedo_hit_common_damage|perc|0.10|factor|-1|
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_kappa_torpedo"
@@ -967,6 +1019,23 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = kappa type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = SMALL_th_kappa_torpedo_on_hit
+        hidden_effect = {
+            if = {
+                limit = {
+                    check_variable_arithmetic = {
+                        which = from.modifier:ship_shield_penetration_add add = 4.25
+                        multiply = from.modifier:ship_shield_penetration_mult
+                        value > modifier:ship_shield_hardening_add
+                    }
+                }
+                reduce_shield = from.value:th_kappa_torpedo_hit_min_damage|perc|0.075|
+            } else = {
+                repair_armor_amount = from.value:th_kappa_torpedo_hit_min_damage|perc|0.075|factor|-1|
+            }
+        }
+    }
 }
 
 # 返魂蝶
@@ -986,7 +1055,8 @@ weapon_component_template = {
         component_lifesteal_add = 0.5
         weapon_type_resurrection_butterfly_sp_weapon_fire_rate_mult = 800
     }
-    firing_arc = 45
+    firing_arc = 60
+    ship_limit = 1
     hide_damage_values_from_tooltip = yes
     potential = { ship_uses_touhou_command_dreadnought = yes }
     inline_script = { script = ship_components/spth_component_basic size = titanic }
@@ -1005,7 +1075,7 @@ weapon_component_template = {
                     limit = { check_variable = { which = th_yuyuko_butterfly_sp_shoot_counter value >= 5140000 } }
                     set_variable = { which = th_yuyuko_butterfly_sp_shoot_counter value = 0 }
                 }
-                # 160000->16*0.5倍, multiply=0.0001
+                # 160000->16倍, multiply=0.0001
                 if = {
                     limit = {
                         check_variable_arithmetic = {
@@ -1536,3 +1606,94 @@ weapon_component_template = {
         modifier = { factor = @cosmic_storm_shroud_ai_weight_factor has_country_flag = affected_by_shroud_storm }
     }
 }
+
+# 灵能武器
+weapon_component_template = {
+    key = "LARGE_touhou_psionic_lighting"
+    icon = "GFX_ship_part_touhou_psionic_lighting_l"
+    prerequisites = { "tech_touhou_psionic_lighting" }
+    component_set = "touhou_psionic_lighting"
+    projectile_gfx = "touhou_psionic_lighting_l_white"
+    tags = { weapon_type_energy weapon_type_lingli l_slot }
+    ai_tags = { weapon_role_anti_hull }
+    ai_tag_weight = 1000
+    inline_script = { script = ship_components/spth_component_basic size = large }
+    inline_script = { script = ship_components/spth_component_attributes name = psionic tag = lightning type = large }
+    inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = large }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    upgrades_to = LARGE_touhou_psionic_lighting
+}
+weapon_component_template = {
+    key = "MEDIUM_touhou_psionic_lighting"
+    icon = "GFX_ship_part_touhou_psionic_lighting_m"
+    prerequisites = { "tech_touhou_psionic_lighting" }
+    component_set = "touhou_psionic_lighting"
+    projectile_gfx = "touhou_psionic_lighting_m_white"
+    tags = { weapon_type_energy weapon_type_lingli m_slot }
+    ai_tags = { weapon_role_anti_hull }
+    ai_tag_weight = 1000
+    inline_script = { script = ship_components/spth_component_basic size = medium }
+    inline_script = { script = ship_components/spth_component_attributes name = psionic tag = lightning type = medium }
+    inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = medium }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    upgrades_to = MEDIUM_touhou_psionic_ag_lighting
+}
+weapon_component_template = {
+    key = "SMALL_touhou_psionic_lighting"
+    icon = "GFX_ship_part_touhou_psionic_lighting_s"
+    prerequisites = { "tech_touhou_psionic_lighting" }
+    component_set = "touhou_psionic_lighting"
+    projectile_gfx = "touhou_psionic_lighting_s_white"
+    tags = { weapon_type_energy weapon_type_lingli s_slot }
+    ai_tags = { weapon_role_anti_hull }
+    ai_tag_weight = 1000
+    inline_script = { script = ship_components/spth_component_basic size = small }
+    inline_script = { script = ship_components/spth_component_attributes name = psionic tag = lightning type = small }
+    inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = small }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    upgrades_to = SMALL_touhou_psionic_ag_lighting
+}
+# 灵能武器plus，for AE
+weapon_component_template = {
+    key = "LARGE_touhou_psionic_lighting"
+    icon = "GFX_ship_part_touhou_psionic_ag_lighting_l"
+    prerequisites = { "tech_touhou_psionic_ag_lighting" }
+    component_set = "touhou_psionic_ag_lighting"
+    projectile_gfx = "touhou_psionic_lighting_l_pink"
+    tags = { weapon_type_energy weapon_type_lingli l_slot weapon_type_difficulty_scale_player }
+    ai_tags = { weapon_role_anti_hull }
+    ai_tag_weight = 1000
+    inline_script = { script = ship_components/spth_component_basic size = large }
+    inline_script = { script = ship_components/spth_component_attributes name = psionic_ag tag = lightning type = large }
+    inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = large }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+}
+weapon_component_template = {
+    key = "MEDIUM_touhou_psionic_ag_lighting"
+    icon = "GFX_ship_part_touhou_psionic_ag_lighting_m"
+    prerequisites = { "tech_touhou_psionic_ag_lighting" }
+    component_set = "touhou_psionic_lighting"
+    projectile_gfx = "touhou_psionic_lighting_m_pink"
+    tags = { weapon_type_energy weapon_type_lingli m_slot weapon_type_difficulty_scale_player }
+    ai_tags = { weapon_role_anti_hull }
+    ai_tag_weight = 1000
+    inline_script = { script = ship_components/spth_component_basic size = medium }
+    inline_script = { script = ship_components/spth_component_attributes name = psionic_ag tag = lightning type = medium }
+    inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = medium }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+}
+weapon_component_template = {
+    key = "SMALL_touhou_psionic_ag_lighting"
+    icon = "GFX_ship_part_touhou_psionic_lighting_s"
+    prerequisites = { "tech_touhou_psionic_ag_lighting" }
+    component_set = "touhou_psionic_ag_lighting"
+    projectile_gfx = "touhou_psionic_lighting_s_pink"
+    tags = { weapon_type_energy weapon_type_lingli s_slot weapon_type_difficulty_scale_player }
+    ai_tags = { weapon_role_anti_hull }
+    ai_tag_weight = 1000
+    inline_script = { script = ship_components/spth_component_basic size = small }
+    inline_script = { script = ship_components/spth_component_attributes name = psionic_ag tag = lightning type = small }
+    inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = small }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+}
+

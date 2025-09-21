@@ -76,13 +76,40 @@ spth_system_selector_confirm_super_carrier_eater = {
                 event_target:spth_system_selector_target = {
                     log = "选中了星系[This.GetName]QAQ"
                     if = {
-                        limit = { spth_can_not_star_killer_hit_system = yes }
+                        limit = {
+                            OR = {
+                                AND = {
+                                    exists = space_owner
+                                    space_owner = { is_same_value = root.from }
+                                }
+                                spth_can_not_star_killer_hit_system = yes
+                            }
+                        }
                         event_target:spth_system_selector_super_carrier_eater_fleet_@from = {
                             set_fleet_flag = spth_reason_super_carrier_eater_fleet
                             fleet_event = { id = touhou_ship_actions.6 }
                             fleet_event = { id = touhou_ship_actions.5 }
                         }
                     } else = {
+                        root.from = {
+                            switch = {
+                                trigger = has_country_flag
+                                spth_super_carrier_remote_mode_2 = {
+                                    set_variable = { which = spth_super_carrier_remote_base_time value = 1280 }
+                                }
+                                spth_super_carrier_remote_mode_3 = {
+                                    set_variable = { which = spth_super_carrier_remote_base_time value = 1800 }
+                                }
+                                default = {
+                                    set_variable = { which = spth_super_carrier_remote_base_time value = 720 }
+                                }
+                            }
+                            add_modifier = {
+                                modifier = touhou_ship_action_super_carrier_eater_cooldown
+                                days = 1
+                                time_multiplier = value:touhou_ship_action_super_carrier_eater_cooldown
+                            }
+                        }
                         star = {
                             create_ambient_object = {
                                 type = spth_star_killer_star_windup_in_range
@@ -93,7 +120,7 @@ spth_system_selector_confirm_super_carrier_eater = {
                                 entity_offset_angle = { min = 0 max = 0 }
                                 entity_offset_height = { min = 0 max = 0 }
                                 entity_scale_to_size = yes
-                                scale = 0.032
+                                scale = 0.10
                             }
                             last_created_ambient_object = {
                                 set_ambient_object_flag = spth_star_killer_star_windup_in_range_supar_carrier
