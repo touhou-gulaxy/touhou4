@@ -1952,3 +1952,124 @@ fleet_event = {
         }
     }
 }
+country_event = {
+    id = spth_fleet.2001
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        OR = {
+            is_touhou_crisis_faction = yes
+            fromfrom = {
+                NOT = { has_fleet_flag = fleet_immune_to_confuse_fired }
+                OR = {
+                    check_modifier_value = { modifier = ship_spth_immune_to_confuse value > 0 }
+                    any_owned_ship = { check_modifier_value = { modifier = ship_spth_immune_to_confuse value > 0 } }
+                }
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_fleet_flag = fleet_immune_to_confuse_fired
+            fleet_event = { id = spth_fleet.2004 }
+        }
+    }
+}
+country_event = {
+    id = spth_fleet.2002
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            NOT = { has_fleet_flag = fleet_immune_to_terrify_fired }
+            OR = {
+                check_modifier_value = { modifier = immune_to_terrify value > 0 }
+                any_owned_ship = { check_modifier_value = { modifier = immune_to_terrify value > 0 } }
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_fleet_flag = fleet_immune_to_terrify_fired
+            fleet_event = { id = spth_fleet.2005 }
+        }
+    }
+}
+country_event = {
+    id = spth_fleet.2003
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            NOT = { has_fleet_flag = fleet_immune_to_ship_monthly_hull_damage_fired }
+            OR = {
+                check_modifier_value = { modifier = ship_spth_immune_to_ship_monthly_hull_damage value > 0 }
+                any_owned_ship = { check_modifier_value = { modifier = ship_spth_immune_to_ship_monthly_hull_damage value > 0 } }
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_fleet_flag = fleet_immune_to_ship_monthly_hull_damage_fired
+            fleet_event = { id = spth_fleet.2006 }
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2004
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = {
+                limit = { check_modifier_value = { modifier = ship_spth_immune_to_confuse value > 0 } }
+                set_confused = no
+            }
+            fleet_event = { id = spth_fleet.2004 days = 3 }
+        } else = {
+            remove_fleet_flag = fleet_immune_to_confuse_fired
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2005
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = {
+                limit = { check_modifier_value = { modifier = immune_to_terrify value > 0 } }
+                remove_terrified = yes
+            }
+            fleet_event = { id = spth_fleet.2005 days = 3 }
+        } else = {
+            remove_fleet_flag = fleet_immune_to_terrify_fired
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2006
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        set_fleet_flag = fleet_immune_to_ship_monthly_hull_damage_fired
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = {
+                limit = { check_modifier_value = { modifier = ship_spth_immune_to_ship_monthly_hull_damage value > 0 } }
+                TH_dynamic_modifier_conditional = {
+                    modifier = ship_monthly_hull_damage
+                    relation = ">"
+                    limit_value = 0
+                    value = 0
+                }
+            }
+            fleet_event = { id = spth_fleet.2006 days = 3 }
+        } else = {
+            TH_clear_all_dynamic_modifier = yes
+            remove_fleet_flag = fleet_immune_to_ship_monthly_hull_damage_fired
+        }
+    }
+}
