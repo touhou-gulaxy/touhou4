@@ -1,0 +1,213 @@
+# lunar_capital_psi_aura = {
+#     background = "GFX_aura_end_background"
+#
+#     intensity_level = {
+#         end = 1000
+#         owner_fleet_modifier = {
+#             modifier = {
+#                 ship_shield_mult = 0.1
+#             }
+#         }
+#         rival_fleet_modifier = {
+#             modifier = {
+#                 ships_upkeep_mult = 0.1
+#             }
+#         }
+#     }
+#     on_start = {
+#         on_psionic_aura_spawned = { TYPE = end_aura }
+#         check_psionic_suppression_eligibility = yes
+#         setup_aura_clashing = yes
+#         # Encountering EotC aura event
+#         if = {
+#             limit = {
+#                 exists = owner
+#                 owner = {
+#                     NOR = {
+#                         is_same_value = root.aura_owner
+#                         has_country_flag = has_encountered_end_aura
+#                     }
+#                 }
+#             }
+#             owner = {
+#                 country_event = {
+#                     id = shroud.4950
+#                     scopes = {
+#                         from = root
+#                         fromfrom = root.aura_owner
+#                     }
+#                 }
+#                 set_country_flag = has_encountered_psionic_auras
+#                 set_country_flag = has_encountered_end_aura
+#                 if = {
+#                     limit = { is_ai = yes }
+#                     give_technology = { tech = tech_psionic_suppression }
+#                     if = {
+#                         limit = {
+#                             NOT = { has_technology = tech_mine_zro }
+#                         }
+#                         add_tech_option_or_research_effect = {
+#                             TECH = tech_mine_zro
+#                             PROGRESS = 0.1
+#                             CATEGORY = society_research
+#                         }
+#                     }
+#                     if = {
+#                         limit = {
+#                             NOT = {
+#                                 any_planet_within_border = {
+#                                     has_zro_deposit = yes
+#                                 }
+#                             }
+#                         }
+#                         random_planet_within_border = {
+#                             limit = {
+#                                 OR = {
+#                                     has_deposit_for = shipclass_research_station
+#                                     has_deposit = no
+#                                 }
+#                             }
+#                             add_deposit = d_zro_deposit_1
+#                         }
+#                     }
+#                 }
+#             }
+#         }
+#         every_neighbor_system = {
+#             limit = {
+#                 exists = owner
+#                 owner = {
+#                     NOR = {
+#                         is_same_value = root.aura_owner
+#                         has_country_flag = has_encountered_end_aura
+#                     }
+#                 }
+#             }
+#             owner = {
+#                 country_event = {
+#                     id = shroud.4950
+#                     scopes = {
+#                         from = root
+#                         fromfrom = root.aura_owner
+#                     }
+#                 }
+#                 set_country_flag = has_encountered_psionic_auras
+#                 set_country_flag = has_encountered_end_aura
+#                 if = {
+#                     limit = { is_ai = yes }
+#                     give_technology = { tech = tech_psionic_suppression }
+#                     if = {
+#                         limit = {
+#                             NOT = { has_technology = tech_mine_zro }
+#                         }
+#                         add_tech_option_or_research_effect = {
+#                             TECH = tech_mine_zro
+#                             PROGRESS = 0.1
+#                             CATEGORY = society_research
+#                         }
+#                     }
+#                     if = {
+#                         limit = {
+#                             NOT = {
+#                                 any_planet_within_border = {
+#                                     has_zro_deposit = yes
+#                                 }
+#                             }
+#                         }
+#                         random_planet_within_border = {
+#                             limit = {
+#                                 OR = {
+#                                     has_deposit_for = shipclass_research_station
+#                                     has_deposit = no
+#                                 }
+#                             }
+#                             add_deposit = d_zro_deposit_1
+#                         }
+#                     }
+#                 }
+#             }
+#         }
+#         # EotC aura coverage events
+#         aura_owner = {
+#             if = {
+#                 if = {
+#                     limit = {
+#                         NOT = { has_country_flag = end_aura_coverage_second_event_triggered }
+#                         check_variable_arithmetic = {
+#                             which = value:num_end_cycle_galaxy_systems_percent
+#                             value >= 0.75
+#                         }
+#                     }
+#                     set_country_flag = end_aura_coverage_second_event_triggered
+#                     every_playable_country = {
+#                         limit = {
+#                             NOT = { is_same_value = root.aura_owner }
+#                         }
+#                         country_event = {
+#                             id = shroud.4965
+#                             scopes = {
+#                                 from = root.aura_owner
+#                             }
+#                         }
+#                     }
+#                 }
+#                 else_if = {
+#                     limit = {
+#                         NOT = { has_country_flag = end_aura_coverage_first_event_triggered }
+#                         check_variable_arithmetic = {
+#                             which = value:num_end_cycle_galaxy_systems_percent
+#                             value >= 0.5
+#                         }
+#                     }
+#                     set_country_flag = end_aura_coverage_first_event_triggered
+#                     every_playable_country = {
+#                         limit = {
+#                             NOT = { is_same_value = root.aura_owner }
+#                         }
+#                         country_event = {
+#                             id = shroud.4960
+#                             scopes = {
+#                                 from = root.aura_owner
+#                             }
+#                         }
+#                     }
+#                 }
+#             }
+#             # Check win con
+#             check_end_aura_win_condition = yes
+#         }
+#     }
+#     on_monthly = {
+#         setup_aura_clashing_monthly = yes
+#     }
+#     on_gain_level = {
+#         spread_aura_endlessly = yes
+#         add_psionic_aura_level_visual = { TYPE = end_aura }
+#     }
+#     on_lose_level = {
+#         remove_psionic_aura_level_visual = yes
+#     }
+#     on_progress_complete = {
+#         spread_aura_endlessly = yes
+#         hidden_effect = {
+#             set_aura_intensity = value:eotc_lvl2_end
+#         }
+#     }
+#     on_type_change = {
+#         update_psionic_aura_visuals = { TYPE = end_aura }
+#     }
+#     on_vanish = {
+#         on_psionic_aura_vanishing = yes
+#     }
+#     daily_decrease = {
+#         base = 0
+#     }
+#     increase_trigger = {
+#         always = yes
+#     }
+#     monthly_decrease = {
+#         base = 0
+#     }
+#     aura_galaxy_texture = "gfx/map/psionic_auras/end_aura.dds"
+#     aura_hyperlane_texture = "gfx/map/psionic_auras/end_aura_hyperlane.dds"
+# }

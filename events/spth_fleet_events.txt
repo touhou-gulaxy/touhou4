@@ -1487,31 +1487,31 @@ country_event = {
                     exists = fleet
                     fleet = { any_owned_ship = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } } }
                 }
-            }
-            fleet = {
-                every_owned_ship = {
-                    limit = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } }
-                    if = {
-                        limit = { NOT = { is_variable_set = resurrection_butterfly_kill_count } }
-                        set_variable = { which = resurrection_butterfly_kill_count value = 0 }
-                    }
-                    change_variable = { which = resurrection_butterfly_kill_count value = 1 }
-                    remove_modifier = weapon_type_resurrection_butterfly_bouns
-                    add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = resurrection_butterfly_kill_count }
-                    random_list = {
-                        0 = {
-                            modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_count }
-                            if = {
-                                limit = { NOT = { is_variable_set = resurrection_butterfly_extra_count } }
-                                set_variable = { which = resurrection_butterfly_extra_count value = 0 }
-                            }
-                            change_variable = { which = resurrection_butterfly_extra_count value = 1 }
-                            remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
-                            add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = resurrection_butterfly_extra_count }
+                fleet = {
+                    every_owned_ship = {
+                        limit = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } }
+                        if = {
+                            limit = { NOT = { is_variable_set = resurrection_butterfly_kill_count } }
+                            set_variable = { which = resurrection_butterfly_kill_count value = 0 }
                         }
-                        0 = { modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_max } modifier = { subtract = modifier:ship_spth_yuyuko_fan_weapon_count } }
+                        change_variable = { which = resurrection_butterfly_kill_count value = 1 }
+                        remove_modifier = weapon_type_resurrection_butterfly_bouns
+                        add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = resurrection_butterfly_kill_count }
+                        random_list = {
+                            0 = {
+                                modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_count }
+                                if = {
+                                    limit = { NOT = { is_variable_set = resurrection_butterfly_extra_count } }
+                                    set_variable = { which = resurrection_butterfly_extra_count value = 0 }
+                                }
+                                change_variable = { which = resurrection_butterfly_extra_count value = 1 }
+                                remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
+                                add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = resurrection_butterfly_extra_count }
+                            }
+                            0 = { modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_max } modifier = { subtract = modifier:ship_spth_yuyuko_fan_weapon_count } }
+                        }
+                        reroll_random = yes
                     }
-                    reroll_random = yes
                 }
             }
         }
@@ -1937,6 +1937,121 @@ ship_event = {
             remove_ship_flag = spth_invincible
         }
     }
+}
+
+# 幻想史诗
+# This = owner of ship 1 (combatant)
+# From = owner of ship 2 (destroyed)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = spth_fleet.1211
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            NOT = { has_ship_flag = ship_th_has_keine_modifier }
+            check_modifier_value = { modifier = ship_th_has_ship_part_keine value > 0 }
+        }
+        is_touhou_country = yes
+    }
+    immediate = {
+        fromfrom = {
+            if = {
+                limit = { NOT = { is_variable_set = th_ship_hyper_point_count } }
+                set_variable = { which = th_ship_hyper_point_count value = 0 }
+            }
+            change_variable = { which = th_ship_hyper_point_count value = root.fromfromfrom.value:th_ship_hyper_point_add }
+            if = {
+                limit = { check_variable = { which = th_ship_hyper_point_count value >= 32 } }
+                set_timed_ship_flag = { flag = ship_th_has_keine_modifier days = 8 }
+                set_variable = { which = th_ship_hyper_point_count value = 0 }
+                add_modifier = { modifier = th_keine_modifier_reduction_mult days = 8 }
+                add_modifier = { modifier = th_keine_modifier_reduction_add days = 2 mult = value:th_ship_hyper_reduction_value }
+                add_modifier = { modifier = th_keine_modifier_fire_rate_energy days = 8 mult = value:th_ship_hyper_fire_rate|modifier|weapon_type_energy_weapon_fire_rate_mult| }
+                add_modifier = { modifier = th_keine_modifier_fire_rate_kinetic days = 8 mult = value:th_ship_hyper_fire_rate|modifier|weapon_type_kinetic_weapon_fire_rate_mult| }
+                add_modifier = { modifier = th_keine_modifier_fire_rate_lingli days = 8 mult = value:th_ship_hyper_fire_rate|modifier|weapon_type_lingli_weapon_fire_rate_mult| }
+            }
+        }
+    }
+}
+# This = Ship
+# From = Disabler Ship
+ship_event = {
+    id = spth_fleet.1212
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_ship_flag = spth_fleet_1212_recent }
+        from = {
+            NOT = { has_ship_flag = ship_th_has_keine_modifier }
+            check_modifier_value = { modifier = ship_th_has_ship_part_keine value > 0 }
+            owner = { is_touhou_country = yes }
+        }
+    }
+    immediate = {
+        set_timed_ship_flag = { flag = spth_fleet_1212_recent days = 2 }
+        from = {
+            if = {
+                limit = { NOT = { is_variable_set = th_ship_hyper_point_count } }
+                set_variable = { which = th_ship_hyper_point_count value = 0 }
+            }
+            change_variable = { which = th_ship_hyper_point_count value = root.value:th_ship_hyper_point_add }
+            if = {
+                limit = { check_variable = { which = th_ship_hyper_point_count value >= 32 } }
+                set_timed_ship_flag = { flag = ship_th_has_keine_modifier days = 8 }
+                set_variable = { which = th_ship_hyper_point_count value = 0 }
+                add_modifier = { modifier = th_keine_modifier_reduction_mult days = 8 }
+                add_modifier = { modifier = th_keine_modifier_reduction_add days = 2 mult = value:th_ship_hyper_reduction_value }
+                add_modifier = { modifier = th_keine_modifier_fire_rate_energy days = 8 mult = value:th_ship_hyper_fire_rate|modifier|weapon_type_energy_weapon_fire_rate_mult| }
+                add_modifier = { modifier = th_keine_modifier_fire_rate_kinetic days = 8 mult = value:th_ship_hyper_fire_rate|modifier|weapon_type_kinetic_weapon_fire_rate_mult| }
+                add_modifier = { modifier = th_keine_modifier_fire_rate_lingli days = 8 mult = value:th_ship_hyper_fire_rate|modifier|weapon_type_lingli_weapon_fire_rate_mult| }
+            }
+        }
+    }
+}
+
+# ship_th_has_ship_part_mokou
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = spth_fleet.1213
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            check_modifier_value = { modifier = ship_th_has_ship_part_mokou value > 0 }
+            NOT = { has_ship_flag = ship_is_ship_part_mokou_copy }
+        }
+        is_touhou_country = yes
+    }
+    immediate = {
+        fromfrom = {
+            if = {
+                limit = { exists = fleet }
+                fleet = {
+                    create_ship = {
+                        name = prev design = prev
+                        effect = {
+                            set_ship_flag = ship_is_ship_part_mokou_copy
+                            add_modifier = { modifier = th_ship_part_mokou_weight }
+                            add_modifier = { modifier = th_ship_part_mokou_damage days = 3 }
+                            ship_event = { id = spth_fleet.1214 days = 10 }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+ship_event = {
+    id = spth_fleet.1214
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { has_ship_flag = ship_is_ship_part_mokou_copy }
+    immediate = { delete_ship = this }
 }
 
 fleet_event = {

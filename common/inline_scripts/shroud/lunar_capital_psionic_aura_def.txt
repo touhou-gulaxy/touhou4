@@ -1,0 +1,77 @@
+# Aura-wide modifiers
+inline_script = "shroud/lunar_capital_wide_modifiers"
+
+on_start = {
+    on_psionic_aura_spawned = { TYPE = $TYPE$ }
+    check_psionic_suppression_eligibility = yes
+    setup_aura_clashing = yes
+}
+
+on_monthly = {
+    setup_aura_clashing_monthly = yes
+}
+
+on_gain_level = {
+    try_spread_aura = yes
+    add_psionic_aura_level_visual = { TYPE = $TYPE$ }
+}
+
+on_lose_level = {
+    remove_psionic_aura_level_visual = yes
+}
+
+on_progress_complete = {
+    try_spread_aura = yes
+    hidden_effect = {
+        set_aura_intensity = 2000
+        if = {
+            limit = {
+                NOT = { has_star_flag = aura_effect_triggered }
+                exists = owner
+                owner = { is_same_value = prev.aura_owner }
+            }
+            set_timed_star_flag = {
+                flag = aura_effect_triggered
+                years = 10
+            }
+            $TYPE$_max_intensity_effect = yes
+        }
+    }
+}
+
+on_type_change = {
+    update_psionic_aura_visuals = { TYPE = $TYPE$ }
+}
+
+on_vanish = {
+    on_psionic_aura_vanishing = yes
+    remove_star_flag = aura_effect_triggered
+}
+
+inline_script = "shroud/psionic_aura_daily_decrease"
+inline_script = "shroud/psionic_aura_monthly_decrease"
+
+increase_trigger = {
+    OR = {
+        aura_owner = { has_technology = tech_aura_intensification }
+        has_star_flag = building_psionic_offices_emitting@root.aura_owner
+    }
+    NOT = {
+        any_neighbor_system = {
+            has_star_flag = aura_is_clashing_against_@root
+        }
+    }
+}
+monthly_increase = { # Final value must be >= 0
+    base = 0
+    modifier = {
+        add = value:calc_psionic_aura_monthly_increase
+        aura_owner = { has_technology = tech_aura_intensification }
+        desc = tech_psionic_aura
+    }
+    modifier = {
+        add = @psionic_offices_intensity
+        has_star_flag = building_psionic_offices_emitting@root.aura_owner
+        desc = tech_psionic_aura
+    }
+}

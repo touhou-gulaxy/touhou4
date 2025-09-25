@@ -53,6 +53,87 @@ spth_planet_dicisions_convert_disable = {
 		}
 	}
 }
+spth_planet_dicisions_shrine = {
+	length = -1
+	icon = GFX_edict_type_touhou
+	potential = {
+		is_ai = no
+		has_authority = auth_gensokyo
+	}
+	prerequisites = { tech_build_spth_capital_shirne }
+	effect = {
+		every_owned_planet = {
+			limit = {
+				is_colony = yes
+				OR = {
+					has_building = building_system_capital
+					has_building = building_ancient_palace
+					has_building = building_nirvana_empire_palace
+					has_building = building_hab_system_capital
+				}
+				NOR = {
+					has_building = building_spth_old_shirne
+					has_building = building_spth_planet_shirne
+				}
+				# allow
+				NOR = {
+					has_modifier = resort_colony
+					has_modifier = slave_colony
+					has_building = building_imperial_capital
+				}
+				sapient_pop_amount >= 6000
+			}
+			select_decision = { name = spth_build_spth_capital_shirne }
+		}
+	}
+}
+spth_refresh_designs = {
+	length = 30
+	icon = GFX_edict_type_touhou
+	potential = {
+		is_ai = no
+		has_authority = auth_gensokyo
+	}
+	effect = {
+		hidden_effect = {
+			every_owned_design = {
+				limit = {
+					OR = {
+						is_ship_size = science
+						is_ship_size = transport
+						is_ship_size = constructor
+						is_ship_size = colonizer
+						is_ship_size = guided_sapience_colonizer
+					}
+				}
+				prev = { remove_ship_design = prev }
+			}
+			refresh_auto_generated_ship_designs = yes
+		}
+	}
+}
+spth_planet_dicisions_th_deposits_build = {
+	length = -1
+	icon = GFX_edict_type_touhou
+	potential = {
+		is_ai = no
+		has_authority = auth_gensokyo
+	}
+	prerequisites = { tech_th_deposits_uncover }
+	effect = {
+		every_owned_planet = {
+			limit = {
+				is_artificial = no
+				NOT = { is_planet_class = pc_machine }
+				NOT = { is_planet_class = pc_hive }
+				NOT = { is_planet_class = pc_city }
+				has_deposit = d_hakurei_barrier
+				NOT = { check_variable = { which = th_deposits_num value >= 6 } }
+			}
+			select_decision = { name = th_deposits_build }
+		}
+	}
+}
 spth_mod_menu = {
 	length = -1
 	icon = GFX_edict_type_touhou
@@ -246,6 +327,35 @@ spth_spellcard_subsidies = {
 	potential = { has_authority = auth_gensokyo }
 	prerequisites = { tech_global_production_strategy }
 	show_tech_unlock_if = { has_authority = auth_gensokyo }
+	ai_weight = { weight = 10 }
+}
+spth_psionic = {
+	length = -1
+	icon = GFX_edict_type_touhou
+	resources = {
+		category = edicts
+		cost = {
+			sr_zro = 200
+			sr_lingli = 500
+			multiplier = value:edict_size_effect
+		}
+		upkeep = {
+			sr_zro = 10
+			sr_lingli = 25
+			multiplier = value:edict_size_effect
+		}
+	}
+	modifier = {
+		unlock_touhou_miko_psionic_produce = 1
+		planet_barrier_produce_mult = 0.125
+		ship_ftl_jumpdrive_range_mult = 1.0
+		ship_jumpdrive_cooldown_mult = -0.10
+		relay_bypass_ship_windup_mult = -0.4
+	}
+	potential = {
+		has_authority = auth_gensokyo
+		check_modifier_value = { modifier = unlock_edict_spth_psionic value > 0 }
+	}
 	ai_weight = { weight = 10 }
 }
 
