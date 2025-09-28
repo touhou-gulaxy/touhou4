@@ -735,6 +735,45 @@ ship_event = {
     }
 }
 
+country_event = {
+    id = touhou_crisis.22
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_kamikaushi_crisis_start
+        NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        NOT = { has_country_flag = touhou_crisis_22_cooldown }
+    }
+    immediate = {
+        set_timed_country_flag = { flag = touhou_crisis_22_cooldown days = 719 }
+        every_owned_planet = {
+            limit = {
+                is_colony = yes pop_amount > 0
+                check_modifier_value = { modifier = spth_planet_psionic_remove_effect value > 0 }
+                any_owned_pop_group = {
+                    OR = {
+                        has_trait = trait_psionic
+                        has_trait = trait_latent_psionic
+                    }
+                }
+            }
+            reroll_random = yes
+            random_list = {
+                159 = {}
+                20 = { touhou_psionic_inhibitor_pop_remove_psionics = yes }
+                10 = { while = { count = 2 touhou_psionic_inhibitor_pop_remove_psionics = yes } }
+                10 = { while = { count = 3 touhou_psionic_inhibitor_pop_remove_psionics = yes } }
+                1 = {
+                    random_owned_pop_group = {
+                        limit = { has_trait = trait_psionic }
+                        kill_pop_group = { pop_group = this percentage = 0.8 }
+                    }
+                }
+            }
+        }
+    }
+}
+
 # 隙间侵军
 # flags:
 # country:
@@ -1048,6 +1087,11 @@ country_event = {
             spth_kamikakushi_spawn_small_defence_fleet = yes
             spth_kamikakushi_spawn_super_carrier_fleet = yes
             spth_kamikakushi_spawn_main_fleet = { id = 1 }
+            spawn_psionic_aura = {
+                type = kamikakushi_aura
+                owner = event_target:spth_kamikakushi_country
+                update_type = no
+            }
             event_target:spth_kamikakushi_spawnpoint = {
                 planet_event = { id = touhou_crisis.111 days = 5 }
                 if = {
@@ -1510,6 +1554,11 @@ country_event = {
             spth_kamikakushi_spawn_small_defence_fleet = yes
             spth_kamikakushi_spawn_super_carrier_fleet = yes
             spth_kamikakushi_spawn_main_fleet = { id = 2 }
+            spawn_psionic_aura = {
+                type = kamikakushi_aura
+                owner = event_target:spth_kamikakushi_country
+                update_type = no
+            }
             event_target:spth_kamikakushi_spawnpoint = {
                 planet_event = { id = touhou_crisis.111 days = 5 }
             }
@@ -1548,6 +1597,11 @@ country_event = {
             spth_kamikakushi_spawn_small_defence_fleet = yes
             spth_kamikakushi_spawn_super_carrier_fleet = yes
             spth_kamikakushi_spawn_main_fleet = { id = 3 }
+            spawn_psionic_aura = {
+                type = kamikakushi_aura
+                owner = event_target:spth_kamikakushi_country
+                update_type = no
+            }
             event_target:spth_kamikakushi_spawnpoint = {
                 planet_event = { id = touhou_crisis.111 days = 5 }
             }

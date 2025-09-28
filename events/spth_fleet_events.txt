@@ -133,6 +133,94 @@ ship_event = {
             # lunar_capital_battlship = { set_ship_flag = has_ag_standard_ship }
             # lunar_capital_escort = { set_ship_flag = has_ag_standard_ship }
             # lunar_capital_frigate = { set_ship_flag = has_ag_standard_ship }
+            touhou_psionic_inhibitor = {
+                solar_system = {
+                    set_star_flag = ag_psionic_inhibitor_platform_in_system
+                    set_star_flag = touhou_psionic_inhibitor_in_system
+                    if = {
+                        limit = {
+                            NOT = {
+                                any_ship_in_system = {
+                                    check_modifier_value = { modifier = is_psionic_inhibitor value > 0 }
+                                    NOT = { is_same_value = root }
+                                }
+                            }
+                        }
+                        log = "built touhou psionic inhibitor."
+                        space_owner = { save_event_target_as = touhou_station_owner }
+                        random_system_planet = {
+                            limit = { is_primary_star = yes }
+                            create_fleet = {
+                                name = "NAME_touhou_psionic_inhibitor"
+                                settings = {
+                                    spawn_debris = no
+                                }
+                                effect = {
+                                    set_owner = event_target:touhou_station_owner
+                                    create_ship = {
+                                        name = "NAME_touhou_psionic_inhibitor"
+                                        design = "NAME_touhou_psionic_inhibitor"
+                                        prefix = no
+                                        effect = {
+                                        }
+                                    }
+                                    set_location = {
+                                        target = root
+                                        distance = 75
+                                        angle = random
+                                    }
+                                    fleet_event = { id = spth_fleet.1215 days = 720 random = 360 }
+                                }
+                            }
+                        }
+                    }
+                }
+                delete_ship = this
+            }
+            touhou_psionic_burster = {
+                solar_system = {
+                    set_star_flag = ag_psionic_burster_platform_in_system
+                    set_star_flag = touhou_psionic_burster_in_system
+                    if = {
+                        limit = {
+                            NOT = {
+                                any_ship_in_system = {
+                                    check_modifier_value = { modifier = is_psionic_burster value > 0 }
+                                    NOT = { is_same_value = root }
+                                }
+                            }
+                        }
+                        log = "built touhou psionic burster."
+                        space_owner = { save_event_target_as = touhou_station_owner }
+                        random_system_planet = {
+                            limit = { is_primary_star = yes }
+                            create_fleet = {
+                                name = "NAME_touhou_psionic_burster"
+                                settings = {
+                                    spawn_debris = no
+                                }
+                                effect = {
+                                    set_owner = event_target:touhou_station_owner
+                                    create_ship = {
+                                        name = "NAME_touhou_psionic_burster"
+                                        design = "NAME_touhou_psionic_burster"
+                                        prefix = no
+                                        effect = {
+                                        }
+                                    }
+                                    set_location = {
+                                        target = root
+                                        distance = 75
+                                        angle = random
+                                    }
+                                    fleet_event = { id = spth_fleet.1216 days = 720 random = 360 }
+                                }
+                            }
+                        }
+                    }
+                }
+                delete_ship = this
+            }
             default = {
                 # 你是？
             }
@@ -2052,6 +2140,71 @@ ship_event = {
     is_triggered_only = yes
     trigger = { has_ship_flag = ship_is_ship_part_mokou_copy }
     immediate = { delete_ship = this }
+}
+
+# 灵能抑制器移除物种灵能
+# 灵能->灵能潜势
+# 灵能潜势->无
+fleet_event = {
+    id = spth_fleet.1215
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        solar_system = {
+            every_system_planet = {
+                limit = {
+                    is_colony = yes pop_amount > 0
+                    any_owned_pop_group = {
+                        OR = {
+                            has_trait = trait_psionic
+                            has_trait = trait_latent_psionic
+                        }
+                    }
+                }
+                reroll_random = yes
+                random_list = {
+                    159 = {}
+                    20 = { touhou_psionic_inhibitor_pop_remove_psionics = yes }
+                    10 = { while = { count = 2 touhou_psionic_inhibitor_pop_remove_psionics = yes } }
+                    10 = { while = { count = 3 touhou_psionic_inhibitor_pop_remove_psionics = yes } }
+                    1 = {
+                        random_owned_pop_group = {
+                            limit = { has_trait = trait_psionic }
+                            kill_pop_group = { pop_group = this percentage = 0.4 }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    after = { fleet_event = { id = spth_fleet.1215 days = 1080 random = 720 } }
+}
+# 灵能增幅器添加物种灵能
+# 优先级低于灵能抑制器
+fleet_event = {
+    id = spth_fleet.1216
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        solar_system = {
+            every_system_planet = {
+                limit = {
+                    is_colony = yes pop_amount > 0
+                    any_owned_pop_group = {
+                        NOT = { has_trait = trait_psionic }
+                    }
+                }
+                reroll_random = yes
+                random_list = {
+                    160 = {}
+                    20 = { touhou_psionic_burster_pop_add_psionics = yes }
+                    10 = { while = { count = 2 touhou_psionic_burster_pop_add_psionics = yes } }
+                    10 = { while = { count = 3 touhou_psionic_burster_pop_add_psionics = yes } }
+                }
+            }
+        }
+    }
+    after = { fleet_event = { id = spth_fleet.1216 days = 1080 random = 720 } }
 }
 
 fleet_event = {

@@ -1229,6 +1229,31 @@ country_event = {
         default_hide_option = yes
     }
 }
+country_event = {
+    id = lunar_capital_psi.48
+    title = lunar_capital_psi.48.name
+    desc = lunar_capital_psi.48.desc
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = tech_touhou_psionic_inhibitor }
+        is_ai = no has_country_flag = has_encountered_lunar_capital_psi_aura
+    }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_shroud_shroud_seal_room }
+    show_sound = event_psionic_aura
+    immediate = { set_country_flag = tech_touhou_psionic_inhibitor }
+    option = {
+        name = lunar_capital_psi.48.a
+        default_hide_option = yes
+        give_technology = { tech = tech_touhou_psionic_inhibitor }
+        hidden_effect = {
+            create_ship_design = { design = NAME_touhou_psionic_inhibitor }
+            add_ship_design = last_created_design
+        }
+    }
+}
 
 # 月之都-升格派
 # 灵能舰船设定为月之都中的升格派
@@ -1500,5 +1525,22 @@ fleet_event = {
     option = {
         name = TH_ACKNOWLEDGED
         default_hide_option = yes
+    }
+}
+
+# 杀了土著
+country_event = {
+    id = lunar_capital_psi.1000
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        is_touhou_crisis_faction = yes
+        from = { has_fleet_flag = spth_lunar_psi_fleet }
+        fromfrom = { is_star = no exists = owner owner = { is_primitive = yes } }
+    }
+    immediate = {
+        fromfrom = { spth_planet_kill_all_pop = yes destroy_colony = yes }
     }
 }

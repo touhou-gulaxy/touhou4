@@ -1,213 +1,633 @@
-# lunar_capital_psi_aura = {
-#     background = "GFX_aura_end_background"
-#
-#     intensity_level = {
-#         end = 1000
-#         owner_fleet_modifier = {
-#             modifier = {
-#                 ship_shield_mult = 0.1
-#             }
-#         }
-#         rival_fleet_modifier = {
-#             modifier = {
-#                 ships_upkeep_mult = 0.1
-#             }
-#         }
-#     }
-#     on_start = {
-#         on_psionic_aura_spawned = { TYPE = end_aura }
-#         check_psionic_suppression_eligibility = yes
-#         setup_aura_clashing = yes
-#         # Encountering EotC aura event
-#         if = {
-#             limit = {
-#                 exists = owner
-#                 owner = {
-#                     NOR = {
-#                         is_same_value = root.aura_owner
-#                         has_country_flag = has_encountered_end_aura
-#                     }
-#                 }
-#             }
-#             owner = {
-#                 country_event = {
-#                     id = shroud.4950
-#                     scopes = {
-#                         from = root
-#                         fromfrom = root.aura_owner
-#                     }
-#                 }
-#                 set_country_flag = has_encountered_psionic_auras
-#                 set_country_flag = has_encountered_end_aura
-#                 if = {
-#                     limit = { is_ai = yes }
-#                     give_technology = { tech = tech_psionic_suppression }
-#                     if = {
-#                         limit = {
-#                             NOT = { has_technology = tech_mine_zro }
-#                         }
-#                         add_tech_option_or_research_effect = {
-#                             TECH = tech_mine_zro
-#                             PROGRESS = 0.1
-#                             CATEGORY = society_research
-#                         }
-#                     }
-#                     if = {
-#                         limit = {
-#                             NOT = {
-#                                 any_planet_within_border = {
-#                                     has_zro_deposit = yes
-#                                 }
-#                             }
-#                         }
-#                         random_planet_within_border = {
-#                             limit = {
-#                                 OR = {
-#                                     has_deposit_for = shipclass_research_station
-#                                     has_deposit = no
-#                                 }
-#                             }
-#                             add_deposit = d_zro_deposit_1
-#                         }
-#                     }
-#                 }
-#             }
-#         }
-#         every_neighbor_system = {
-#             limit = {
-#                 exists = owner
-#                 owner = {
-#                     NOR = {
-#                         is_same_value = root.aura_owner
-#                         has_country_flag = has_encountered_end_aura
-#                     }
-#                 }
-#             }
-#             owner = {
-#                 country_event = {
-#                     id = shroud.4950
-#                     scopes = {
-#                         from = root
-#                         fromfrom = root.aura_owner
-#                     }
-#                 }
-#                 set_country_flag = has_encountered_psionic_auras
-#                 set_country_flag = has_encountered_end_aura
-#                 if = {
-#                     limit = { is_ai = yes }
-#                     give_technology = { tech = tech_psionic_suppression }
-#                     if = {
-#                         limit = {
-#                             NOT = { has_technology = tech_mine_zro }
-#                         }
-#                         add_tech_option_or_research_effect = {
-#                             TECH = tech_mine_zro
-#                             PROGRESS = 0.1
-#                             CATEGORY = society_research
-#                         }
-#                     }
-#                     if = {
-#                         limit = {
-#                             NOT = {
-#                                 any_planet_within_border = {
-#                                     has_zro_deposit = yes
-#                                 }
-#                             }
-#                         }
-#                         random_planet_within_border = {
-#                             limit = {
-#                                 OR = {
-#                                     has_deposit_for = shipclass_research_station
-#                                     has_deposit = no
-#                                 }
-#                             }
-#                             add_deposit = d_zro_deposit_1
-#                         }
-#                     }
-#                 }
-#             }
-#         }
-#         # EotC aura coverage events
-#         aura_owner = {
-#             if = {
-#                 if = {
-#                     limit = {
-#                         NOT = { has_country_flag = end_aura_coverage_second_event_triggered }
-#                         check_variable_arithmetic = {
-#                             which = value:num_end_cycle_galaxy_systems_percent
-#                             value >= 0.75
-#                         }
-#                     }
-#                     set_country_flag = end_aura_coverage_second_event_triggered
-#                     every_playable_country = {
-#                         limit = {
-#                             NOT = { is_same_value = root.aura_owner }
-#                         }
-#                         country_event = {
-#                             id = shroud.4965
-#                             scopes = {
-#                                 from = root.aura_owner
-#                             }
-#                         }
-#                     }
-#                 }
-#                 else_if = {
-#                     limit = {
-#                         NOT = { has_country_flag = end_aura_coverage_first_event_triggered }
-#                         check_variable_arithmetic = {
-#                             which = value:num_end_cycle_galaxy_systems_percent
-#                             value >= 0.5
-#                         }
-#                     }
-#                     set_country_flag = end_aura_coverage_first_event_triggered
-#                     every_playable_country = {
-#                         limit = {
-#                             NOT = { is_same_value = root.aura_owner }
-#                         }
-#                         country_event = {
-#                             id = shroud.4960
-#                             scopes = {
-#                                 from = root.aura_owner
-#                             }
-#                         }
-#                     }
-#                 }
-#             }
-#             # Check win con
-#             check_end_aura_win_condition = yes
-#         }
-#     }
-#     on_monthly = {
-#         setup_aura_clashing_monthly = yes
-#     }
-#     on_gain_level = {
-#         spread_aura_endlessly = yes
-#         add_psionic_aura_level_visual = { TYPE = end_aura }
-#     }
-#     on_lose_level = {
-#         remove_psionic_aura_level_visual = yes
-#     }
-#     on_progress_complete = {
-#         spread_aura_endlessly = yes
-#         hidden_effect = {
-#             set_aura_intensity = value:eotc_lvl2_end
-#         }
-#     }
-#     on_type_change = {
-#         update_psionic_aura_visuals = { TYPE = end_aura }
-#     }
-#     on_vanish = {
-#         on_psionic_aura_vanishing = yes
-#     }
-#     daily_decrease = {
-#         base = 0
-#     }
-#     increase_trigger = {
-#         always = yes
-#     }
-#     monthly_decrease = {
-#         base = 0
-#     }
-#     aura_galaxy_texture = "gfx/map/psionic_auras/end_aura.dds"
-#     aura_hyperlane_texture = "gfx/map/psionic_auras/end_aura_hyperlane.dds"
-# }
+
+lunar_capital_psi_aura = {
+    background = "GFX_aura_lunar_capital_psi_aura_background"
+    intensity_level = {
+        end = 1000000
+        rival_planet_modifier = { modifier = {
+            planet_jobs_upkeep_mult = 0.05
+        } }
+        rival_fleet_modifier = { modifier = {
+            ships_upkeep_mult = 0.25
+            megastructures_upkeep_mult = 0.25
+            ship_ftl_jumpdrive_range_mult = -0.125
+            ship_damage_reduction_add = -10
+        } }
+    }
+    intensity_level = {
+        end = 4500000
+        rival_planet_modifier = { modifier = {
+            planet_jobs_produces_mult = -0.05
+            station_researchers_produces_mult = -0.10
+            station_gatherers_produces_mult = -0.25
+            planet_stability_add = -5
+            planet_jobs_upkeep_mult = 0.10
+        } }
+        rival_fleet_modifier = { modifier = {
+            ships_upkeep_mult = 0.5
+            megastructures_upkeep_mult = 0.5
+            ship_ftl_jumpdrive_range_mult = -0.5
+            ship_damage_reduction_add = -20
+        } }
+    }
+    intensity_level = {
+        end = 9000000
+        rival_planet_modifier = { modifier = {
+            planet_jobs_produces_mult = -0.10
+            station_researchers_produces_mult = -0.25
+            station_gatherers_produces_mult = -0.50
+            planet_stability_add = -20
+            planet_jobs_upkeep_mult = 0.25
+        } }
+        rival_fleet_modifier = { modifier = {
+            ships_upkeep_mult = 1.0
+            megastructures_upkeep_mult = 1.0
+            ship_ftl_jumpdrive_range_mult = -0.75
+            ship_damage_reduction_add = -40
+        } }
+    }
+    on_start = {
+        set_star_flag = psionic_aura_ongoing
+        if = {
+            limit = { NOT = { any_system_ambient_object = { is_ambient_object_type = lunar_capital_psi_system_effect_very_thin } } }
+            star = {
+                create_ambient_object = { type = "lunar_capital_psi_system_effect_very_thin" location = this }
+                last_created_ambient_object = { set_location = { target = prev distance = 0 angle = random } }
+            }
+        }
+        aura_owner = { set_visited = prev }
+        set_timed_star_flag = { flag = newly_spawned_psionic_aura months = 6 }
+        root = { save_event_target_as = winning_system }
+        every_neighbor_system = {
+            limit = {
+                has_psionic_aura = yes
+                aura_owner = { NOT = { is_same_value = root.aura_owner } }
+                spth_has_psionic_inhibition_station = no
+            }
+            save_event_target_as = losing_system
+            event_target:winning_system = {
+                set_star_flag = aura_is_clashing_against_@event_target:losing_system
+                set_star_flag = aura_clash_winning_against_@event_target:losing_system
+            }
+            event_target:losing_system = {
+                set_star_flag = aura_is_clashing_against_@event_target:winning_system
+                aura_owner = { if = {
+                    limit = { NOT = { has_country_flag = aura_clashing_event_triggered } }
+                    set_country_flag = aura_clashing_event_triggered
+                    country_event = { id = toho.8049 scopes = { from = prev fromfrom = event_target:winning_system } }
+                } }
+            }
+        }
+        if = {
+            limit = { exists = owner owner = { NOR = { is_same_value = root.aura_owner has_country_flag = has_encountered_lunar_capital_psi_aura } } }
+            owner = {
+                country_event = { id = toho.8048 scopes = { from = root fromfrom = root.aura_owner } }
+                set_country_flag = has_encountered_psionic_auras
+                set_country_flag = has_encountered_lunar_capital_psi_aura
+                set_country_flag = has_encountered_end_aura
+                if = {
+                    limit = { is_ai = yes }
+                    add_research_option = tech_psionic_suppression
+                    add_research_option = tech_mine_zro
+                    if = {
+                        limit = { NOT = { any_planet_within_border = { has_zro_deposit = yes } } }
+                        random_planet_within_border = { limit = { OR = { has_deposit_for = shipclass_research_station has_deposit = no } } add_deposit = d_zro_deposit_1 }
+                    }
+                }
+            }
+        }
+        every_neighbor_system = {
+            limit = { exists = owner owner = { NOR = { is_same_value = root.aura_owner has_country_flag = has_encountered_lunar_capital_psi_aura } } }
+            owner = {
+                country_event = { id = toho.8048 scopes = { from = root fromfrom = root.aura_owner } }
+                set_country_flag = has_encountered_psionic_auras
+                set_country_flag = has_encountered_lunar_capital_psi_aura
+                set_country_flag = has_encountered_end_aura
+                if = {
+                    limit = { is_ai = yes }
+                    add_research_option = tech_psionic_suppression
+                    add_research_option = tech_mine_zro
+                    if = {
+                        limit = { NOT = { any_planet_within_border = { has_zro_deposit = yes } } }
+                        random_planet_within_border = { limit = { OR = { has_deposit_for = shipclass_research_station has_deposit = no } } add_deposit = d_zro_deposit_1 }
+                    }
+                }
+            }
+        }
+    }
+    on_monthly = {
+        set_timed_star_flag = { flag = aura_clashing_on_monthly_check days = 20 }
+        root = { save_event_target_as = winning_system }
+        every_neighbor_system = {
+            limit = {
+                NOT = { has_star_flag = aura_clashing_on_monthly_check }
+                has_psionic_aura = yes
+                aura_owner = { NOT = { is_same_value = root.aura_owner } }
+            }
+            if = {
+                limit = { spth_has_psionic_inhibition_station = no }
+                remove_star_flag = aura_is_clashing_against_@root
+                remove_star_flag = aura_clash_winning_against_@root
+                root = {
+                    remove_star_flag = aura_is_clashing_against_@prev
+                    remove_star_flag = aura_clash_winning_against_@prev
+                }
+                save_event_target_as = losing_system
+                event_target:winning_system = {
+                    set_star_flag = aura_is_clashing_against_@event_target:losing_system
+                    set_star_flag = aura_clash_winning_against_@event_target:losing_system
+                }
+                event_target:losing_system = {
+                    set_star_flag = aura_is_clashing_against_@event_target:winning_system
+                    aura_owner = { if = {
+                        limit = { NOT = { has_country_flag = aura_clashing_event_triggered } }
+                        set_country_flag = aura_clashing_event_triggered
+                        country_event = { id = toho.8049  scopes = { from = prev fromfrom = event_target:winning_system } }
+                    } }
+                }
+            }
+            reroll_random = yes
+            random_list = {
+                95 = { }
+                5 = { if = {
+                    limit = { any_system_megastructure = { is_megastructure_type = shroud_seal } }
+                    random_system_megastructure = {
+                        limit = { is_megastructure_type = shroud_seal }
+                        if = { limit = { exists = owner } owner = { country_event = { id = toho.8050 scopes = { from = prevprev } } } }
+                        if = {
+                            limit = { exists = planet }
+                            solar_system = { spawn_megastructure = {
+                                type = "touhou_disabled_shroud_seal"
+                                planet = prev.planet
+                                init_effect = { solar_system = { if = {
+                                    limit = { NOT = { has_star_flag = toho_8051_fired } }
+                                    set_star_flag = toho_8051_fired
+                                    system_event = { id = toho.8051 days = 550 random = 50 }
+                                } } }
+                            } }
+                        }
+                        else = { solar_system = { spawn_megastructure = {
+                            type = "touhou_disabled_shroud_seal"
+                            coords_from = prev
+                            init_effect = { solar_system = { if = {
+                                limit = { NOT = { has_star_flag = toho_8051_fired } }
+                                set_star_flag = toho_8051_fired
+                                system_event = { id = toho.8051 days = 550 random = 50 }
+                            } } }
+                        } } }
+                        remove_megastructure = this
+                    }
+                } }
+            }
+        }
+    }
+    on_gain_level = {
+        custom_tooltip = "lunar_capital_psi_psionic_aura_spread_effect"
+        every_system_megastructure = {
+            limit = { is_megastructure_type = shroud_seal }
+            if = { limit = { exists = owner } owner = { country_event = { id = toho.8050 scopes = { from = prevprev } } } }
+            if = {
+                limit = { exists = planet }
+                solar_system = { spawn_megastructure = {
+                    type = "touhou_disabled_shroud_seal"
+                    planet = prev.planet
+                    init_effect = { solar_system = { if = {
+                        limit = { NOT = { has_star_flag = toho_8051_fired } }
+                        set_star_flag = toho_8051_fired
+                        system_event = { id = toho.8051 days = 550 random = 50 }
+                    } } }
+                } }
+            }
+            else = { solar_system = { spawn_megastructure = {
+                type = "touhou_disabled_shroud_seal"
+                coords_from = prev
+                init_effect = { solar_system = { if = {
+                    limit = { NOT = { has_star_flag = toho_8051_fired } }
+                    set_star_flag = toho_8051_fired
+                    system_event = { id = toho.8051 days = 550 random = 50 }
+                } } }
+            } } }
+            remove_megastructure = this
+        }
+        if = {
+            limit = { has_psionic_aura = yes }
+            random_neighbor_system = {
+                limit = {
+                    has_psionic_aura = no
+                    spth_has_psionic_inhibition_station = no
+                }
+                weights = {
+                    base = 1
+                    modifier = { add = value:count_adjacent_psionic_auras always = yes }
+                    modifier = { factor = 0.25 any_system_megastructure = { is_megastructure_type = shroud_seal } }
+                    modifier = { factor = 2 spth_system_has_psionic_burster_station = yes }
+                    modifier = { factor = 10 any_system_megastructure = { is_megastructure_type = touhou_disabled_shroud_seal } }
+                }
+                spawn_psionic_aura = { type = lunar_capital_psi_aura owner = event_target:spth_lunar_capital_psi_country update_type = no }
+                reroll_random = yes
+                random_list = {
+                    95 = { }
+                    5 = { if = {
+                        limit = { any_system_megastructure = { is_megastructure_type = shroud_seal } }
+                        random_system_megastructure = {
+                            limit = { is_megastructure_type = shroud_seal }
+                            if = { limit = { exists = owner } owner = { country_event = { id = toho.8050 scopes = { from = prevprev } } } }
+                            if = {
+                                limit = { exists = planet }
+                                solar_system = { spawn_megastructure = {
+                                    type = "touhou_disabled_shroud_seal"
+                                    planet = prev.planet
+                                    init_effect = { solar_system = { if = {
+                                        limit = { NOT = { has_star_flag = toho_8051_fired } }
+                                        set_star_flag = toho_8051_fired
+                                        system_event = { id = toho.8051 days = 550 random = 50 }
+                                    } } }
+                                } }
+                            }
+                            else = { solar_system = { spawn_megastructure = {
+                                type = "touhou_disabled_shroud_seal"
+                                coords_from = prev
+                                init_effect = { solar_system = { if = {
+                                    limit = { NOT = { has_star_flag = toho_8051_fired } }
+                                    set_star_flag = toho_8051_fired
+                                    system_event = { id = toho.8051 days = 550 random = 50 }
+                                } } }
+                            } } }
+                            remove_megastructure = this
+                        }
+                    } }
+                }
+            }
+        }
+    }
+    on_lose_level = { }
+    on_progress_complete = {
+        custom_tooltip = "lunar_capital_psi_psionic_aura_spread_effect"
+        every_system_megastructure = {
+            limit = { is_megastructure_type = shroud_seal }
+            if = { limit = { exists = owner } owner = { country_event = { id = toho.8050 scopes = { from = prevprev } } } }
+            if = {
+                limit = { exists = planet }
+                solar_system = { spawn_megastructure = {
+                    type = "touhou_disabled_shroud_seal"
+                    planet = prev.planet
+                    init_effect = { solar_system = { if = {
+                        limit = { NOT = { has_star_flag = toho_8051_fired } }
+                        set_star_flag = toho_8051_fired
+                        system_event = { id = toho.8051 days = 550 random = 50 }
+                    } } }
+                } }
+            }
+            else = { solar_system = { spawn_megastructure = {
+                type = "touhou_disabled_shroud_seal"
+                coords_from = prev
+                init_effect = { solar_system = { if = {
+                    limit = { NOT = { has_star_flag = toho_8051_fired } }
+                    set_star_flag = toho_8051_fired
+                    system_event = { id = toho.8051 days = 550 random = 50 }
+                } } }
+            } } }
+            remove_megastructure = this
+        }
+        if = {
+            limit = { has_psionic_aura = yes }
+            random_neighbor_system = {
+                limit = {
+                    has_psionic_aura = no
+                    spth_has_psionic_inhibition_station = no
+                }
+                weights = {
+                    base = 1
+                    modifier = { add = value:count_adjacent_psionic_auras always = yes }
+                    modifier = { factor = 0.25 any_system_megastructure = { is_megastructure_type = shroud_seal } }
+                    modifier = { factor = 2 spth_system_has_psionic_burster_station = yes }
+                    modifier = { factor = 10 any_system_megastructure = { is_megastructure_type = touhou_disabled_shroud_seal } }
+                }
+                spawn_psionic_aura = { type = lunar_capital_psi_aura owner = event_target:spth_lunar_capital_psi_country update_type = no }
+                if = {
+                    limit = { any_system_megastructure = { is_megastructure_type = shroud_seal } }
+                    reroll_random = yes
+                    random_list = {
+                        95 = { }
+                        5 = { random_system_megastructure = {
+                            limit = { is_megastructure_type = shroud_seal }
+                            if = { limit = { exists = owner } owner = { country_event = { id = toho.8050 scopes = { from = prevprev } } } }
+                            if = {
+                                limit = { exists = planet }
+                                solar_system = { spawn_megastructure = {
+                                    type = "touhou_disabled_shroud_seal"
+                                    planet = prev.planet
+                                    init_effect = { solar_system = { if = {
+                                        limit = { NOT = { has_star_flag = toho_8051_fired } }
+                                        set_star_flag = toho_8051_fired
+                                        system_event = { id = toho.8051 days = 550 random = 50 }
+                                    } } }
+                                } }
+                            }
+                            else = { solar_system = { spawn_megastructure = {
+                                type = "touhou_disabled_shroud_seal"
+                                coords_from = prev
+                                init_effect = { solar_system = { if = {
+                                    limit = { NOT = { has_star_flag = toho_8051_fired } }
+                                    set_star_flag = toho_8051_fired
+                                    system_event = { id = toho.8051 days = 550 random = 50 }
+                                } } }
+                            } } }
+                            remove_megastructure = this
+                        } }
+                    }
+                }
+            }
+        }
+    }
+    on_type_change = { random_system_ambient_object = { limit = { is_ambient_object_type = lunar_capital_psi_system_effect_very_thin } destroy_ambient_object = this } }
+    on_vanish = {
+        remove_star_flag = psionic_aura_ongoing
+        random_system_ambient_object = {
+            limit = { is_ambient_object_type = lunar_capital_psi_system_effect_very_thin }
+            destroy_ambient_object = this
+        }
+        try_resolve_aura_clashing = yes
+    }
+
+    daily_decrease = { base = 0 }
+    monthly_decrease = {
+        base = 0
+        modifier = { add = 50000 spth_system_has_psionic_inhibition_station = yes }
+        modifier = { add = 10000 spth_neighbor_system_has_psionic_inhibition_station = yes }
+    }
+
+    increase_trigger = { NOT = { any_neighbor_system = { has_star_flag = aura_is_clashing_against_@root } } }
+    monthly_increase = {
+        base = 100000
+        modifier = { factor = 2 exists = space_owner space_owner = { is_same_value = event_target:spth_lunar_capital_psi_country } desc = shipclass_starbase }
+        modifier = {
+            factor = 0.8
+            OR = {
+                has_megastructure = shroud_seal
+                check_variable_arithmetic = { which = value:count_neighbor_shroud_seals value > 0 }
+            }
+            desc = "AFFECTED_BY_SHROUD_SEALS"
+        }
+        modifier = {
+            factor = 0.8
+            any_system_planet = { OR = {
+                has_active_building = building_psionic_suppressor
+                has_active_building = building_ancient_ward_2
+            } }
+            desc = "AFFECTED_BY_PSIONIC_SUPPRESSORS"
+        }
+        modifier = {
+            factor = 1.25
+            spth_system_has_psionic_burster_station = yes
+            desc = AFFECTED_BY_PSIONIC_BURSTER
+        }
+    }
+
+    aura_galaxy_texture = "gfx/map/lunar_capital/lunar_capital_psi_aura.dds"
+    aura_hyperlane_texture = "gfx/map/lunar_capital/lunar_capital_psi_hyperlane.dds"
+}
+
+kamikakushi_aura = {
+    background = "GFX_aura_kamikakushi_aura_background"
+    intensity_level = {
+        end = 900000
+        owner_fleet_modifier = { modifier = {
+            damage_vs_psionic_empires_mult = 0.125
+            evasion_vs_psionic_empires_mult = 0.125
+            ship_damage_against_reckoning_mult = 0.125
+        } }
+        neutral_fleet_modifier = { modifier = {
+            damage_vs_psionic_empires_mult = 0.125
+            evasion_vs_psionic_empires_mult = 0.125
+            ship_damage_against_reckoning_mult = 0.125
+        } }
+        rival_planet_modifier = { modifier = {
+            spth_planet_psionic_remove_effect = 1
+            psionic_pop_bonus_workforce_mult = -0.05
+            logistic_growth_mult = -0.05
+            pop_psionic_happiness = -0.05
+        } }
+        rival_fleet_modifier = { modifier = {
+            ship_psionic_aura_speed_mult = -0.125
+            ship_psionic_aura_fire_rate_mult = -0.125
+            ship_damage_reduction_add = -10
+        } }
+    }
+    intensity_level = {
+        end = 4000000
+        owner_fleet_modifier = { modifier = {
+            damage_vs_psionic_empires_mult = 0.25
+            evasion_vs_psionic_empires_mult = 0.25
+            ship_damage_against_reckoning_mult = 0.25
+        } }
+        neutral_fleet_modifier = { modifier = {
+            damage_vs_psionic_empires_mult = 0.25
+            evasion_vs_psionic_empires_mult = 0.25
+            ship_damage_against_reckoning_mult = 0.25
+        } }
+        rival_planet_modifier = { modifier = {
+            spth_planet_psionic_remove_effect = 1
+            psionic_pop_bonus_workforce_mult = -0.10
+            logistic_growth_mult = -0.10
+            pop_psionic_happiness = -0.10
+        } }
+        rival_fleet_modifier = { modifier = {
+            ship_psionic_aura_speed_mult = -0.25
+            ship_psionic_aura_fire_rate_mult = -0.25
+            ship_damage_reduction_add = -20
+        } }
+    }
+    intensity_level = {
+        end = 8000000
+        owner_fleet_modifier = { modifier = {
+            damage_vs_psionic_empires_mult = 0.50
+            evasion_vs_psionic_empires_mult = 0.50
+            ship_damage_against_reckoning_mult = 0.50
+        } }
+        neutral_fleet_modifier = { modifier = {
+            damage_vs_psionic_empires_mult = 0.50
+            evasion_vs_psionic_empires_mult = 0.50
+            ship_damage_against_reckoning_mult = 0.50
+        } }
+        rival_planet_modifier = { modifier = {
+            spth_planet_psionic_remove_effect = 1
+            psionic_pop_bonus_workforce_mult = -0.20
+            logistic_growth_mult = -0.20
+            pop_psionic_happiness = -0.20
+        } }
+        rival_fleet_modifier = { modifier = {
+            ship_psionic_aura_speed_mult = -0.50
+            ship_psionic_aura_fire_rate_mult = -0.50
+            ship_damage_reduction_add = -40
+        } }
+    }
+    on_start = {
+        set_star_flag = psionic_aura_ongoing
+        if = {
+            limit = { NOT = { any_system_ambient_object = { is_ambient_object_type = kamikakushi_system_effect_very_thin } } }
+            star = {
+                create_ambient_object = { type = "kamikakushi_system_effect_very_thin" location = this }
+                last_created_ambient_object = { set_location = { target = prev distance = 0 angle = random } }
+            }
+        }
+        aura_owner = { set_visited = prev }
+        set_timed_star_flag = { flag = newly_spawned_psionic_aura months = 6 }
+        root = { save_event_target_as = winning_system }
+        every_neighbor_system = {
+            limit = {
+                has_psionic_aura = yes
+                aura_owner = { NOT = { is_same_value = root.aura_owner } }
+                spth_has_psionic_burster_station = no
+            }
+            save_event_target_as = losing_system
+            event_target:winning_system = {
+                set_star_flag = aura_is_clashing_against_@event_target:losing_system
+                set_star_flag = aura_clash_winning_against_@event_target:losing_system
+            }
+            event_target:losing_system = {
+                set_star_flag = aura_is_clashing_against_@event_target:winning_system
+                aura_owner = { if = {
+                    limit = { NOT = { has_country_flag = aura_clashing_event_triggered } }
+                    set_country_flag = aura_clashing_event_triggered
+                    country_event = { id = toho.8071 scopes = { from = prev fromfrom = event_target:winning_system } }
+                } }
+            }
+        }
+        if = {
+            limit = { exists = owner owner = { NOR = { is_same_value = root.aura_owner has_country_flag = has_encountered_kamikakushi_aura } } }
+            owner = {
+                country_event = { id = toho.8070 scopes = { from = root fromfrom = root.aura_owner } }
+                set_country_flag = has_encountered_psionic_auras
+                set_country_flag = has_encountered_kamikakushi_aura
+                set_country_flag = has_encountered_end_aura
+            }
+        }
+        every_neighbor_system = {
+            limit = { exists = owner owner = { NOR = { is_same_value = root.aura_owner has_country_flag = has_encountered_kamikakushi_aura } } }
+            owner = {
+                country_event = { id = toho.8070 scopes = { from = root fromfrom = root.aura_owner } }
+                set_country_flag = has_encountered_psionic_auras
+                set_country_flag = has_encountered_kamikakushi_aura
+                set_country_flag = has_encountered_end_aura
+            }
+        }
+    }
+    on_monthly = {
+        set_timed_star_flag = { flag = aura_clashing_on_monthly_check days = 20 }
+        root = { save_event_target_as = winning_system }
+        every_neighbor_system = {
+            limit = {
+                NOT = { has_star_flag = aura_clashing_on_monthly_check }
+                has_psionic_aura = yes
+                aura_owner = { NOT = { is_same_value = root.aura_owner } }
+                spth_has_psionic_burster_station = no
+            }
+            remove_star_flag = aura_is_clashing_against_@root
+            remove_star_flag = aura_clash_winning_against_@root
+            root = {
+                remove_star_flag = aura_is_clashing_against_@prev
+                remove_star_flag = aura_clash_winning_against_@prev
+            }
+            save_event_target_as = losing_system
+            event_target:winning_system = {
+                set_star_flag = aura_is_clashing_against_@event_target:losing_system
+                set_star_flag = aura_clash_winning_against_@event_target:losing_system
+            }
+            event_target:losing_system = {
+                set_star_flag = aura_is_clashing_against_@event_target:winning_system
+                aura_owner = { if = {
+                    limit = { NOT = { has_country_flag = aura_clashing_event_triggered } }
+                    set_country_flag = aura_clashing_event_triggered
+                    country_event = { id = toho.8071  scopes = { from = prev fromfrom = event_target:winning_system } }
+                } }
+            }
+        }
+    }
+    on_gain_level = {
+        custom_tooltip = "kamikakushi_psionic_aura_spread_effect"
+        if = {
+            limit = { has_psionic_aura = yes }
+            random_neighbor_system = {
+                limit = {
+                    has_psionic_aura = no
+                    spth_has_psionic_burster_station = no
+                }
+                weights = {
+                    base = 1
+                    modifier = { add = value:count_adjacent_psionic_auras always = yes }
+                    modifier = { factor = 10 any_system_megastructure = { is_megastructure_type = shroud_seal } }
+                    modifier = { factor = 2 spth_system_has_psionic_inhibition_station = yes }
+                    modifier = { factor = 0.25 any_system_megastructure = { is_megastructure_type = touhou_disabled_shroud_seal } }
+                }
+                spawn_psionic_aura = { type = kamikakushi_aura owner = event_target:spth_kamikakushi_country update_type = no }
+            }
+        }
+    }
+    on_lose_level = { }
+    on_progress_complete = {
+        custom_tooltip = "kamikakushi_psionic_aura_spread_effect"
+        if = {
+            limit = { has_psionic_aura = yes }
+            random_neighbor_system = {
+                limit = {
+                    has_psionic_aura = no
+                    spth_has_psionic_burster_station = no
+                }
+                weights = {
+                    base = 1
+                    modifier = { add = value:count_adjacent_psionic_auras always = yes }
+                    modifier = { factor = 10 any_system_megastructure = { is_megastructure_type = shroud_seal } }
+                    modifier = { factor = 2 spth_system_has_psionic_inhibition_station = yes }
+                    modifier = { factor = 0.25 any_system_megastructure = { is_megastructure_type = touhou_disabled_shroud_seal } }
+                }
+                spawn_psionic_aura = { type = kamikakushi_aura owner = event_target:spth_kamikakushi_country update_type = no }
+            }
+        }
+    }
+    on_type_change = { random_system_ambient_object = { limit = { is_ambient_object_type = kamikakushi_system_effect_very_thin } destroy_ambient_object = this } }
+    on_vanish = {
+        remove_star_flag = psionic_aura_ongoing
+        random_system_ambient_object = {
+            limit = { is_ambient_object_type = kamikakushi_system_effect_very_thin }
+            destroy_ambient_object = this
+        }
+        try_resolve_aura_clashing = yes
+    }
+
+    daily_decrease = { base = 0 }
+    monthly_decrease = {
+        base = 0
+        modifier = { add = 50000 spth_system_has_psionic_burster_station = yes }
+        modifier = { add = 10000 spth_neighbor_system_has_psionic_burster_station = yes }
+    }
+
+    increase_trigger = { NOT = { any_neighbor_system = { has_star_flag = aura_is_clashing_against_@root } } }
+    monthly_increase = {
+        base = 100000
+        modifier = { factor = 2 exists = space_owner space_owner = { is_same_value = event_target:spth_kamikakushi_country } desc = shipclass_starbase }
+        modifier = {
+            factor = 1.25
+            OR = {
+                has_megastructure = shroud_seal
+                check_variable_arithmetic = { which = value:count_neighbor_shroud_seals value > 0 }
+            }
+            desc = "AFFECTED_BY_SHROUD_SEALS"
+        }
+        modifier = {
+            factor = 1.25
+            any_system_planet = { OR = {
+                has_active_building = building_psionic_suppressor
+                has_active_building = building_ancient_ward_2
+            } }
+            desc = "AFFECTED_BY_PSIONIC_SUPPRESSORS"
+        }
+        modifier = {
+            factor = 0.8
+            spth_system_has_psionic_burster_station = yes
+            desc = AFFECTED_BY_PSIONIC_BURSTER
+        }
+    }
+
+    aura_galaxy_texture = "gfx/map/kamikakushi/kamikakushi_aura.dds"
+    aura_hyperlane_texture = "gfx/map/kamikakushi/kamikakushi_hyperlane.dds"
+}

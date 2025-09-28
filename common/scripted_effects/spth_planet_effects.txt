@@ -984,3 +984,64 @@ spth_planet_kill_all_pop = {
         spth_kill_pop_group = yes
     }
 }
+
+touhou_psionic_inhibitor_pop_remove_psionics = {
+    optimize_memory
+    random_owned_pop_group = {
+        limit = {
+            OR = {
+                pop_group_has_trait = trait_psionic
+                pop_group_has_trait = trait_latent_psionic
+            }
+        }
+        if = {
+            limit = { NOT = { exists = event_target:touhou_target_species } }
+            if = {
+                limit = { pop_group_has_trait = trait_latent_psionic }
+                modify_species = {
+                    species = this
+                    remove_trait = trait_latent_psionic
+                    effect = { save_event_target_as = touhou_target_species }
+                }
+            }
+            else = {
+                modify_species = {
+                    species = this
+                    add_trait = trait_latent_psionic
+                    add_traits_at_start_of_list = yes
+                    remove_trait = trait_psionic
+                    effect = { save_event_target_as = touhou_target_species }
+                }
+            }
+            change_species = event_target:touhou_target_species
+        }
+    }
+}
+touhou_psionic_burster_pop_add_psionics = {
+    optimize_memory
+    random_owned_pop_group = {
+        limit = {
+            NOT = { pop_group_has_trait = trait_psionic }
+        }
+        if = {
+            limit = { NOT = { exists = event_target:touhou_target_species } }
+            if = {
+                limit = { pop_group_has_trait = trait_latent_psionic }
+                modify_species = {
+                    species = this
+                    add_trait = trait_psionic
+                    add_traits_at_start_of_list = yes
+                    effect = { save_event_target_as = touhou_target_species }
+                }
+            } else = {
+                modify_species = {
+                    species = this
+                    add_trait = trait_latent_psionic
+                    add_traits_at_start_of_list = yes
+                    effect = { save_event_target_as = touhou_target_species }
+                }
+            }
+            change_species = event_target:touhou_target_species
+        }
+    }
+}
