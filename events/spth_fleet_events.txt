@@ -221,6 +221,117 @@ ship_event = {
                 }
                 delete_ship = this
             }
+            touhou_superstarbase_move = {
+                save_event_target_as = touhou_design_ship
+                solar_system = {
+                    space_owner = {
+                        save_event_target_as = touhou_station_owner
+                        if = {
+                            limit = { NOT = { has_country_flag = has_built_touhou_superstarbase } }
+                            set_country_flag = has_built_touhou_superstarbase
+                            country_event = { id = spth_fleet.1217 }
+                        }
+                    }
+                    if = {
+                        limit = {
+                            NOR = {
+                                has_star_flag = touhou_superstarbase_move_loc_1
+                                any_ship_in_system = { has_ship_flag = touhou_superstarbase_move_loc_1 }
+                            }
+                        }
+                        set_timed_star_flag = { flag = touhou_superstarbase_move_loc_1 days = 2 }
+                        random_system_planet = {
+                            limit = { is_primary_star = yes }
+                            touhou_superstarbase_spawn = {
+                                owner = event_target:touhou_station_owner
+                                ship_flag = touhou_superstarbase_move_loc_1
+                                angle = 0
+                            }
+                        }
+                    } else_if = {
+                        limit = {
+                            NOR = {
+                                has_star_flag = touhou_superstarbase_move_loc_2
+                                any_ship_in_system = { has_ship_flag = touhou_superstarbase_move_loc_2 }
+                            }
+                        }
+                        set_timed_star_flag = { flag = touhou_superstarbase_move_loc_2 days = 2 }
+                        random_system_planet = {
+                            limit = { is_primary_star = yes }
+                            touhou_superstarbase_spawn = {
+                                owner = event_target:touhou_station_owner
+                                ship_flag = touhou_superstarbase_move_loc_2
+                                angle = 60
+                            }
+                        }
+                    } else_if = {
+                        limit = {
+                            NOR = {
+                                has_star_flag = touhou_superstarbase_move_loc_3
+                                any_ship_in_system = { has_ship_flag = touhou_superstarbase_move_loc_3 }
+                            }
+                        }
+                        set_timed_star_flag = { flag = touhou_superstarbase_move_loc_3 days = 2 }
+                        random_system_planet = {
+                            limit = { is_primary_star = yes }
+                            touhou_superstarbase_spawn = {
+                                owner = event_target:touhou_station_owner
+                                ship_flag = touhou_superstarbase_move_loc_3
+                                angle = 120
+                            }
+                        }
+                    } else_if = {
+                        limit = {
+                            NOR = {
+                                has_star_flag = touhou_superstarbase_move_loc_4
+                                any_ship_in_system = { has_ship_flag = touhou_superstarbase_move_loc_4 }
+                            }
+                        }
+                        set_timed_star_flag = { flag = touhou_superstarbase_move_loc_4 days = 2 }
+                        random_system_planet = {
+                            limit = { is_primary_star = yes }
+                            touhou_superstarbase_spawn = {
+                                owner = event_target:touhou_station_owner
+                                ship_flag = touhou_superstarbase_move_loc_4
+                                angle = 180
+                            }
+                        }
+                    } else_if = {
+                        limit = {
+                            NOR = {
+                                has_star_flag = touhou_superstarbase_move_loc_5
+                                any_ship_in_system = { has_ship_flag = touhou_superstarbase_move_loc_5 }
+                            }
+                        }
+                        set_timed_star_flag = { flag = touhou_superstarbase_move_loc_5 days = 2 }
+                        random_system_planet = {
+                            limit = { is_primary_star = yes }
+                            touhou_superstarbase_spawn = {
+                                owner = event_target:touhou_station_owner
+                                ship_flag = touhou_superstarbase_move_loc_5
+                                angle = 240
+                            }
+                        }
+                    } else_if = {
+                        limit = {
+                            NOR = {
+                                has_star_flag = touhou_superstarbase_move_loc_6
+                                any_ship_in_system = { has_ship_flag = touhou_superstarbase_move_loc_6 }
+                            }
+                        }
+                        set_timed_star_flag = { flag = touhou_superstarbase_move_loc_6 days = 2 }
+                        random_system_planet = {
+                            limit = { is_primary_star = yes }
+                            touhou_superstarbase_spawn = {
+                                owner = event_target:touhou_station_owner
+                                ship_flag = touhou_superstarbase_move_loc_6
+                                angle = 300
+                            }
+                        }
+                    }
+                }
+                delete_ship = this
+            }
             default = {
                 # 你是？
             }
@@ -2207,6 +2318,21 @@ fleet_event = {
     after = { fleet_event = { id = spth_fleet.1216 days = 1080 random = 720 } }
 }
 
+country_event = {
+    id = spth_fleet.1217
+    title = spth_fleet.1217.name
+    desc = spth_fleet.1217.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_enigmatic_fortress_room }
+    is_triggered_only = yes
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+}
+
 fleet_event = {
     id = spth_fleet.2000
     hide_window = yes
@@ -2336,7 +2462,11 @@ fleet_event = {
             }
             fleet_event = { id = spth_fleet.2006 days = 3 }
         } else = {
-            TH_clear_all_dynamic_modifier = yes
+            every_owned_ship = {
+                limit = { check_modifier_value = { modifier = ship_spth_immune_to_ship_monthly_hull_damage value > 0 } }
+                remove_modifier = TH_dynamic_remove_ship_monthly_hull_damage
+                remove_modifier = TH_dynamic_reset_ship_monthly_hull_damage
+            }
             remove_fleet_flag = fleet_immune_to_ship_monthly_hull_damage_fired
         }
     }

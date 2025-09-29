@@ -357,3 +357,56 @@ th_toyohime_weapon_sp_hit_effect = {
         add_modifier = { modifier = "th_toyohime_weapon_$size$_effect_final" days = 5 }
     }
 }
+
+touhou_superstarbase_test_spawn = {
+    optimize_memory
+    while = {
+        count = 6
+        create_fleet = {
+            name = "NAME_touhou_superstarbase_move_fleet"
+            settings = {
+                can_upgrade = no
+                can_change_composition = no
+                can_change_leader = no
+                spawn_debris = no
+            }
+            effect = {
+                set_owner = event_target:spth_test_country
+                create_ship = {
+                    name = "NAME_touhou_superstarbase_move"
+                    random_existing_design = touhou_superstarbase_move
+                    prefix = no
+                    effect = {
+                        fire_on_action = {
+                            on_action = on_ship_built
+                            scopes = { from = prev }
+                        }
+                    }
+                }
+                set_location = { target = prev distance = 50 angle = 0 }
+            }
+        }
+    }
+}
+touhou_superstarbase_spawn = {
+    optimize_memory
+    create_fleet = {
+        name = "NAME_touhou_superstarbase_move_fleet"
+        settings = {
+            can_upgrade = no
+            can_change_composition = no
+            can_change_leader = no
+            spawn_debris = no
+        }
+        effect = {
+            set_owner = $owner$
+            create_ship = {
+                name = "NAME_touhou_superstarbase_move"
+                design = event_target:touhou_design_ship
+                prefix = no
+                effect = { set_ship_flag = $ship_flag$ }
+            }
+            set_location = { target = prev distance = 50 angle = $angle$ }
+        }
+    }
+}
