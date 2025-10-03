@@ -1,0 +1,125 @@
+namespace = touhou_awaken_empire
+
+country_event = {
+    id = touhou_awaken_empire.11
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = spth_awaken_empire_kamikakushi
+        is_country_type = spth_awaken_empire_kamikakushi
+    }
+    immediate = {
+        if = {
+            limit = {
+                OR = {
+                    is_at_war = yes
+                    any_country = {
+                        OR = {
+                            touhou_is_known_crisis_faction = yes
+                            is_country_type = spth_kamikakushi_country
+                        }
+                    }
+                }
+            }
+            every_owned_fleet = {
+                limit = {
+                    exists = this
+                    has_fleet_flag = spth_kamikakushi_fallen_empire_fleet
+                    is_fleet_idle = yes
+                    NAND = {
+                        exists = orbit
+                        orbit = {
+                            NOT = { is_star = yes }
+                            exists = owner
+                            owner = { is_hostile = event_target:spth_kamikakushi_country }
+                            exists = controller
+                            controller = { is_hostile = event_target:spth_kamikakushi_country }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                fleet_event = { id = touhou_awaken_empire.12 days = 3 random = 2 }
+            }
+        } else = {
+            every_owned_fleet = {
+                clear_orders = yes
+                clear_fleet_actions = this
+            }
+        }
+    }
+}
+
+fleet_event = {
+    id = touhou_awaken_empire.12
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this exists = owner
+        has_fleet_flag = spth_kamikakushi_fallen_empire_fleet
+        owner = {
+            is_country_type = spth_awaken_empire_kamikakushi
+            OR = {
+                is_at_war = yes
+                any_country = {
+                    OR = {
+                        touhou_is_known_crisis_faction = yes
+                        is_country_type = spth_kamikakushi_country
+                    }
+                }
+            }
+        }
+    }
+    immediate = { spth_invasion_fleet_action = { ID = touhou_awaken_empire TYPE = touhou_awaken_empire OWNER = spth_kamikakushi_fallen_empire } }
+}
+
+#Invasion fleet action on orbit planet.
+country_event = {
+    id = touhou_awaken_empire.13
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_country_type = spth_awaken_empire_kamikakushi
+        from = { has_fleet_flag = spth_kamikakushi_fallen_empire_fleet }
+        fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
+    }
+    immediate = {
+        from = {
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = touhou_awaken_empire.12 days = 3 random = 2 }
+        }
+    }
+}
+
+country_event = {
+    id = touhou_awaken_empire.14
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = spth_awaken_empire_kamikakushi
+        is_country_type = spth_awaken_empire_kamikakushi
+        fromfromfrom = {
+            OR = {
+                is_ship_class = shipclass_starbase
+                is_ship_class = shipclass_military
+            }
+        }
+    }
+    after = {
+        fromfrom = {
+            solar_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        has_fleet_flag = spth_kamikakushi_fallen_empire_fleet
+                        owner = { is_country_type = spth_awaken_empire_kamikakushi }
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = touhou_awaken_empire.12 days = 3 random = 2 }
+                }
+            }
+        }
+    }
+}

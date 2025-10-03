@@ -1085,6 +1085,7 @@ country_event = {
 				flag_mokou = { root = { spth_effect_init_mokou_effect = yes } }
 				flag_reisen = { root = { spth_effect_init_reisen_effect = yes } }
 				flag_kokoro = { root = { spth_effect_init_kokoro_effect = yes } }
+                flag_karakasa = { root = { spth_effect_init_karakasa_effect = yes } }
 				flag_cirno = { root = { spth_effect_init_cirno_effect = yes } }
 				flag_eirin = { root = { spth_effect_init_eirin_effect = yes } }
 				flag_kaguya = { root = { spth_effect_init_kaguya_effect = yes } }
@@ -1948,6 +1949,7 @@ situation_event = {
 		name = TH_WORYING
 		default_hide_option = yes
 		custom_tooltip = toho.8041.a.effect
+        owner = { give_specimen = { key = touhou_parasol origin = toho.8041.name } }
 		hidden_effect = { owner = { spth_effect_init_yuza_effect = yes } }
 	}
 }
@@ -1964,6 +1966,7 @@ situation_event = {
 	option = {
 		name = toho.8042.a
 		default_hide_option = yes
+        owner = { give_specimen = { key = touhou_cleansed_crystal_mirror origin = toho.8042.name } }
 	}
 	after = {
 		hidden_effect = {
@@ -2351,6 +2354,157 @@ country_event = {
         }
     }
 }
+
+country_event = {
+    id = toho.8080
+    title = toho.8080.name
+    desc = {
+        text = toho.8080.desc
+        trigger = { NOT = { has_origin = origin_spth_story_gensokyo } }
+    }
+    desc = {
+        text = toho.8080.desc.lunar
+        trigger = { has_origin = origin_spth_story_gensokyo }
+    }
+    trigger = {
+        has_authority = auth_gensokyo
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = EMPTY_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { room = spth_ag_excited_shroud_room portrait = shroud1 }
+    immediate = {
+        if = {
+            limit = { NOT = { exists = event_target:spth_story_lunar_capital_area_toyohime } }
+            set_global_flag = spth_story_lunar_capital_toyohime_spawned
+            random_system = {
+                set_spawn_system_batch = begin
+                spawn_system = {
+                    initializer = spth_story_lunar_capital_area_toyohime
+                    hyperlane = no
+                }
+                set_spawn_system_batch = end
+                random_system_planet = { save_event_target_as = spth_story_lunar_capital_aethon_planet_1 }
+                spawn_megastructure = {
+                    type = spth_lunar_jumpdrive_gateway
+                    coords_from = event_target:spth_story_lunar_capital_aethon_planet_1
+                    owner = root
+                    orbit_distance = 0
+                    orbit_angle = 0
+                    graphical_culture = root
+                    init_effect = {
+                        set_megastructure_flag = is_spth_lunar_jumpdrive_gateway
+                        set_megastructure_flag = spth_lunar_jumpdrive_gateway_debug
+                    }
+                }
+                event_target:spth_story_lunar_capital_area_toyohime = {
+                    set_star_flag = spth_debug_spawn
+                }
+            }
+        }
+        if = {
+            limit = { NOT = { has_global_flag = spth_lunar_capital_psi_crisis_begin } }
+            set_global_flag = spth_lunar_capital_psi_crisis_begin
+            set_global_flag = lunar_jumpdrive_gateway_blocked
+            touhou_destory_crisis_shpere = yes
+            spth_lunar_psi_crisis_setup_sub_gate = { spth_id = 1 }
+            spth_lunar_psi_crisis_setup_sub_gate = { spth_id = 2 }
+            spth_lunar_psi_create_country = yes
+            event_target:spth_story_lunar_capital_area_toyohime = {
+                spth_lunar_psi_spawn_starbase = yes
+            }
+            while = { count = 5 spth_lunar_psi_create_defence_fleet = yes }
+            spth_lunar_psi_create_gate = { spth_id = 0 }
+            every_playable_country = {
+                country_event = { id = lunar_capital_psi.150 }
+                country_event = { id = lunar_capital_psi.35 }
+            }
+        }
+    }
+    show_sound = event_shroud_song
+    option = { name = toho.8080.a is_dialog_only = yes response_text = toho.8080.a.response }
+    option = { name = toho.8080.b is_dialog_only = yes response_text = toho.8080.b.response }
+    option = { name = toho.8080.c response_text = toho.8080.c.response }
+    option = { name = toho.8080.d response_text = toho.8080.d.response default_hide_option = yes }
+    after = {
+        custom_tooltip = toho.8080.tooltip
+    }
+}
+country_event = {
+    id = toho.8081
+    title = toho.8080.name
+    desc = toho.8081.desc
+    is_triggered_only = yes
+    trigger = {
+        has_authority = auth_gensokyo
+    }
+    diplomatic = yes
+    diplomatic_title = EMPTY_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { room = spth_ag_excited_shroud_room portrait = shroud1 }
+    immediate = {
+        if = {
+            limit = { NOT = { exists = event_target:spth_story_lunar_capital_area_toyohime } }
+            set_global_flag = spth_story_lunar_capital_toyohime_spawned
+            random_system = {
+                set_spawn_system_batch = begin
+                spawn_system = {
+                    initializer = spth_story_lunar_capital_area_toyohime
+                    hyperlane = no
+                }
+                set_spawn_system_batch = end
+                random_system_planet = { save_event_target_as = spth_story_lunar_capital_aethon_planet_1 }
+                spawn_megastructure = {
+                    type = spth_lunar_jumpdrive_gateway
+                    coords_from = event_target:spth_story_lunar_capital_aethon_planet_1
+                    owner = root
+                    orbit_distance = 0
+                    orbit_angle = 0
+                    graphical_culture = root
+                    init_effect = {
+                        set_megastructure_flag = is_spth_lunar_jumpdrive_gateway
+                        set_megastructure_flag = spth_lunar_jumpdrive_gateway_debug
+                    }
+                }
+                event_target:spth_story_lunar_capital_area_toyohime = {
+                    set_star_flag = spth_debug_spawn
+                }
+            }
+        }
+        if = {
+            limit = { NOT = { has_global_flag = spth_lunar_capital_psi_crisis_begin } }
+            set_global_flag = spth_lunar_capital_psi_crisis_begin
+            set_global_flag = lunar_jumpdrive_gateway_blocked
+            touhou_destory_crisis_shpere = yes
+            spth_lunar_psi_crisis_setup_sub_gate = { spth_id = 1 }
+            spth_lunar_psi_crisis_setup_sub_gate = { spth_id = 2 }
+            spth_lunar_psi_create_country = yes
+            event_target:spth_story_lunar_capital_area_toyohime = {
+                spth_lunar_psi_spawn_starbase = yes
+            }
+            while = { count = 5 spth_lunar_psi_create_defence_fleet = yes }
+            spth_lunar_psi_create_gate = { spth_id = 0 }
+            every_playable_country = {
+                country_event = { id = lunar_capital_psi.150 }
+                country_event = { id = lunar_capital_psi.35 }
+            }
+        }
+    }
+    show_sound = event_shroud_song
+    option = { name = toho.8080.a is_dialog_only = yes response_text = toho.8081.a.response }
+    option = { name = toho.8080.b is_dialog_only = yes response_text = toho.8081.b.response }
+    option = { name = toho.8080.c response_text = toho.8081.c.response }
+    option = { name = toho.8080.d response_text = toho.8081.d.response default_hide_option = yes }
+    after = {
+        custom_tooltip = toho.8081.tooltip
+    }
+}
+
 
 # gatekeeper
 country_event = {
@@ -3093,6 +3247,3515 @@ fleet_event = {
 		name = toho.8116.b
 		ai_chance = { base = 10 }
 	}
+}
+
+# [NEW] Entering Shroud, overwrited.
+country_event = {
+    id = toho.8300
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { ag_zeta_crisis_event_active = yes }
+            country_event = { id = toho.8999 }      # 虚境受抑制
+        } else_if = {
+            limit = { touhou_is_shroud_excited = yes }
+            country_event = { id = toho.8301 }      # 虚境活跃
+        } else_if = {
+            limit = { touhou_is_shroud_inhibited = yes }
+            country_event = { id = toho.8997 }      # 虚境受抑制
+        } else = {
+            log = "into to toho common shroud."
+            reroll_random = yes
+            random_list = {
+                # 以下三个为幻想乡灵能裂解器
+                150 = {
+                    modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                    modifier = { factor = 0 has_country_flag = tech_touhou_psionic_lighting_pd }
+                    if = {
+                        limit = {
+                            OR = {
+                                has_technology = tech_touhou_psionic_lighting_pd
+                                has_tech_option = tech_touhou_psionic_lighting_pd
+                            }
+                        }
+                        country_event = { id = toho.8901 }
+                    } else = {
+                        country_event = { id = toho.8411 }
+                    }
+                }
+                150 = {
+                    modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                    modifier = { factor = 0 has_country_flag = tech_touhou_psionic_lighting_xl }
+                    if = {
+                        limit = {
+                            OR = {
+                                has_technology = tech_touhou_psionic_lighting_xl
+                                has_tech_option = tech_touhou_psionic_lighting_xl
+                            }
+                        }
+                        country_event = { id = toho.8901 }
+                    } else = {
+                        country_event = { id = toho.8413 }
+                    }
+                }
+                150 = {
+                    modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                    modifier = { factor = 0 has_country_flag = tech_touhou_psionic_lighting_t }
+                    if = {
+                        limit = {
+                            OR = {
+                                has_technology = tech_touhou_psionic_lighting_t
+                                has_tech_option = tech_touhou_psionic_lighting_t
+                            }
+                        }
+                        country_event = { id = toho.8901 }
+                    } else = {
+                        country_event = { id = toho.8415 }
+                    }
+                }
+                150 = {
+                    modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                    modifier = { factor = 0 has_country_flag = tech_trait_touhou_psionic }
+                    if = {
+                        limit = {
+                            OR = {
+                                has_technology = tech_trait_touhou_psionic
+                                has_tech_option = tech_trait_touhou_psionic
+                            }
+                        }
+                        country_event = { id = toho.8901 }
+                    } else = {
+                        country_event = { id = toho.8418 }
+                    }
+                }
+                0 = { country_event = { id = shroud.3 } }
+                100 = {
+                    modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                    modifier = { factor = 0 has_country_flag = tech_th_advanced_shield_given }
+                    set_country_flag = tech_th_advanced_shield_given
+                    if = {
+                        limit = { NOT = { has_origin = origin_spth_story_gensokyo } }
+                        if = {
+                            limit = { has_civic = civic_gensokyo }
+                            if = {
+                                limit = {
+                                    OR = {
+                                        has_technology = tech_th_shield_barrier_psionic
+                                        has_tech_option = tech_th_shield_barrier_psionic
+                                    }
+                                }
+                                country_event = { id = toho.8901 }	# Failsafe
+                            } else = {
+                                country_event = { id = toho.8409 }
+                            }
+                        } else = {
+                            if = {
+                                limit = {
+                                    OR = {
+                                        has_technology = tech_th_armor_scarlet_psionic
+                                        has_tech_option = tech_th_armor_scarlet_psionic
+                                    }
+                                }
+                                country_event = { id = toho.8901 }	# Failsafe
+                            } else = {
+                                country_event = { id = toho.8409 }
+                            }
+                        }
+                    } else = {
+                        if = {
+                            limit = {
+                                AND = {
+                                    OR = {
+                                        has_technology = tech_th_armor_barrier_psionic_story
+                                        has_tech_option = tech_th_armor_barrier_psionic_story
+                                    }
+                                    OR = {
+                                        has_technology = tech_th_shield_barrier_psionic_story
+                                        has_tech_option = tech_th_shield_barrier_psionic_story
+                                    }
+                                }
+                            }
+                            country_event = { id = toho.8901 }	# Failsafe
+                        } else = {
+                            country_event = { id = toho.8409 }
+                        }
+                    }
+                }
+                # 100 = {
+                #     modifier = {
+                #         factor = 0                                           # 随机事件，袿姬小超主
+                #         NOT = { has_authority = auth_gensokyo }
+                #     }
+                #     modifier = { factor = 0 has_country_flag = toho_8302_fired }
+                #     if = {
+                #         limit = { has_authority = auth_gensokyo }
+                #         set_country_flag = toho_8302_fired
+                #         country_event = { id = toho.8302 }
+                #     }
+                # }
+                # 100 = {
+                #     modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                #     modifier = {
+                #         factor = 0                                           # 随机事件，崇拜FUMO的原始文明
+                #         has_country_flag = toho_8310_fired
+                #     }
+                #     if = {
+                #         limit = { has_authority = auth_gensokyo }
+                #         set_country_flag = toho_8310_fired
+                #         country_event = { id = toho.8310 }
+                #     }
+                # }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3000_happened
+                                has_covenant = the_eater_of_worlds
+                                has_country_flag = the_eater_of_worlds_betrayal
+                            }
+                            is_in_domain = the_eater_of_worlds
+                        }
+                    }
+                    country_event = { id = shroud.3000 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3005_happened
+                                has_covenant = the_eater_of_worlds
+                                has_country_flag = the_eater_of_worlds_betrayal
+                            }
+                            any_country = {
+                                root = {
+                                    has_claim = prev
+                                    relative_power = {
+                                        who = prev
+                                        category = fleet
+                                        value > equivalent
+                                    }
+                                }
+                            }
+                            is_in_domain = the_eater_of_worlds
+                        }
+                    }
+                    country_event = { id = shroud.3005 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3010_happened
+                                has_covenant = the_eater_of_worlds
+                                has_country_flag = the_eater_of_worlds_betrayal
+                            }
+                            pop_amount >= 1000
+                            is_in_domain = the_eater_of_worlds
+                        }
+                    }
+                    country_event = { id = shroud.3010 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3015_happened
+                                has_covenant = the_composer_of_strands
+                                has_country_flag = the_composer_of_strands_betrayal
+                            }
+                            is_in_domain = the_composer_of_strands
+                        }
+                    }
+                    country_event = { id = shroud.3015 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3020_happened
+                                has_covenant = the_composer_of_strands
+                                has_country_flag = the_composer_of_strands_betrayal
+                            }
+                            is_in_domain = the_composer_of_strands
+                        }
+                    }
+                    country_event = { id = shroud.3020 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3025_happened
+                                has_covenant = the_composer_of_strands
+                                has_country_flag = the_composer_of_strands_betrayal
+                            }
+                            is_in_domain = the_composer_of_strands
+                            any_planet_within_border = { is_terraforming = yes }
+                        }
+                    }
+                    country_event = { id = shroud.3025 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3030_happened
+                                has_covenant = the_cradle_of_souls
+                                has_country_flag = the_cradle_of_souls_betrayal
+                            }
+                            is_in_domain = the_cradle_of_souls
+                        }
+                    }
+                    country_event = { id = shroud.3030 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3035_happened
+                                has_covenant = the_cradle_of_souls
+                                has_country_flag = the_cradle_of_souls_betrayal
+                            }
+                            is_in_domain = the_cradle_of_souls
+                        }
+                    }
+                    country_event = { id = shroud.3035 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3040_happened
+                                has_covenant = the_instrument_of_desire
+                                has_country_flag = the_instrument_of_desire_betrayal
+                            }
+                            is_in_domain = the_instrument_of_desire
+                        }
+                    }
+                    country_event = { id = shroud.3040 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3045_happened
+                                has_covenant = the_instrument_of_desire
+                                has_country_flag = the_instrument_of_desire_betrayal
+                            }
+                            is_in_domain = the_instrument_of_desire
+                        }
+                    }
+                    country_event = { id = shroud.3045 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOT = { has_country_flag = shroud_3050_happened }
+                            OR = {
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_eater_of_worlds
+                                        has_country_flag = shroud_3050_happened_eater
+                                    }
+                                    is_in_domain = the_eater_of_worlds
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_composer_of_strands
+                                        has_country_flag = shroud_3050_happened_composer
+                                    }
+                                    is_in_domain = the_composer_of_strands
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_cradle_of_souls
+                                        has_country_flag = shroud_3050_happened_cradle
+                                    }
+                                    is_in_domain = the_cradle_of_souls
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_instrument_of_desire
+                                        has_country_flag = shroud_3050_happened_instrument
+                                    }
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3050 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOT = { has_country_flag = shroud_3055_happened }
+                            OR = {
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_eater_of_worlds
+                                        has_country_flag = shroud_3055_happened_eater
+                                    }
+                                    is_in_domain = the_eater_of_worlds
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_composer_of_strands
+                                        has_country_flag = shroud_3055_happened_composer
+                                    }
+                                    is_in_domain = the_composer_of_strands
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_cradle_of_souls
+                                        has_country_flag = shroud_3055_happened_cradle
+                                    }
+                                    is_in_domain = the_cradle_of_souls
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_instrument_of_desire
+                                        has_country_flag = shroud_3055_happened_instrument
+                                    }
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3055 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOT = { has_country_flag = shroud_3060_happened }
+                            OR = {
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_eater_of_worlds
+                                        has_country_flag = shroud_3060_happened_eater
+                                    }
+                                    is_in_domain = the_eater_of_worlds
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_composer_of_strands
+                                        has_country_flag = shroud_3060_happened_composer
+                                    }
+                                    is_in_domain = the_composer_of_strands
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_cradle_of_souls
+                                        has_country_flag = shroud_3060_happened_cradle
+                                    }
+                                    is_in_domain = the_cradle_of_souls
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_instrument_of_desire
+                                        has_country_flag = shroud_3060_happened_instrument
+                                    }
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3060 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOT = { has_country_flag = shroud_3065_happened }
+                            OR = {
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_eater_of_worlds
+                                        has_country_flag = shroud_3065_happened_eater
+                                    }
+                                    is_in_domain = the_eater_of_worlds
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_composer_of_strands
+                                        has_country_flag = shroud_3065_happened_composer
+                                    }
+                                    is_in_domain = the_composer_of_strands
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_cradle_of_souls
+                                        has_country_flag = shroud_3065_happened_cradle
+                                    }
+                                    is_in_domain = the_cradle_of_souls
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_instrument_of_desire
+                                        has_country_flag = shroud_3065_happened_instrument
+                                    }
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3065 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOT = { has_country_flag = shroud_3070_happened }
+                            OR = {
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_eater_of_worlds
+                                        has_country_flag = shroud_3070_happened_eater
+                                    }
+                                    is_in_domain = the_eater_of_worlds
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_composer_of_strands
+                                        has_country_flag = shroud_3070_happened_composer
+                                    }
+                                    is_in_domain = the_composer_of_strands
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_cradle_of_souls
+                                        has_country_flag = shroud_3070_happened_cradle
+                                    }
+                                    is_in_domain = the_cradle_of_souls
+                                }
+                                AND = {
+                                    NOR = {
+                                        has_covenant = the_instrument_of_desire
+                                        has_country_flag = shroud_3070_happened_instrument
+                                    }
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3070 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOT = { has_country_flag = shroud_3100_happened }
+                            NOR = {
+                                has_technology = tech_zro_launcher
+                                has_tech_option = tech_zro_launcher
+                            }
+                            OR = {
+                                AND = {
+                                    NOT = { has_covenant = the_eater_of_worlds }
+                                    is_in_domain = the_eater_of_worlds
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_composer_of_strands }
+                                    is_in_domain = the_composer_of_strands
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_cradle_of_souls }
+                                    is_in_domain = the_cradle_of_souls
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_instrument_of_desire }
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3100 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOT = { has_country_flag = shroud_3105_happened }
+                            NOR = {
+                                has_technology = tech_psionic_lightning
+                                has_tech_option = tech_psionic_lightning
+                            }
+                            OR = {
+                                AND = {
+                                    NOT = { has_covenant = the_eater_of_worlds }
+                                    is_in_domain = the_eater_of_worlds
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_composer_of_strands }
+                                    is_in_domain = the_composer_of_strands
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_cradle_of_souls }
+                                    is_in_domain = the_cradle_of_souls
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_instrument_of_desire }
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3105 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOT = { has_country_flag = shroud_3110_happened }
+                            NOR = {
+                                has_technology = tech_psionic_disruptor
+                                has_tech_option = tech_psionic_disruptor
+                            }
+                            OR = {
+                                AND = {
+                                    NOT = { has_covenant = the_eater_of_worlds }
+                                    is_in_domain = the_eater_of_worlds
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_composer_of_strands }
+                                    is_in_domain = the_composer_of_strands
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_cradle_of_souls }
+                                    is_in_domain = the_cradle_of_souls
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_instrument_of_desire }
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3110 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOT = { has_country_flag = shroud_3115_happened }
+                            NOR = {
+                                has_technology = tech_psionic_bombers
+                                has_tech_option = tech_psionic_bombers
+                            }
+                            OR = {
+                                AND = {
+                                    NOT = { has_covenant = the_eater_of_worlds }
+                                    is_in_domain = the_eater_of_worlds
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_composer_of_strands }
+                                    is_in_domain = the_composer_of_strands
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_cradle_of_souls }
+                                    is_in_domain = the_cradle_of_souls
+                                }
+                                AND = {
+                                    NOT = { has_covenant = the_instrument_of_desire }
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3115 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            has_country_flag = has_delved_in_shroud
+                            has_resource = { type = energy amount >= 2000 }
+                            has_resource = { type = sr_zro amount >= 500 }
+                            NOT = { has_country_flag = exclude_distant_echo_delve_event }
+                            NOT = { has_country_flag = has_recently_seen_distant_echo }
+                            OR = {
+                                has_patron_relation = { patron = the_composer_of_strands contact = none }
+                                has_patron_relation = { patron = the_eater_of_worlds contact = none }
+                                has_patron_relation = { patron = the_instrument_of_desire contact = none }
+                                has_patron_relation = { patron = the_cradle_of_souls contact = none }
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3120 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3200_happened
+                                has_country_flag = forging_our_own_path
+                            }
+                            has_patron_relation = { patron = the_animator_of_clay contact = completed }
+                            OR = {
+                                is_in_domain = the_cradle_of_souls
+                                is_in_domain = the_composer_of_strands
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3200 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3210_happened
+                                has_country_flag = forging_our_own_path
+                            }
+                            has_patron_relation = { patron = the_outsider contact = completed }
+                            OR = {
+                                is_in_domain = the_cradle_of_souls
+                                is_in_domain = the_composer_of_strands
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3210 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3220_happened
+                                has_country_flag = forging_our_own_path
+                            }
+                            has_patron_relation = { patron = the_golden_dream contact = completed }
+                            OR = {
+                                is_in_domain = the_cradle_of_souls
+                                is_in_domain = the_instrument_of_desire
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3220 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3230_happened
+                                has_country_flag = forging_our_own_path
+                            }
+                            has_patron_relation = { patron = the_endless_tide contact = completed }
+                            OR = {
+                                is_in_domain = the_eater_of_worlds
+                                is_in_domain = the_composer_of_strands
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3230 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3240_happened
+                                has_country_flag = forging_our_own_path
+                            }
+                            has_patron_relation = { patron = the_pale_mountain contact = completed }
+                            OR = {
+                                is_in_domain = the_eater_of_worlds
+                                is_in_domain = the_composer_of_strands
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3240 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3250_happened
+                                has_country_flag = forging_our_own_path
+                            }
+                            has_patron_relation = { patron = the_hollow_point contact = completed }
+                            OR = {
+                                is_in_domain = the_cradle_of_souls
+                                is_in_domain = the_instrument_of_desire
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3250 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3260_happened
+                                has_country_flag = forging_our_own_path
+                            }
+                            has_patron_relation = { patron = the_vacant_throne contact = completed }
+                            OR = {
+                                is_in_domain = the_eater_of_worlds
+                                is_in_domain = the_instrument_of_desire
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3260 }
+                }
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NAND = {
+                            NOR = {
+                                has_country_flag = shroud_3270_happened
+                                has_country_flag = forging_our_own_path
+                            }
+                            has_patron_relation = { patron = the_black_river contact = completed }
+                            OR = {
+                                is_in_domain = the_eater_of_worlds
+                                is_in_domain = the_instrument_of_desire
+                            }
+                        }
+                    }
+                    country_event = { id = shroud.3270 }
+                }
+                1 = { country_event = { id = utopia.3002 } }
+            }
+        }
+    }
+}
+country_event = {
+    id = toho.8301
+    title = toho.8301.name
+    desc = {
+        trigger = { NOR = { has_modifier = "shroud_cooldown" has_modifier = "shroud_precog_cooldown" } }
+        text = toho.8301.desc.1
+        text = toho.8301.desc.2
+        text = toho.8301.desc.3
+        text = toho.8301.desc.4
+        text = toho.8301.desc.5
+        text = toho.8301.desc.6
+        text = toho.8301.desc.7
+        text = toho.8301.desc.8
+        text = toho.8301.desc.9
+        text = toho.8301.desc.10
+        text = toho.8301.desc.11
+    }
+    desc = {
+        trigger = {
+            NOR = { has_modifier = "shroud_cooldown" has_modifier = "shroud_precog_cooldown" }
+            has_global_flag = spth_lunar_capital_psi_crisis_ended
+        }
+        text = toho.8301.desc.12
+        text = toho.8301.desc.13
+        text = toho.8301.desc.14
+        text = toho.8301.desc.15
+        text = toho.8301.desc.16
+        text = toho.8301.desc.17
+        text = toho.8301.desc.18
+        text = toho.8301.desc.20
+        text = toho.8301.desc.21
+        text = toho.8301.desc.22
+    }
+    desc = {
+        trigger = {
+            NOR = { has_modifier = "shroud_cooldown" has_modifier = "shroud_precog_cooldown" }
+            has_global_flag = ag_zeta_crisis_ended
+        }
+        text = toho.8301.desc.14
+        text = toho.8301.desc.16
+        text = toho.8301.desc.17
+        text = toho.8301.desc.18
+        text = toho.8301.desc.19
+        text = toho.8301.desc.20
+        text = toho.8301.desc.21
+        text = toho.8301.desc.22
+        text = toho.8301.desc.23
+        text = toho.8301.desc.24
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    trigger = {
+        any_country = {
+            OR = {
+                is_country_type = shroud
+                is_country_type = ag_dummy_shroud
+            }
+        }
+        NOT = { has_country_flag = shroud_diplomacy_engaged }
+    }
+    immediate = {
+        set_country_flag = shroud_diplomacy_engaged
+    }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+        }
+    }
+    option = {
+        name = "toho.8301.a"
+        hidden_effect = {
+            if = {
+                limit = {
+                    NOT = { has_country_flag = tech_th_advanced_shield_given }
+                    has_authority = auth_gensokyo
+                }
+                set_country_flag = tech_th_advanced_shield_given
+                if = {
+                    limit = { NOT = { has_origin = origin_spth_story_gensokyo } }
+                    if = {
+                        limit = { has_civic = civic_gensokyo }
+                        if = {
+                            limit = {
+                                OR = {
+                                    has_technology = tech_th_shield_barrier_psionic
+                                    has_tech_option = tech_th_shield_barrier_psionic
+                                }
+                            }
+                            country_event = { id = toho.8901 }	# Failsafe
+                        } else = {
+                            country_event = { id = toho.8409 }
+                        }
+                    } else = {
+                        if = {
+                            limit = {
+                                OR = {
+                                    has_technology = tech_th_armor_scarlet_psionic
+                                    has_tech_option = tech_th_armor_scarlet_psionic
+                                }
+                            }
+                            country_event = { id = toho.8901 }	# Failsafe
+                        } else = {
+                            country_event = { id = toho.8409 }
+                        }
+                    }
+                } else = {
+                    if = {
+                        limit = {
+                            AND = {
+                                OR = {
+                                    has_technology = tech_th_armor_barrier_psionic_story
+                                    has_tech_option = tech_th_armor_barrier_psionic_story
+                                }
+                                OR = {
+                                    has_technology = tech_th_shield_barrier_psionic_story
+                                    has_tech_option = tech_th_shield_barrier_psionic_story
+                                }
+                            }
+                        }
+                        country_event = { id = toho.8901 }	# Failsafe
+                    } else = {
+                        country_event = { id = toho.8409 }
+                    }
+                }
+            } else_if = {
+                limit = {
+                    NAND = {
+                        OR = { has_technology = "tech_psi_jump_drive_1" has_tech_option = "tech_psi_jump_drive_1" }
+                        OR = { has_technology = "tech_psionic_shield" has_tech_option = "tech_psionic_shield" }
+                        OR = { has_technology = "tech_precognition_interface" has_tech_option = "tech_precognition_interface" }
+                    }
+                }
+                reroll_random = yes
+                random_list = {
+                    10 = {
+                        modifier = { factor = 0 OR = { has_technology = "tech_psi_jump_drive_1" has_tech_option = "tech_psi_jump_drive_1" } }
+                        if = {
+                            limit = { NOR = { has_technology = "tech_psi_jump_drive_1" has_tech_option = "tech_psi_jump_drive_1" } }
+                            country_event = { id = toho.8400 }
+                        }
+                        else = { country_event = { id = toho.8901 } }	# Failsafe
+                    }
+                    10 = {
+                        modifier = { factor = 0 OR = { has_technology = "tech_psionic_shield" has_tech_option = "tech_psionic_shield" } }
+                        if = {
+                            limit = { NOR = { has_technology = "tech_psionic_shield" has_tech_option = "tech_psionic_shield" } }
+                            country_event = { id = toho.8403 }
+                        }
+                        else = { country_event = { id = toho.8901 } }	# Failsafe
+                    }
+                    10 = {
+                        modifier = { factor = 0 OR = { has_technology = "tech_precognition_interface" has_tech_option = "tech_precognition_interface" } }
+                        if = {
+                            limit = { NOR = { has_technology = "tech_precognition_interface" has_tech_option = "tech_precognition_interface" } }
+                            country_event = { id = toho.8406 }
+                        }
+                        else = { country_event = { id = toho.8901 } }	# Failsafe
+                    }
+                }
+            } else = {
+                reroll_random = yes
+                random_list = {
+                    # 以下三个为幻想乡灵能裂解器
+                    50 = {
+                        modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                        modifier = { factor = 0 has_country_flag = tech_touhou_psionic_lighting_pd }
+                        if = {
+                            limit = {
+                                OR = {
+                                    has_technology = tech_touhou_psionic_lighting_pd
+                                    has_tech_option = tech_touhou_psionic_lighting_pd
+                                }
+                            }
+                            country_event = { id = toho.8901 }
+                        } else = {
+                            country_event = { id = toho.8411 }
+                        }
+                    }
+                    50 = {
+                        modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                        modifier = { factor = 0 has_country_flag = tech_touhou_psionic_lighting_xl }
+                        if = {
+                            limit = {
+                                OR = {
+                                    has_technology = tech_touhou_psionic_lighting_xl
+                                    has_tech_option = tech_touhou_psionic_lighting_xl
+                                }
+                            }
+                            country_event = { id = toho.8901 }
+                        } else = {
+                            country_event = { id = toho.8413 }
+                        }
+                    }
+                    50 = {
+                        modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                        modifier = { factor = 0 has_country_flag = tech_touhou_psionic_lighting_t }
+                        if = {
+                            limit = {
+                                OR = {
+                                    has_technology = tech_touhou_psionic_lighting_t
+                                    has_tech_option = tech_touhou_psionic_lighting_t
+                                }
+                            }
+                            country_event = { id = toho.8901 }
+                        } else = {
+                            country_event = { id = toho.8415 }
+                        }
+                    }
+                    25 = {
+                        modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                        modifier = { factor = 0 has_country_flag = tech_trait_touhou_psionic }
+                        if = {
+                            limit = {
+                                OR = {
+                                    has_technology = tech_trait_touhou_psionic
+                                    has_tech_option = tech_trait_touhou_psionic
+                                }
+                            }
+                            country_event = { id = toho.8901 }
+                        } else = {
+                            country_event = { id = toho.8418 }
+                        }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3000_happened
+                                    has_covenant = the_eater_of_worlds
+                                    has_country_flag = the_eater_of_worlds_betrayal
+                                }
+                                is_in_domain = the_eater_of_worlds
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3000_happened
+                                    has_covenant = the_eater_of_worlds
+                                    has_country_flag = the_eater_of_worlds_betrayal
+                                }
+                                is_in_domain = the_eater_of_worlds
+                            }
+                            country_event = { id = touhou_shroud.2001 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3005_happened
+                                    has_covenant = the_eater_of_worlds
+                                    has_country_flag = the_eater_of_worlds_betrayal
+                                }
+                                # the player has claims on territories owned by other empires that are weaker than them
+                                any_country = {
+                                    root = {
+                                        has_claim = prev
+                                        relative_power = {
+                                            who = prev
+                                            category = fleet
+                                            value > equivalent
+                                        }
+                                    }
+                                }
+                                is_in_domain = the_eater_of_worlds
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3005_happened
+                                    has_covenant = the_eater_of_worlds
+                                    has_country_flag = the_eater_of_worlds_betrayal
+                                }
+                                # the player has claims on territories owned by other empires that are weaker than them
+                                any_country = {
+                                    root = {
+                                        has_claim = prev
+                                        relative_power = {
+                                            who = prev
+                                            category = fleet
+                                            value > equivalent
+                                        }
+                                    }
+                                }
+                                is_in_domain = the_eater_of_worlds
+                            }
+                            country_event = { id = touhou_shroud.2005 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3010_happened
+                                    has_covenant = the_eater_of_worlds
+                                    has_country_flag = the_eater_of_worlds_betrayal
+                                }
+                                pop_amount >= 1000
+                                is_in_domain = the_eater_of_worlds
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3010_happened
+                                    has_covenant = the_eater_of_worlds
+                                    has_country_flag = the_eater_of_worlds_betrayal
+                                }
+                                pop_amount >= 1000
+                                is_in_domain = the_eater_of_worlds
+                            }
+                            country_event = { id = touhou_shroud.2010 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3015_happened
+                                    has_covenant = the_composer_of_strands
+                                    has_country_flag = the_composer_of_strands_betrayal
+                                }
+                                is_in_domain = the_composer_of_strands
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3015_happened
+                                    has_covenant = the_composer_of_strands
+                                    has_country_flag = the_composer_of_strands_betrayal
+                                }
+                                is_in_domain = the_composer_of_strands
+                            }
+                            country_event = { id = touhou_shroud.2015 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3020_happened
+                                    has_covenant = the_composer_of_strands
+                                    has_country_flag = the_composer_of_strands_betrayal
+                                }
+                                is_in_domain = the_composer_of_strands
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3020_happened
+                                    has_covenant = the_composer_of_strands
+                                    has_country_flag = the_composer_of_strands_betrayal
+                                }
+                                is_in_domain = the_composer_of_strands
+                            }
+                            country_event = { id = touhou_shroud.2020 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3025_happened
+                                    has_covenant = the_composer_of_strands
+                                    has_country_flag = the_composer_of_strands_betrayal
+                                }
+                                is_in_domain = the_composer_of_strands
+                                any_planet_within_border = {
+                                    is_terraforming = yes
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3025_happened
+                                    has_covenant = the_composer_of_strands
+                                    has_country_flag = the_composer_of_strands_betrayal
+                                }
+                                is_in_domain = the_composer_of_strands
+                                any_planet_within_border = {
+                                    is_terraforming = yes
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2025 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3030_happened
+                                    has_covenant = the_cradle_of_souls
+                                    has_country_flag = the_cradle_of_souls_betrayal
+                                }
+                                is_in_domain = the_cradle_of_souls
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3030_happened
+                                    has_covenant = the_cradle_of_souls
+                                    has_country_flag = the_cradle_of_souls_betrayal
+                                }
+                                is_in_domain = the_cradle_of_souls
+                            }
+                            country_event = { id = touhou_shroud.2030 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3035_happened
+                                    has_covenant = the_cradle_of_souls
+                                    has_country_flag = the_cradle_of_souls_betrayal
+                                }
+                                is_in_domain = the_cradle_of_souls
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3035_happened
+                                    has_covenant = the_cradle_of_souls
+                                    has_country_flag = the_cradle_of_souls_betrayal
+                                }
+                                is_in_domain = the_cradle_of_souls
+                            }
+                            country_event = { id = touhou_shroud.2035 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3040_happened
+                                    has_covenant = the_instrument_of_desire
+                                    has_country_flag = the_instrument_of_desire_betrayal
+                                }
+                                is_in_domain = the_instrument_of_desire
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3040_happened
+                                    has_covenant = the_instrument_of_desire
+                                    has_country_flag = the_instrument_of_desire_betrayal
+                                }
+                                is_in_domain = the_instrument_of_desire
+                            }
+                            country_event = { id = touhou_shroud.2040 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3045_happened
+                                    has_covenant = the_instrument_of_desire
+                                    has_country_flag = the_instrument_of_desire_betrayal
+                                }
+                                is_in_domain = the_instrument_of_desire
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3045_happened
+                                    has_covenant = the_instrument_of_desire
+                                    has_country_flag = the_instrument_of_desire_betrayal
+                                }
+                                is_in_domain = the_instrument_of_desire
+                            }
+                            country_event = { id = touhou_shroud.2045 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOT = { has_country_flag = shroud_3050_happened }
+                                OR = {
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_eater_of_worlds
+                                            has_country_flag = shroud_3050_happened_eater
+                                        }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_composer_of_strands
+                                            has_country_flag = shroud_3050_happened_composer
+                                        }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_cradle_of_souls
+                                            has_country_flag = shroud_3050_happened_cradle
+                                        }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_instrument_of_desire
+                                            has_country_flag = shroud_3050_happened_instrument
+                                        }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOT = { has_country_flag = shroud_3050_happened }
+                                OR = {
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_eater_of_worlds
+                                            has_country_flag = shroud_3050_happened_eater
+                                        }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_composer_of_strands
+                                            has_country_flag = shroud_3050_happened_composer
+                                        }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_cradle_of_souls
+                                            has_country_flag = shroud_3050_happened_cradle
+                                        }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_instrument_of_desire
+                                            has_country_flag = shroud_3050_happened_instrument
+                                        }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2050 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOT = { has_country_flag = shroud_3055_happened }
+                                OR = {
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_eater_of_worlds
+                                            has_country_flag = shroud_3055_happened_eater
+                                        }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_composer_of_strands
+                                            has_country_flag = shroud_3055_happened_composer
+                                        }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_cradle_of_souls
+                                            has_country_flag = shroud_3055_happened_cradle
+                                        }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_instrument_of_desire
+                                            has_country_flag = shroud_3055_happened_instrument
+                                        }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOT = { has_country_flag = shroud_3055_happened }
+                                OR = {
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_eater_of_worlds
+                                            has_country_flag = shroud_3055_happened_eater
+                                        }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_composer_of_strands
+                                            has_country_flag = shroud_3055_happened_composer
+                                        }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_cradle_of_souls
+                                            has_country_flag = shroud_3055_happened_cradle
+                                        }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOR = {
+                                            has_covenant = the_instrument_of_desire
+                                            has_country_flag = shroud_3055_happened_instrument
+                                        }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2055 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    # 10 = {
+                    #     modifier = {
+                    #         factor = 0
+                    #         NAND = {
+                    #             NOT = { has_country_flag = shroud_3060_happened }
+                    #             OR = {
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_eater_of_worlds
+                    #                         has_country_flag = shroud_3060_happened_eater
+                    #                     }
+                    #                     is_in_domain = the_eater_of_worlds
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_composer_of_strands
+                    #                         has_country_flag = shroud_3060_happened_composer
+                    #                     }
+                    #                     is_in_domain = the_composer_of_strands
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_cradle_of_souls
+                    #                         has_country_flag = shroud_3060_happened_cradle
+                    #                     }
+                    #                     is_in_domain = the_cradle_of_souls
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_instrument_of_desire
+                    #                         has_country_flag = shroud_3060_happened_instrument
+                    #                     }
+                    #                     is_in_domain = the_instrument_of_desire
+                    #                 }
+                    #             }
+                    #         }
+                    #     }
+                    #     if = {
+                    #         limit = {
+                    #             NOT = { has_country_flag = shroud_3060_happened }
+                    #             OR = {
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_eater_of_worlds
+                    #                         has_country_flag = shroud_3060_happened_eater
+                    #                     }
+                    #                     is_in_domain = the_eater_of_worlds
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_composer_of_strands
+                    #                         has_country_flag = shroud_3060_happened_composer
+                    #                     }
+                    #                     is_in_domain = the_composer_of_strands
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_cradle_of_souls
+                    #                         has_country_flag = shroud_3060_happened_cradle
+                    #                     }
+                    #                     is_in_domain = the_cradle_of_souls
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_instrument_of_desire
+                    #                         has_country_flag = shroud_3060_happened_instrument
+                    #                     }
+                    #                     is_in_domain = the_instrument_of_desire
+                    #                 }
+                    #             }
+                    #         }
+                    #         country_event = { id = touhou_shroud.2560 }
+                    #     }
+                    #     else = { country_event = { id = toho.8901 } }
+                    # }
+                    # 10 = {
+                    #     modifier = {
+                    #         factor = 0
+                    #         NAND = {
+                    #             NOT = { has_country_flag = shroud_3065_happened }
+                    #             OR = {
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_eater_of_worlds
+                    #                         has_country_flag = shroud_3065_happened_eater
+                    #                     }
+                    #                     is_in_domain = the_eater_of_worlds
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_composer_of_strands
+                    #                         has_country_flag = shroud_3065_happened_composer
+                    #                     }
+                    #                     is_in_domain = the_composer_of_strands
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_cradle_of_souls
+                    #                         has_country_flag = shroud_3065_happened_cradle
+                    #                     }
+                    #                     is_in_domain = the_cradle_of_souls
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_instrument_of_desire
+                    #                         has_country_flag = shroud_3065_happened_instrument
+                    #                     }
+                    #                     is_in_domain = the_instrument_of_desire
+                    #                 }
+                    #             }
+                    #         }
+                    #     }
+                    #     if = {
+                    #         limit = {
+                    #             NOT = { has_country_flag = shroud_3065_happened }
+                    #             OR = {
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_eater_of_worlds
+                    #                         has_country_flag = shroud_3065_happened_eater
+                    #                     }
+                    #                     is_in_domain = the_eater_of_worlds
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_composer_of_strands
+                    #                         has_country_flag = shroud_3065_happened_composer
+                    #                     }
+                    #                     is_in_domain = the_composer_of_strands
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_cradle_of_souls
+                    #                         has_country_flag = shroud_3065_happened_cradle
+                    #                     }
+                    #                     is_in_domain = the_cradle_of_souls
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_instrument_of_desire
+                    #                         has_country_flag = shroud_3065_happened_instrument
+                    #                     }
+                    #                     is_in_domain = the_instrument_of_desire
+                    #                 }
+                    #             }
+                    #         }
+                    #         country_event = { id = touhou_shroud.2565 }
+                    #     }
+                    #     else = { country_event = { id = toho.8901 } }
+                    # }
+                    # 10 = {
+                    #     modifier = {
+                    #         factor = 0
+                    #         NAND = {
+                    #             NOT = { has_country_flag = shroud_3070_happened }
+                    #             OR = {
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_eater_of_worlds
+                    #                         has_country_flag = shroud_3070_happened_eater
+                    #                     }
+                    #                     is_in_domain = the_eater_of_worlds
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_composer_of_strands
+                    #                         has_country_flag = shroud_3070_happened_composer
+                    #                     }
+                    #                     is_in_domain = the_composer_of_strands
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_cradle_of_souls
+                    #                         has_country_flag = shroud_3070_happened_cradle
+                    #                     }
+                    #                     is_in_domain = the_cradle_of_souls
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_instrument_of_desire
+                    #                         has_country_flag = shroud_3070_happened_instrument
+                    #                     }
+                    #                     is_in_domain = the_instrument_of_desire
+                    #                 }
+                    #             }
+                    #         }
+                    #     }
+                    #     if = {
+                    #         limit = {
+                    #             NOT = { has_country_flag = shroud_3070_happened }
+                    #             OR = {
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_eater_of_worlds
+                    #                         has_country_flag = shroud_3070_happened_eater
+                    #                     }
+                    #                     is_in_domain = the_eater_of_worlds
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_composer_of_strands
+                    #                         has_country_flag = shroud_3070_happened_composer
+                    #                     }
+                    #                     is_in_domain = the_composer_of_strands
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_cradle_of_souls
+                    #                         has_country_flag = shroud_3070_happened_cradle
+                    #                     }
+                    #                     is_in_domain = the_cradle_of_souls
+                    #                 }
+                    #                 AND = {
+                    #                     NOR = {
+                    #                         has_covenant = the_instrument_of_desire
+                    #                         has_country_flag = shroud_3070_happened_instrument
+                    #                     }
+                    #                     is_in_domain = the_instrument_of_desire
+                    #                 }
+                    #             }
+                    #         }
+                    #         country_event = { id = touhou_shroud.2570 }
+                    #     }
+                    #     else = { country_event = { id = toho.8901 } }
+                    # }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOT = { has_country_flag = shroud_3100_happened }
+                                NOR = {
+                                    has_technology = tech_zro_launcher
+                                    has_tech_option = tech_zro_launcher
+                                }
+                                OR = {
+                                    AND = {
+                                        NOT = { has_covenant = the_eater_of_worlds }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_composer_of_strands }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_cradle_of_souls }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_instrument_of_desire }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOT = { has_country_flag = shroud_3100_happened }
+                                NOR = {
+                                    has_technology = tech_zro_launcher
+                                    has_tech_option = tech_zro_launcher
+                                }
+                                OR = {
+                                    AND = {
+                                        NOT = { has_covenant = the_eater_of_worlds }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_composer_of_strands }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_cradle_of_souls }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_instrument_of_desire }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2100 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOT = { has_country_flag = shroud_3105_happened }
+                                NOR = {
+                                    has_technology = tech_psionic_lightning
+                                    has_tech_option = tech_psionic_lightning
+                                }
+                                OR = {
+                                    AND = {
+                                        NOT = { has_covenant = the_eater_of_worlds }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_composer_of_strands }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_cradle_of_souls }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_instrument_of_desire }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOT = { has_country_flag = shroud_3105_happened }
+                                NOR = {
+                                    has_technology = tech_psionic_lightning
+                                    has_tech_option = tech_psionic_lightning
+                                }
+                                OR = {
+                                    AND = {
+                                        NOT = { has_covenant = the_eater_of_worlds }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_composer_of_strands }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_cradle_of_souls }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_instrument_of_desire }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2105 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOT = { has_country_flag = shroud_3110_happened }
+                                NOR = {
+                                    has_technology = tech_psionic_disruptor
+                                    has_tech_option = tech_psionic_disruptor
+                                }
+                                OR = {
+                                    AND = {
+                                        NOT = { has_covenant = the_eater_of_worlds }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_composer_of_strands }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_cradle_of_souls }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_instrument_of_desire }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOT = { has_country_flag = shroud_3110_happened }
+                                NOR = {
+                                    has_technology = tech_psionic_disruptor
+                                    has_tech_option = tech_psionic_disruptor
+                                }
+                                OR = {
+                                    AND = {
+                                        NOT = { has_covenant = the_eater_of_worlds }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_composer_of_strands }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_cradle_of_souls }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_instrument_of_desire }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2110 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOT = { has_country_flag = shroud_3115_happened }
+                                NOR = {
+                                    has_technology = tech_psionic_bombers
+                                    has_tech_option = tech_psionic_bombers
+                                }
+                                OR = {
+                                    AND = {
+                                        NOT = { has_covenant = the_eater_of_worlds }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_composer_of_strands }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_cradle_of_souls }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_instrument_of_desire }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOT = { has_country_flag = shroud_3115_happened }
+                                NOR = {
+                                    has_technology = tech_psionic_bombers
+                                    has_tech_option = tech_psionic_bombers
+                                }
+                                OR = {
+                                    AND = {
+                                        NOT = { has_covenant = the_eater_of_worlds }
+                                        is_in_domain = the_eater_of_worlds
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_composer_of_strands }
+                                        is_in_domain = the_composer_of_strands
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_cradle_of_souls }
+                                        is_in_domain = the_cradle_of_souls
+                                    }
+                                    AND = {
+                                        NOT = { has_covenant = the_instrument_of_desire }
+                                        is_in_domain = the_instrument_of_desire
+                                    }
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2115 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                has_country_flag = has_delved_in_shroud
+                                has_resource = { type = energy amount >= 2000 }
+                                has_resource = { type = sr_zro amount >= 500 }
+                                NOT = { has_country_flag = exclude_distant_echo_delve_event }
+                                NOT = { has_country_flag = has_recently_seen_distant_echo }
+                                OR = {
+                                    has_patron_relation = { patron = the_composer_of_strands contact = none }
+                                    has_patron_relation = { patron = the_eater_of_worlds contact = none }
+                                    has_patron_relation = { patron = the_instrument_of_desire contact = none }
+                                    has_patron_relation = { patron = the_cradle_of_souls contact = none }
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                has_country_flag = has_delved_in_shroud
+                                has_resource = { type = energy amount >= 2000 }
+                                has_resource = { type = sr_zro amount >= 500 }
+                                NOT = { has_country_flag = exclude_distant_echo_delve_event }
+                                NOT = { has_country_flag = has_recently_seen_distant_echo }
+                                OR = {
+                                    has_patron_relation = { patron = the_composer_of_strands contact = none }
+                                    has_patron_relation = { patron = the_eater_of_worlds contact = none }
+                                    has_patron_relation = { patron = the_instrument_of_desire contact = none }
+                                    has_patron_relation = { patron = the_cradle_of_souls contact = none }
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2120 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3200_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_animator_of_clay
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_cradle_of_souls
+                                    is_in_domain = the_composer_of_strands
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3200_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_animator_of_clay
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_cradle_of_souls
+                                    is_in_domain = the_composer_of_strands
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2200 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3210_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_outsider
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_cradle_of_souls
+                                    is_in_domain = the_composer_of_strands
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3210_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_outsider
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_cradle_of_souls
+                                    is_in_domain = the_composer_of_strands
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2210 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3220_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_golden_dream
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_cradle_of_souls
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3220_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_golden_dream
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_cradle_of_souls
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2220 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3230_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_endless_tide
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_eater_of_worlds
+                                    is_in_domain = the_composer_of_strands
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3230_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_endless_tide
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_eater_of_worlds
+                                    is_in_domain = the_composer_of_strands
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2230 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3240_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_pale_mountain
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_eater_of_worlds
+                                    is_in_domain = the_composer_of_strands
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3240_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_pale_mountain
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_eater_of_worlds
+                                    is_in_domain = the_composer_of_strands
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2240 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3250_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_hollow_point
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_cradle_of_souls
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3250_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_hollow_point
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_cradle_of_souls
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2250 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3260_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_vacant_throne
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_eater_of_worlds
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3260_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_vacant_throne
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_eater_of_worlds
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2260 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            NAND = {
+                                NOR = {
+                                    has_country_flag = shroud_3270_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_black_river
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_eater_of_worlds
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                NOR = {
+                                    has_country_flag = shroud_3270_happened
+                                    has_country_flag = forging_our_own_path
+                                }
+                                has_patron_relation = {
+                                    patron = the_black_river
+                                    contact = completed
+                                }
+                                OR = {
+                                    is_in_domain = the_eater_of_worlds
+                                    is_in_domain = the_instrument_of_desire
+                                }
+                            }
+                            country_event = { id = touhou_shroud.2270 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            OR = {
+                                has_patron_relation = { patron = the_animator_of_clay contact = completed }
+                                has_patron_relation = { patron = the_animator_of_clay contact = in_progress }
+                            }
+                        }
+                        if = {
+                            limit = { NOR = {
+                                has_patron_relation = { patron = the_animator_of_clay contact = completed }
+                                has_patron_relation = { patron = the_animator_of_clay contact = in_progress }
+                            } }
+                            country_event = { id = touhou_shroud.2281 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            OR = {
+                                has_patron_relation = { patron = the_outsider contact = completed }
+                                has_patron_relation = { patron = the_outsider contact = in_progress }
+                            }
+                        }
+                        if = {
+                            limit = { NOR = {
+                                has_patron_relation = { patron = the_outsider contact = completed }
+                                has_patron_relation = { patron = the_outsider contact = in_progress }
+                            } }
+                            country_event = { id = touhou_shroud.2282 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            OR = {
+                                has_patron_relation = { patron = the_endless_tide contact = completed }
+                                has_patron_relation = { patron = the_endless_tide contact = in_progress }
+                            }
+                        }
+                        if = {
+                            limit = { NOR = {
+                                has_patron_relation = { patron = the_endless_tide contact = completed }
+                                has_patron_relation = { patron = the_endless_tide contact = in_progress }
+                            } }
+                            country_event = { id = touhou_shroud.2283 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            OR = {
+                                has_patron_relation = { patron = the_pale_mountain contact = completed }
+                                has_patron_relation = { patron = the_pale_mountain contact = in_progress }
+                            }
+                        }
+                        if = {
+                            limit = { NOR = {
+                                has_patron_relation = { patron = the_pale_mountain contact = completed }
+                                has_patron_relation = { patron = the_pale_mountain contact = in_progress }
+                            } }
+                            country_event = { id = touhou_shroud.2284 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            OR = {
+                                has_patron_relation = { patron = the_golden_dream contact = completed }
+                                has_patron_relation = { patron = the_golden_dream contact = in_progress }
+                            }
+                        }
+                        if = {
+                            limit = { NOR = {
+                                has_patron_relation = { patron = the_golden_dream contact = completed }
+                                has_patron_relation = { patron = the_golden_dream contact = in_progress }
+                            } }
+                            country_event = { id = touhou_shroud.2285 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            OR = {
+                                has_patron_relation = { patron = the_hollow_point contact = completed }
+                                has_patron_relation = { patron = the_hollow_point contact = in_progress }
+                            }
+                        }
+                        if = {
+                            limit = { NOR = {
+                                has_patron_relation = { patron = the_hollow_point contact = completed }
+                                has_patron_relation = { patron = the_hollow_point contact = in_progress }
+                            } }
+                            country_event = { id = touhou_shroud.2286 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            OR = {
+                                has_patron_relation = { patron = the_vacant_throne contact = completed }
+                                has_patron_relation = { patron = the_vacant_throne contact = in_progress }
+                            }
+                        }
+                        if = {
+                            limit = { NOR = {
+                                has_patron_relation = { patron = the_vacant_throne contact = completed }
+                                has_patron_relation = { patron = the_vacant_throne contact = in_progress }
+                            } }
+                            country_event = { id = touhou_shroud.2287 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = {
+                        modifier = {
+                            factor = 0
+                            OR = {
+                                has_patron_relation = { patron = the_black_river contact = completed }
+                                has_patron_relation = { patron = the_black_river contact = in_progress }
+                            }
+                        }
+                        if = {
+                            limit = { NOR = {
+                                has_patron_relation = { patron = the_black_river contact = completed }
+                                has_patron_relation = { patron = the_black_river contact = in_progress }
+                            } }
+                            country_event = { id = touhou_shroud.2288 }
+                        }
+                        else = { country_event = { id = toho.8901 } }
+                    }
+                    10 = { country_event = { id = toho.8901 } }
+                }
+            }
+        }
+    }
+    option = {
+        name = "toho.8301.b"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = toho.8302
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+
+    }
+}
+country_event = {
+    id = toho.8303
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+
+    }
+}
+country_event = {
+    id = toho.8304
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+
+    }
+}
+country_event = {
+    id = toho.8305
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+
+    }
+}
+country_event = {
+    id = toho.8310
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+
+    }
+}
+
+# 灵能跃迁引擎
+country_event = {
+    id = toho.8400
+    title = "toho.8301.name"
+    desc = "utopia.3160.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = { hidden_effect = { remove_country_flag = shroud_diplomacy_engaged } }
+    option = {
+        name = "utopia.3160.a"
+        custom_tooltip = "shroud.unknown.chances.medium"
+        hidden_effect = {
+            reroll_random = yes
+            random_list = {
+                60 = { country_event = { id = toho.8401 } }
+                40 = {
+                    modifier = { factor = 0.5 has_relic = r_zro_crystal }
+                    country_event = { id = toho.8402 }
+                }
+            }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+# 成功
+country_event = {
+    id = toho.8401
+    title = "utopia.3161.name"
+    desc = "utopia.3161.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = positive_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        if = {
+            limit = {
+                NOR = {
+                    has_technology = tech_psi_jump_drive_1
+                    has_tech_option = tech_psi_jump_drive_1
+                }
+            }
+            add_research_option = tech_psi_jump_drive_1
+            add_tech_progress = { tech = tech_psi_jump_drive_1 progress = 0.5 }
+        }
+    }
+}
+# 失败
+country_event = {
+    id = toho.8402
+    title = "curse.bestowed"
+    desc = "utopia.3162.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = negative_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        add_modifier = { modifier = shroud_neg_speed days = 1800 }
+    }
+}
+# 灵能屏障
+country_event = {
+    id = toho.8403
+    title = "toho.8301.name"
+    desc = "utopia.3170.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = { hidden_effect = { remove_country_flag = shroud_diplomacy_engaged } }
+    option = {
+        name = "utopia.3170.a"
+        custom_tooltip = "shroud.unknown.chances.medium"
+        hidden_effect = {
+            reroll_random = yes
+            random_list = {
+                60 = { country_event = { id = toho.8404 } }
+                40 = {
+                    modifier = { factor = 0.5 has_relic = r_zro_crystal }
+                    country_event = { id = toho.8405 }
+                }
+            }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+# 成功
+country_event = {
+    id = toho.8404
+    title = "utopia.3171.name"
+    desc = { trigger = { NOR = { is_machine_species = yes is_gestalt = yes } } text = utopia.3171.desc_organic }
+    desc = { trigger = { OR = { is_machine_species = yes is_gestalt = yes } } text = utopia.3171.desc_machine_gestalt }
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = positive_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        if = {
+            limit = {
+                NOR = {
+                    has_technology = tech_psionic_shield
+                    has_tech_option = tech_psionic_shield
+                }
+            }
+            add_research_option = tech_psionic_shield
+            add_tech_progress = { tech = tech_psionic_shield progress = 0.5 }
+        }
+    }
+}
+# 失败
+country_event = {
+    id = toho.8405
+    title = "curse.bestowed"
+    desc = { trigger = { is_machine_species = no is_gestalt = no } text = utopia.3172.desc_organic_non_gestalt }
+    desc = { trigger = { is_machine_species = no is_gestalt = yes } text = utopia.3172.desc_organic_gestalt }
+    desc = { trigger = { is_machine_species = yes is_gestalt = no } text = utopia.3172.desc_machine_non_gestalt }
+    desc = { trigger = { is_machine_species = yes is_gestalt = yes } text = utopia.3172.desc_machine_gestalt }
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = negative_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        country_event = { id = utopia.3024 }
+    }
+}
+# 预知接口
+country_event = {
+    id = toho.8406
+    title = "toho.8301.name"
+    desc = { trigger = { is_robot_empire = no is_gestalt = no } text = utopia.3180.desc_organic_non_gestalt }
+    desc = { trigger = { is_robot_empire = yes is_gestalt = no } text = utopia.3180.desc_machine_non_gestalt }
+    desc = { trigger = { is_gestalt = yes } text = utopia.3180.desc_gestalt }
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = { hidden_effect = { remove_country_flag = shroud_diplomacy_engaged } }
+    option = {
+        name = "utopia.3180.a"
+        custom_tooltip = "shroud.unknown.chances.medium"
+        hidden_effect = {
+            reroll_random = yes
+            random_list = {
+                60 = { country_event = { id = toho.8407 } }
+                40 = {
+                    modifier = { factor = 0.5 has_relic = r_zro_crystal }
+                    country_event = { id = toho.8408 }
+                }
+            }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+# 成功
+country_event = {
+    id = toho.8407
+    title = "utopia.3181.name"
+    desc = { trigger = { is_robot_empire = no is_gestalt = no } text = utopia.3181.desc_organic_non_gestalt }
+    desc = { trigger = { is_robot_empire = yes is_gestalt = no } text = utopia.3181.desc_machine_non_gestalt }
+    desc = { trigger = { is_gestalt = yes } text = utopia.3181.desc_gestalt }
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = positive_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        if = {
+            limit = {
+                NOR = {
+                    has_technology = tech_precognition_interface
+                    has_tech_option = tech_precognition_interface
+                }
+            }
+            add_research_option = tech_precognition_interface
+            add_tech_progress = { tech = tech_precognition_interface progress = 0.5 }
+        }
+    }
+}
+# 失败
+country_event = {
+    id = toho.8408
+    title = "curse.bestowed"
+    desc = { trigger = { is_robot_empire = no is_gestalt = no } text = utopia.3182.desc }
+    desc = { trigger = { is_robot_empire = yes is_gestalt = no } text = utopia.3182.desc_machine_non_gestalt }
+    desc = { trigger = { is_gestalt = yes } text = utopia.3182.desc_gestalt }
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = negative_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        hidden_effect = {
+            if = {
+                limit = { is_hive_empire = no is_robot_empire = no }
+                add_modifier = {
+                    modifier = "shroud_precog_cooldown"
+                    days = 1800
+                    time_multiplier = value:scripted_modifier_mult_capped|MODIFIER|shroud_delve_cooldown|CAP|0.1|
+                }
+            }
+            else_if = {
+                limit = { is_hive_empire = yes }
+                add_modifier = {
+                    modifier = "shroud_precog_cooldown_hive"
+                    days = 1800
+                    time_multiplier = value:scripted_modifier_mult_capped|MODIFIER|shroud_delve_cooldown|CAP|0.1|
+                }
+            }
+            else_if = {
+                limit = { is_robot_empire = yes }
+                add_modifier = {
+                    modifier = "shroud_precog_cooldown_robot"
+                    days = 1800
+                    time_multiplier = value:scripted_modifier_mult_capped|MODIFIER|shroud_delve_cooldown|CAP|0.1|
+                }
+            }
+        }
+    }
+}
+
+# 幻想乡高级盾甲
+country_event = {
+    id = toho.8409
+    title = "toho.8409.name"
+    desc = "toho.8409.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = { hidden_effect = { remove_country_flag = shroud_diplomacy_engaged } }
+    option = {
+        name = "toho.8409.a"
+        country_event = { id = toho.8410 }
+    }
+    option = {
+        name = "exit.shroud"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+# 成功
+country_event = {
+    id = toho.8410
+    title = "toho.8410.name"
+    desc = "toho.8410.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = {
+        set_country_flag = shroud_diplomacy_engaged
+        if = {
+            limit = { NOT = { has_origin = origin_spth_story_gensokyo } }
+            if = {
+                limit = { has_civic = civic_gensokyo }
+                set_country_flag = tech_th_shield_barrier_psionic
+            } else = {
+                set_country_flag = tech_th_armor_scarlet_psionic
+            }
+        } else = {
+            set_country_flag = tech_th_shield_barrier_psionic_story
+            set_country_flag = tech_th_armor_barrier_psionic_story
+        }
+    }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = positive_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        if = {
+            limit = { NOT = { has_origin = origin_spth_story_gensokyo } }
+            if = {
+                limit = { has_civic = civic_gensokyo }
+                add_research_option = tech_th_shield_barrier_psionic
+            } else = {
+                add_research_option = tech_th_armor_scarlet_psionic
+            }
+        } else = {
+            add_research_option = tech_th_shield_barrier_psionic_story
+            add_research_option = tech_th_armor_barrier_psionic_story
+        }
+    }
+}
+
+# P槽灵能裂解器
+country_event = {
+    id = toho.8411
+    title = "toho.8411.name"
+    desc = "toho.8411.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = { hidden_effect = { remove_country_flag = shroud_diplomacy_engaged } }
+    option = {
+        name = "utopia.3180.a"
+        custom_tooltip = "shroud.unknown.chances.medium"
+        hidden_effect = {
+            reroll_random = yes
+            random_list = {
+                60 = { country_event = { id = toho.8412 } }
+                40 = {
+                    modifier = { factor = 0.5 has_relic = r_zro_crystal }
+                    country_event = { id = toho.8417 }
+                }
+            }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+# 成功
+country_event = {
+    id = toho.8412
+    title = "toho.8412.name"
+    desc = "toho.8412.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = positive_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        hidden_effect = {
+            set_country_flag = tech_touhou_psionic_lighting_pd
+        }
+        add_research_option = tech_touhou_psionic_lighting_pd
+    }
+}
+# X槽灵能裂解器
+country_event = {
+    id = toho.8413
+    title = "toho.8413.name"
+    desc = "toho.8413.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = { hidden_effect = { remove_country_flag = shroud_diplomacy_engaged } }
+    option = {
+        name = "utopia.3180.a"
+        custom_tooltip = "shroud.unknown.chances.medium"
+        hidden_effect = {
+            reroll_random = yes
+            random_list = {
+                60 = { country_event = { id = toho.8414 } }
+                40 = {
+                    modifier = { factor = 0.5 has_relic = r_zro_crystal }
+                    country_event = { id = toho.8417 }
+                }
+            }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+# 成功
+country_event = {
+    id = toho.8414
+    title = "toho.8414.name"
+    desc = "toho.8414.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = positive_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        hidden_effect = {
+            set_country_flag = tech_touhou_psionic_lighting_xl
+        }
+        add_research_option = tech_touhou_psionic_lighting_xl
+    }
+}
+# T槽灵能裂解器
+country_event = {
+    id = toho.8415
+    title = "toho.8415.name"
+    desc = "toho.8415.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = { hidden_effect = { remove_country_flag = shroud_diplomacy_engaged } }
+    option = {
+        name = "utopia.3180.a"
+        custom_tooltip = "shroud.unknown.chances.medium"
+        hidden_effect = {
+            reroll_random = yes
+            random_list = {
+                60 = { country_event = { id = toho.8416 } }
+                40 = {
+                    modifier = { factor = 0.5 has_relic = r_zro_crystal }
+                    country_event = { id = toho.8417 }
+                }
+            }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+# 成功
+country_event = {
+    id = toho.8416
+    title = "toho.8416.name"
+    desc = "toho.8416.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = positive_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        hidden_effect = {
+            set_country_flag = tech_touhou_psionic_lighting_t
+        }
+        add_research_option = tech_touhou_psionic_lighting_t
+    }
+}
+# 失败
+country_event = {
+    id = toho.8417
+    title = "toho.8417.name"
+    desc = "toho.8417.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = negative_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        add_modifier = { modifier = touhou_shroud_debuff_effiency days = 1800 }
+    }
+}
+
+# 生命灵能化
+country_event = {
+    id = toho.8418
+    title = "toho.8418.name"
+    desc = "toho.8418.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = { hidden_effect = { remove_country_flag = shroud_diplomacy_engaged } }
+    option = {
+        name = "toho.8418.a"
+        custom_tooltip = "shroud.unknown.chances.medium"
+        hidden_effect = {
+            reroll_random = yes
+            random_list = {
+                60 = { country_event = { id = toho.8419 } }
+                40 = {
+                    modifier = { factor = 0.5 has_relic = r_zro_crystal }
+                    country_event = { id = toho.8420 }
+                }
+            }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+# 成功
+country_event = {
+    id = toho.8419
+    title = "toho.8419.name"
+    desc = "toho.8419.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = positive_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        hidden_effect = {
+            set_country_flag = tech_trait_touhou_psionic
+        }
+        add_research_option = tech_trait_touhou_psionic
+    }
+}
+# 失败
+country_event = {
+    id = toho.8420
+    title = "toho.8420.name"
+    desc = "toho.8420.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = negative_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        add_modifier = { modifier = touhou_shroud_debuff_effiency days = 1800 }
+    }
+}
+
+country_event = {
+    id = toho.8901
+    title = "toho.8301.name"
+    desc = {
+        trigger = { is_robot_empire = no }
+        text = "utopia.3200.1.desc_organic"
+        text = "utopia.3200.3.desc_organic"
+        text = "utopia.3200.5.desc_organic"
+        text = "utopia.3200.6.desc_organic"
+        text = "utopia.3200.8.desc_organic"
+    }
+    desc = {
+        trigger = { is_robot_empire = yes }
+        text = "utopia.3200.1.desc_machine"
+        text = "utopia.3200.3.desc_machine"
+        text = "utopia.3200.5.desc_machine"
+        text = "utopia.3200.6.desc_machine"
+        text = "utopia.3200.8.desc_machine"
+    }
+    desc = { trigger = { is_hive_empire = no is_robot_empire = no } text = "utopia.3200.9.desc_organic_non_hive" }
+    desc = { trigger = { is_hive_empire = no is_robot_empire = yes } text = "utopia.3200.9.desc_machine_non_hive" }
+    desc = { trigger = { is_hive_empire = yes } text = "utopia.3200.9.desc_hive" }
+    desc = {
+        trigger = { always = yes }
+        text = "utopia.3200.2.desc"
+        text = "utopia.3200.4.desc"
+        text = "utopia.3200.7.desc"
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+
+    immediate = {
+        set_country_flag = shroud_diplomacy_engaged
+        randomize_shroud_flags = yes
+    }
+    after = { hidden_effect = {
+        remove_country_flag = shroud_diplomacy_engaged
+        remove_shroud_flags = yes
+    } }
+
+    ### High
+    option = {
+        name = "boon.happiness.high"
+        trigger = { has_country_flag = high.1 }
+        custom_tooltip = "shroud.boon.chances.high"
+        happiness_shroud_high = yes
+    }
+    option = {
+        name = "boon.upkeep.high"
+        trigger = { has_country_flag = high.2 }
+        custom_tooltip = "shroud.boon.chances.high"
+        upkeep_shroud_high = yes
+    }
+    option = {
+        name = "boon.research.high"
+        trigger = { has_country_flag = high.3 }
+        custom_tooltip = "shroud.boon.chances.high"
+        research_shroud_high = yes
+    }
+    option = {
+        name = "boon.shields.high"
+        trigger = { has_country_flag = high.4 }
+        custom_tooltip = "shroud.boon.chances.high"
+        shields_shroud_high = yes
+    }
+    option = {
+        name = "boon.weapons.high"
+        trigger = { has_country_flag = high.5 }
+        custom_tooltip = "shroud.boon.chances.high"
+        weapons_shroud_high = yes
+    }
+    option = {
+        name = "boon.firing.high"
+        trigger = { has_country_flag = high.6 }
+        custom_tooltip = "shroud.boon.chances.high"
+        firingrate_shroud_high = yes
+    }
+    option = {
+        name = "boon.ethics.high"
+        trigger = { has_country_flag = high.7 }
+        custom_tooltip = "shroud.boon.chances.high"
+        ethics_shroud_high = yes
+    }
+    option = {
+        name = "boon.influence.high"
+        trigger = { has_country_flag = high.8 }
+        custom_tooltip = "shroud.boon.chances.high"
+        influence_shroud_high = yes
+    }
+    option = {
+        name = "boon.unity.high"
+        trigger = { has_country_flag = high.9 }
+        custom_tooltip = "shroud.boon.chances.high"
+        unity_shroud_high = yes
+    }
+    option = {
+        name = "boon.evasion.high"
+        trigger = { has_country_flag = high.10 }
+        custom_tooltip = "shroud.boon.chances.high"
+        evasion_shroud_high = yes
+    }
+    option = {
+        name = "boon.repair.high"
+        trigger = { has_country_flag = high.11 }
+        custom_tooltip = "shroud.boon.chances.high"
+        repair_shroud_high = yes
+    }
+    option = {
+        name = "boon.lifespans.high"
+        trigger = { has_country_flag = high.12 }
+        custom_tooltip = "shroud.boon.chances.high"
+        lifespan_shroud_high = yes
+    }
+    option = {
+        name = "boon.speed.high"
+        trigger = { has_country_flag = high.13 }
+        custom_tooltip = "shroud.boon.chances.high"
+        speed_shroud_high = yes
+    }
+    option = {
+        name = "boon.morale.high"
+        trigger = { has_country_flag = high.14 }
+        custom_tooltip = "shroud.boon.chances.high"
+        morale_shroud_high = yes
+    }
+    option = {
+        name = "boon.sensors.high"
+        trigger = { has_country_flag = high.15 }
+        custom_tooltip = "shroud.boon.chances.high"
+        sensor_shroud_high = yes
+    }
+    option = {
+        name = "shroud.avatar.high"
+        trigger = { has_country_flag = high.16 }
+        custom_tooltip = "shroud.boon.chances.high"
+        avatar_shroud_high = yes
+    }
+
+    ### Medium
+    option = {
+        name = "boon.happiness.medium"
+        trigger = { has_country_flag = medium.1 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        happiness_shroud_medium = yes
+    }
+    option = {
+        name = "boon.upkeep.medium"
+        trigger = { has_country_flag = medium.2 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        upkeep_shroud_medium = yes
+    }
+    option = {
+        name = "boon.research.medium"
+        trigger = { has_country_flag = medium.3 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        research_shroud_medium = yes
+    }
+    option = {
+        name = "boon.shields.medium"
+        trigger = { has_country_flag = medium.4 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        shields_shroud_medium = yes
+    }
+    option = {
+        name = "boon.weapons.medium"
+        trigger = { has_country_flag = medium.5 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        weapons_shroud_medium = yes
+    }
+    option = {
+        name = "boon.firing.medium"
+        trigger = { has_country_flag = medium.6 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        firingrate_shroud_medium = yes
+    }
+    option = {
+        name = "boon.ethics.medium"
+        trigger = { has_country_flag = medium.7 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        ethics_shroud_medium = yes
+    }
+    option = {
+        name = "boon.influence.medium"
+        trigger = { has_country_flag = medium.8 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        influence_shroud_medium = yes
+    }
+    option = {
+        name = "boon.unity.medium"
+        trigger = { has_country_flag = medium.9 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        unity_shroud_medium = yes
+    }
+    option = {
+        name = "boon.evasion.medium"
+        trigger = { has_country_flag = medium.10 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        evasion_shroud_medium = yes
+    }
+    option = {
+        name = "boon.repair.medium"
+        trigger = { has_country_flag = medium.11 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        repair_shroud_medium = yes
+    }
+    option = {
+        name = "boon.lifespans.medium"
+        trigger = { has_country_flag = medium.12 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        lifespan_shroud_medium = yes
+    }
+    option = {
+        name = "boon.speed.medium"
+        trigger = { has_country_flag = medium.13 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        speed_shroud_medium = yes
+    }
+    option = {
+        name = "boon.morale.medium"
+        trigger = { has_country_flag = medium.14 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        morale_shroud_medium = yes
+    }
+    option = {
+        name = "boon.sensors.medium"
+        trigger = { has_country_flag = medium.15 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        sensor_shroud_medium = yes
+    }
+    option = {
+        name = "shroud.avatar.medium"
+        trigger = { has_country_flag = medium.16 }
+        custom_tooltip = "shroud.boon.chances.medium"
+        avatar_shroud_medium = yes
+    }
+
+    ### Low
+    option = {
+        name = "boon.happiness.low"
+        trigger = { has_country_flag = low.1 }
+        custom_tooltip = "shroud.boon.chances.low"
+        happiness_shroud_low = yes
+    }
+    option = {
+        name = "boon.upkeep.low"
+        trigger = { has_country_flag = low.2 }
+        custom_tooltip = "shroud.boon.chances.low"
+        upkeep_shroud_low = yes
+    }
+    option = {
+        name = "boon.research.low"
+        trigger = { has_country_flag = low.3 }
+        custom_tooltip = "shroud.boon.chances.low"
+        research_shroud_low = yes
+    }
+    option = {
+        name = "boon.shields.low"
+        trigger = { has_country_flag = low.4 }
+        custom_tooltip = "shroud.boon.chances.low"
+        shields_shroud_low = yes
+    }
+    option = {
+        name = "boon.weapons.low"
+        trigger = { has_country_flag = low.5 }
+        custom_tooltip = "shroud.boon.chances.low"
+        weapons_shroud_low = yes
+    }
+    option = {
+        name = "boon.firing.low"
+        trigger = { has_country_flag = low.6 }
+        custom_tooltip = "shroud.boon.chances.low"
+        firingrate_shroud_low = yes
+    }
+    option = {
+        name = "boon.ethics.low"
+        trigger = { has_country_flag = low.7 }
+        custom_tooltip = "shroud.boon.chances.low"
+        ethics_shroud_low = yes
+    }
+    option = {
+        name = "boon.influence.low"
+        trigger = { has_country_flag = low.8 }
+        custom_tooltip = "shroud.boon.chances.low"
+        influence_shroud_low = yes
+    }
+    option = {
+        name = "boon.unity.low"
+        trigger = { has_country_flag = low.9 }
+        custom_tooltip = "shroud.boon.chances.low"
+        unity_shroud_low = yes
+    }
+    option = {
+        name = "boon.evasion.low"
+        trigger = { has_country_flag = low.10 }
+        custom_tooltip = "shroud.boon.chances.low"
+        evasion_shroud_low = yes
+    }
+    option = {
+        name = "boon.repair.low"
+        trigger = { has_country_flag = low.11 }
+        custom_tooltip = "shroud.boon.chances.low"
+        repair_shroud_low = yes
+    }
+    option = {
+        name = "boon.lifespans.low"
+        trigger = { has_country_flag = low.12 }
+        custom_tooltip = "shroud.boon.chances.low"
+        lifespan_shroud_low = yes
+    }
+    option = {
+        name = "boon.speed.low"
+        trigger = { has_country_flag = low.13 }
+        custom_tooltip = "shroud.boon.chances.low"
+        speed_shroud_low = yes
+    }
+    option = {
+        name = "boon.morale.low"
+        trigger = { has_country_flag = low.14 }
+        custom_tooltip = "shroud.boon.chances.low"
+        morale_shroud_low = yes
+    }
+    option = {
+        name = "boon.sensors.low"
+        trigger = { has_country_flag = low.15 }
+        custom_tooltip = "shroud.boon.chances.low"
+        sensor_shroud_low = yes
+    }
+    option = {
+        name = "shroud.avatar.low"
+        trigger = { has_country_flag = low.16 }
+        custom_tooltip = "shroud.boon.chances.low"
+        avatar_shroud_low = yes
+    }
+
+    option = {
+        name = "exit.shroud"
+        custom_tooltip = "exit.shroud.tooltip"
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = toho.8997
+    title = toho.8997.name
+    desc = toho.8997.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { room = spth_dead_shroud_room }
+    option = {
+        name = toho.8997.a
+    }
+    option = {
+        name = toho.8997.b
+    }
+}
+# country_event = {
+#     id = toho.8998
+#     is_triggered_only = yes
+#     diplomatic = yes
+#     custom_gui = spth_event_large_window
+#     custom_gui_option = spth_event_large_ui_option
+#     picture_event_data = { room = th_satori_1_room }
+#     immediate = {
+#
+#     }
+# }
+country_event = {
+    id = toho.8999
+    title = toho.8999.name
+    desc = toho.8999.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { room = spth_dead_shroud_room }
+    option = {
+        name = toho.8999.a
+    }
+    option = {
+        name = toho.8999.b
+    }
 }
 
 

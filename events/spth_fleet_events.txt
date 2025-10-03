@@ -1982,6 +1982,112 @@ country_event = {
                             }
                         }
                     }
+                    leader_trait_utsuho = {
+                        prev = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_utsuho_skill_fired } }
+                                set_timed_fleet_flag = { flag = leader_trait_utsuho_skill_fired days = 180 }
+                                every_owned_ship = {
+                                    spth_reduce_shield_max = { percent = 1 }
+                                    add_modifier = { modifier = th_leader_trait_utsuho days = 4 }
+                                    th_spawn_explosion_particle = { color = blue size = medium }
+                                }
+                                root.fromfromfrom = {
+                                    spth_reduce_shield_max = { percent = 1 }
+                                    add_modifier = { modifier = th_leader_trait_utsuho days = 12 }
+                                    th_spawn_explosion_particle = { color = pink size = large }
+                                }
+                            }
+                        }
+                    }
+                    leader_trait_youmu = {
+                        prev = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_youmu_skill_fired } }
+                                set_timed_fleet_flag = { flag = leader_trait_youmu_skill_fired days = 180 }
+                                set_variable = { which = youmu_skill_instant_move value = prev.trigger:has_total_skill }
+                                multiply_variable = { which = youmu_skill_instant_move value = 2 }
+                                root.fromfromfrom = { save_event_target_as = youmu_skill_target }
+                                create_ambient_object = {
+                                    type = th_invisible_object
+                                    location = this
+                                    entity_offset = 0
+                                    entity_offset_angle = 0
+                                    entity_offset_height = 0
+                                    use_3d_location = yes
+                                }
+                                last_created_ambient_object = {
+                                    save_event_target_as = youmu_skill_ori_location
+                                }
+                                set_location = {
+                                    target = event_target:youmu_skill_target
+                                    distance = 30
+                                    angle = random
+                                }
+                                fleet_event = { id = spth_fleet.1218 days = 2 }
+                            }
+                        }
+                    }
+                    leader_trait_flandre = {
+                        prev = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_flandre_skill_fired } }
+                                set_timed_fleet_flag = { flag = leader_trait_flandre_skill_fired days = 180 }
+                                while = {
+                                    count = 3
+                                    star = {
+                                        create_fleet = {
+                                            name = NAME_leader_trait_flandre_fleet
+                                            settings = {
+                                                is_boss = yes
+                                                spawn_debris = no
+                                                can_upgrade = no
+                                                can_disband = no
+                                                can_change_composition = no
+                                                can_change_leader = no
+                                                uses_naval_capacity = no
+                                            }
+                                            effect = {
+                                                set_owner = prevprev.owner
+                                                set_fleet_flag = flandre_skill_copy_fleet
+                                                copy_flags_and_variables_from = prevprev
+                                                prevprev = {
+                                                    set_timed_fleet_flag = { flag = flandre_skill_root_fleet days = 20 }
+                                                    every_owned_ship = {
+                                                        set_timed_ship_flag = { flag = flandre_skill_root_ship days = 20 }
+                                                        prevprev = {
+                                                            create_ship = {
+                                                                name = prev
+                                                                design = prev.design
+                                                                effect = {
+                                                                    copy_flags_and_variables_from = prevprev
+                                                                    set_ship_flag = flandre_skill_copy_ship
+                                                                    # 古代帝国 兼容
+                                                                    ag_difficulty_bonus = yes
+                                                                }
+                                                            }
+                                                            last_created_ship = {
+                                                                set_ship_flag = flandre_skill_copy_ship_@prevprev
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                set_location = {
+                                                    target = prev
+                                                    distance = 50
+                                                    angle = random
+                                                }
+                                                set_fleet_stance = aggressive
+                                                set_aggro_range = 500
+                                                set_aggro_range_measure_from = self
+                                                fleet_event = { id = spth_fleet.2000 days = 20 }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     default = {}
                 }
             }
@@ -2330,6 +2436,29 @@ country_event = {
     option = {
         name = TH_OK
         default_hide_option = yes
+    }
+}
+
+fleet_event = {
+    id = spth_fleet.1218
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { check_variable = { which = youmu_skill_instant_move value > 0 } }
+            change_variable = { which = youmu_skill_instant_move value = -2 }
+            fleet_event = { id = spth_fleet.1218 days = 2 }
+        } else = {
+            clear_variable = youmu_skill_instant_move
+            set_location = {
+                target = event_target:youmu_skill_ori_location
+                angle = random
+                distance = 10
+            }
+            event_target:youmu_skill_ori_location = {
+                destroy_ambient_object = this
+            }
+        }
     }
 }
 

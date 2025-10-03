@@ -64,6 +64,42 @@ ship_terrify_duration = {
     mult = value:terrify_duration_factor
 }
 
+calc_psionic_aura_monthly_increase = {
+    base = 0
+    modifier = {
+        add = value:calc_psionic_aura_monthly_increase_on_owned_system
+        exists = owner
+        owner = { is_same_value = root.aura_owner }
+        desc = tech_psionic_aura
+    }
+    modifier = {
+        add = value:calc_intensity_from_sector_leader
+        exists = sector
+        sector = {
+            is_owned_by = root.aura_owner
+            sector_capital = {
+                exists = leader
+                leader = { has_psionic_leader_trait = yes }
+            }
+        }
+        desc = INTENSITY_FROM_PSIONIC_SECTOR_LEADER
+    }
+    modifier = {
+        add = value:calc_intensity_from_neighbor_auras
+        desc = INTENSITY_FROM_NEARBY_AURAS
+    }
+    modifier = {
+        add = value:count_planet_type_in_system|TYPE|pc_shrouded|VALUE|@shrouded_planet_intensity|
+        any_system_planet = { is_planet_class = pc_shrouded }
+        desc = INTENSITY_FROM_SHROUDED_PLANETS
+    }
+    modifier = {
+        factor = 0
+        system_has_psionic_inhibition_station = yes
+        system_has_psionic_burster_station = no
+    }
+}
+
 edict_size_effect = {
     base = 0.01
     mult = trigger:empire_sprawl_over_cap
