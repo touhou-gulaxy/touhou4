@@ -3279,6 +3279,7 @@ country_event = {
                                 has_tech_option = tech_touhou_psionic_lighting_pd
                             }
                         }
+                        set_country_flag = tech_touhou_psionic_lighting_pd
                         country_event = { id = toho.8901 }
                     } else = {
                         country_event = { id = toho.8411 }
@@ -3294,6 +3295,7 @@ country_event = {
                                 has_tech_option = tech_touhou_psionic_lighting_xl
                             }
                         }
+                        set_country_flag = tech_touhou_psionic_lighting_xl
                         country_event = { id = toho.8901 }
                     } else = {
                         country_event = { id = toho.8413 }
@@ -3309,6 +3311,7 @@ country_event = {
                                 has_tech_option = tech_touhou_psionic_lighting_t
                             }
                         }
+                        set_country_flag = tech_touhou_psionic_lighting_t
                         country_event = { id = toho.8901 }
                     } else = {
                         country_event = { id = toho.8415 }
@@ -3324,6 +3327,7 @@ country_event = {
                                 has_tech_option = tech_trait_touhou_psionic
                             }
                         }
+                        set_country_flag = tech_trait_touhou_psionic
                         country_event = { id = toho.8901 }
                     } else = {
                         country_event = { id = toho.8418 }
@@ -3382,18 +3386,20 @@ country_event = {
                         }
                     }
                 }
-                # 100 = {
-                #     modifier = {
-                #         factor = 0                                           # 随机事件，袿姬小超主
-                #         NOT = { has_authority = auth_gensokyo }
-                #     }
-                #     modifier = { factor = 0 has_country_flag = toho_8302_fired }
-                #     if = {
-                #         limit = { has_authority = auth_gensokyo }
-                #         set_country_flag = toho_8302_fired
-                #         country_event = { id = toho.8302 }
-                #     }
-                # }
+                # 随机事件，袿姬小超主
+                100 = {
+                    modifier = {
+                        factor = 0
+                        NOT = { has_authority = auth_gensokyo }
+                    }
+                    modifier = { factor = 0 has_country_flag = toho_8302_fired }
+                    if = {
+                        limit = { has_authority = auth_gensokyo }
+                        set_country_flag = toho_8302_fired
+                        set_country_flag = unlock_touhou_psionic_echo_keiei
+                        country_event = { id = toho.8302 }
+                    } else = { country_event = { id = toho.8901 } }
+                }
                 # 100 = {
                 #     modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
                 #     modifier = {
@@ -4093,6 +4099,7 @@ country_event = {
     custom_gui_option = spth_special_diplomacy_option
     force_open = yes
     picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    show_sound = event_psionic
     trigger = {
         any_country = {
             OR = {
@@ -4215,6 +4222,7 @@ country_event = {
                                     has_tech_option = tech_touhou_psionic_lighting_pd
                                 }
                             }
+                            set_country_flag = tech_touhou_psionic_lighting_pd
                             country_event = { id = toho.8901 }
                         } else = {
                             country_event = { id = toho.8411 }
@@ -4230,6 +4238,7 @@ country_event = {
                                     has_tech_option = tech_touhou_psionic_lighting_xl
                                 }
                             }
+                            set_country_flag = tech_touhou_psionic_lighting_xl
                             country_event = { id = toho.8901 }
                         } else = {
                             country_event = { id = toho.8413 }
@@ -4245,6 +4254,7 @@ country_event = {
                                     has_tech_option = tech_touhou_psionic_lighting_t
                                 }
                             }
+                            set_country_flag = tech_touhou_psionic_lighting_t
                             country_event = { id = toho.8901 }
                         } else = {
                             country_event = { id = toho.8415 }
@@ -4260,6 +4270,7 @@ country_event = {
                                     has_tech_option = tech_trait_touhou_psionic
                                 }
                             }
+                            set_country_flag = tech_trait_touhou_psionic
                             country_event = { id = toho.8901 }
                         } else = {
                             country_event = { id = toho.8418 }
@@ -5634,38 +5645,314 @@ country_event = {
         default_hide_option = yes
     }
 }
+# shroud patron.
 country_event = {
     id = toho.8302
-    hide_window = yes
+    title = toho.8302.name
+    desc = toho.8302.desc
     is_triggered_only = yes
-    immediate = {
-
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    show_sound = event_psionic
+    option = {
+        name = toho.8302.a
+        default_hide_option = yes
+        enable_patron_first_contact_project = {
+            name = TOUHOU_PSIONIC_ECHO_KEIEI_FC_PROJECT
+            patron = touhou_psionic_echo_keiei
+            owner = this
+        }
     }
 }
 country_event = {
     id = toho.8303
-    hide_window = yes
+    title = toho.8303.name
+    desc = toho.8303.desc
     is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    show_sound = event_psionic
     immediate = {
-
+        set_patron_first_contact_state = { patron = touhou_psionic_echo_keiei state = completed }
+    }
+    option = {
+        name = toho.8303.a
+        tooltip = { set_patron_first_contact_state = { patron = touhou_psionic_echo_keiei state = completed } }
+        add_monthly_resource_mult = {
+            resource = physics_research
+            value = @tier1materialreward
+            min = @tier3materialmin
+            max = @tier3materialmax
+        }
+        add_monthly_resource_mult = {
+            resource = society_research
+            value = @tier1materialreward
+            min = @tier3materialmin
+            max = @tier3materialmax
+        }
+        add_monthly_resource_mult = {
+            resource = engineering_research
+            value = @tier1materialreward
+            min = @tier3materialmin
+            max = @tier3materialmax
+        }
+    }
+    option = {
+        name = toho.8303.b
+        tooltip = { set_patron_first_contact_state = { patron = touhou_psionic_echo_keiei state = completed } }
+        add_monthly_resource_mult = {
+            resource = physics_research
+            value = @tier1materialreward
+            min = @tier3materialmin
+            max = @tier3materialmax
+        }
+        add_monthly_resource_mult = {
+            resource = society_research
+            value = @tier1materialreward
+            min = @tier3materialmin
+            max = @tier3materialmax
+        }
+        add_monthly_resource_mult = {
+            resource = engineering_research
+            value = @tier1materialreward
+            min = @tier3materialmin
+            max = @tier3materialmax
+        }
+    }
+    option = {
+        name = toho.8303.c
+        tooltip = { set_patron_first_contact_state = { patron = touhou_psionic_echo_keiei state = completed } }
+        add_monthly_resource_mult = {
+            resource = physics_research
+            value = @tier1materialreward
+            min = @tier3materialmin
+            max = @tier3materialmax
+        }
+        add_monthly_resource_mult = {
+            resource = society_research
+            value = @tier1materialreward
+            min = @tier3materialmin
+            max = @tier3materialmax
+        }
+        add_monthly_resource_mult = {
+            resource = engineering_research
+            value = @tier1materialreward
+            min = @tier3materialmin
+            max = @tier3materialmax
+        }
+    }
+    after = {
+        custom_tooltip = toho.8303.effect
+        hidden_effect = {
+            touhou_ac_keiki_spawn_country = yes
+        }
     }
 }
 country_event = {
     id = toho.8304
-    hide_window = yes
+    title = toho.8304.name
+    desc = toho.8304.desc.1
+    desc = toho.8304.desc.2
     is_triggered_only = yes
+    trigger = {
+        OR = {
+            from = { is_same_value = root }
+            AND = {
+                NOT = { has_country_flag = touhou_special_leader_diplomacy_engaged }	# 通用特殊领袖外交窗口。
+                from = { is_country_type = touhou_ac_keiki_country }
+            }
+        }
+        exists = event_target:touhou_ac_keiki_country_@root
+    }
     immediate = {
-
+        set_country_flag = touhou_special_leader_diplomacy_engaged
+        # save leader
+        event_target:touhou_ac_keiki_leader_@root = {
+            save_global_event_target_as = touhou_special_leader_diplo_target_@root
+        }
+    }
+    after = {
+        remove_country_flag = touhou_special_leader_diplomacy_engaged
+        clear_global_event_target = touhou_special_leader_diplo_target_@root
+    }
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = touhou_event_leader_ui_window
+    custom_gui_option = touhou_event_leader_ui_option
+    force_open = yes
+    picture_event_data = { portrait = spth_por_keiki room = ethic_touhou_room }
+    show_sound = event_psionic
+    option = {
+        name = toho.8304.a
+        response_text = toho.8304.a.response
+        hidden_effect = {
+            touhou_ac_keiki_remove_leader = yes
+            touhou_ac_keiki_spawn_leader_official = yes
+        }
+    }
+    option = {
+        name = toho.8304.b
+        response_text = toho.8304.b.response
+        hidden_effect = {
+            touhou_ac_keiki_remove_leader = yes
+            touhou_ac_keiki_spawn_leader_commander = yes
+        }
+    }
+    option = {
+        name = toho.8304.c
+        response_text = toho.8304.c.response
+        hidden_effect = {
+            touhou_ac_keiki_remove_leader = yes
+            touhou_ac_keiki_spawn_leader_admiral = yes
+        }
+    }
+    option = {
+        name = toho.8304.shroud
+        trigger = { touhou_is_shroud_inhibited = no }
+        country_event = { id = toho.8305 }
+    }
+    option = {
+        name = toho.8304.shroud.sp
+        trigger = { touhou_is_shroud_inhibited = yes }
+        is_dialog_only = yes
+        response_text = toho.8304.shroud.sp.response
+    }
+    option = {
+        name = touhou_ac_leader_exit
+        response_text = touhou_ac_leader_exit_response
     }
 }
 country_event = {
     id = toho.8305
-    hide_window = yes
+    title = toho.8305.name
+    desc = toho.8305.desc.1
+    desc = toho.8305.desc.2
+    desc = toho.8305.desc.3
     is_triggered_only = yes
     immediate = {
-
+        set_country_flag = touhou_special_leader_diplomacy_engaged
+        # save leader
+        event_target:touhou_ac_keiki_leader_@root = {
+            save_global_event_target_as = touhou_special_leader_diplo_target_@root
+        }
+    }
+    after = {
+        remove_country_flag = touhou_special_leader_diplomacy_engaged
+        clear_global_event_target = touhou_special_leader_diplo_target_@root
+    }
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = touhou_event_leader_ui_window
+    custom_gui_option = touhou_event_leader_ui_option
+    force_open = yes
+    picture_event_data = { portrait = spth_por_keiki room = spth_city_planet_room }
+    show_sound = event_psionic
+    option = {
+        name = toho.8305.a
+        country_event = { id = toho.8306 }
+    }
+    option = {
+        name = toho.8305.b
+        response_text = toho.8305.b.response
+        reroll_random = yes
+        random_list = {
+            20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_1 days = 1800 } }
+            20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_2 days = 1800 } }
+            20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_3 days = 1800 } }
+            20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_4 days = 1800 } }
+            20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_5 days = 1800 } }
+        }
+    }
+    option = {
+        name = toho.8305.c
+        country_event = { id = toho.8307 }
+    }
+    option = {
+        name = touhou_ac_leader_exit
+        default_hide_option = yes
+        response_text = touhou_ac_leader_exit_response
     }
 }
+country_event = {
+    id = toho.8306
+    title = toho.8305.name
+    desc = toho.8305.desc.1
+    desc = toho.8305.desc.2
+    desc = toho.8305.desc.3
+    is_triggered_only = yes
+    immediate = {
+        set_country_flag = touhou_special_leader_diplomacy_engaged
+        # save leader
+        event_target:touhou_ac_keiki_leader_@root = {
+            save_global_event_target_as = touhou_special_leader_diplo_target_@root
+        }
+    }
+    after = {
+        remove_country_flag = touhou_special_leader_diplomacy_engaged
+        clear_global_event_target = touhou_special_leader_diplo_target_@root
+    }
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = touhou_event_leader_ui_window
+    custom_gui_option = touhou_event_leader_ui_option
+    option = {
+        name = toho.8306.a
+        is_dialog_only = yes
+        response_text = toho.8306.a.response
+    }
+    option = {
+        name = toho.8306.b
+        is_dialog_only = yes
+        response_text = toho.8306.a.response
+    }
+    option = {
+        name = toho.8306.c
+        is_dialog_only = yes
+        response_text = toho.8306.a.response
+    }
+    option = {
+        name = toho.8306.exit
+        default_hide_option = yes
+        country_event = { id = toho.8305 }
+    }
+}
+country_event = {
+    id = toho.8307
+    title = toho.8305.name
+    desc = toho.8307.desc
+    is_triggered_only = yes
+    immediate = {
+        set_country_flag = touhou_special_leader_diplomacy_engaged
+        # save leader
+        event_target:touhou_ac_keiki_leader_@root = {
+            save_global_event_target_as = touhou_special_leader_diplo_target_@root
+        }
+    }
+    after = {
+        remove_country_flag = touhou_special_leader_diplomacy_engaged
+        clear_global_event_target = touhou_special_leader_diplo_target_@root
+    }
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = touhou_event_leader_ui_window
+    custom_gui_option = touhou_event_leader_ui_option
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+        hidden_effect = {
+            fire_on_action = { on_action = on_patron_delve_failed }
+        }
+    }
+}
+
 country_event = {
     id = toho.8310
     hide_window = yes
