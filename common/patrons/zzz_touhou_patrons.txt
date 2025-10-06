@@ -220,3 +220,160 @@ touhou_psionic_echo_keiei = {
         }
     }
 }
+
+touhou_great_patron_dragon = {
+    category = great_patron
+    color = { 0.647 0.052 0.858 1 }
+    text_color_code = "P"
+    covenant_event = toho.8313
+    covenant_confirmation_time = @covenant_confirmation_time_days
+    add_modifier = yes
+
+    pre_communications_name_format = "{<whisperers_adj> {<patron_noun>}}"
+
+    position = { x = 0 y = 0 }
+
+    callings = {
+        calling_touhou_finish_megastructure
+        calling_touhou_launch_agenda
+        calling_touhou_complete_arc_site
+        calling_touhou_complete_arc_rift
+        calling_touhou_build_research_building
+        calling_touhou_build_sp_produce
+    }
+
+    deeds = {
+        deed_upgrade_megastructure
+        deed_scientist_level_up
+        deed_explore_wormhole
+        deed_wormhole_locks_mastery
+        deed_activate_relic
+        deed_arc_site_stage
+        deed_arc_rift_stage
+        deed_pick_tradition
+        deed_change_policy
+        deed_reform_council
+        deed_research_repeatable_tech
+    }
+
+    covenant = {
+        name = "touhou_great_patron_dragon_witv"
+        icon = "GFX_whisperers_covenant"
+        desc = touhou_great_patron_dragon_witv_desc
+        triggered_modifier = {
+            potential = { has_country_flag = touhou_great_patron_dragon_covenant_confirmed }
+            country_sr_lingli_produces_mult = 0.2
+            country_resource_max_add = 500000
+            custom_tech_1_research_speed_mult = 0.2
+        }
+        triggered_modifier = {
+            country_unity_produces_mult = -0.25
+        }
+    }
+
+    passive_accord = {
+        name = "touhou_great_patron_dragon_accord_1"
+        icon = "GFX_accord_wisdom"
+        on_unlock = {
+            custom_tooltip = touhou_great_patron_dragon_accord_1_tt
+            set_country_flag = touhou_great_patron_dragon_accord_1
+        }
+        triggered_modifier = {
+            planet_decision_enact_speed_mult = 0.25
+        }
+    }
+
+    passive_accord = {
+        name = "touhou_great_patron_dragon_accord_2"
+        icon = "GFX_accord_knowledge"
+        on_unlock = {
+            custom_tooltip = touhou_great_patron_dragon_accord_2_tt
+            set_country_flag = touhou_great_patron_dragon_accord_2
+        }
+        triggered_modifier = {
+            physics_tech_cost_mult = -0.1
+            society_tech_cost_mult = -0.2
+            engineering_tech_cost_mult = -0.1
+        }
+    }
+
+    active_accord = {
+        name = "touhou_great_patron_dragon_accord_3"
+        icon = "GFX_accord_annihilation"
+        sound = "accord_activation_whisperers_foresight"
+
+        cooldown = 2400
+        first_cooldown = 2400
+        activation_cost = {
+            cost = {
+                sr_lingli = 5000
+                sr_fuka = 5000
+            }
+        }
+
+        effect = {
+            custom_tooltip = touhou_great_patron_dragon_accord_3_tt
+            hidden_effect = {
+                set_variable = { which = touhou_great_patron_dragon_accord_3_val value = modifier:weapon_type_energy_weapon_damage_mult }
+                change_variable = { which = touhou_great_patron_dragon_accord_3_val value = modifier:weapon_type_kinetic_weapon_damage_mult }
+                add_modifier = { modifier = touhou_great_patron_dragon_accord_3 days = 1800 mult = touhou_great_patron_dragon_accord_3_val }
+            }
+        }
+    }
+
+    active_accord = {
+        name = "touhou_great_patron_dragon_accord_4"
+        icon = "GFX_accord_generation"
+        sound = "accord_activation_whisperers_hindsight"
+
+        cooldown = 1800
+        first_cooldown = 1800
+        activation_cost = {
+            cost = {
+                sr_zro = 5000
+                sr_lingli = 5000
+            }
+        }
+
+        possible = {
+            custom_tooltip = {
+                text = requires_valid_hindsight_target
+                count_system_with_aura = {
+                    count > 0
+                    limit = {
+                        count_system_colony = {
+                            count > 0
+                            limit = {
+                                solar_system = {
+                                    has_psionic_aura = yes
+                                    aura_owner = { is_same_value = root }
+                                }
+                                has_deposit = d_hakurei_barrier
+                                NOT = { has_planet_flag = touhou_great_patron_dragon_accord_4 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        effect = {
+            custom_tooltip = touhou_great_patron_dragon_accord_4_tt
+            hidden_effect = {
+                random_system_with_aura = {
+                    random_system_colony = {
+                        limit = {
+                            solar_system = {
+                                has_psionic_aura = yes
+                                aura_owner = { is_same_value = root }
+                            }
+                            has_deposit = d_hakurei_barrier
+                            NOT = { has_planet_flag = touhou_great_patron_dragon_accord_4 }
+                        }
+                        set_planet_flag = touhou_great_patron_dragon_accord_4
+                    }
+                }
+            }
+        }
+    }
+}

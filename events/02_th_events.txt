@@ -3387,12 +3387,13 @@ country_event = {
                     }
                 }
                 # 随机事件，袿姬小超主
-                100 = {
+                150 = {
                     modifier = {
                         factor = 0
                         NOT = { has_authority = auth_gensokyo }
                     }
                     modifier = { factor = 0 has_country_flag = toho_8302_fired }
+                    modifier = { factor = 2 has_country_flag = th_alice_get }
                     if = {
                         limit = { has_authority = auth_gensokyo }
                         set_country_flag = toho_8302_fired
@@ -3400,18 +3401,17 @@ country_event = {
                         country_event = { id = toho.8302 }
                     } else = { country_event = { id = toho.8901 } }
                 }
-                # 100 = {
-                #     modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
-                #     modifier = {
-                #         factor = 0                                           # 随机事件，崇拜FUMO的原始文明
-                #         has_country_flag = toho_8310_fired
-                #     }
-                #     if = {
-                #         limit = { has_authority = auth_gensokyo }
-                #         set_country_flag = toho_8310_fired
-                #         country_event = { id = toho.8310 }
-                #     }
-                # }
+                # 幻想乡上超主
+                300 = {
+                    modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                    modifier = { factor = 0 has_country_flag = toho_8310_fired }
+                    modifier = { factor = 0 touhou_has_any_vanilla_patron = no }
+                    if = {
+                        limit = { has_authority = auth_gensokyo }
+                        set_country_flag = toho_8310_fired
+                        country_event = { id = toho.8310 }
+                    }
+                }
                 100 = {
                     modifier = {
                         factor = 0
@@ -4211,6 +4211,17 @@ country_event = {
             } else = {
                 reroll_random = yes
                 random_list = {
+                    # 幻想乡上超主
+                    150 = {
+                        modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                        modifier = { factor = 0 has_country_flag = toho_8310_fired }
+                        modifier = { factor = 0 touhou_has_any_vanilla_patron = no }
+                        if = {
+                            limit = { has_authority = auth_gensokyo }
+                            set_country_flag = toho_8310_fired
+                            country_event = { id = toho.8310 }
+                        }
+                    }
                     # 以下三个为幻想乡灵能裂解器
                     50 = {
                         modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
@@ -4275,6 +4286,20 @@ country_event = {
                         } else = {
                             country_event = { id = toho.8418 }
                         }
+                    }
+                    25 = {
+                        modifier = {
+                            factor = 0
+                            NOT = { has_authority = auth_gensokyo }
+                        }
+                        modifier = { factor = 0 has_country_flag = toho_8302_fired }
+                        modifier = { factor = 2 has_country_flag = th_alice_get }
+                        if = {
+                            limit = { has_authority = auth_gensokyo }
+                            set_country_flag = toho_8302_fired
+                            set_country_flag = unlock_touhou_psionic_echo_keiei
+                            country_event = { id = toho.8302 }
+                        } else = { country_event = { id = toho.8901 } }
                     }
                     10 = {
                         modifier = {
@@ -5862,6 +5887,15 @@ country_event = {
     option = {
         name = toho.8305.b
         response_text = toho.8305.b.response
+        allow = {
+            custom_tooltip = {
+                fail_text = toho.8305.b.fail
+                NOT = { has_country_flag = toho_8305_b_recent }
+            }
+        }
+        hidden_effect = {
+            set_timed_country_flag = { flag = toho_8305_b_recent days = 900 }
+        }
         reroll_random = yes
         random_list = {
             20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_1 days = 1800 } }
@@ -5869,10 +5903,21 @@ country_event = {
             20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_3 days = 1800 } }
             20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_4 days = 1800 } }
             20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_5 days = 1800 } }
+            20 = { add_modifier = { modifier = touhou_ac_patron_shroud_buff_6 days = 1800 } }
         }
     }
     option = {
         name = toho.8305.c
+        custom_tooltip = toho.8305.c.effect
+        allow = {
+            custom_tooltip = {
+                fail_text = toho.8305.c.fail
+                NOT = { has_country_flag = toho_8305_c_recent }
+            }
+        }
+        hidden_effect = {
+            set_timed_country_flag = { flag = toho_8305_c_recent days = 720 }
+        }
         country_event = { id = toho.8307 }
     }
     option = {
@@ -5903,6 +5948,9 @@ country_event = {
     diplomatic_title = BLANK_STRING
     custom_gui = touhou_event_leader_ui_window
     custom_gui_option = touhou_event_leader_ui_option
+    force_open = yes
+    picture_event_data = { portrait = spth_por_keiki room = spth_city_planet_room }
+    show_sound = event_psionic
     option = {
         name = toho.8306.a
         is_dialog_only = yes
@@ -5911,12 +5959,12 @@ country_event = {
     option = {
         name = toho.8306.b
         is_dialog_only = yes
-        response_text = toho.8306.a.response
+        response_text = toho.8306.b.response
     }
     option = {
         name = toho.8306.c
         is_dialog_only = yes
-        response_text = toho.8306.a.response
+        response_text = toho.8306.c.response
     }
     option = {
         name = toho.8306.exit
@@ -5944,6 +5992,9 @@ country_event = {
     diplomatic_title = BLANK_STRING
     custom_gui = touhou_event_leader_ui_window
     custom_gui_option = touhou_event_leader_ui_option
+    force_open = yes
+    picture_event_data = { portrait = spth_por_keiki room = spth_ag_excited_shroud_room }
+    show_sound = event_psionic
     option = {
         name = TH_OK
         default_hide_option = yes
@@ -5955,10 +6006,213 @@ country_event = {
 
 country_event = {
     id = toho.8310
-    hide_window = yes
+    title = toho.8310.name
+    desc = toho.8310.desc
     is_triggered_only = yes
+    immediate = { set_country_flag = meet_touhou_great_patron_dragon }
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    option = {
+        name = toho.8310.a
+        enable_patron_first_contact_project = {
+            name = TOUHOU_GREATE_PATRON_DRAGON_FC_PROJECT
+            patron = touhou_great_patron_dragon
+            owner = this
+        }
+    }
+}
+country_event = {
+    id = toho.8311
+    title = toho.8311.name
+    desc = toho.8311.desc
+    is_triggered_only = yes
+    immediate = { set_patron_first_contact_state = { patron = touhou_great_patron_dragon state = completed } }
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    option = {
+        name = toho.8311.a
+        tooltip = { set_patron_first_contact_state = { patron = touhou_great_patron_dragon state = completed } }
+        country_event = { id = toho.8312 }
+    }
+}
+country_event = {
+    id = toho.8312
+    title = toho.8312.name
+    desc = toho.8312.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    option = {
+        name = toho.8312.aa
+        trigger = { has_patron_relation = { patron = whisperers_in_the_void contact = completed } }
+        touhou_change_patron_type = { patron = whisperers_in_the_void new_patron = touhou_great_patron_dragon }
+        accept_covenant = touhou_great_patron_dragon
+        hidden_effect = {
+            set_country_flag = has_shroud_patron
+            set_country_flag = touhou_great_patron_dragon_accept
+            add_attunement = { touhou_great_patron_dragon = 50 }
+            # country_event = { id = toho.8313 days = 180 }
+        }
+    }
+    option = {
+        name = toho.8312.ab
+        trigger = { always = no has_patron_relation = { patron = end_of_the_cycle contact = completed } }
+        touhou_change_patron_type = { patron = end_of_the_cycle new_patron = touhou_great_patron_dragon }
+        accept_covenant = touhou_great_patron_dragon
+        hidden_effect = {
+            set_country_flag = has_shroud_patron
+            set_country_flag = touhou_great_patron_dragon_accept
+            add_attunement = { touhou_great_patron_dragon = 50 }
+            # country_event = { id = toho.8313 days = 180 }
+        }
+    }
+    option = {
+        name = toho.8312.ac
+        trigger = { has_patron_relation = { patron = the_eater_of_worlds contact = completed } }
+        touhou_change_patron_type = { patron = the_eater_of_worlds new_patron = touhou_great_patron_dragon }
+        accept_covenant = touhou_great_patron_dragon
+        hidden_effect = {
+            set_country_flag = has_shroud_patron
+            set_country_flag = touhou_great_patron_dragon_accept
+            add_attunement = { touhou_great_patron_dragon = 50 }
+            # country_event = { id = toho.8313 days = 180 }
+        }
+    }
+    option = {
+        name = toho.8312.ad
+        trigger = { has_patron_relation = { patron = the_cradle_of_souls contact = completed } }
+        touhou_change_patron_type = { patron = the_cradle_of_souls new_patron = touhou_great_patron_dragon }
+        accept_covenant = touhou_great_patron_dragon
+        hidden_effect = {
+            set_country_flag = has_shroud_patron
+            set_country_flag = touhou_great_patron_dragon_accept
+            add_attunement = { touhou_great_patron_dragon = 50 }
+            # country_event = { id = toho.8313 days = 180 }
+        }
+    }
+    option = {
+        name = toho.8312.ae
+        trigger = { has_patron_relation = { patron = the_instrument_of_desire contact = completed } }
+        touhou_change_patron_type = { patron = the_instrument_of_desire new_patron = touhou_great_patron_dragon }
+        accept_covenant = touhou_great_patron_dragon
+        hidden_effect = {
+            set_country_flag = has_shroud_patron
+            set_country_flag = touhou_great_patron_dragon_accept
+            add_attunement = { touhou_great_patron_dragon = 50 }
+            # country_event = { id = toho.8313 days = 180 }
+        }
+    }
+    option = {
+        name = toho.8312.af
+        trigger = { has_patron_relation = { patron = the_composer_of_strands contact = completed } }
+        touhou_change_patron_type = { patron = the_composer_of_strands new_patron = touhou_great_patron_dragon }
+        accept_covenant = touhou_great_patron_dragon
+        hidden_effect = {
+            set_country_flag = has_shroud_patron
+            set_country_flag = touhou_great_patron_dragon_accept
+            add_attunement = { touhou_great_patron_dragon = 50 }
+            # country_event = { id = toho.8313 days = 180 }
+        }
+    }
+    option = {
+        name = toho.8312.b
+        hidden_effect = {
+            refuse_covenant = {
+                patron = touhou_great_patron_dragon
+                reset_attunement = yes
+            }
+        }
+        add_monthly_resource_mult = {
+            resource = sr_lingli
+            value = @tier5researchreward
+            min = @tier5researchmin
+            max = @tier5researchmax
+        }
+        add_monthly_resource_mult = {
+            resource = sr_fuka
+            value = @tier5researchreward
+            min = @tier5researchmin
+            max = @tier5researchmax
+        }
+        add_monthly_resource_mult = {
+            resource = sr_zro
+            value = @tier5materialreward
+            min = @tier5materialmin
+            max = @tier5materialmax
+        }
+    }
+}
+country_event = {
+    id = toho.8313
+    title = toho.8313.name
+    desc = toho.8313.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
     immediate = {
-
+        set_country_flag = toho_8313_fired
+    }
+    trigger = { NOT = { has_country_flag = toho_8313_fired } }
+    option = {
+        name = toho.8313.a
+        hidden_effect = {
+            clear_covenant_flags = yes # in case you had a covenant before
+            remove_country_flag = forging_our_own_path
+            set_country_flag = touhou_great_patron_dragon_covenant_confirmed
+            set_country_flag = touhou_great_patron_dragon_covenant_rank_1
+            set_country_flag = touhou_great_patron_dragon_covenant_rank_2
+            set_country_flag = touhou_great_patron_dragon_covenant_rank_3
+            set_country_flag = touhou_great_patron_dragon_covenant_rank_4
+            set_country_flag = has_shroud_patron
+            set_country_flag = has_ever_established_covenant
+            give_technology = { tech = tech_psionic_aura message = yes }
+            give_technology = { tech = tech_aura_intensification message = yes }
+            refresh_psionic_aura_type = yes
+        }
+        accept_covenant = touhou_great_patron_dragon
+    }
+    option = {
+        name = toho.8313.b
+        hidden_effect = {
+            refuse_covenant = {
+                patron = touhou_great_patron_dragon
+                reset_attunement = yes
+            }
+        }
+        add_monthly_resource_mult = {
+            resource = sr_lingli
+            value = @tier5researchreward
+            min = @tier5researchmin
+            max = @tier5researchmax
+        }
+        add_monthly_resource_mult = {
+            resource = sr_fuka
+            value = @tier5researchreward
+            min = @tier5researchmin
+            max = @tier5researchmax
+        }
+        add_monthly_resource_mult = {
+            resource = sr_zro
+            value = @tier5materialreward
+            min = @tier5materialmin
+            max = @tier5materialmax
+        }
     }
 }
 

@@ -370,10 +370,7 @@ lunar_capital_psi_aura = {
         }
         modifier = {
             factor = 0.8
-            any_system_planet = { OR = {
-                has_active_building = building_psionic_suppressor
-                has_active_building = building_ancient_ward_2
-            } }
+            spth_system_has_psionic_inhibition_station = yes
             desc = "AFFECTED_BY_PSIONIC_SUPPRESSORS"
         }
         modifier = {
@@ -615,10 +612,7 @@ kamikakushi_aura = {
         }
         modifier = {
             factor = 1.25
-            any_system_planet = { OR = {
-                has_active_building = building_psionic_suppressor
-                has_active_building = building_ancient_ward_2
-            } }
+            spth_system_has_psionic_inhibition_station = yes
             desc = "AFFECTED_BY_PSIONIC_SUPPRESSORS"
         }
         modifier = {
@@ -631,3 +625,235 @@ kamikakushi_aura = {
     aura_galaxy_texture = "gfx/map/kamikakushi/kamikakushi_aura.dds"
     aura_hyperlane_texture = "gfx/map/kamikakushi/kamikakushi_hyperlane.dds"
 }
+
+touhou_great_patron_dragon_aura = {
+    patron = touhou_great_patron_dragon
+    background = "GFX_aura_lunar_capital_psi_aura_background"
+    intensity_level = {
+        end = 5000
+        owner_planet_modifier = { modifier = {
+            planet_jobs_sr_lingli_produces_mult = 0.05
+            planet_jobs_sr_fuka_produces_mult = 0.05
+            # pop_miko_bonus_workforce_mult = 0.05
+        } }
+        owner_fleet_modifier = { modifier = {
+            weapon_type_lingli_weapon_damage_mult = 0.125
+            ship_spth_shield_efficiency = 0.05
+            ship_shield_hardening_add = 0.125
+        } }
+        rival_planet_modifier = { modifier = {
+            planet_jobs_upkeep_mult = 0.05
+        } }
+        rival_fleet_modifier = { modifier = {
+            ships_upkeep_mult = 0.25
+            megastructures_upkeep_mult = 0.25
+            ship_ftl_jumpdrive_range_mult = -0.125
+            ship_damage_reduction_add = -3
+        } }
+    }
+    intensity_level = {
+        end = 10000
+        owner_planet_modifier = { modifier = {
+            planet_jobs_sr_lingli_produces_mult = 0.1
+            planet_jobs_sr_fuka_produces_mult = 0.1
+            # pop_miko_bonus_workforce_mult = 0.1
+        } }
+        owner_fleet_modifier = { modifier = {
+            weapon_type_lingli_weapon_damage_mult = 0.125
+            ship_spth_shield_efficiency = 0.1
+            ship_shield_hardening_add = 0.25
+        } }
+        rival_planet_modifier = { modifier = {
+            planet_jobs_produces_mult = -0.05
+            station_researchers_produces_mult = -0.10
+            station_gatherers_produces_mult = -0.25
+            planet_stability_add = -5
+            planet_jobs_upkeep_mult = 0.10
+        } }
+        rival_fleet_modifier = { modifier = {
+            ships_upkeep_mult = 0.5
+            megastructures_upkeep_mult = 0.5
+            ship_ftl_jumpdrive_range_mult = -0.5
+            ship_damage_reduction_add = -6
+        } }
+    }
+    intensity_level = {
+        end = 20000
+        owner_planet_modifier = { modifier = {
+            planet_jobs_sr_lingli_produces_mult = 0.2
+            planet_jobs_sr_fuka_produces_mult = 0.2
+            # pop_miko_bonus_workforce_mult = 0.2
+        } }
+        owner_fleet_modifier = { modifier = {
+            weapon_type_lingli_weapon_damage_mult = 0.25
+            ship_spth_shield_efficiency = 0.2
+            ship_shield_hardening_add = 0.50
+        } }
+        rival_planet_modifier = { modifier = {
+            planet_jobs_produces_mult = -0.10
+            station_researchers_produces_mult = -0.25
+            station_gatherers_produces_mult = -0.50
+            planet_stability_add = -20
+            planet_jobs_upkeep_mult = 0.25
+        } }
+        rival_fleet_modifier = { modifier = {
+            ships_upkeep_mult = 1.0
+            megastructures_upkeep_mult = 1.0
+            ship_ftl_jumpdrive_range_mult = -0.75
+            ship_damage_reduction_add = -12
+        } }
+    }
+    on_start = {
+        set_star_flag = psionic_aura_ongoing
+        if = {
+            limit = { NOT = { any_system_ambient_object = { is_ambient_object_type = touhou_great_patron_dragon_system_effect_very_thin } } }
+            star = {
+                create_ambient_object = { type = "touhou_great_patron_dragon_system_effect_very_thin" location = this }
+                last_created_ambient_object = { set_location = { target = prev distance = 0 angle = random } }
+            }
+        }
+        aura_owner = { set_visited = prev }
+        set_timed_star_flag = { flag = newly_spawned_psionic_aura months = 6 }
+        root = { save_event_target_as = winning_system }
+        every_neighbor_system = {
+            limit = {
+                has_psionic_aura = yes
+                aura_owner = { NOT = { is_same_value = root.aura_owner } }
+                spth_has_psionic_inhibition_station = no
+            }
+            save_event_target_as = losing_system
+            event_target:winning_system = {
+                set_star_flag = aura_is_clashing_against_@event_target:losing_system
+                set_star_flag = aura_clash_winning_against_@event_target:losing_system
+            }
+            event_target:losing_system = {
+                set_star_flag = aura_is_clashing_against_@event_target:winning_system
+                # aura_owner = { if = {
+                #     limit = { NOT = { has_country_flag = aura_clashing_event_triggered } }
+                #     set_country_flag = aura_clashing_event_triggered
+                #     country_event = { id = toho.8049 scopes = { from = prev fromfrom = event_target:winning_system } }
+                # } }
+            }
+        }
+    }
+    on_monthly = {
+        set_timed_star_flag = { flag = aura_clashing_on_monthly_check days = 20 }
+        root = { save_event_target_as = winning_system }
+        every_neighbor_system = {
+            limit = {
+                NOT = { has_star_flag = aura_clashing_on_monthly_check }
+                has_psionic_aura = yes
+                aura_owner = { NOT = { is_same_value = root.aura_owner } }
+            }
+            if = {
+                limit = { spth_has_psionic_inhibition_station = no }
+                remove_star_flag = aura_is_clashing_against_@root
+                remove_star_flag = aura_clash_winning_against_@root
+                root = {
+                    remove_star_flag = aura_is_clashing_against_@prev
+                    remove_star_flag = aura_clash_winning_against_@prev
+                }
+                save_event_target_as = losing_system
+                event_target:winning_system = {
+                    set_star_flag = aura_is_clashing_against_@event_target:losing_system
+                    set_star_flag = aura_clash_winning_against_@event_target:losing_system
+                }
+                event_target:losing_system = {
+                    set_star_flag = aura_is_clashing_against_@event_target:winning_system
+                    # aura_owner = { if = {
+                    #     limit = { NOT = { has_country_flag = aura_clashing_event_triggered } }
+                    #     set_country_flag = aura_clashing_event_triggered
+                    #     country_event = { id = toho.8049  scopes = { from = prev fromfrom = event_target:winning_system } }
+                    # } }
+                }
+            }
+        }
+    }
+    on_gain_level = {
+        custom_tooltip = "touhou_great_patron_dragon_psionic_aura_spread_effect"
+        if = {
+            limit = { has_psionic_aura = yes }
+            random_neighbor_system = {
+                limit = {
+                    has_psionic_aura = no
+                    spth_has_psionic_inhibition_station = no
+                }
+                weights = {
+                    base = 1
+                    modifier = { add = value:count_adjacent_psionic_auras always = yes }
+                    modifier = { factor = 2 any_system_megastructure = { is_megastructure_type = shroud_seal } }
+                    modifier = { factor = 2 spth_system_has_psionic_burster_station = yes }
+                }
+                spawn_psionic_aura = { type = touhou_great_patron_dragon_aura owner = event_target:spth_touhou_great_patron_dragon_country update_type = no }
+            }
+        }
+    }
+    on_lose_level = { }
+    on_progress_complete = {
+        custom_tooltip = "touhou_great_patron_dragon_psionic_aura_spread_effect"
+        if = {
+            limit = { has_psionic_aura = yes }
+            random_neighbor_system = {
+                limit = {
+                    has_psionic_aura = no
+                    spth_has_psionic_inhibition_station = no
+                }
+                weights = {
+                    base = 1
+                    modifier = { add = value:count_adjacent_psionic_auras always = yes }
+                    modifier = { factor = 2 any_system_megastructure = { is_megastructure_type = shroud_seal } }
+                    modifier = { factor = 2 spth_system_has_psionic_burster_station = yes }
+                }
+                spawn_psionic_aura = { type = touhou_great_patron_dragon_aura owner = event_target:spth_touhou_great_patron_dragon_country update_type = no }
+            }
+        }
+    }
+    on_type_change = { random_system_ambient_object = { limit = { is_ambient_object_type = touhou_great_patron_dragon_system_effect_very_thin } destroy_ambient_object = this } }
+    on_vanish = {
+        remove_star_flag = psionic_aura_ongoing
+        random_system_ambient_object = {
+            limit = { is_ambient_object_type = touhou_great_patron_dragon_system_effect_very_thin }
+            destroy_ambient_object = this
+        }
+        try_resolve_aura_clashing = yes
+    }
+
+    monthly_increase = {
+        base = 0
+        modifier = {
+            add = value:calc_psionic_aura_monthly_increase
+            aura_owner = { has_technology = tech_aura_intensification }
+            desc = tech_psionic_aura
+        }
+        modifier = {
+            add = @psionic_offices_intensity
+            has_star_flag = building_psionic_offices_emitting@root.aura_owner
+            desc = tech_psionic_aura
+        }
+        modifier = {
+            factor = 1.25
+            OR = {
+                has_megastructure = shroud_seal
+                check_variable_arithmetic = { which = value:count_neighbor_shroud_seals value > 0 }
+            }
+            desc = "AFFECTED_BY_SHROUD_SEALS"
+        }
+        modifier = {
+            factor = 0.25
+            spth_system_has_psionic_inhibition_station = yes
+            desc = "AFFECTED_BY_PSIONIC_SUPPRESSORS"
+        }
+        modifier = {
+            factor = 1.25
+            spth_system_has_psionic_burster_station = yes
+            desc = AFFECTED_BY_PSIONIC_BURSTER
+        }
+    }
+    daily_decrease = { base = 0 }
+    inline_script = "shroud/psionic_aura_monthly_decrease"
+    increase_trigger = { NOT = { any_neighbor_system = { has_star_flag = aura_is_clashing_against_@root } } }
+
+    aura_galaxy_texture = "gfx/map/lunar_capital/touhou_great_patron_dragon_aura.dds"
+    aura_hyperlane_texture = "gfx/map/lunar_capital/touhou_great_patron_dragon_hyperlane.dds"
+}
+

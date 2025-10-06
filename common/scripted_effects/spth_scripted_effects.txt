@@ -878,7 +878,13 @@ spth_set_stage_crisis_sound = {
 				spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_2 }
 			} else = { spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_1 } }
 		} else = { stop_crisis_sound = yes }
-	}
+	} else_if = {
+        limit = { has_global_flag = spth_lunar_capital_psi_crisis_begin }
+        if = {
+            limit = { NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended } }
+            spth_set_crisis_sound = { sound = lunar_capital_psi_crisis_stage_1 }
+        } else = { stop_crisis_sound = yes }
+    }
 }
 spth_astral_thread_small_reward = {
 	optimize_memory
@@ -1100,4 +1106,12 @@ touhou_spawn_lathe_cracker_effect = {
 touhou_destroy_habitable_ringworld = {
 	optimize_memory
 	change_pc = pc_ringworld_habitable_damaged
+}
+
+touhou_change_patron_type = {
+    optimize_memory
+    if = {
+        limit = { has_patron_relation = { patron = $patron$ contact = completed } }
+        replace_patron = { new_patron = $new_patron$ replaced_patron = $patron$ }
+    }
 }
