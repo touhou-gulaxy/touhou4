@@ -241,6 +241,10 @@ spth_save_planet_buildings_and_districts = {
         default = {  }
     }
     if = {
+        limit = { has_building = building_master_archive }
+        set_planet_flag = has_saved_building_master_archive
+    }
+    if = {
         limit = { spth_has_rural_designation = yes }
         set_planet_flag = spth_has_rural_designation
     } else_if = {
@@ -297,12 +301,17 @@ spth_restore_planet_buildings_and_districts = {
     remove_building = building_colony_shelter
     switch = {
         trigger = has_planet_flag
-        has_saved_building_capital = { set_planet_flag = has_saved_building_capital add_building = building_capital }
-        has_saved_building_major_capital = { set_planet_flag = has_saved_building_major_capital add_building = building_major_capital }
-        has_saved_building_system_capital = { set_planet_flag = has_saved_building_system_capital add_building = building_system_capital }
-        has_saved_building_spth_old_shirne = { set_planet_flag = has_saved_building_spth_old_shirne add_building = building_spth_old_shirne }
-        has_saved_building_spth_planet_shirne = { set_planet_flag = has_saved_building_spth_planet_shirne add_building = building_spth_planet_shirne }
+        has_saved_building_capital = { remove_planet_flag = has_saved_building_capital add_building = building_capital }
+        has_saved_building_major_capital = { remove_planet_flag = has_saved_building_major_capital add_building = building_major_capital }
+        has_saved_building_system_capital = { remove_planet_flag = has_saved_building_system_capital add_building = building_system_capital }
+        has_saved_building_spth_old_shirne = { remove_planet_flag = has_saved_building_spth_old_shirne add_building = building_spth_old_shirne }
+        has_saved_building_spth_planet_shirne = { remove_planet_flag = has_saved_building_spth_planet_shirne add_building = building_spth_planet_shirne }
         default = { add_building = building_colony_shelter }
+    }
+    if = {
+        limit = { has_planet_flag = has_saved_building_master_archive }
+        remove_planet_flag = has_saved_building_master_archive
+        add_building = building_master_archive
     }
     if = {
         limit = {
@@ -514,7 +523,9 @@ spth_change_pc_gensokyo_planet_effect = {
         }
         add_deposit = d_hakurei_barrier
     }
+    spth_save_planet_buildings_and_districts = yes
     change_pc = pc_gensokyo_planet
+    spth_restore_planet_buildings_and_districts = yes
     set_planet_entity = {
         entity = "gensokyo_city_entity"
         graphical_culture = owner
