@@ -38,6 +38,74 @@ fleet_event = {
             remove_fleet_flag = touhou_ship_action_menu_ship_expend
         }
     }
+    # 古代帝国联动
+    option = {
+        name = {
+            trigger = {
+                has_fleet_flag = touhou_psionic_conduit_ancient_titan_action_enable
+            }
+            text = concept_touhou_psionic_conduit_ancient_titan_action_alt
+        }
+        name = {
+            trigger = {
+                NOT = { has_fleet_flag = touhou_psionic_conduit_ancient_titan_action_enable }
+            }
+            text = concept_touhou_psionic_conduit_ancient_titan_action
+        }
+        custom_tooltip = concept_touhou_psionic_conduit_ancient_titan_action_desc
+        trigger = {
+            any_owned_ship = {
+                check_modifier_value = { modifier = touhou_psionic_conduit_ancient_titan_action value > 0 }
+                ag_can_be_charged_by_psionic_conduit = yes
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { has_fleet_flag = touhou_psionic_conduit_ancient_titan_cooldown }
+            }
+        }
+        hidden_effect = {
+            set_timed_fleet_flag = { flag = touhou_psionic_conduit_ancient_titan_cooldown days = 30 }
+            if = {
+                limit = { has_fleet_flag = touhou_psionic_conduit_ancient_titan_action_enable }
+                remove_fleet_flag = touhou_psionic_conduit_ancient_titan_action_enable
+                every_owned_ship = {
+                    limit = { has_ship_flag = touhou_psionic_conduit_ancient_titan_action_enable }
+                    remove_ship_flag = touhou_psionic_conduit_ancient_titan_action_enable
+                    remove_modifier = touhou_psionic_conduit_ancient_action
+                    if = {
+                        limit = { has_modifier = touhou_psionic_conduit_ancient_titan_upkeep }
+                        remove_modifier = touhou_psionic_conduit_ancient_titan_upkeep
+                    }
+                    if = {
+                        limit = { has_modifier = touhou_psionic_conduit_ancient_battleship_upkeep }
+                        remove_modifier = touhou_psionic_conduit_ancient_battleship_upkeep
+                    }
+                    if = {
+                        limit = { has_modifier = touhou_psionic_conduit_ancient_destroyer_upkeep }
+                        remove_modifier = touhou_psionic_conduit_ancient_destroyer_upkeep
+                    }
+                }
+            } else = {
+                set_fleet_flag = touhou_psionic_conduit_ancient_titan_action_enable
+                every_owned_ship = {
+                    limit = { ag_can_be_charged_by_psionic_conduit = yes }
+                    set_ship_flag = touhou_psionic_conduit_ancient_titan_action_enable
+                    add_modifier = { modifier = touhou_psionic_conduit_ancient_action }
+                    if = {
+                        limit = { ship_size_multiplier > 10 }
+                        add_modifier = { modifier = touhou_psionic_conduit_ancient_titan_upkeep }
+                    } else_if = {
+                        limit = { ship_size_multiplier > 4 }
+                        add_modifier = { modifier = touhou_psionic_conduit_ancient_battleship_upkeep }
+                    } else = {
+                        add_modifier = { modifier = touhou_psionic_conduit_ancient_destroyer_upkeep }
+                    }
+                }
+            }
+        }
+    }
     # Ship Actions
     option = {
         name = touhou_ship_action_ship
