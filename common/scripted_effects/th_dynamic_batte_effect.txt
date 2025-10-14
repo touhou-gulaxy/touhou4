@@ -979,29 +979,13 @@ spth_repair_ship_perc = {
 }
 yukari_kamikakushi_reduce_effect = {
     optimize_memory
-    TH_dynamic_modifier_conditional = {
-        modifier = ship_shield_hardening_add
-        relation = ">"
-        limit_value = yukari_kamikakushi_reduction_value
-        value = yukari_kamikakushi_reduce_hardening
+    if = {
+        limit = { has_modifier = yukari_kamikakushi_dot_damage }
+        remove_modifier = yukari_kamikakushi_dot_damage
     }
-    TH_dynamic_modifier_conditional = {
-        modifier = ship_armor_hardening_add
-        relation = ">"
-        limit_value = yukari_kamikakushi_reduction_value
-        value = yukari_kamikakushi_reduce_hardening
-    }
-    TH_dynamic_modifier_conditional = {
-        modifier = ship_shield_hardening_add
-        relation = ">"
-        limit_value = yukari_kamikakushi_reduce_value
-        value = yukari_kamikakushi_reduce_value
-    }
-    TH_dynamic_modifier_conditional = {
-        modifier = ship_armor_hardening_add
-        relation = ">"
-        limit_value = yukari_kamikakushi_reduce_value
-        value = yukari_kamikakushi_reduce_value
+    add_modifier = {
+        modifier = yukari_kamikakushi_dot_damage
+        mult = value:yukari_kamikakushi_dot_damage
     }
 }
 
@@ -1063,5 +1047,39 @@ spth_refresh_ship_extra_life = {
         limit = { check_modifier_value = { modifier = ship_spth_extra_life value >= 1 } }
         set_ship_flag = has_triggered_spth_extra_life
         set_disable_at_health = 0.01
+    }
+}
+
+ship_spth_damage_reduction_mult_max_refresh = {
+    optimize_memory
+    if = {
+        limit = {
+            check_modifier_value = { modifier = ship_spth_damage_reduction_mult_max value < 0 }
+            NOR = {
+                has_ship_flag = spth_invincible
+                check_modifier_value = { modifier = ship_spth_inv_status value > 0 }
+            }
+            check_variable_arithmetic = {
+                which = modifier:ship_damage_reduction_mult
+                value > value:ship_spth_damage_reduction_mult_max_value
+            }
+        }
+        if = {
+            limit = { has_modifier = ship_spth_damage_reduction_mult_max_buf }
+            remove_modifier = ship_spth_damage_reduction_mult_max_buf
+        }
+        set_variable = {
+            which = ship_spth_damage_reduction_mult_max_value
+            value = value:ship_spth_damage_reduction_mult_max_value
+        }
+        set_variable = {
+            which = ship_spth_damage_reduction_mult_max_buf_value
+            value = value:ship_spth_damage_reduction_mult_max_buf_value
+        }
+        add_modifier = {
+            modifier = ship_spth_damage_reduction_mult_max_buf
+            mult = ship_spth_damage_reduction_mult_max_buf_value
+            days = $duration$
+        }
     }
 }

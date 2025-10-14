@@ -155,3 +155,80 @@ touhou_mask_of_hope_factor = {
     base = 1
     add = modifier:touhou_mask_of_hope_effect
 }
+
+ship_spth_damage_reduction_mult_max_value = {
+    base = 1
+    add = modifier:ship_spth_damage_reduction_mult_max
+}
+# modifier, max->modifier-val=max->val=max-modifier
+ship_spth_damage_reduction_mult_max_buf_value = {
+    base = 0
+    add = modifier:ship_damage_reduction_mult
+    subtract = value:ship_spth_damage_reduction_mult_max_value
+}
+
+yukari_kamikakushi_dot_damage_size_factor = {
+    base = 0
+    add = trigger:ship_size_multiplier
+    square_root = yes
+    min = 1
+    max = 32
+}
+yukari_kamikakushi_dot_damage_max = {
+    base = 50
+    mult = value:yukari_kamikakushi_dot_damage_size_factor
+}
+yukari_kamikakushi_dot_damage = {
+    base = 0
+    add = trigger:has_max_armor_hp
+    mult = 0.001
+    max = value:yukari_kamikakushi_dot_damage_max
+}
+
+concept_touhou_blood_slash_damage = {
+    base = 0
+    add = trigger:has_max_armor_hp
+    mult = trigger:has_armor_percentage
+    mult = 0.01
+    max = 22230
+    min = 1
+}
+concept_touhou_sunbeam_modifier = {
+    base = 0
+    add = event_target:concept_touhou_sunbeam_target.modifier:weapon_type_$tag$_weapon_damage_mult
+    mult = $factor$
+    min = 0
+}
+concept_touhou_sunbeam_damage_factor = {
+    base = 1
+    add = value:concept_touhou_sunbeam_modifier|tag|lingli|factor|0.1|
+    add = value:concept_touhou_sunbeam_modifier|tag|spark|factor|0.25|
+}
+concept_touhou_sunbeam_damage = {
+    base = $base$
+    mult = value:concept_touhou_sunbeam_damage_factor
+    min = $min$
+    max = $max$
+}
+concept_touhou_echo_strike_damage_factor = {
+    base = 1
+    add = value:concept_touhou_sunbeam_modifier|tag|lingli|factor|0.1|
+}
+concept_touhou_echo_strike_damage = {
+    base = @spth_common_energy_$size$_damage_min
+    mult = @spth_common_energy_$size$_armor_damage
+}
+concept_touhou_cleanse_health_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 1
+}
+concept_touhou_cleanse_health = {
+    base = @spth_common_energy_$size$_damage_min
+    mult = @touhou_spread_weapon_damage_factor
+    mult = value:concept_touhou_cleanse_health_factor
+    mult = -1
+    max = -50
+    min = -14400
+}

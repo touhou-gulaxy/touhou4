@@ -41,6 +41,72 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = titanic }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = titanic }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
+    on_hit = {
+        custom_tooltip = TH_weapon_gungnir2_hit_effect
+        hidden_effect = {
+            if = {
+                limit = {
+                    NOT = {
+                        from = { has_ship_flag = concept_touhou_blood_slash }
+                        has_ship_flag = concept_touhou_blood_slash
+                        has_modifier = concept_touhou_blood_slash_armor
+                    }
+                }
+                random_list = {
+                    25 = {
+                        from = { set_timed_ship_flag = { flag = concept_touhou_blood_slash days = 15 } }
+                        set_timed_ship_flag = { flag = concept_touhou_blood_slash days = 10 }
+                        if = {
+                            limit = { has_armor_percentage > 0.05 }
+                            random_list = {
+                                25 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_armor
+                                        mult = value:concept_touhou_blood_slash_damage days = 3
+                                    }
+                                }
+                                50 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_armor
+                                        mult = value:concept_touhou_blood_slash_damage days = 4
+                                    }
+                                }
+                                25 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_armor
+                                        mult = value:concept_touhou_blood_slash_damage days = 5
+                                    }
+                                }
+                            }
+                        } else = {
+                            random_list = {
+                                25 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_hull
+                                        mult = value:concept_touhou_blood_slash_damage days = 3
+                                    }
+                                }
+                                50 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_hull
+                                        mult = value:concept_touhou_blood_slash_damage days = 4
+                                    }
+                                }
+                                25 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_hull
+                                        mult = value:concept_touhou_blood_slash_damage days = 5
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    75 = {}
+                }
+            }
+        }
+    }
 }
 
 weapon_component_template = {
@@ -63,6 +129,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = gungnir type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = titanic }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
 }
 
 ######################魔炮#################
@@ -80,9 +147,38 @@ weapon_component_template = {
     ai_tag_weight = 1000
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = small }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = small }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = energy type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_weapon_spark_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { from = { NOT = { has_ship_flag = concept_touhou_echo_strike } } }
+                random_list = {
+                    10 = {
+                        from = { set_timed_ship_flag = { flag = concept_touhou_echo_strike days = 15 } }
+                        random_list = {
+                            25 = { set_timed_ship_flag = { flag = concept_touhou_echo_strike_victim days = 3 } }
+                            50 = { set_timed_ship_flag = { flag = concept_touhou_echo_strike_victim days = 4 } }
+                            25 = { set_timed_ship_flag = { flag = concept_touhou_echo_strike_victim days = 5 } }
+                        }
+                    }
+                    90 = {
+                    }
+                }
+            }
+            if = {
+                limit = { has_ship_flag = concept_touhou_echo_strike_victim NOT = { has_ship_flag = concept_touhou_echo_strike_damaged } }
+                remove_ship_flag = concept_touhou_echo_strike_victim
+                set_timed_ship_flag = { flag = concept_touhou_echo_strike_damaged days = 5 }
+                add_modifier = {
+                    modifier = concept_touhou_echo_strike
+                    mult = value:concept_touhou_echo_strike_damage|size|small| days = 2
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_weapon_spark"
@@ -97,9 +193,38 @@ weapon_component_template = {
     ai_tag_weight = 1000
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = medium }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = energy type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_weapon_spark_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { from = { NOT = { has_ship_flag = concept_touhou_echo_strike } } }
+                random_list = {
+                    10 = {
+                        from = { set_timed_ship_flag = { flag = concept_touhou_echo_strike days = 15 } }
+                        random_list = {
+                            25 = { set_timed_ship_flag = { flag = concept_touhou_echo_strike_victim days = 3 } }
+                            50 = { set_timed_ship_flag = { flag = concept_touhou_echo_strike_victim days = 4 } }
+                            25 = { set_timed_ship_flag = { flag = concept_touhou_echo_strike_victim days = 5 } }
+                        }
+                    }
+                    90 = {
+                    }
+                }
+            }
+            if = {
+                limit = { has_ship_flag = concept_touhou_echo_strike_victim NOT = { has_ship_flag = concept_touhou_echo_strike_damaged } }
+                remove_ship_flag = concept_touhou_echo_strike_victim
+                set_timed_ship_flag = { flag = concept_touhou_echo_strike_damaged days = 5 }
+                add_modifier = {
+                    modifier = concept_touhou_echo_strike
+                    mult = value:concept_touhou_echo_strike_damage|size|medium| days = 2
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "LARGE_th_weapon_spark"
@@ -114,9 +239,42 @@ weapon_component_template = {
     ai_tag_weight = 1000
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = large }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = large }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = energy type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_weapon_spark_hit_effect
+        hidden_effect = {
+            if = {
+                limit = {
+                    from = { NOT = { has_ship_flag = concept_touhou_echo_strike } }
+                    NOT = { has_ship_flag = concept_touhou_echo_strike }
+                }
+                random_list = {
+                    10 = {
+                        from = { set_timed_ship_flag = { flag = concept_touhou_echo_strike days = 15 } }
+                        set_timed_ship_flag = { flag = concept_touhou_echo_strike days = 10 }
+                        random_list = {
+                            25 = { set_timed_ship_flag = { flag = concept_touhou_echo_strike_victim days = 3 } }
+                            50 = { set_timed_ship_flag = { flag = concept_touhou_echo_strike_victim days = 4 } }
+                            25 = { set_timed_ship_flag = { flag = concept_touhou_echo_strike_victim days = 5 } }
+                        }
+                    }
+                    90 = {
+                    }
+                }
+            }
+            if = {
+                limit = { has_ship_flag = concept_touhou_echo_strike_victim NOT = { has_ship_flag = concept_touhou_echo_strike_damaged } }
+                remove_ship_flag = concept_touhou_echo_strike_victim
+                set_timed_ship_flag = { flag = concept_touhou_echo_strike_damaged days = 5 }
+                add_modifier = {
+                    modifier = concept_touhou_echo_strike
+                    mult = value:concept_touhou_echo_strike_damage|size|large| days = 2
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "TH_weapon_spark"
@@ -159,6 +317,29 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = titanic }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = titanic }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
+    on_hit = {
+        custom_tooltip = TH_weapon_spark1_hit_effect
+        hidden_effect = {
+            if = {
+                limit = {
+                    from = { NOT = { has_ship_flag = concept_touhou_sunbeam } }
+                    NOT = {
+                        has_ship_flag = concept_touhou_sunbeam
+                        has_ship_flag = concept_touhou_sunbeam_victim
+                    }
+                }
+                from = {
+                    save_event_target_as = concept_touhou_sunbeam_target
+                    set_timed_ship_flag = { flag = concept_touhou_sunbeam days = 15 }
+                }
+                set_timed_ship_flag = { flag = concept_touhou_sunbeam days = 10 }
+                set_timed_ship_flag = { flag = concept_touhou_sunbeam_victim days = 5 }
+                touhou_spawn_sunbeam_object = yes
+                reduce_shield = value:concept_touhou_sunbeam_damage|base|8892|min|8892|max|72000|
+            }
+        }
+    }
 }
 
 ####################梦想封印#################
@@ -265,9 +446,25 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_shield }
     ai_tag_weight = 997
     inline_script = { script = ship_components/spth_component_basic size = small }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = small }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = energy type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_yinyang_jade_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = th_yinyang_jade_hit_effect } }
+                random_list = {
+                    15 = {
+                        set_timed_ship_flag = { flag = th_yinyang_jade_hit_effect days = 8 }
+                        add_modifier = { modifier = th_yinyang_jade_hit_effect days = 5 }
+                    }
+                    85 = {
+                    }
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_yinyang_jade"
@@ -282,9 +479,25 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_shield }
     ai_tag_weight = 998
     inline_script = { script = ship_components/spth_component_basic size = medium }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = energy type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_yinyang_jade_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = th_yinyang_jade_hit_effect } }
+                random_list = {
+                    15 = {
+                        set_timed_ship_flag = { flag = th_yinyang_jade_hit_effect days = 8 }
+                        add_modifier = { modifier = th_yinyang_jade_hit_effect days = 5 }
+                    }
+                    85 = {
+                    }
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "LARGE_th_yinyang_jade"
@@ -299,9 +512,25 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_shield }
     ai_tag_weight = 999
     inline_script = { script = ship_components/spth_component_basic size = large }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = large }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = energy type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_yinyang_jade_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = th_yinyang_jade_hit_effect } }
+                random_list = {
+                    15 = {
+                        set_timed_ship_flag = { flag = th_yinyang_jade_hit_effect days = 8 }
+                        add_modifier = { modifier = th_yinyang_jade_hit_effect days = 5 }
+                    }
+                    85 = {
+                    }
+                }
+            }
+        }
+    }
 }
 
 #####魔法书########
@@ -372,7 +601,7 @@ weapon_component_template = {
     prerequisites = { "tech_touhou_psionic_lighting_pd" }
     component_set = "PD_touhou_psionic_lighting"
     projectile_gfx = "touhou_psionic_lighting_pd_white"
-    tags = { weapon_type_point_defense weapon_type_energy weapon_type_lingli }
+    tags = { weapon_type_point_defense weapon_type_energy weapon_type_lingli weapon_type_psionic }
     ai_tags = { weapon_role_point_defense }
     point_defence_targets = { "missile" "strike_craft" }
     ai_tag_weight = 1000
@@ -640,9 +869,24 @@ weapon_component_template = {
     ai_tag_weight = 998
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = large }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = large }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = kinetic type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_weapon_needle_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = concept_touhou_constraint } }
+                random_list = {
+                    15 = {
+                        set_timed_ship_flag = { flag = concept_touhou_constraint days = 12 }
+                        add_modifier = { modifier = concept_touhou_constraint days = 4 }
+                    }
+                    85 = {}
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_weapon_needle"
@@ -655,9 +899,24 @@ weapon_component_template = {
     ai_tag_weight = 998
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = medium }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = kinetic type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_weapon_needle_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = concept_touhou_constraint } }
+                random_list = {
+                    15 = {
+                        set_timed_ship_flag = { flag = concept_touhou_constraint days = 12 }
+                        add_modifier = { modifier = concept_touhou_constraint days = 4 }
+                    }
+                    85 = {}
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_weapon_needle"
@@ -670,9 +929,24 @@ weapon_component_template = {
     ai_tag_weight = 998
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = small }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = small }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = kinetic type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_weapon_needle_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = concept_touhou_constraint } }
+                random_list = {
+                    15 = {
+                        set_timed_ship_flag = { flag = concept_touhou_constraint days = 12 }
+                        add_modifier = { modifier = concept_touhou_constraint days = 4 }
+                    }
+                    85 = {}
+                }
+            }
+        }
+    }
 }
 
 #御币
@@ -693,17 +967,16 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = sanae type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    ship_modifier = {
+        ship_provide_spth_damage_reduction_mult_max = 1
+    }
     on_hit = {
         custom_tooltip = th_weapon_sanae_hit_effect
         hidden_effect = {
+            spth_reduce_shield = { percent = 0.01 factor = 0.01 }
             if = {
-                limit = { has_shield_hp > 1 }
-                spth_reduce_shield = { percent = 0.01 factor = 0.01 }
-            } else = {
-                if = {
-                    limit = { has_shield_hp < 100000000 }
-                    reduce_shield = -320
-                }
+                limit = { NOT = { has_modifier = th_weapon_sanae_hit_effect } }
+                add_modifier = { modifier = th_weapon_sanae_hit_effect }
             }
         }
     }
@@ -724,17 +997,16 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = sanae type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    ship_modifier = {
+        ship_provide_spth_damage_reduction_mult_max = 1
+    }
     on_hit = {
         custom_tooltip = th_weapon_sanae_hit_effect
         hidden_effect = {
+            spth_reduce_shield = { percent = 0.01 factor = 0.01 }
             if = {
-                limit = { has_shield_hp > 1 }
-                spth_reduce_shield = { percent = 0.01 factor = 0.01 }
-            } else = {
-                if = {
-                    limit = { has_shield_hp < 100000000 }
-                    reduce_shield = -320
-                }
+                limit = { NOT = { has_modifier = th_weapon_sanae_hit_effect } }
+                add_modifier = { modifier = th_weapon_sanae_hit_effect }
             }
         }
     }
@@ -754,17 +1026,16 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = sanae type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    ship_modifier = {
+        ship_provide_spth_damage_reduction_mult_max = 1
+    }
     on_hit = {
         custom_tooltip = th_weapon_sanae_hit_effect
         hidden_effect = {
+            spth_reduce_shield = { percent = 0.01 factor = 0.01 }
             if = {
-                limit = { has_shield_hp > 1 }
-                spth_reduce_shield = { percent = 0.01 factor = 0.01 }
-            } else = {
-                if = {
-                    limit = { has_shield_hp < 100000000 }
-                    reduce_shield = -320
-                }
+                limit = { NOT = { has_modifier = th_weapon_sanae_hit_effect } }
+                add_modifier = { modifier = th_weapon_sanae_hit_effect }
             }
         }
     }
@@ -785,9 +1056,35 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_armor }
     ai_tag_weight = 997
     inline_script = { script = ship_components/spth_component_basic size = small }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = small }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = kinetic type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_barrage_normal_hit_effect
+        hidden_effect = {
+            from = {
+                if = {
+                    limit = { NOT = { has_ship_flag = concept_touhou_cleanse } }
+                    random_list = {
+                        20 = {
+                            set_timed_ship_flag = { flag = concept_touhou_cleanse days = 16 }
+                            set_timed_ship_flag = { flag = concept_touhou_cleanse_fired days = 4 }
+                            if = {
+                                limit = { has_modifier = concept_touhou_blood_slash_armor }
+                                remove_modifier = concept_touhou_blood_slash_armor
+                            }
+                            if = {
+                                limit = { has_ship_flag = concept_touhou_echo_strike_victim }
+                                remove_ship_flag = concept_touhou_echo_strike_victim
+                            }
+                            reduce_hp = value:concept_touhou_cleanse_health|size|small|
+                        }
+                        80 = {}
+                    }
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "th_barrage_normal_2"
@@ -802,9 +1099,35 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_armor }
     ai_tag_weight = 998
     inline_script = { script = ship_components/spth_component_basic size = medium }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = kinetic type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_barrage_normal_hit_effect
+        hidden_effect = {
+            from = {
+                if = {
+                    limit = { NOT = { has_ship_flag = concept_touhou_cleanse } }
+                    random_list = {
+                        20 = {
+                            set_timed_ship_flag = { flag = concept_touhou_cleanse days = 16 }
+                            set_timed_ship_flag = { flag = concept_touhou_cleanse_fired days = 4 }
+                            if = {
+                                limit = { has_modifier = concept_touhou_blood_slash_armor }
+                                remove_modifier = concept_touhou_blood_slash_armor
+                            }
+                            if = {
+                                limit = { has_ship_flag = concept_touhou_echo_strike_victim }
+                                remove_ship_flag = concept_touhou_echo_strike_victim
+                            }
+                            reduce_hp = value:concept_touhou_cleanse_health|size|medium|
+                        }
+                        80 = {}
+                    }
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "th_barrage_normal_3"
@@ -819,9 +1142,35 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_armor }
     ai_tag_weight = 999
     inline_script = { script = ship_components/spth_component_basic size = large }
-    inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = large }
+    inline_script = { script = ship_components/spth_component_attributes_spread name = common tag = kinetic type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    on_hit = {
+        custom_tooltip = th_barrage_normal_hit_effect
+        hidden_effect = {
+            from = {
+                if = {
+                    limit = { NOT = { has_ship_flag = concept_touhou_cleanse } }
+                    random_list = {
+                        20 = {
+                            set_timed_ship_flag = { flag = concept_touhou_cleanse days = 16 }
+                            set_timed_ship_flag = { flag = concept_touhou_cleanse_fired days = 4 }
+                            if = {
+                                limit = { has_modifier = concept_touhou_blood_slash_armor }
+                                remove_modifier = concept_touhou_blood_slash_armor
+                            }
+                            if = {
+                                limit = { has_ship_flag = concept_touhou_echo_strike_victim }
+                                remove_ship_flag = concept_touhou_echo_strike_victim
+                            }
+                            reduce_hp = value:concept_touhou_cleanse_health|size|large|
+                        }
+                        80 = {}
+                    }
+                }
+            }
+        }
+    }
 }
 
 ##########楼观剑系#######
@@ -904,6 +1253,7 @@ weapon_component_template = {
     potential = { ship_from_touhou_country = { origin = origin_spth_story_gensokyo } }
     ai_tags = { weapon_role_anti_hull }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
 }
 weapon_component_template = {
     key = "spth_weapon_laevatain"
@@ -936,6 +1286,7 @@ weapon_component_template = {
     potential = { ship_from_touhou_country = { not_origin = origin_spth_story_gensokyo } }
     ai_tags = { weapon_role_anti_hull }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
 }
 
 # 河童导弹
@@ -1600,6 +1951,7 @@ weapon_component_template = {
         }
     }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
 }
 
 weapon_component_template = {
@@ -1663,7 +2015,7 @@ weapon_component_template = {
     prerequisites = { "tech_touhou_psionic_lighting" }
     component_set = "touhou_psionic_lighting"
     projectile_gfx = "touhou_psionic_lighting_l_white"
-    tags = { weapon_type_energy weapon_type_lingli l_slot }
+    tags = { weapon_type_energy weapon_type_lingli l_slot weapon_type_psionic }
     ai_tags = { weapon_role_anti_hull }
     ai_tag_weight = 1000
     inline_script = { script = ship_components/spth_component_basic size = large }
@@ -1671,6 +2023,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
     upgrades_to = LARGE_touhou_psionic_ag_lighting
+    target_focus = spread
 }
 weapon_component_template = {
     key = "MEDIUM_touhou_psionic_lighting"
@@ -1678,7 +2031,7 @@ weapon_component_template = {
     prerequisites = { "tech_touhou_psionic_lighting" }
     component_set = "touhou_psionic_lighting"
     projectile_gfx = "touhou_psionic_lighting_m_white"
-    tags = { weapon_type_energy weapon_type_lingli m_slot }
+    tags = { weapon_type_energy weapon_type_lingli m_slot weapon_type_psionic }
     ai_tags = { weapon_role_anti_hull }
     ai_tag_weight = 1000
     inline_script = { script = ship_components/spth_component_basic size = medium }
@@ -1686,6 +2039,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
     upgrades_to = MEDIUM_touhou_psionic_ag_lighting
+    target_focus = spread
 }
 weapon_component_template = {
     key = "SMALL_touhou_psionic_lighting"
@@ -1693,7 +2047,7 @@ weapon_component_template = {
     prerequisites = { "tech_touhou_psionic_lighting" }
     component_set = "touhou_psionic_lighting"
     projectile_gfx = "touhou_psionic_lighting_s_white"
-    tags = { weapon_type_energy weapon_type_lingli s_slot }
+    tags = { weapon_type_energy weapon_type_lingli s_slot weapon_type_psionic }
     ai_tags = { weapon_role_anti_hull }
     ai_tag_weight = 1000
     inline_script = { script = ship_components/spth_component_basic size = small }
@@ -1701,6 +2055,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
     upgrades_to = SMALL_touhou_psionic_ag_lighting
+    target_focus = spread
 }
 weapon_component_template = {
     key = "touhou_psionic_lighting_ex"
@@ -1708,7 +2063,7 @@ weapon_component_template = {
     prerequisites = { "tech_touhou_psionic_lighting_xl" }
     component_set = "touhou_psionic_lighting_ex"
     projectile_gfx = "touhou_psionic_lighting_xl_white"
-    tags = { weapon_type_energy weapon_type_lingli x_slot }
+    tags = { weapon_type_energy weapon_type_lingli x_slot weapon_type_psionic }
     ai_tags = { weapon_role_anti_hull }
     ai_tag_weight = 1000
     inline_script = { script = ship_components/spth_component_basic size = extra_large }
@@ -1716,6 +2071,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = extra_large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
     upgrades_to = touhou_psionic_ag_lighting_ex
+    target_focus = spread
 }
 weapon_component_template = {
     key = "touhou_psionic_lighting_t"
@@ -1723,7 +2079,7 @@ weapon_component_template = {
     prerequisites = { "tech_touhou_psionic_lighting_t" }
     component_set = "touhou_psionic_lighting_t"
     projectile_gfx = "touhou_psionic_lighting_white_t"
-    tags = { weapon_type_energy weapon_type_lingli t_slot }
+    tags = { weapon_type_energy weapon_type_lingli t_slot weapon_type_psionic }
     ai_tags = { weapon_role_anti_hull }
     ai_tag_weight = 1000
     inline_script = { script = ship_components/spth_component_basic size = titanic }
@@ -1731,6 +2087,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = titanic }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
     upgrades_to = touhou_psionic_ag_lighting_t
+    target_focus = spread
 }
 # 灵能武器plus，for AE
 weapon_component_template = {
@@ -1746,6 +2103,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = psionic_ag tag = lightning type = large }
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
 }
 weapon_component_template = {
     key = "MEDIUM_touhou_psionic_ag_lighting"
@@ -1760,6 +2118,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = psionic_ag tag = lightning type = medium }
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
 }
 weapon_component_template = {
     key = "SMALL_touhou_psionic_ag_lighting"
@@ -1774,6 +2133,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = psionic_ag tag = lightning type = small }
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
 }
 weapon_component_template = {
     key = "touhou_psionic_ag_lighting_ex"
@@ -1788,6 +2148,7 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = psionic_ag tag = lightning type = extra_large }
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = extra_large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
 }
 weapon_component_template = {
     key = "touhou_psionic_ag_lighting_t"
@@ -1802,5 +2163,6 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = psionic_ag tag = lightning type = titanic }
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = titanic }
     inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+    target_focus = spread
 }
 

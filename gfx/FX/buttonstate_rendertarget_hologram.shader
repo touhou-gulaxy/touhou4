@@ -24,7 +24,7 @@ PixelShader =
 			MipFilter = "None"
 			AddressU = "Clamp"
 			AddressV = "Clamp"
-		}		
+		}
 	}
 }
 
@@ -36,7 +36,7 @@ VertexStruct VS_OUTPUT
 	float2  vTexCoord : TEXCOORD0;
 @ifdef MASKING
 	float2  vMaskingTexCoord : TEXCOORD2;
-@endif	
+@endif
 };
 
 
@@ -50,7 +50,7 @@ VertexShader =
 			VS_OUTPUT Out;
 			Out.vPosition  = mul( WorldViewProjectionMatrix, float4( v.vPosition.xyz, 1 ) );
 			Out.vScreenPos = Out.vPosition.xy;
-		
+
 			Out.vTexCoord = v.vTexCoord;
 			Out.vTexCoord += Offset;
 
@@ -62,8 +62,8 @@ VertexShader =
 #ifdef PDX_OPENGL
 			//Flip texture coordinates so map is not upside down
 			Out.vTexCoord.y = 1 - Out.vTexCoord.y;
-#endif		
-		
+#endif
+
 			return Out;
 		}
 	]]
@@ -117,11 +117,12 @@ PixelShader =
 			const float3 ShadowColor = float3(0.01, 0.08, 0.08);
 			const float3 HighlightColor = float3(0.05, 0.2, 0.2);
 			float4 Fill;
-			Fill.rgb = lerp(ShadowColor, HighlightColor, maxChannel);
+			// Fill.rgb = lerp(ShadowColor, HighlightColor, maxChannel);
+			Fill.rgb = ShadowColor;
 			Fill.a = TextureColor.a * maxChannel;
 
-			// float4 OutColor = PortraitColor + Fill + EdgesOverlay * 0.1;
-			float4 OutColor = PortraitColor;
+			// float4 OutColor = PortraitColor + Fill + EdgesOverlay * 0.2;
+			float4 OutColor = PortraitColor + Fill;
 			OutColor *= Color;
 
 		#ifdef MASKING
@@ -133,7 +134,7 @@ PixelShader =
 			return OutColor;
 		}
 	]]
-	
+
 }
 
 

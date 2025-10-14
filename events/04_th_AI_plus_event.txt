@@ -737,7 +737,7 @@ country_event = {
             limit = { ruler = { NOT = { has_trait = leader_trait_ruler_spth_AI_ruler } } }
             ruler = { add_trait = leader_trait_ruler_spth_AI_ruler }
         }
-        every_owned_fleet = {
+        random_owned_fleet = {
             limit = {
                 is_ship_class = shipclass_military is_cloaked = no
                 is_in_combat = no NOT = { has_fleet_flag = disable_th_ai_plus_delete }
@@ -745,16 +745,36 @@ country_event = {
             }
             set_fleet_bombardment_stance = spth_kamikakushi
             set_variable = { which = th_ai_convert_count value = 0 }
-            create_ship = { name = random random_existing_design = TH_battle_cruiser effect = { set_ship_flag = disable_th_ai_plus_delete } }
-            every_owned_ship = {
-                limit = {
-                    is_designable = yes is_disabled = no is_touhou_ship = no
-                    NOT = { has_ship_flag = disable_th_ai_plus_delete }
+            if = {
+                limit = { has_global_flag = spth_AI_plus_extra }
+                create_ship = { name = random random_existing_design = TH_battle_cruiser effect = { set_ship_flag = disable_th_ai_plus_delete } }
+            } else = {
+                reroll_random = yes
+                random_list = {
+                    50 = { create_ship = { name = random design = NAME_spth_battle1 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
+                    50 = { create_ship = { name = random design = NAME_spth_battle2 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
                 }
-                delete_ship = this prev = { change_variable = { which = th_ai_convert_count value = prev.trigger:ship_size_multiplier } }
             }
             if = {
-                limit = { has_global_flag = spth_AI_NOT_plus_extra }
+                limit = { has_global_flag = spth_AI_plus_extra }
+                every_owned_ship = {
+                    limit = {
+                        is_designable = yes is_disabled = no ship_size_multiplier < 4
+                        NOT = { has_ship_flag = disable_th_ai_plus_delete }
+                    }
+                    delete_ship = this prev = { change_variable = { which = th_ai_convert_count value = prev.trigger:ship_size_multiplier } }
+                }
+            } else = {
+                every_owned_ship = {
+                    limit = {
+                        is_designable = yes is_disabled = no ship_size_multiplier < 8
+                        NOT = { has_ship_flag = disable_th_ai_plus_delete }
+                    }
+                    delete_ship = this prev = { change_variable = { which = th_ai_convert_count value = prev.trigger:ship_size_multiplier } }
+                }
+            }
+            if = {
+                limit = { NOT = { has_global_flag = spth_AI_plus_extra } }
                 divide_variable = { which = th_ai_convert_count value = 8 }
                 while = {
                     count = th_ai_convert_count

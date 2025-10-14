@@ -120,10 +120,13 @@ fleet_event = {
                         modifier = { factor = value:yukari_kamikakushi_chance_reduce always = yes }
                         reroll_random = yes
                         random_list = {
-                            10 = { clear_shield = yes }
-                            20 = { spth_reduce_shield = { percent = 0.75 factor = 0.75 } }
-                            30 = { spth_reduce_shield = { percent = 0.50 factor = 0.50 } }
-                            40 = { spth_reduce_shield = { percent = 0.25 factor = 0.25 } }
+                            1 = { clear_shield = yes }
+                            4 = { spth_reduce_shield = { percent = 0.25 factor = 0.25 } }
+                            10 = { spth_reduce_shield = { percent = 0.20 factor = 0.20 } }
+                            25 = { spth_reduce_shield = { percent = 0.15 factor = 0.15 } }
+                            40 = { spth_reduce_shield = { percent = 0.10 factor = 0.10 } }
+                            50 = { spth_reduce_shield = { percent = 0.05 factor = 0.05 } }
+                            50 = { spth_reduce_shield = { percent = 0.025 factor = 0.025 } }
                         }
                     }
                     80 = {
@@ -134,13 +137,11 @@ fleet_event = {
                 reroll_random = yes
             }
             set_update_modifiers_batch = end
-            fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
+            fleet_event = { id = Th_dynamic_battle_vict.6 days = 4 }
         } else = {
             remove_fleet_flag = kamikakushi_reduce_triggered
             every_owned_ship = {
-                clear_variable = yukari_kamikakushi_reduce_hardening
-                clear_variable = yukari_kamikakushi_reduce_value
-                TH_clear_all_dynamic_modifier = yes
+                remove_modifier = yukari_kamikakushi_dot_damage
             }
         }
     }
@@ -853,18 +854,10 @@ country_event = {
                 limit = { NOT = { has_fleet_flag = kamikakushi_reduce_triggered } }
                 set_fleet_flag = kamikakushi_reduce_triggered
                 every_owned_ship = {
-                    set_variable = {
-                        which = yukari_kamikakushi_reduce_value
-                        value = value:yukari_kamikakushi_reduce_value
-                    }
-                    set_variable = {
-                        which = yukari_kamikakushi_reduce_hardening
-                        value = value:yukari_kamikakushi_hardening_reduce_value
-                    }
                     yukari_kamikakushi_reduce_effect = yes
-                    clear_shield = yes
+                    spth_reduce_shield_max = { percent = 0.25 }
                 }
-                fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
+                fleet_event = { id = Th_dynamic_battle_vict.6 days = 4 }
             }
         }
     }
@@ -1053,6 +1046,48 @@ country_event = {
         fromfrom = {
             set_fleet_flag = spth_kamikakushi_cruiser_arua_protect
             fleet_event = { id = Th_dynamic_battle_vict.24 }
+        }
+    }
+}
+
+country_event = {
+    id = Th_dynamic_battle_vict.1007
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        from = { spth_should_close_combat_system = no }
+        fromfrom = {
+            check_modifier_value = { modifier = ship_provide_spth_damage_reduction_mult_max value > 0 }
+        }
+    }
+    immediate = {
+        fromfromfrom = {
+            if = {
+                limit = { NOT = { has_fleet_flag = ship_spth_damage_reduction_mult_max_fired } }
+                set_fleet_flag = ship_spth_damage_reduction_mult_max_fired
+                ship_spth_damage_reduction_mult_max_refresh = { duration = -1 }
+                fleet_event = { id = Th_dynamic_battle_vict.1008 days = 3 }
+            }
+        }
+    }
+}
+fleet_event = {
+    id = Th_dynamic_battle_vict.1008
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            ship_spth_damage_reduction_mult_max_refresh = { duration = -1 }
+            fleet_event = { id = Th_dynamic_battle_vict.1008 days = 3 }
+        } else = {
+            remove_fleet_flag = ship_spth_damage_reduction_mult_max_fired
+            every_owned_ship = {
+                clear_variable = ship_spth_damage_reduction_mult_max_value
+                clear_variable = ship_spth_damage_reduction_mult_max_buf_value
+                remove_modifier = ship_spth_damage_reduction_mult_max_buf
+            }
         }
     }
 }
