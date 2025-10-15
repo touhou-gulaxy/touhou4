@@ -532,192 +532,61 @@ country_event = {
         NOT = { has_global_flag = spth_AI_NOT_plus }
         is_ai = yes has_authority = auth_gensokyo
         mid_game_years_passed >= 0
-        count_owned_fleet = { count <= 20 }
     }
     immediate = {
-        random_owned_starbase = { save_event_target_as = spth_ship_loc }
         if = {
-            limit = { NOT = { has_country_flag = th_AI_plus_4_init } mid_game_years_passed >= 0 }
-            set_country_flag = th_AI_plus_4_init
-            every_owned_fleet = {
-                limit = { is_ship_class = shipclass_military }
-                destroy_fleet = { kill_leader = yes destroy_template = yes target = this }
+            limit = {
+                NOT = { has_technology = tech_th_battle_cruiser }
+                can_research_technology = tech_th_battle_cruiser
             }
-            if = {
-                limit = {
-                    NOT = { has_technology = tech_th_battle_cruiser }
-                    can_research_technology = tech_th_battle_cruiser
-                }
-                give_technology = { tech = tech_th_battle_cruiser }
-                create_ship_design = { design = NAME_touhou_ai_design_ship_carrier }
-                add_ship_design = last_created_design
-                create_ship_design = { design = NAME_touhou_ai_design_ship_missile }
-                add_ship_design = last_created_design
-                create_ship_design = { design = NAME_touhou_ai_design_ship_gunpower_scarlet }
-                add_ship_design = last_created_design
-                create_ship_design = { design = NAME_touhou_ai_design_ship_gunpower_marisa }
-                add_ship_design = last_created_design
-            }
+            give_technology = { tech = tech_th_battle_cruiser }
+            create_ship_design = { design = NAME_touhou_ai_design_ship_carrier }
+            add_ship_design = last_created_design
+            create_ship_design = { design = NAME_touhou_ai_design_ship_missile }
+            add_ship_design = last_created_design
+            create_ship_design = { design = NAME_touhou_ai_design_ship_gunpower_scarlet }
+            add_ship_design = last_created_design
+            create_ship_design = { design = NAME_touhou_ai_design_ship_gunpower_marisa }
+            add_ship_design = last_created_design
         }
         if = {
             limit = { ruler = { NOT = { has_trait = leader_trait_ruler_spth_AI_ruler } } }
             ruler = { add_trait = leader_trait_ruler_spth_AI_ruler }
         }
         if = {
-            limit = {
-                resource_stockpile_compare = {
-                    resource = alloys
-                    value >= 500
-                }
-                has_monthly_income = { resource = energy value >= -100 }
-                used_naval_capacity_percent <= 1
-            }
-            create_fleet = {
-                set_take_point = yes
-                effect = {
-                    set_owner = prev
-                    while = {
-                        count = 50
-                        create_ship = {
-                            name = random
-                            random_existing_design = corvette
-                        }
-                    }
-                    set_location = event_target:spth_ship_loc
-                }
-            }
-            add_resource = {
-                alloys = -2500
-            }
-        }
-        if = {
-            limit = {
-                resource_stockpile_compare = {
-                    resource = alloys
-                    value >= 3000
-                }
-                has_monthly_income = { resource = energy value >= -100 }
-                used_naval_capacity_percent <= 1
-            }
-            last_created_fleet = {
-                while = {
-                    count = 30
-                    create_ship = {
-                        name = random
-                        random_existing_design = cruiser
-                    }
-                }
-            }
-            add_resource = {
-                alloys = -2500
-            }
-        }
-        if = {
-            limit = {
-                resource_stockpile_compare = {
-                    resource = alloys
-                    value >= 10000
-                }
-                has_monthly_income = { resource = energy value >= -100 }
-                used_naval_capacity_percent <= 1
-            }
+            limit = { count_owned_fleet = { count <= 5 } }
             if = {
-                limit = {
-                    has_civic = civic_gensokyo
-                }
-                last_created_fleet = {
-                    while = {
-                        count = 15
-                        create_ship = {
-                            name = random
-                            design = "NAME_spth_battle2"
-                        }
-                    }
-                    while = {
-                        count = 15
-                        create_ship = {
-                            name = random
-                            design = "NAME_spth_battle1"
-                        }
-                    }
-                }
-            }
-            else = {
-                last_created_fleet = {
-                    while = {
-                        count = 45
-                        create_ship = {
-                            name = random
-                            design = "NAME_spth_battle3"
-                        }
-                    }
-                }
-            }
-            add_resource = {
-                alloys = -10000
-            }
-        }
-        if = {
-            limit = {
-                mid_game_years_passed >= 10
-                last_created_fleet = {
-                    fleet_power >= 5000000
-                }
-            }
-            if = {
-                limit = { has_civic = civic_gensokyo }
-                last_created_fleet = {
-                    while = {
-                        count = 15
-                        create_ship = {
-                            name = random
-                            design = "NAME_spth_battle2"
-                        }
-                    }
-                    while = {
-                        count = 15
-                        create_ship = {
-                            name = random
-                            design = "NAME_spth_battle1"
-                        }
-                    }
-                    while = {
-                        count = 1
-                        create_ship = {
-                            name = random
-                            random_existing_design = titan
-                        }
+                limit = { has_global_flag = spth_AI_plus_extra }
+                create_fleet = {
+                    set_take_point = yes
+                    effect = {
+                        set_owner = root
+                        set_variable = { which = th_ai_ship_count value = root.value:touhou_country_command_limit }
+                        divide_variable = { which = th_ai_ship_count value = 16 }
+                        floor_variable = th_ai_ship_count
+                        create_ship = { name = random random_existing_design = TH_battle_cruiser effect = { set_ship_flag = disable_th_ai_plus_delete } }
+                        clear_variable = th_ai_ship_count
+                        set_location = root.capital_scope
+                        set_fleet_bombardment_stance = spth_kamikakushi
                     }
                 }
             } else = {
-                last_created_fleet = {
-                    while = {
-                        count = 45
-                        create_ship = {
-                            name = random
-                            design = "NAME_spth_battle3"
+                create_fleet = {
+                    set_take_point = yes
+                    effect = {
+                        set_owner = root
+                        set_variable = { which = th_ai_ship_count value = root.value:touhou_country_command_limit }
+                        divide_variable = { which = th_ai_ship_count value = 8 }
+                        floor_variable = th_ai_ship_count
+                        random_list = {
+                            50 = { create_ship = { name = random design = NAME_spth_battle1 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
+                            50 = { create_ship = { name = random design = NAME_spth_battle2 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
                         }
-                    }
-                    while = {
-                        count = 1
-                        create_ship = {
-                            name = random
-                            random_existing_design = titan
-                        }
+                        clear_variable = th_ai_ship_count
+                        set_location = root.capital_scope
+                        set_fleet_bombardment_stance = spth_kamikakushi
                     }
                 }
-            }
-        }
-        if = {
-            limit = {
-                is_at_war = yes
-                count_owned_fleet = {
-                    count < 30
-                }
-            }
-            country_event = {
-                id = th_AI_plus.6
-                days = 50
             }
         }
     }
@@ -737,86 +606,48 @@ country_event = {
             limit = { ruler = { NOT = { has_trait = leader_trait_ruler_spth_AI_ruler } } }
             ruler = { add_trait = leader_trait_ruler_spth_AI_ruler }
         }
-        random_owned_fleet = {
-            limit = {
-                is_ship_class = shipclass_military is_cloaked = no
-                is_in_combat = no NOT = { has_fleet_flag = disable_th_ai_plus_delete }
-                is_disabled = no is_upgrading = no
-            }
-            set_fleet_bombardment_stance = spth_kamikakushi
-            set_variable = { which = th_ai_convert_count value = 0 }
-            if = {
-                limit = { has_global_flag = spth_AI_plus_extra }
+        if = {
+            limit = { has_global_flag = spth_AI_plus_extra }
+            random_owned_fleet = {
+                limit = {
+                    is_ship_class = shipclass_military is_cloaked = no
+                    is_in_combat = no NOT = { has_fleet_flag = disable_th_ai_plus_delete }
+                    is_disabled = no is_upgrading = no
+                }
+                set_fleet_bombardment_stance = spth_kamikakushi
+                set_variable = { which = th_ai_convert_count value = 0 }
                 create_ship = { name = random random_existing_design = TH_battle_cruiser effect = { set_ship_flag = disable_th_ai_plus_delete } }
-            } else = {
-                reroll_random = yes
-                random_list = {
-                    50 = { create_ship = { name = random design = NAME_spth_battle1 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
-                    50 = { create_ship = { name = random design = NAME_spth_battle2 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
-                }
-            }
-            if = {
-                limit = { has_global_flag = spth_AI_plus_extra }
                 every_owned_ship = {
                     limit = {
-                        is_designable = yes is_disabled = no ship_size_multiplier < 4
+                        is_designable = yes is_disabled = no
+                        OR = {
+                            ship_size_multiplier < 8
+                            is_touhou_ship = no
+                        }
                         NOT = { has_ship_flag = disable_th_ai_plus_delete }
                     }
                     delete_ship = this prev = { change_variable = { which = th_ai_convert_count value = prev.trigger:ship_size_multiplier } }
                 }
-            } else = {
-                every_owned_ship = {
-                    limit = {
-                        is_designable = yes is_disabled = no ship_size_multiplier < 8
-                        NOT = { has_ship_flag = disable_th_ai_plus_delete }
-                    }
-                    delete_ship = this prev = { change_variable = { which = th_ai_convert_count value = prev.trigger:ship_size_multiplier } }
-                }
-            }
-            if = {
-                limit = { NOT = { has_global_flag = spth_AI_plus_extra } }
-                divide_variable = { which = th_ai_convert_count value = 8 }
-                while = {
-                    count = th_ai_convert_count
-                    random_list = {
-                        50 = { create_ship = { name = random design = NAME_spth_battle1 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
-                        50 = { create_ship = { name = random design = NAME_spth_battle2 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
-                    }
-                }
-            } else = {
                 divide_variable = { which = th_ai_convert_count value = 16 }
                 while = {
                     count = th_ai_convert_count
                     create_ship = { name = random random_existing_design = TH_battle_cruiser effect = { set_ship_flag = disable_th_ai_plus_delete } }
                 }
             }
-        }
-        if = {
-            limit = { count_owned_fleet = { count <= 20 } }
-            create_fleet = {
-                set_take_point = yes
-                effect = {
-                    set_owner = root
-                    set_variable = { which = th_ai_ship_count value = root.value:touhou_country_command_limit }
-                    if = {
-                        limit = { has_global_flag = spth_AI_NOT_plus_extra }
-                        divide_variable = { which = th_ai_ship_count value = 8 }
-                        floor_variable = th_ai_ship_count
-                        while = {
-                            count = th_ai_ship_count
-                            random_list = {
-                                50 = { create_ship = { name = random design = NAME_spth_battle1 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
-                                50 = { create_ship = { name = random design = NAME_spth_battle2 effect = { set_ship_flag = disable_th_ai_plus_delete } } }
-                            }
-                        }
-                    } else = {
+            if = {
+                limit = { count_owned_fleet = { count <= 10 } }
+                create_fleet = {
+                    set_take_point = yes
+                    effect = {
+                        set_owner = root
+                        set_variable = { which = th_ai_ship_count value = root.value:touhou_country_command_limit }
                         divide_variable = { which = th_ai_ship_count value = 16 }
                         floor_variable = th_ai_ship_count
                         create_ship = { name = random random_existing_design = TH_battle_cruiser effect = { set_ship_flag = disable_th_ai_plus_delete } }
+                        clear_variable = th_ai_ship_count
+                        set_location = root.capital_scope
+                        set_fleet_bombardment_stance = spth_kamikakushi
                     }
-                    clear_variable = th_ai_ship_count
-                    set_location = root.capital_scope
-                    set_fleet_bombardment_stance = spth_kamikakushi
                 }
             }
         }
@@ -828,9 +659,16 @@ country_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        NOT = { has_global_flag = spth_AI_NOT_plus }
+        # NOT = { has_global_flag = spth_AI_NOT_plus }
         is_ai = yes
         has_authority = auth_gensokyo
+        OR = {
+            end_game_years_passed >= 0
+            AND = {
+                NOT = { has_global_flag = spth_AI_NOT_plus }
+                mid_game_years_passed >= 0
+            }
+        }
         years_passed >= 25
     }
     immediate = {
