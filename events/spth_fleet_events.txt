@@ -2464,6 +2464,77 @@ fleet_event = {
     }
 }
 
+# This = owner of ship 1 (combatant)
+# From = owner of ship 2 (destroyed)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = spth_fleet.1219
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = spth_fleet_1219_lock }
+        has_modifier = touhou_spellcard_22_cap
+        exists = fromfrom
+        fromfromfrom = {
+            ship_size_multiplier >= 4
+            ship_size_multiplier <= 16
+            is_ship_class = shipclass_military
+            ag_is_ancient_titan_alt = no
+        }
+        from = {
+            OR = {
+                is_touhou_crisis_faction = yes
+                is_touhou_common_country = yes
+            }
+        }
+    }
+    immediate = {
+        set_timed_country_flag = { flag = spth_fleet_1219_lock days = 1 }
+        fromfrom = {
+            if = {
+                limit = { exists = fleet }
+                fleet = {
+                    create_ship = {
+                        name = root.fromfromfrom
+                        design = root.fromfromfrom.design
+                        effect = {
+                            ag_difficulty_bonus = yes
+                            set_ship_flag = spth_fleet_1219_clone_ship
+                            ship_event = { id = spth_fleet.1214 days = 5 }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fleet_event = {
+    id = spth_fleet.1220
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            set_variable = { which = touhou_spellcard_11_value value = value:touhou_spellcard_11_value }
+            every_owned_ship = {
+                if = {
+                    limit = { has_modifier = touhou_spellcard_11 }
+                    remove_modifier = touhou_spellcard_11
+                }
+                add_modifier = { modifier = touhou_spellcard_11 mult = prev.touhou_spellcard_11_value }
+            }
+            fleet_event = { id = spth_fleet.1220 days = 10 }
+        } else = {
+            clear_variable = touhou_spellcard_11_value
+            every_owned_ship = {
+                remove_modifier = touhou_spellcard_11
+            }
+        }
+    }
+}
+
 fleet_event = {
     id = spth_fleet.2000
     hide_window = yes

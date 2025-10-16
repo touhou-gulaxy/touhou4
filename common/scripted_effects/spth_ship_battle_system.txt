@@ -37,22 +37,22 @@ spth_super_carrier_init_system_self = {
             # set_variable = { which = spth_super_carrier_inv_max value = 10 }
             ship_event = { id = spth_fleet.1001 days = 1 }
         }
-        every_owned_ship = {
-            limit = { has_hp < 4800000 }
-            set_variable = { which = spth_super_carrier_hull_standard value = trigger:has_hp }
-            change_variable = { which = spth_super_carrier_hull_standard value = modifier:ship_hull_add }
-            change_variable = { which = spth_super_carrier_hull_standard value = 1080000 }
-            if = {
-                limit = {
-                    check_variable_arithmetic = {
-                        which = spth_super_carrier_hull_standard
-                        multiply = modifier:ship_hull_mult
-                        value < 10000000
-                    }
-                }
-                add_modifier = { modifier = spth_super_carrier_protect days = 15 }
-            }
-        }
+        # every_owned_ship = {
+        #     limit = { has_hp < 4800000 }
+        #     set_variable = { which = spth_super_carrier_hull_standard value = trigger:has_hp }
+        #     change_variable = { which = spth_super_carrier_hull_standard value = modifier:ship_hull_add }
+        #     change_variable = { which = spth_super_carrier_hull_standard value = 1080000 }
+        #     if = {
+        #         limit = {
+        #             check_variable_arithmetic = {
+        #                 which = spth_super_carrier_hull_standard
+        #                 multiply = modifier:ship_hull_mult
+        #                 value < 10000000
+        #             }
+        #         }
+        #         add_modifier = { modifier = spth_super_carrier_protect days = 15 }
+        #     }
+        # }
         fleet_event = { id = spth_fleet.1005 }
     }
 }
@@ -66,12 +66,22 @@ spth_super_carrier_main_system_self = {
         owner = { set_variable = { which = spth_super_carrier_inv_counter value = 0 } }
     }
     if = {
-        limit = { check_variable = { which = spth_super_carrier_combat_days value <= 10 } }
-        fleet = { every_owned_ship = { spth_repair_ship_perc = { all_hp = yes ar_perc = 0.2 } } }
+        limit = { check_variable = { which = spth_super_carrier_combat_days value <= 5 } }
+        fleet = { every_owned_ship = { spth_repair_ship_perc = { ar_perc = 0.25 sh_perc = 0.25 } } }
     } else = {
         if = {
             limit = { check_variable_arithmetic = { which = spth_super_carrier_combat_days modulo = 3 value = 0 } }
-            fleet = { every_owned_ship = { spth_repair_ship_perc = { all_hp = yes } } }
+            fleet = {
+                every_owned_ship = {
+                    limit = { has_max_hp < 200000000 }
+                    set_variable = { which = touhou_calc_temp_hull_value value = value:touhou_calc_temp_hull_value|factor|0.25| }
+                    if = {
+                        limit = { check_variable = { which = touhou_calc_temp_hull_value value > 0 } }
+                        set_variable = { which = touhou_calc_temp_hull_value value = -200 }
+                    }
+                    reduce_hp = touhou_calc_temp_hull_value
+                }
+            }
         }
     }
     fleet = {
@@ -227,6 +237,21 @@ spth_super_carrier_on_hit_effect = {
         effect = { save_event_target_as = target_d_outer }
     }
     from = {
+        if = {
+            limit = { exists = owner owner = {
+                has_modifier = touhou_spellcard_41_cap
+            } }
+            prev.fleet = {
+                while = {
+                    count = value:touhou_spellcard_41_chain_amount
+                    random_owned_ship = {
+                        limit = { NOT = { has_ship_flag = touhou_spellcard_41_target } }
+                        set_timed_ship_flag = { flag = touhou_spellcard_41_target days = 1 }
+                        spth_reduce_armor_max = { percent = 0.10 }
+                    }
+                }
+            }
+        }
         save_event_target_as = shooter
         fleet = {
             every_combatant_fleet = {
