@@ -511,3 +511,126 @@ touhou_ac_keiki_spawn_leader_commander = {
         save_global_event_target_as = touhou_ac_keiki_leader_@root
     }
 }
+
+touhou_leader_special_army_effect_init = {
+    optimize_memory
+
+    if = {
+        limit = {
+            any_ground_combat_$who$ = {
+                exists = leader
+                leader = {
+                    check_modifier_value = { modifier = touhou_leader_kill_army_chance value > 0 }
+                }
+            }
+        }
+        random_ground_combat_$who$ = {
+            limit = { exists = leader leader = { check_modifier_value = { modifier = touhou_leader_kill_army_chance value > 0 } } }
+            leader = { save_event_target_as = touhou_leader_kill_army_chance_$who$ }
+        }
+    }
+    if = {
+        limit = {
+            any_ground_combat_$who$ = {
+                exists = leader
+                leader = {
+                    check_modifier_value = { modifier = touhou_leader_kill_army_perc value > 0 }
+                }
+            }
+        }
+        random_ground_combat_$who$ = {
+            limit = { exists = leader leader = { check_modifier_value = { modifier = touhou_leader_kill_army_perc value > 0 } } }
+            leader = { save_event_target_as = touhou_leader_kill_army_perc_$who$ }
+        }
+    }
+    if = {
+        limit = {
+            any_ground_combat_$who$ = {
+                exists = leader
+                leader = {
+                    check_modifier_value = { modifier = touhou_leader_damage_army_effect value > 0 }
+                }
+            }
+        }
+        random_ground_combat_$who$ = {
+            limit = { exists = leader leader = { check_modifier_value = { modifier = touhou_leader_damage_army_effect value > 0 } } }
+            leader = { save_event_target_as = touhou_leader_damage_army_$who$ }
+        }
+    }
+}
+touhou_leader_special_army_effect_loop = {
+    optimize_memory
+    if = {
+        limit = { exists = event_target:touhou_leader_kill_army_chance_$who$ }
+        reroll_random = yes
+        random_list = {
+            1 = {
+                modifier = { add = event_target:touhou_leader_kill_army_chance_$who$.modifier:touhou_leader_kill_army_chance }
+                random_ground_combat_$opposite_who$ = { limit = { is_in_frontline = yes } remove_army = yes }
+                log = "kill army check passed"
+            }
+            99 = { log = "kill army check failed" }
+        }
+    }
+    if = {
+        limit = { exists = event_target:touhou_leader_kill_army_perc_$who$ }
+        reroll_random = yes
+        random_list = {
+            5 = {
+                modifier = {
+                    mult = event_target:touhou_leader_kill_army_perc_$who$.trigger:has_total_skill
+                    event_target:touhou_leader_kill_army_perc_$who$ = { has_total_skill <= 19 }
+                }
+                modifier = { mult = 19 event_target:touhou_leader_kill_army_perc_$who$ = { has_total_skill > 19 } }
+                while = {
+                    count = value:touhou_leader_kill_army_perc_amount|who|$who$|
+                    random_ground_combat_$opposite_who$ = { limit = { is_in_frontline = yes } remove_army = yes }
+                }
+                log = "kill prec check passed"
+            }
+            95 = { log = "kill prec check failed" }
+        }
+    }
+    if = {
+        limit = { exists = event_target:touhou_leader_damage_army_$who$ }
+        random_ground_combat_$opposite_who$ = {
+            limit = { is_in_frontline = yes }
+            damage_army = event_target:touhou_leader_damage_army_$who$.modifier:touhou_leader_damage_army_effect
+        }
+    }
+}
+
+touhou_give_tech_option = {
+    optimize_memory
+    if = {
+        limit = {
+            NOR = {
+                has_technology = $touhou_tech$
+                has_tech_option = $touhou_tech$
+            }
+        }
+        add_research_option = $touhou_tech$
+        add_tech_progress = { tech = $touhou_tech$ progress = $progress|0.25$ }
+    } else = {
+        [[research_point]
+            add_monthly_resource_mult = {
+                resource = society_research
+                value = @tier5researchreward
+                min = @tier5researchmin
+                max = @tier5researchmax
+            }
+            add_monthly_resource_mult = {
+                resource = physics_research
+                value = @tier5researchreward
+                min = @tier5researchmin
+                max = @tier5researchmax
+            }
+            add_monthly_resource_mult = {
+                resource = engineering_research
+                value = @tier5researchreward
+                min = @tier5researchmin
+                max = @tier5researchmax
+            }
+        ]
+    }
+}

@@ -110,7 +110,6 @@ country_event = {
 			set_country_flag = hisher_the_messenger
 		}
 	}
-
 }
 
 ship_event = {
@@ -152,4 +151,446 @@ ship_event = {
 			}
 		}
 	}
+}
+
+ship_event = {
+    id = th_anomaly.10
+    title = th_anomaly.10.name
+    desc = th_anomaly.10.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_gas_giant_room }
+    location = root
+    is_triggered_only = yes
+    immediate = {
+        owner = {
+            set_country_flag = touhou_fe_union_ship_fired
+        }
+    }
+    option = {
+        name = TH_OK
+        enable_special_project = {
+            name = touhou_fallen_empire_1_ship_project
+            location = from
+            owner = root.owner
+        }
+    }
+}
+ship_event = {
+    id = th_anomaly.11
+    title = th_anomaly.11.name
+    desc = th_anomaly.11.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_relic_shipyard_room }
+    immediate = {
+        create_fleet = {
+            name = NAME_th_fallen_empire_union_fallen_ship_fleet
+            settings = { spawn_debris = no can_disband = no }
+            effect = {
+                set_location = root.fleet
+                set_owner = root.owner
+                create_ship = {
+                    name = NAME_th_fallen_empire_union_fallen_ship
+                    design = NAME_th_fallen_empire_union_fallen_ship
+                    effect = {
+                        ag_difficulty_bonus = yes
+                        set_ship_flag = touhou_fe_union_ship
+                        set_ship_flag = touhou_fe_union_ship_locked
+                    }
+                }
+                set_fleet_flag = touhou_fe_union_ship
+                set_fleet_flag = touhou_fe_union_ship_locked
+                set_fleet_flag = touhou_fe_union_ship_find_by_@root.owner
+            }
+        }
+        every_country = {
+            if = {
+                limit = { has_country_flag = touhou_player_bonus_fired }
+                remove_modifier = touhou_difficulty_player_basic
+                remove_modifier = touhou_difficulty_player_hard
+                remove_modifier = touhou_difficulty_player_lunatic
+            }
+            set_variable = { which = touhou_scaled_difficulty value = event_target:global_event_country.spth_lunar_capital_crisis_difficulty }
+            add_modifier = { modifier = touhou_difficulty_player_basic mult = touhou_scaled_difficulty }
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                add_modifier = { modifier = touhou_difficulty_player_hard mult = touhou_scaled_difficulty }
+            }
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 4 } }
+                add_modifier = { modifier = touhou_difficulty_player_lunatic mult = touhou_scaled_difficulty }
+            }
+            clear_variable = touhou_scaled_difficulty
+        }
+        random_country = {
+            limit = {
+                OR = {
+                    is_country_type = fallen_empire
+                    is_country_type = awakened_fallen_empire
+                }
+                is_at_war = no
+                is_gestalt = no
+                has_communications = root
+            }
+            save_event_target_as = spth_target_fe
+            prev.owner = { country_event = { id = th_anomaly.12 days = 15 random = 15 } }
+        }
+        owner = { country_event = { id = th_anomaly.13 days = 45 random = 15 } }
+    }
+    location = root
+    is_triggered_only = yes
+    option = {
+        name = TH_INTERESTRING
+        custom_tooltip = th_anomaly.11.effect
+    }
+}
+country_event = {
+    id = th_anomaly.12
+    title = th_anomaly.12.name
+    desc = th_anomaly.12.desc
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = {
+        room = event_target:spth_target_fe
+        portrait = event_target:spth_target_fe.ruler
+        planet_background = event_target:spth_target_fe.capital_scope
+        graphical_culture = event_target:spth_target_fe
+        city_level = event_target:spth_target_fe.capital_scope
+    }
+    is_triggered_only = yes
+    option = {
+        name = th_anomaly.12.a
+        is_dialog_only = yes
+        response_text = th_anomaly.12.a.response
+    }
+    option = {
+        name = th_anomaly.12.b
+        response_text = th_anomaly.12.b.response
+        touhou_give_tech_option = { touhou_tech = tech_fe_singularity_1 research_point = yes }
+        if = {
+            limit = { has_technology = tech_fe_silo_1 }
+            touhou_give_tech_option = { touhou_tech = tech_fe_silo_2 research_point = yes }
+        } else = {
+            touhou_give_tech_option = { touhou_tech = tech_fe_silo_1 research_point = yes }
+        }
+        add_research_option = tech_cosmogenesis_escort
+    }
+    option = {
+        name = th_anomaly.12.c
+        response_text = th_anomaly.12.c.response
+        event_target:spth_target_fe = {
+            add_opinion_modifier = {
+                modifier = touhou_fe_union_refuse_to_return_ship
+                who = root
+            }
+        }
+    }
+    option = {
+        name = th_anomaly.12.d
+        response_text = th_anomaly.12.d.response
+        event_target:spth_target_fe = {
+            add_opinion_modifier = {
+                modifier = touhou_fe_union_refuse_to_return_ship
+                who = root
+            }
+            add_opinion_modifier = {
+                modifier = touhou_fe_union_refuse_to_return_ship_bad
+                who = root
+            }
+        }
+    }
+}
+country_event = {
+    id = th_anomaly.13
+    title = th_anomaly.13.name
+    desc = th_anomaly.13.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_databank_room }
+    location = root
+    is_triggered_only = yes
+    option = {
+        name = th_anomaly.13.a
+        custom_tooltip = th_anomaly.13.a.effect
+        hidden_effect = {
+            country_event = { id = th_anomaly.14 days = 90 random = 90 }
+        }
+    }
+    option = {
+        name = th_anomaly.13.b
+    }
+}
+country_event = {
+    id = th_anomaly.14
+    title = th_anomaly.14.name
+    desc = th_anomaly.14.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mysterious_signal_room }
+    location = root
+    is_triggered_only = yes
+    option = {
+        name = TH_OK
+        country_event = { id = th_anomaly.15 days = 90 random = 90 }
+    }
+}
+country_event = {
+    id = th_anomaly.15
+    title = th_anomaly.15.name
+    desc = th_anomaly.15.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_travel_room }
+    location = root
+    is_triggered_only = yes
+    option = {
+        name = TH_OK
+        country_event = { id = th_anomaly.16 days = 90 random = 90 }
+    }
+}
+country_event = {
+    id = th_anomaly.16
+    title = th_anomaly.16.name
+    desc = th_anomaly.16.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_unknown_ships_room }
+    location = root
+    is_triggered_only = yes
+    immediate = {
+        create_country = {
+            name = touhou_fe_union_titan_hostile
+            type = touhou_fe_union_titan_hostile
+            flag = {
+                icon = {
+                    category = "touhou_fe_union"
+                    file = "th_ag_fallen_empires_1.dds"
+                }
+                colors = {
+                    "red"
+                    "red"
+                    "red"
+                    "null"
+                }
+                background = {
+                    category = "backgrounds"
+                    file = "00_solid.dds"
+                }
+            }
+            name_list = touhouchs
+            effect = {
+                set_graphical_culture = strg_01
+                set_country_flag = touhou_mod_country
+                set_country_flag = touhou_crisis_country
+                set_country_flag = touhou_fe_union_titan_hostile
+                set_country_flag = protected_from_queen_storm
+                add_modifier = { modifier = touhou_immune_from_terrify }
+                save_global_event_target_as = touhou_fe_union_titan_hostile
+                every_playable_country = {
+                    limit = { NOT = { is_same_value = prev } }
+                    establish_communications_no_message = prev
+                    add_intel = { who = prev amount = 70 }
+                }
+                every_country = {
+                    limit = {
+                        OR = {
+                            is_country_type = default
+                            is_country_type = fallen_empire
+                            is_country_type = awakened_fallen_empire
+                        }
+                        NOT = { has_communications = prev }
+                    }
+                    establish_communications_no_message = prev
+                }
+            }
+        }
+        if = {
+            limit = { any_owned_fleet = { is_ship_size = th_fallen_empire_union_fallen_ship } }
+            random_owned_fleet = {
+                limit = { any_owned_ship = { is_ship_size = th_fallen_empire_union_fallen_ship } }
+                solar_system = { save_event_target_as = spth_target_system }
+                save_event_target_as = spth_spawnpoint
+                if = {
+                    limit = { num_ships <= 1 exists = leader }
+                    leader = { unassign_leader = this }
+                }
+                create_fleet = {
+                    name = NAME_touhou_fe_union_titan_hostile_1
+                    settings = { can_disband = no can_change_composition = no can_change_leader = no spawn_debris = no }
+                    effect = {
+                        set_owner = event_target:touhou_fe_union_titan_hostile
+                        set_location = event_target:spth_spawnpoint
+                        create_ship = {
+                            name = NAME_touhou_fe_union_titan_hostile_2
+                            design = NAME_touhou_fe_union_titan_hostile_2
+                            effect = {
+                                touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                                ag_difficulty_bonus = yes
+                                set_ship_flag = NAME_touhou_fe_union_titan_hostile_2
+                            }
+                        }
+                        create_ship = {
+                            name = NAME_touhou_fe_union_titan_hostile_1
+                            design = NAME_touhou_fe_union_titan_hostile_1
+                            effect = {
+                                touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                                ag_difficulty_bonus = yes
+                                set_ship_flag = NAME_touhou_fe_union_titan_hostile_1
+                            }
+                        }
+                        set_fleet_flag = touhou_fe_union_titan_hostile
+                    }
+                }
+                random_owned_ship = {
+                    limit = { is_ship_size = th_fallen_empire_union_fallen_ship }
+                    delete_ship = this
+                }
+            }
+        } else = {
+            random_system_within_border = {
+                save_event_target_as = spth_target_system
+                create_fleet = {
+                    name = NAME_touhou_fe_union_titan_hostile_1
+                    settings = { can_disband = no can_change_composition = no can_change_leader = no spawn_debris = no }
+                    effect = {
+                        set_owner = event_target:touhou_fe_union_titan_hostile
+                        set_location = event_target:spth_target_system.star
+                        create_ship = {
+                            name = NAME_touhou_fe_union_titan_hostile_2
+                            design = NAME_touhou_fe_union_titan_hostile_2
+                            effect = {
+                                touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                                ag_difficulty_bonus = yes
+                                set_ship_flag = NAME_touhou_fe_union_titan_hostile_2
+                            }
+                        }
+                        create_ship = {
+                            name = NAME_touhou_fe_union_titan_hostile_1
+                            design = NAME_touhou_fe_union_titan_hostile_1
+                            effect = {
+                                touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                                ag_difficulty_bonus = yes
+                                set_ship_flag = NAME_touhou_fe_union_titan_hostile_1
+                            }
+                        }
+                        set_fleet_flag = touhou_fe_union_titan_hostile
+                    }
+                }
+            }
+        }
+        every_playable_country = {
+            limit = { NOT = { is_same_value = root } }
+            country_event = { id = th_anomaly.17 }
+        }
+        country_event = { id = th_anomaly.18 days = 45 random = 15 }
+    }
+    option = {
+        name = TH_WORYING
+    }
+}
+country_event = {
+    id = th_anomaly.17
+    title = th_anomaly.17.name
+    desc = th_anomaly.17.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_unknown_ships_room }
+    location = root
+    is_triggered_only = yes
+    option = {
+        name = TH_WORYING
+    }
+}
+country_event = {
+    id = th_anomaly.18
+    title = th_anomaly.18.name
+    desc = th_anomaly.18.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_evil_room }
+    location = root
+    is_triggered_only = yes
+    immediate = {
+        event_target:touhou_fe_union_titan_hostile = {
+            every_country = {
+                limit = { is_touhou_common_country = yes }
+                set_faction_hostility = {
+                    target = prev
+                    set_hostile = yes
+                }
+            }
+            every_owned_ship = { set_timed_ship_flag = { flag = spth_invincible days = 20 } }
+        }
+    }
+    option = {
+        name = th_anomaly.18.a
+    }
+    option = {
+        name = TH_WHAT_HAPPENED
+    }
+}
+
+# This = owner of ship 1 (combatant)
+# From = owner of ship 2 (destroyed)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = th_anomaly.20
+    title = th_anomaly.20.name
+    desc = th_anomaly.20.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_small_space_battle_room }
+    is_triggered_only = yes
+    trigger = {
+        from = {
+            is_country_type = touhou_fe_union_titan_hostile
+            NOT = { has_country_flag = spth_debug_spawn_flag }
+            num_ships < 1
+        }
+    }
+    immediate = {
+        event_target:touhou_fe_union_titan_hostile = {
+            destroy_country = yes
+        }
+    }
+    option = {
+        name = th_anomaly.20.a
+        enable_special_project = { name = touhou_fe_union_rebuild_titan owner = root }
+    }
+}
+country_event = {
+    id = th_anomaly.21
+    title = th_anomaly.21.name
+    desc = th_anomaly.21.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_small_space_battle_room }
+    is_triggered_only = yes
+    immediate = {
+        set_country_flag = tech_touhou_fe_union_titan
+    }
+    option = {
+        name = th_anomaly.21.a
+        give_technology = { tech = tech_touhou_fe_union_titan message = yes }
+        if = {
+            limit = { NOT = { has_existing_ship_design = touhou_fe_union_titan } }
+            create_ship_design = { design = NAME_touhou_fe_union_titan }
+            add_ship_design = last_created_design
+        }
+    }
 }

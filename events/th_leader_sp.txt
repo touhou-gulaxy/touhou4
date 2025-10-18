@@ -299,9 +299,13 @@ planet_event = {
         if = {
             limit = { check_modifier_value = { modifier = planet_kaguya_protect_duration value > 45 } }
             add_planet_devastation = -100
+            set_planet_flag = planet_kaguya_protect_90
+            set_planet_flag = planet_kaguya_protect_fired
             planet_event = { id = th_leader_sp.208 days = 90 }
         } else = {
             add_planet_devastation = -100
+            set_planet_flag = planet_kaguya_protect_45
+            set_planet_flag = planet_kaguya_protect_fired
             planet_event = { id = th_leader_sp.208 days = 45 }
         }
         planet_event = { id =  th_leader_sp.209 days = 1 }
@@ -332,6 +336,7 @@ planet_event = {
                 clear_variable = planet_kaguya_protect_time
                 remove_planet_flag = planet_kaguya_protect_90
                 remove_planet_flag = planet_kaguya_protect_45
+                remove_planet_flag = planet_kaguya_protect_fired
             } else = { planet_event = { id =  th_leader_sp.209 days = 1 } }
             add_planet_devastation = -100
             change_variable = { which = planet_kaguya_protect_time value = 1 }
@@ -339,6 +344,7 @@ planet_event = {
             clear_variable = planet_kaguya_protect_time
             remove_planet_flag = planet_kaguya_protect_90
             remove_planet_flag = planet_kaguya_protect_45
+            remove_planet_flag = planet_kaguya_protect_fired
         }
     }
 }
@@ -602,6 +608,136 @@ country_event = {
         name = GOOD
     }
 }
+
+# on_ground_combat_started
+# This = planet
+# From = country attacking
+planet_event = {
+    id = th_leader_sp.903
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        planet_event = { id = th_leader_sp.904 days = 1 }
+        planet_event = { id = th_leader_sp.906 days = 1 }
+    }
+}
+planet_event = {
+    id = th_leader_sp.904
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_planet_flag = th_leader_sp_904_fired }
+        has_ground_combat = yes
+        any_ground_combat_attacker = {
+            exists = leader
+            leader = {
+                OR = {
+                    check_modifier_value = { modifier = touhou_leader_kill_army_chance value > 0 }
+                    check_modifier_value = { modifier = touhou_leader_kill_army_perc value > 0 }
+                    check_modifier_value = { modifier = touhou_leader_damage_army_effect value > 0 }
+                }
+            }
+        }
+    }
+    immediate = {
+        set_planet_flag = th_leader_sp_904_fired
+        touhou_leader_special_army_effect_init = { who = attacker }
+        planet_event = { id = th_leader_sp.905 }
+    }
+}
+# cycle
+planet_event = {
+    id = th_leader_sp.905
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { has_ground_combat = yes }
+            touhou_leader_special_army_effect_loop = { who = attacker opposite_who = defender }
+            planet_event = { id = th_leader_sp.905 days = 5 }
+        } else = {
+            remove_planet_flag = th_leader_sp_904_fired
+        }
+    }
+}
+planet_event = {
+    id = th_leader_sp.906
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        any_ground_combat_defender = {
+            exists = leader
+            leader = {
+                OR = {
+                    check_modifier_value = { modifier = touhou_leader_kill_army_chance value > 0 }
+                    check_modifier_value = { modifier = touhou_leader_kill_army_perc value > 0 }
+                    check_modifier_value = { modifier = touhou_leader_damage_army_effect value > 0 }
+                }
+            }
+        }
+    }
+    immediate = {
+        set_planet_flag = th_leader_sp_906_fired
+        touhou_leader_special_army_effect_init = { who = defender }
+        planet_event = { id = th_leader_sp.907 }
+    }
+}
+# cycle
+planet_event = {
+    id = th_leader_sp.907
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { has_ground_combat = yes }
+            touhou_leader_special_army_effect_loop = { who = defender opposite_who = attacker }
+            planet_event = { id = th_leader_sp.907 days = 5 }
+        } else = {
+            remove_planet_flag = th_leader_sp_906_fired
+        }
+    }
+}
+# An army has been killed in ground combat
+# This = owner
+# From = army
+# FromFrom = opponent
+# FromFromFrom = planet
+country_event = {
+    id = th_leader_sp.908
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfromfrom = {
+            has_ground_combat = yes
+            OR = {
+                any_ground_combat_attacker = { check_modifier_value = { modifier = touhou_leader_has_heal_army_effect value > 0 } }
+                any_ground_combat_defender = { check_modifier_value = { modifier = touhou_leader_has_heal_army_effect value > 0 } }
+            }
+        }
+    }
+    immediate = {
+        fromfromfrom = {
+            if = {
+                limit = {
+                    any_ground_combat_attacker = {
+                        exists = owner owner = { is_same_value = root.fromfrom }
+                        check_modifier_value = { modifier = touhou_leader_has_heal_army_effect value > 0 }
+                    }
+                }
+                every_ground_combat_attacker = {
+                    limit = { is_in_frontline = yes }
+                    damage_army = value:touhou_leader_heal_army_effect_value
+                }
+            } else = {
+                every_ground_combat_defender = {
+                    limit = { is_in_frontline = yes }
+                    damage_army = value:touhou_leader_heal_army_effect_value
+                }
+            }
+        }
+    }
+}
+
 
 # 敌后大生产 月度刷新
 country_event = {

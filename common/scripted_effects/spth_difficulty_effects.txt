@@ -84,6 +84,18 @@ touhou_difficulty_bonus = {
             }
         }
     }
+    if = {
+        limit = { exists = event_target:touhou_fe_union_titan_hostile }
+        event_target:touhou_fe_union_titan_hostile = {
+            every_controlled_fleet = {
+                every_owned_ship = {
+                    if = { limit = { NOT = { has_ship_flag = touhou_mod_crisis_ship } } set_ship_flag = touhou_mod_crisis_ship }
+                    touhou_remove_all_difficulty_modifier = yes
+                    touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                }
+            }
+        }
+    }
     every_playable_country = {
         limit = { is_ai = no is_touhou_crisis_faction = no }
         every_controlled_fleet = {
@@ -111,6 +123,25 @@ touhou_difficulty_bonus = {
                 }
             }
         }
+    }
+    every_country = {
+        if = {
+            limit = { has_country_flag = touhou_player_bonus_fired }
+            remove_modifier = touhou_difficulty_player_basic
+            remove_modifier = touhou_difficulty_player_hard
+            remove_modifier = touhou_difficulty_player_lunatic
+        }
+        set_variable = { which = touhou_scaled_difficulty value = event_target:global_event_country.spth_lunar_capital_crisis_difficulty }
+        add_modifier = { modifier = touhou_difficulty_player_basic mult = touhou_scaled_difficulty }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+            add_modifier = { modifier = touhou_difficulty_player_hard mult = touhou_scaled_difficulty }
+        }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 4 } }
+            add_modifier = { modifier = touhou_difficulty_player_lunatic mult = touhou_scaled_difficulty }
+        }
+        clear_variable = touhou_scaled_difficulty
     }
     set_update_modifiers_batch = end
 }

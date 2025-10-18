@@ -2535,6 +2535,163 @@ fleet_event = {
     }
 }
 
+# Planet has taken damage from orbital bombardment - Damage is applied daily
+# This = Planet
+# From = Bombarder
+planet_event = {
+    id = spth_fleet.1221
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { NOT = { has_planet_flag = spth_fleet_1221_fired } }
+    immediate = {
+        set_planet_flag = spth_fleet_1221_fired
+        planet_event = { id = spth_fleet.1222 }
+    }
+}
+planet_event = {
+    id = spth_fleet.1222
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { has_orbital_bombardment = yes }
+            if = {
+                limit = {
+                    touhou_planet_under_protect = no # 兼容：阿夸星球护盾、古代堡垒
+                    any_fleet_in_orbit = {
+                        exists = owner
+                        owner = { is_hostile_to = root.controller }
+                        any_owned_ship = { check_modifier_value = { modifier = touhou_leader_bombardment_special_effect value > 0 } }
+                    }
+                }
+                set_variable = { which = touhou_num_armies value = trigger:num_armies }
+                set_variable = { which = touhou_leader_bombardment_ruin_fortress value = 0 }
+                set_variable = { which = touhou_leader_bombardment_kill_army value = 0 }
+                set_variable = { which = touhou_leader_bombardment_damage_army value = 0 }
+                set_variable = { which = touhou_leader_bombardment_damage_army_factor value = 0 }
+                every_fleet_in_orbit = {
+                    limit = {
+                        exists = owner
+                        owner = { is_hostile_to = root.controller }
+                        any_owned_ship = { check_modifier_value = { modifier = touhou_leader_bombardment_special_effect value > 0 } }
+                    }
+                    every_owned_ship = {
+                        limit = { check_modifier_value = { modifier = touhou_leader_bombardment_special_effect value > 0 } }
+                        if = {
+                            limit = { check_modifier_value = { modifier = touhou_leader_bombardment_ruin_fortress value > 0 } }
+                            root = {
+                                change_variable = {
+                                    which = touhou_leader_bombardment_ruin_fortress
+                                    value = prev.modifier:touhou_leader_bombardment_ruin_fortress
+                                }
+                            }
+                        }
+                        if = {
+                            limit = { check_modifier_value = { modifier = touhou_leader_bombardment_kill_army value > 0 } }
+                            root = {
+                                change_variable = {
+                                    which = touhou_leader_bombardment_kill_army
+                                    value = prev.modifier:touhou_leader_bombardment_kill_army
+                                }
+                            }
+                        }
+                        if = {
+                            limit = { check_modifier_value = { modifier = touhou_leader_bombardment_damage_army value > 0 } }
+                            root = {
+                                change_variable = {
+                                    which = touhou_leader_bombardment_damage_army
+                                    value = prev.modifier:touhou_leader_bombardment_damage_army
+                                }
+                                change_variable = {
+                                    which = touhou_leader_bombardment_damage_army_factor
+                                    value = 1
+                                }
+                            }
+                        }
+                    }
+                }
+                while = {
+                    limit = { check_variable = { which = touhou_leader_bombardment_ruin_fortress value > 0 } }
+                    if = {
+                        limit = { touhou_planet_has_activate_fortress = yes }
+                        reroll_random = yes
+                        random_list = {
+                            0 = {
+                                modifier = { add = touhou_leader_bombardment_ruin_fortress always = yes }
+                                modifier = { min = 0 always = yes }
+                                modifier = { max = 10000 always = yes }
+                                if = { limit = { has_active_building = building_stronghold } ruin_building = building_stronghold }
+                                else_if = { limit = { has_active_building = building_fortress } ruin_building = building_fortress }
+                                else_if = { limit = { has_active_building = building_fe_fortress } ruin_building = building_fe_fortress }
+                                else_if = { limit = { has_active_building = building_fe_stronghold } ruin_building = building_fe_stronghold }
+                                else_if = { limit = { has_active_building = building_military_academy } ruin_building = building_military_academy }
+                                else_if = { limit = { has_active_building = building_planetary_shield_generator } ruin_building = building_planetary_shield_generator }
+                                else_if = { limit = { has_active_building = building_spth_police_station } ruin_building = building_spth_police_station }
+                                else_if = { limit = { spth_has_ag_mod = yes has_active_building = ag_ancient_fortress } ruin_building = ag_ancient_fortress }
+                            }
+                            10000 = {
+                                modifier = { subtract = touhou_leader_bombardment_ruin_fortress always = yes }
+                                modifier = { min = 0 always = yes }
+                                modifier = { max = 10000 always = yes }
+                            }
+                        }
+                        subtract_variable = { which = touhou_leader_bombardment_ruin_fortress value = 10000 }
+                    } else = {
+                        set_variable = { which = touhou_leader_bombardment_ruin_fortress value = -114514 }
+                    }
+                }
+                clear_variable = touhou_leader_bombardment_ruin_fortress
+                while = {
+                    limit = { check_variable = { which = touhou_leader_bombardment_kill_army value > 0 } }
+                    reroll_random = yes
+                    random_list = {
+                        0 = {
+                            modifier = { add = touhou_leader_bombardment_kill_army always = yes }
+                            modifier = { min = 0 always = yes }
+                            modifier = { max = 10000 always = yes }
+                            random_planet_army = { remove_army = yes }
+                        }
+                        10000 = {
+                            modifier = { subtract = touhou_leader_bombardment_kill_army always = yes }
+                            modifier = { min = 0 always = yes }
+                            modifier = { max = 10000 always = yes }
+                        }
+                    }
+                    subtract_variable = { which = touhou_leader_bombardment_kill_army value = 10000 }
+                }
+                clear_variable = touhou_leader_bombardment_kill_army
+                if = {
+                    limit = { check_variable = { which = touhou_num_armies value > 0 } }
+                    divide_variable = {
+                        which = touhou_leader_bombardment_damage_army
+                        value = touhou_leader_bombardment_damage_army_factor
+                    }
+                    reroll_random = yes
+                    random_list = {
+                        40 = { multiply_variable = { which = touhou_num_armies value = 0.10 } }
+                        30 = { multiply_variable = { which = touhou_num_armies value = 0.15 } }
+                        20 = { multiply_variable = { which = touhou_num_armies value = 0.20 } }
+                        10 = { multiply_variable = { which = touhou_num_armies value = 0.25 } }
+                    }
+                    ceiling_variable = touhou_num_armies
+                    while = {
+                        count = touhou_num_armies
+                        random_planet_army = {
+                            limit = { NOT = { has_army_flag = touhou_leader_bombardment_damage_army } }
+                            set_timed_army_flag = { flag = touhou_leader_bombardment_damage_army days = 1 }
+                            damage_army = prev.touhou_leader_bombardment_damage_army
+                        }
+                    }
+                }
+                clear_variable = touhou_num_armies
+                clear_variable = touhou_leader_bombardment_damage_army
+                clear_variable = touhou_leader_bombardment_damage_army_factor
+            }
+        }
+    }
+}
+
+
 fleet_event = {
     id = spth_fleet.2000
     hide_window = yes

@@ -35,6 +35,7 @@ country_event = {
                 }
             }
         }
+        country_event = { id = lunar_capital_psi.49 days = 30 random = 30 }
         country_event = { id = lunar_capital_psi.1 days = 400 random = 100 }
     }
 }
@@ -953,6 +954,10 @@ country_event = {
                 remove_modifier = touhou_lunar_psi_extra_11
             }
         }
+        remove_global_flag = spth_lunar_psi_picked_mirror_design
+        event_target:touhou_mirror_design = { remove_design_flag = touhou_mirror_design }
+        clear_global_event_target = touhou_mirror_design
+        clear_global_event_target = touhou_pick_mirror_country
         event_target:spth_lunar_capital_psi_country = {
             every_owned_fleet = { delete_fleet = this }
             destroy_country = yes
@@ -1257,6 +1262,57 @@ country_event = {
                 add_ship_design = last_created_design
             }
         }
+    }
+}
+
+# touhou_lunar_psi_extra_41
+country_event = {
+    id = lunar_capital_psi.49
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_main_gate_bypass }
+    }
+    immediate = {
+        if = {
+            limit = { has_global_flag = touhou_lunar_psi_extra_41 }
+            if = {
+                limit = { NOT = { has_global_flag = spth_lunar_psi_picked_mirror_design } }
+                spth_lunar_psi_pick_mirror_design = yes
+            }
+            if = {
+                limit = { NOT = { has_global_flag = no_lunar_capital_pick_mirror_country } }
+                spth_lunar_psi_spawn_mirror_fleets_sub_gate = { spth_id = 1 }
+                spth_lunar_psi_spawn_mirror_fleets_sub_gate = { spth_id = 2 }
+            }
+        }
+    }
+}
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = lunar_capital_psi.50
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = { has_ship_flag = lunar_capital_psi_mirror_ship }
+        is_touhou_crisis_faction = yes
+        count_owned_ship = {
+            limit = { has_ship_flag = lunar_capital_psi_mirror_ship }
+            count <= 1
+        }
+    }
+    immediate = {
+        event_target:spth_lunar_capital_psi_country = {
+            remove_modifier = touhou_lunar_psi_extra_41
+        }
+        remove_global_flag = spth_lunar_psi_picked_mirror_design
+        event_target:touhou_mirror_design = { remove_design_flag = touhou_mirror_design }
+        clear_global_event_target = touhou_mirror_design
+        clear_global_event_target = touhou_pick_mirror_country
     }
 }
 

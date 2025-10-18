@@ -569,3 +569,80 @@ touhou_spellcard_point_cap_used = {
     base = 0
     add = modifier:touhou_spellcard_upkeep_add
 }
+
+lunar_capital_psi_mirror_ship_extra = {
+    base = 0
+    add = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+    square_root = yes
+    add = 4
+}
+lunar_capital_psi_mirror_ship_factor = {
+    base = 1
+    modifier = { add = 1 has_global_flag = spth_lunar_capital_crisis_phantasm }
+    modifier = {
+        add = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+        touhou_check_diffiulty_lteq = { value = 4 }
+    }
+    modifier = {
+        add = value:lunar_capital_psi_mirror_ship_extra
+        touhou_check_diffiulty_gteq = { value = 5 }
+    }
+}
+lunar_capital_psi_mirror_ship_count = {
+    base = 1
+    modifier = { add = 1 touhou_check_diffiulty_gteq = { value = 3 } }
+    modifier = { add = 1 touhou_check_diffiulty_gteq = { value = 4 } }
+    modifier = { add = 1 touhou_check_diffiulty_gteq = { value = 8 } }
+    modifier = { add = 1 has_global_flag = spth_lunar_capital_crisis_phantasm }
+    mult = value:lunar_capital_psi_mirror_ship_factor
+    modifier = { mult = 2 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value <= 1 } } }
+    modifier = { mult = 2 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value <= 2 } } }
+    modifier = { mult = 2 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value <= 4 } } }
+    modifier = { mult = 2 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value <= 8 } } }
+    modifier = { mult = 0.5 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value >= 32 } } }
+    abs = yes
+    min = 1
+}
+# easy -> 5
+# normal -> 25
+# hard -> 99
+# lunatic -> 200
+# od -> 500
+lunar_capital_psi_mirror_damage_reduction_max = {
+    base = 5
+    modifier = { add = 7.5 touhou_check_diffiulty_gteq = { value = 2 } }
+    modifier = { add = 20.5 touhou_check_diffiulty_gteq = { value = 3 } }
+    modifier = { add = 17 touhou_check_diffiulty_gteq = { value = 4 } }
+    modifier = { add = 12.5 touhou_check_diffiulty_gteq = { value = 8 } }
+    modifier = { mult = 2 has_global_flag = spth_lunar_capital_crisis_phantasm }
+    mult = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+}
+lunar_capital_psi_mirror_damage_reduction = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger = count_owned_ship
+        trigger_scope = event_target:touhou_pick_mirror_country
+        parameters = { limit = { design = { has_design_flag = touhou_mirror_design } } }
+        mode = add
+        mult = event_target:spth_lunar_capital_psi_country.touhou_mirror_design_ship_size
+    }
+    max = value:lunar_capital_psi_mirror_damage_reduction_max
+}
+
+touhou_leader_kill_army_perc_factor = {
+    base = 0
+    add = event_target:touhou_leader_kill_army_perc_$who$.modifier:touhou_leader_kill_army_perc
+    min = 0
+    max = 1
+}
+touhou_leader_kill_army_perc_amount = {
+    base = 0
+    add = trigger:count_ground_combat_defender
+    mult = value:touhou_leader_kill_army_perc_factor|who|$who$|
+    min = 1
+}
+touhou_leader_heal_army_effect_value = {
+    base = 0
+    add = leader.modifier:touhou_leader_heal_army_effect
+    mult = -1
+}
