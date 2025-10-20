@@ -3,6 +3,40 @@ touhou_changed_difficulty = {
     optimize_memory
     touhou_difficulty_bonus = yes
 }
+touhou_difficulty_bonus_player = {
+    optimize_memory
+    if = {
+        limit = { has_country_flag = touhou_player_bonus_fired }
+        remove_country_flag = touhou_player_bonus_fired
+        if = {
+            limit = { spth_has_ag_mod = yes }
+            remove_modifier = touhou_difficulty_player_ag
+        } else = {
+            remove_modifier = touhou_difficulty_player_basic
+            remove_modifier = touhou_difficulty_player_hard
+            remove_modifier = touhou_difficulty_player_lunatic
+        }
+    }
+    set_country_flag = touhou_player_bonus_fired
+    if = {
+        limit = { spth_has_ag_mod = yes }
+        set_variable = { which = touhou_ag_scaled_difficulty_temp value = event_target:global_event_country.ag_scaled_difficulty }
+        add_modifier = { modifier = touhou_difficulty_player_ag multiplier = touhou_ag_scaled_difficulty_temp days = -1 }
+        clear_variable = touhou_ag_scaled_difficulty_temp
+    } else = {
+        set_variable = { which = touhou_scaled_difficulty value = event_target:global_event_country.spth_lunar_capital_crisis_difficulty }
+        add_modifier = { modifier = touhou_difficulty_player_basic mult = touhou_scaled_difficulty }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+            add_modifier = { modifier = touhou_difficulty_player_hard mult = touhou_scaled_difficulty }
+        }
+        if = {
+            limit = { touhou_check_diffiulty_gteq = { value = 4 } }
+            add_modifier = { modifier = touhou_difficulty_player_lunatic mult = touhou_scaled_difficulty }
+        }
+        clear_variable = touhou_scaled_difficulty
+    }
+}
 touhou_difficulty_bonus = {
     optimize_memory
     set_update_modifiers_batch = begin
@@ -124,25 +158,7 @@ touhou_difficulty_bonus = {
             }
         }
     }
-    every_country = {
-        if = {
-            limit = { has_country_flag = touhou_player_bonus_fired }
-            remove_modifier = touhou_difficulty_player_basic
-            remove_modifier = touhou_difficulty_player_hard
-            remove_modifier = touhou_difficulty_player_lunatic
-        }
-        set_variable = { which = touhou_scaled_difficulty value = event_target:global_event_country.spth_lunar_capital_crisis_difficulty }
-        add_modifier = { modifier = touhou_difficulty_player_basic mult = touhou_scaled_difficulty }
-        if = {
-            limit = { touhou_check_diffiulty_gteq = { value = 3 } }
-            add_modifier = { modifier = touhou_difficulty_player_hard mult = touhou_scaled_difficulty }
-        }
-        if = {
-            limit = { touhou_check_diffiulty_gteq = { value = 4 } }
-            add_modifier = { modifier = touhou_difficulty_player_lunatic mult = touhou_scaled_difficulty }
-        }
-        clear_variable = touhou_scaled_difficulty
-    }
+    every_country = { touhou_difficulty_bonus_player = yes }
     set_update_modifiers_batch = end
 }
 touhou_difficulty_bonus_ship = {
@@ -256,6 +272,34 @@ touhou_difficulty_bonus_ship = {
         }
     ]
 }
+touhou_difficulty_bonus_ag_ship = {
+    optimize_memory
+    touhou_remove_all_difficulty_modifier_ag = yes
+    set_ship_flag = touhou_difficulty_bonus_ag_fired
+    switch = {
+        trigger = is_ship_size
+        touhou_fe_union_titan = {
+            add_modifier = {
+                modifier = touhou_difficulty_fe_union_titan_shield
+                multiplier = value:touhou_scaled_difficulty_ag_armor_or_shield|touhou_tag|touhou_fe_union_shield_count|
+            }
+            add_modifier = {
+                modifier = touhou_difficulty_fe_union_titan_armor
+                multiplier = value:touhou_scaled_difficulty_ag_armor_or_shield|touhou_tag|touhou_fe_union_armor_count|
+            }
+        }
+        th_fallen_empire_union_fallen_ship = {
+            add_modifier = {
+                modifier = touhou_difficulty_fe_union_titan_shield
+                multiplier = value:touhou_scaled_difficulty_ag_armor_or_shield|touhou_tag|touhou_fe_union_shield_count|
+            }
+            add_modifier = {
+                modifier = touhou_difficulty_fe_union_titan_armor
+                multiplier = value:touhou_scaled_difficulty_ag_armor_or_shield|touhou_tag|touhou_fe_union_armor_count|
+            }
+        }
+    }
+}
 touhou_remove_all_difficulty_modifier = {
     optimize_memory
     if = {
@@ -301,5 +345,13 @@ touhou_remove_all_difficulty_modifier = {
             remove_modifier = touhou_difficulty_lunar_capital_psi_phantasm_static
             remove_modifier = touhou_difficulty_lunar_capital_psi_titan
         }
+    }
+}
+touhou_remove_all_difficulty_modifier_ag = {
+    optimize_memory
+    if = {
+        limit = { has_ship_flag = touhou_difficulty_bonus_ag_fired }
+        if = { limit = { has_modifier = touhou_difficulty_fe_union_titan_shield } remove_modifier = touhou_difficulty_fe_union_titan_shield }
+        if = { limit = { has_modifier = touhou_difficulty_fe_union_titan_armor } remove_modifier = touhou_difficulty_fe_union_titan_armor }
     }
 }

@@ -634,3 +634,84 @@ touhou_give_tech_option = {
         ]
     }
 }
+
+ancient_titan_touhou_fleet_repair_init = {
+    optimize_memory
+    random_controlled_ship = {
+        limit = { check_modifier_value = { modifier = ship_ancient_titan_touhou_fleet_repair value > 0 } }
+        prev = {
+            set_timed_fleet_flag = {
+                flag = ancient_titan_touhou_fleet_repair
+                days = prev.value:ancient_titan_touhou_fleet_repair_duration
+            }
+        }
+    }
+    every_controlled_ship = {
+        if = {
+            limit = { check_modifier_value = { modifier = ship_ancient_titan_touhou_fleet_repair value > 0 } }
+            add_modifier = { modifier = ancient_titan_touhou_fleet_repair_cooldown days = 240 }
+        }
+        add_modifier = {
+            modifier = ancient_titan_touhou_fleet_repair days = 1
+            time_multiplier = value:ancient_titan_touhou_fleet_repair_duration
+        }
+    }
+    fleet_event = { id = touhou_ship_actions.104 }
+}
+ancient_titan_touhou_fleet_repair_init_alt = {
+    optimize_memory
+    random_controlled_ship = {
+        limit = { check_modifier_value = { modifier = ship_ancient_titan_touhou_fleet_repair value > 0 } }
+        prev = {
+            set_timed_fleet_flag = {
+                flag = ancient_titan_touhou_fleet_repair
+                days = prev.value:ancient_titan_touhou_fleet_repair_duration
+            }
+        }
+    }
+    every_controlled_ship = {
+        if = {
+            limit = { check_modifier_value = { modifier = ship_ancient_titan_touhou_fleet_repair value > 0 } }
+            add_modifier = { modifier = ancient_titan_touhou_fleet_repair_cooldown days = 360 }
+        }
+        add_modifier = {
+            modifier = ancient_titan_touhou_fleet_repair days = 1
+            time_multiplier = value:ancient_titan_touhou_fleet_repair_duration
+        }
+    }
+    fleet_event = { id = touhou_ship_actions.104 }
+}
+touhou_repair_ship_hull_overflow = {
+    optimize_memory
+    if = {
+        limit = { has_hp <= 100000000 }
+        if = {
+            limit = {
+                check_variable_arithmetic = {
+                    which = trigger:has_max_hp multiply = 1.1
+                    value > trigger:has_hp   # 船体小于等于110%时给临时船体
+                }
+            }
+            reduce_hp = value:touhou_repair_ship_hull_overflow_value|factor|$perc$|
+        }
+    } else = {
+        repair_percentage = $perc$
+    }
+}
+touhou_repair_ship_shield_overflow = {
+    optimize_memory
+    if = {
+        limit = { has_hp <= 100000000 }
+        if = {
+            limit = {
+                check_variable_arithmetic = {
+                    which = value:spth_max_shield_value|percent|1.1|
+                    value > trigger:has_shield_hp
+                }
+            }
+            reduce_shield = value:touhou_repair_ship_shield_overflow_value|factor|$perc$|
+        }
+    } else = {
+        repair_shield_percentage = $perc$
+    }
+}

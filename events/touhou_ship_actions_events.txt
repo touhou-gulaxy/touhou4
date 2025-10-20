@@ -131,6 +131,30 @@ fleet_event = {
             }
         }
     }
+    option = {
+        name = concept_ancient_titan_touhou_fleet_repair
+        custom_tooltip = ancient_titan_touhou_fleet_repair_ag_tt
+        custom_tooltip = concept_ancient_titan_touhou_fleet_repair_desc
+        trigger = {
+            # spth_has_ag_mod = no
+            NOT = { owner = { has_country_flag = ag_ship_subsystem_enabled_9901_48 } }
+            any_controlled_ship = {
+                check_modifier_value = { modifier = ship_ancient_titan_touhou_fleet_repair value > 0 }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                any_controlled_ship = {
+                    check_modifier_value = { modifier = ship_ancient_titan_touhou_fleet_repair value > 0 }
+                    NOT = { has_modifier = ancient_titan_touhou_fleet_repair_cooldown }
+                }
+            }
+        }
+        hidden_effect = {
+            ancient_titan_touhou_fleet_repair_init_alt = yes
+        }
+    }
     # Ship Actions
     option = {
         name = touhou_ship_action_ship
@@ -2080,5 +2104,33 @@ country_event = {
             remove_modifier = touhou_spellcard_42_cap
             country_event = { id = touhou_ship_actions.103 }
         }
+    }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.104
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_in_combat = yes
+        has_fleet_flag = ancient_titan_touhou_fleet_repair
+    }
+    immediate = {
+        every_controlled_ship = {
+            limit = { has_modifier = ancient_titan_touhou_fleet_repair }
+            if = {
+                limit = {
+                    OR = {
+                        is_touhou_ship = yes
+                        ag_is_mod_ship = yes
+                    }
+                }
+                touhou_repair_ship_hull_overflow = { perc = 0.01 }
+                touhou_repair_ship_shield_overflow = { perc = 0.005 }
+            } else = {
+                touhou_repair_ship_hull_overflow = { perc = 0.005 }
+            }
+        }
+        fleet_event = { id = touhou_ship_actions.104 days = 1 }
     }
 }

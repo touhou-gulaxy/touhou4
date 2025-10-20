@@ -332,6 +332,18 @@ ship_event = {
                 }
                 delete_ship = this
             }
+            touhou_fe_union_titan = {
+                set_ship_flag = ag_touhou_fe_titan_player
+                ag_difficulty_bonus = yes
+                fleet = { set_fleet_flag = ag_has_ancient_ship_in_fleet }
+                if = {
+                    limit = { spth_has_ag_mod = yes }
+                    add_modifier = { modifier = touhou_fe_union_titan_ag_extra_life }
+                    touhou_difficulty_bonus_ag_ship = yes
+                    ag_set_disable_at_health = { ag_disable_type = ancient_titan }
+                    fire_on_action = { on_action = on_touhou_fe_union_titan_built }
+                }
+            }
             default = {
                 # 你是？
             }
@@ -1257,46 +1269,34 @@ ship_event = {
                     OR = {
                         check_modifier_value = { modifier = ship_th_mokou_skill value != 0 }
                         check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 }
+                        AND = { exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
                     }
                 }
                 reroll_random = yes
-                if = {
-                    limit = { check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
-                    random_list = {
-                        15 = { modifier = { add = modifier:ship_th_mokou_skill } }
-                        85 = {
-                            modifier = { subtract = modifier:ship_th_mokou_skill }
-                            if = {
-                                limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
-                                change_variable = { which = spth_extra_life_used value = 1 }
-                                remove_modifier = ship_spth_extra_life_lose
-                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
-                                ship_event = { id = spth_fleet.1105 days = 180 }
-                            }
-                            set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
-                            add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
-                            clear_variable = ship_spth_extra_life_reduce
-                        }
+                random_list = {
+                    0 = {
+                        modifier = { min = 0 always = yes }
+                        modifier = { max = 100 always = yes }
+                        modifier = { add = 10 check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
+                        modifier = { add = modifier:ship_th_mokou_skill }
+                        modifier = { add = 10 exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
                     }
-                } else = {
-                    random_list = {
-                        10 = {
-                            modifier = { add = modifier:ship_th_mokou_skill check_modifier_value = { modifier = ship_th_mokou_skill value != 0 } }
-                            modifier = { subtract = 10 check_modifier_value = { modifier = ship_th_mokou_skill value != 0 } }
+                    100 = {
+                        modifier = { min = 0 always = yes }
+                        modifier = { max = 100 always = yes }
+                        modifier = { subtract = 10 check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
+                        modifier = { subtract = modifier:ship_th_mokou_skill }
+                        modifier = { subtract = 10 exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
+                        if = {
+                            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+                            change_variable = { which = spth_extra_life_used value = 1 }
+                            remove_modifier = ship_spth_extra_life_lose
+                            add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+                            ship_event = { id = spth_fleet.1105 days = 180 }
                         }
-                        80 = {
-                            modifier = { subtract = modifier:ship_th_mokou_skill check_modifier_value = { modifier = ship_th_mokou_skill value != 0 } }
-                            if = {
-                                limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
-                                change_variable = { which = spth_extra_life_used value = 1 }
-                                remove_modifier = ship_spth_extra_life_lose
-                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
-                                ship_event = { id = spth_fleet.1105 days = 180 }
-                            }
-                            set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
-                            add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
-                            clear_variable = ship_spth_extra_life_reduce
-                        }
+                        set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+                        add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+                        clear_variable = ship_spth_extra_life_reduce
                     }
                 }
             } else = {
@@ -2691,6 +2691,52 @@ planet_event = {
     }
 }
 
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.1223
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            NOT = { has_fleet_flag = touhou_dynamic_damage_fired }
+            any_owned_ship = {
+                OR = {
+                    is_ship_size = th_fallen_empire_union_fallen_ship
+                    is_ship_size = touhou_fe_union_titan
+                }
+            }
+        }
+        NOR = {
+            fromfrom = { has_fleet_flag = ag_zeta_crisis_avatar_fleet }
+            fromfromfrom = { has_fleet_flag = ag_zeta_crisis_avatar_fleet }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_timed_fleet_flag = { flag = touhou_dynamic_damage_fired days = 5 }
+            every_owned_ship = {
+                limit = {
+                    OR = {
+                        is_ship_size = th_fallen_empire_union_fallen_ship
+                        is_ship_size = touhou_fe_union_titan
+                    }
+                }
+                if = {
+                    limit = { spth_has_ag_mod = yes }
+                    set_variable = { which = touhou_dynamic_damage_val value = event_target:global_event_country.ag_scaled_difficulty }
+                } else = {
+                    set_variable = { which = touhou_dynamic_damage_val value = event_target:global_event_country.spth_lunar_capital_crisis_difficulty }
+                    subtract_variable = { which = touhou_dynamic_damage_val value = 1 }
+                }
+                add_modifier = { modifier = touhou_difficulty_dynamic_damage multiplier = touhou_dynamic_damage_val days = 5 }
+                clear_variable = touhou_dynamic_damage_val
+            }
+        }
+    }
+}
 
 fleet_event = {
     id = spth_fleet.2000
