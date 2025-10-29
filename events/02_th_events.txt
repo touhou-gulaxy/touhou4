@@ -4,18 +4,36 @@ event = {
     id = toho.1
     hide_window = yes
     is_triggered_only = yes
-    trigger = {
-        NOT = { has_global_flag = touhou_1_fired }
-    }
     immediate = {
-        set_global_flag = touhou_1_fired
         if = {
-            limit = { any_country = { is_fallen_empire_materialist = yes } }
-            random_country = {
-                limit = { is_fallen_empire_materialist = yes }
-                set_global_flag = touhou_has_fallen_empire_materialist
-                save_global_event_target_as = touhou_fallen_empire_materialist
-                capital_scope = { save_global_event_target_as = touhou_fallen_empire_materialist_capital }
+            limit = { NOT = { has_global_flag = touhou_fallen_empire_materialist_checked } }
+            set_global_flag = touhou_fallen_empire_materialist_checked
+            if = {
+                limit = {
+                    NOT = { has_global_flag = touhou_has_fallen_empire_materialist }
+                    any_country = { is_fallen_empire_materialist = yes }
+                }
+                random_country = {
+                    limit = { is_fallen_empire_materialist = yes }
+                    set_global_flag = touhou_has_fallen_empire_materialist
+                    save_global_event_target_as = touhou_fallen_empire_materialist
+                    capital_scope = { save_global_event_target_as = touhou_fallen_empire_materialist_capital }
+                }
+            }
+        }
+        if = {
+            limit = { NOT = { has_global_flag = touhou_only_gensokyo_ai_checked } }
+            set_global_flag = touhou_only_gensokyo_ai_checked
+            if = {
+                limit = {
+                    NOT = { any_country = { is_ai = no has_authority = auth_gensokyo } }
+                    any_country = { is_ai = yes has_authority = auth_gensokyo }
+                }
+                set_global_flag = touhou_has_only_gensokyo_ai
+                random_country = {
+                    limit = { is_ai = yes has_authority = auth_gensokyo }
+                    set_country_flag = touhou_is_choosen_gensokyo_ai
+                }
             }
         }
     }
@@ -1166,6 +1184,25 @@ country_event = {
         #}
         country_event = { id = toho.1011 }
 	}
+}
+
+country_event = {
+    id = toho.101
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { has_ascension_perk = ap_defender_of_the_galaxy }
+            if = {
+                limit = { NOT = { has_modifier = touhou_defender_of_the_galaxy_kamikakushi } }
+                add_modifier = { modifier = touhou_defender_of_the_galaxy_kamikakushi days = -1 }
+            }
+            if = {
+                limit = { NOT = { has_modifier = touhou_defender_of_the_galaxy_lunar_capital } }
+                add_modifier = { modifier = touhou_defender_of_the_galaxy_lunar_capital days = -1 }
+            }
+        }
+    }
 }
 
 country_event = {
@@ -3278,6 +3315,68 @@ fleet_event = {
 		name = toho.8116.b
 		ai_chance = { base = 10 }
 	}
+}
+
+country_event = {
+    id = toho.8120
+    is_triggered_only = yes
+    title = toho.8120.name
+    desc = toho.8120.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_ringworld_build_start
+    location = fromfromfrom
+    option = { name = TH_OK }
+}
+country_event = {
+    id = toho.8121
+    is_triggered_only = yes
+    title = toho.8121.name
+    desc = toho.8121.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_ringworld_build_complete
+    inline_script = { script = events/touhou_ancient_titan_built_options }
+}
+country_event = {
+    id = toho.8122
+    is_triggered_only = yes
+    title = toho.8122.name
+    desc = toho.8122.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_ringworld_build_start
+    location = fromfromfrom
+    option = { name = TH_INTERESTRING }
+}
+country_event = {
+    id = toho.8123
+    is_triggered_only = yes
+    title = toho.8123.name
+    desc = toho.8123.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_mega_structure_other_empire_build_complete
+    option = {
+        name = "apoc.130.a.weaker"
+        trigger = { is_pacifist = no any_controlled_ship = { ag_is_ancient_titan = no } }
+    }
+    option = {
+        name = "apoc.130.a.stronger"
+        trigger = { is_pacifist = no any_controlled_ship = { ag_is_ancient_titan = yes } }
+    }
+    option = {
+        name = "apoc.130.a.pacif"
+        trigger = { is_pacifist = yes }
+    }
 }
 
 # [NEW] Entering Shroud, overwrited.
@@ -6202,6 +6301,7 @@ country_event = {
     trigger = { NOT = { has_country_flag = toho_8313_fired } }
     option = {
         name = toho.8313.a
+        tooltip = { accept_covenant = touhou_great_patron_dragon }
         hidden_effect = {
             clear_covenant_flags = yes # in case you had a covenant before
             remove_country_flag = forging_our_own_path
@@ -6212,11 +6312,12 @@ country_event = {
             set_country_flag = touhou_great_patron_dragon_covenant_rank_4
             set_country_flag = has_shroud_patron
             set_country_flag = has_ever_established_covenant
+            accept_covenant = touhou_great_patron_dragon
             give_technology = { tech = tech_psionic_aura message = yes }
             give_technology = { tech = tech_aura_intensification message = yes }
             refresh_psionic_aura_type = yes
+            country_event = { id = toho.8314 days = 1 }
         }
-        accept_covenant = touhou_great_patron_dragon
     }
     option = {
         name = toho.8313.b
@@ -6244,6 +6345,133 @@ country_event = {
             min = @tier5materialmin
             max = @tier5materialmax
         }
+    }
+}
+country_event = {
+    id = toho.8314
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        accept_covenant = touhou_great_patron_dragon
+    }
+}
+
+country_event = {
+    id = toho.8315
+    title = toho.8315.name
+    desc = toho.8315.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    option = {
+        name = toho.8315.a
+        allow = {
+            custom_tooltip = {
+                fail_text = toho.8315.a.fail
+                any_system_with_aura = {
+                    any_system_colony = {
+                        solar_system = {
+                            has_psionic_aura = yes
+                            aura_owner = { is_same_value = root }
+                        }
+                        has_deposit = d_hakurei_barrier
+                        has_planet_flag = touhou_great_patron_dragon_accord_4
+                    }
+                }
+            }
+        }
+        country_event = { id = toho.8317 }
+    }
+    option = {
+        name = toho.8315.b
+        allow = {
+            custom_tooltip = {
+                fail_text = toho.8315.b.fail
+                any_system_with_aura = {
+                    any_system_colony = {
+                        solar_system = {
+                            has_psionic_aura = yes
+                            aura_owner = { is_same_value = root }
+                        }
+                        has_deposit = d_hakurei_barrier
+                        NOT = { has_planet_flag = touhou_great_patron_dragon_accord_4 }
+                    }
+                }
+            }
+        }
+        country_event = { id = toho.8316 }
+    }
+    option = {
+        name = toho.8315.refuce
+        response_text = toho.8315.refuce.response
+        add_resource = { sr_zro = 5000 sr_lingli = 5000 }
+    }
+}
+country_event = {
+    id = toho.8316
+    title = toho.8316.name
+    desc = toho.8316.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = {
+        touhou_great_patron_dragon_accord_4_select_planet = { not_has_flag = yes id = a }
+        touhou_great_patron_dragon_accord_4_select_planet = { not_has_flag = yes id = b }
+        touhou_great_patron_dragon_accord_4_select_planet = { not_has_flag = yes id = c }
+        touhou_great_patron_dragon_accord_4_select_planet = { not_has_flag = yes id = d }
+        touhou_great_patron_dragon_accord_4_select_planet = { not_has_flag = yes id = e }
+        touhou_great_patron_dragon_accord_4_select_planet = { not_has_flag = yes id = f }
+        touhou_great_patron_dragon_accord_4_select_planet = { not_has_flag = yes id = g }
+    }
+    inline_script = { script = events/touhou_dragon_accord_4_planet id = a }
+    inline_script = { script = events/touhou_dragon_accord_4_planet id = b }
+    inline_script = { script = events/touhou_dragon_accord_4_planet id = c }
+    inline_script = { script = events/touhou_dragon_accord_4_planet id = d }
+    inline_script = { script = events/touhou_dragon_accord_4_planet id = e }
+    inline_script = { script = events/touhou_dragon_accord_4_planet id = f }
+    inline_script = { script = events/touhou_dragon_accord_4_planet id = g }
+    option = {
+        name = toho.8315.refuce
+        response_text = toho.8315.refuce.response
+        add_resource = { sr_zro = 5000 sr_lingli = 5000 }
+    }
+}
+country_event = {
+    id = toho.8317
+    title = toho.8316.name
+    desc = toho.8316.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = {
+        touhou_great_patron_dragon_accord_4_select_planet = { has_flag = yes id = a }
+        touhou_great_patron_dragon_accord_4_select_planet = { has_flag = yes id = b }
+        touhou_great_patron_dragon_accord_4_select_planet = { has_flag = yes id = c }
+        touhou_great_patron_dragon_accord_4_select_planet = { has_flag = yes id = d }
+        touhou_great_patron_dragon_accord_4_select_planet = { has_flag = yes id = e }
+        touhou_great_patron_dragon_accord_4_select_planet = { has_flag = yes id = f }
+        touhou_great_patron_dragon_accord_4_select_planet = { has_flag = yes id = g }
+    }
+    inline_script = { script = events/touhou_dragon_accord_4_planet_sp id = a }
+    inline_script = { script = events/touhou_dragon_accord_4_planet_sp id = b }
+    inline_script = { script = events/touhou_dragon_accord_4_planet_sp id = c }
+    inline_script = { script = events/touhou_dragon_accord_4_planet_sp id = d }
+    inline_script = { script = events/touhou_dragon_accord_4_planet_sp id = e }
+    inline_script = { script = events/touhou_dragon_accord_4_planet_sp id = f }
+    inline_script = { script = events/touhou_dragon_accord_4_planet_sp id = g }
+    option = {
+        name = toho.8315.refuce
+        response_text = toho.8315.refuce.response
+        add_resource = { sr_zro = 5000 sr_lingli = 5000 }
     }
 }
 
@@ -8659,4 +8887,323 @@ country_event = {
 		name = gensokyo_start.1147.exit
 		default_hide_option = yes
 	}
+}
+
+situation_event = {
+    id = toho.5001
+    title = toho.5001.name
+    desc = toho.5001.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_physics_research_room }
+    option = {
+        name = toho.5001.a
+        hidden_effect = {
+            owner = {
+                set_country_flag = touhou_rare_resourse_analysis_living_metal
+            }
+            set_situation_flag = touhou_rare_resourse_analysis_living_metal
+        }
+    }
+    option = {
+        name = toho.5001.b
+        hidden_effect = {
+            owner = {
+                set_country_flag = touhou_rare_resourse_analysis_dark_matter
+            }
+            set_situation_flag = touhou_rare_resourse_analysis_dark_matter
+        }
+    }
+    option = {
+        name = toho.5001.c
+        hidden_effect = {
+            owner = {
+                set_country_flag = touhou_rare_resourse_analysis_zro
+            }
+            set_situation_flag = touhou_rare_resourse_analysis_zro
+        }
+    }
+}
+situation_event = {
+    id = toho.5002
+    title = toho.5002.name
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_living_metal }
+        text = toho.5002.desc.living_metal
+    }
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_dark_matter }
+        text = toho.5002.desc.dark_matter
+    }
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_zro }
+        text = toho.5002.desc.zro
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_strategic_resources_room }
+    option = {
+        name = TH_INTERESTRING
+    }
+}
+situation_event = {
+    id = toho.5003
+    title = toho.5003.name
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_living_metal }
+        text = toho.5003.desc.living_metal
+    }
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_dark_matter }
+        text = toho.5003.desc.dark_matter
+    }
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_zro }
+        text = toho.5003.desc.zro
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_strategic_resources_room }
+    option = {
+        name = TH_INTERESTRING
+    }
+}
+situation_event = {
+    id = toho.5004
+    title = toho.5004.name
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_living_metal }
+        text = toho.5004.desc.living_metal
+    }
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_dark_matter }
+        text = toho.5004.desc.dark_matter
+    }
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_zro }
+        text = toho.5004.desc.zro
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_strategic_resources_room }
+    option = {
+        name = TH_INTERESTRING
+    }
+}
+situation_event = {
+    id = toho.5005
+    title = toho.5005.name
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_living_metal }
+        text = toho.5005.desc.living_metal
+    }
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_dark_matter }
+        text = toho.5005.desc.dark_matter
+    }
+    desc = {
+        trigger = { has_situation_flag = touhou_rare_resourse_analysis_zro }
+        text = toho.5005.desc.zro
+    }
+    is_triggered_only = yes
+    immediate = {
+        owner = { set_country_flag = touhou_rare_resourse_analysis_finished }
+    }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_strategic_resources_room }
+    option = {
+        name = TH_OK
+    }
+}
+
+@touhou_rare_resourse_analysis_stage_1_progress = 250
+@touhou_rare_resourse_analysis_stage_2_progress = 500
+@touhou_rare_resourse_analysis_stage_3_progress = 750
+situation_event = {
+    id = toho.5011
+    title = toho.5011.name
+    desc = toho.5011.desc
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_situation_flag = toho_5011_fired }
+        has_situation_flag = touhou_rare_resourse_analysis_living_metal
+        situation_progress >= @[touhou_rare_resourse_analysis_stage_1_progress + 50]
+    }
+    immediate = { set_situation_flag = toho_5011_fired }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_resource_cache_room }
+    option = {
+        name = toho.5011.a
+        allow = {
+            owner = {
+                resource_stockpile_compare = {
+                    resource = sr_living_metal
+                    value >= 3600
+                }
+            }
+        }
+        owner = { add_resource = { sr_living_metal = -3600 } }
+        hidden_effect = {
+            set_timed_situation_flag = { flag = touhou_rare_resourse_analysis_living_metal_sample days = 360 }
+        }
+    }
+    option = {
+        name = toho.5011.b
+        allow = { NOT = { current_situation_approach = touhou_rare_resourse_analysis_approach_positive } }
+        set_situation_approach = touhou_rare_resourse_analysis_approach_positive
+    }
+    option = {
+        name = toho.5011.c
+        allow = { NOT = { current_situation_approach = touhou_rare_resourse_analysis_approach_netual } }
+        set_situation_approach = touhou_rare_resourse_analysis_approach_netual
+    }
+    option = {
+        name = toho.5011.d
+        allow = { NOT = { current_situation_approach = touhou_rare_resourse_analysis_approach_negative } }
+        set_situation_approach = touhou_rare_resourse_analysis_approach_negative
+    }
+}
+situation_event = {
+    id = toho.5012
+    title = toho.5012.name
+    desc = toho.5012.desc
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_situation_flag = toho_5012_fired }
+        has_situation_flag = touhou_rare_resourse_analysis_living_metal
+        situation_progress >= @[touhou_rare_resourse_analysis_stage_1_progress + 150]
+    }
+    immediate = { set_situation_flag = toho_5012_fired }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mining_operations_room }
+    option = {
+        name = toho.5012.a
+        allow = {
+            owner = {
+                resource_stockpile_compare = {
+                    resource = nanites
+                    value >= 3600
+                }
+            }
+        }
+        owner = { add_resource = { nanites = -3600 } }
+        hidden_effect = {
+            set_timed_situation_flag = { flag = touhou_rare_resourse_analysis_nanites_sample days = 360 }
+        }
+    }
+    option = {
+        name = toho.5012.b
+        allow = { NOT = { current_situation_approach = touhou_rare_resourse_analysis_approach_positive } }
+        set_situation_approach = touhou_rare_resourse_analysis_approach_positive
+    }
+    option = {
+        name = toho.5012.c
+        allow = { NOT = { current_situation_approach = touhou_rare_resourse_analysis_approach_netual } }
+        set_situation_approach = touhou_rare_resourse_analysis_approach_netual
+    }
+    option = {
+        name = toho.5012.d
+        allow = { NOT = { current_situation_approach = touhou_rare_resourse_analysis_approach_negative } }
+        set_situation_approach = touhou_rare_resourse_analysis_approach_negative
+    }
+}
+situation_event = {
+    id = toho.5013
+    title = toho.5013.name
+    desc = toho.5013.desc
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_situation_flag = toho_5013_fired }
+        has_situation_flag = touhou_rare_resourse_analysis_living_metal
+        situation_progress >= @[touhou_rare_resourse_analysis_stage_2_progress + 50]
+    }
+    immediate = { set_situation_flag = toho_5013_fired }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_engineering_research_room }
+    option = {
+        name = toho.5013.a
+    }
+}
+situation_event = {
+    id = toho.5014
+    title = toho.5014.name
+    desc = toho.5014.desc
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_situation_flag = toho_5014_fired }
+        has_situation_flag = touhou_rare_resourse_analysis_living_metal
+        situation_progress >= @[touhou_rare_resourse_analysis_stage_2_progress + 150]
+    }
+    immediate = { set_situation_flag = toho_5014_fired }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_space_hangar_room }
+    option = {
+        name = toho.5014.a
+    }
+}
+situation_event = {
+    id = toho.5015
+    title = toho.5015.name
+    desc = toho.5015.desc
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_situation_flag = toho_5015_fired }
+        has_situation_flag = touhou_rare_resourse_analysis_living_metal
+        situation_progress >= @[touhou_rare_resourse_analysis_stage_3_progress + 50]
+    }
+    immediate = { set_situation_flag = toho_5015_fired }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_engineering_research_room }
+    option = {
+        name = TH_SO_INTERESTRING
+    }
+    after = {
+        owner.capital_scope = {
+            add_deposit = d_touhou_living_metal_factory
+        }
+    }
+}
+situation_event = {
+    id = toho.5016
+    title = toho.5016.name
+    desc = toho.5016.desc
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_situation_flag = toho_5016_fired }
+        has_situation_flag = touhou_rare_resourse_analysis_living_metal
+        situation_progress >= @[touhou_rare_resourse_analysis_stage_3_progress + 150]
+    }
+    immediate = { set_situation_flag = toho_5016_fired }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_space_hangar_room }
+    option = {
+        name = TH_SHOCKED
+    }
+    after = {
+        owner.capital_scope = {
+            add_deposit = d_touhou_nanites_factory
+        }
+    }
 }

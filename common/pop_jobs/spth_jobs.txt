@@ -41,7 +41,10 @@ miko = {
 			sr_zro = 1.0
 		}
 		upkeep = {
-			trigger = { exists = owner owner = { check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 } } }
+			trigger = {
+                exists = owner owner = { check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 } }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
+            }
 			sr_zro = 1.0
 			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
 		}
@@ -64,38 +67,70 @@ miko = {
 	}
 
 	triggered_country_modifier = {
-		potential = { spth_check_gensokyo_auth = yes }
+		potential = { spth_check_gensokyo_auth = { not_policy_flag = touhou_miko_admin_mode_admin_cap } }
 		modifier = {
 			empire_size_add = -2
 		}
 	}
     triggered_country_modifier = {
-        potential = { spth_check_gensokyo_auth = yes owner = { has_country_flag = touhou_great_patron_dragon_accord_2 } }
+        potential = { spth_check_gensokyo_auth = { policy_flag = touhou_miko_admin_mode_admin_cap } }
         modifier = {
             country_admin_cap_add = 2
         }
     }
 	triggered_country_modifier = {
-		potential = { spth_check_gensokyo_auth = yes }
+        potential = { spth_check_gensokyo_auth = { not_policy_flag = touhou_miko_admin_mode_admin_cap } }
 		modifier = {
 			empire_size_add = -1
 		}
 		mult = planet_weak_genso_job_produce_faith_modifier
 	}
+    triggered_country_modifier = {
+        potential = { spth_check_gensokyo_auth = { policy_flag = touhou_miko_admin_mode_admin_cap } }
+        modifier = {
+            country_admin_cap_add = 1
+        }
+        mult = planet_weak_genso_job_produce_faith_modifier
+    }
+    triggered_country_modifier = {
+        potential = { spth_check_gensokyo_auth = { flag = touhou_great_patron_dragon_accord_2 } }
+        modifier = {
+            country_admin_cap_add = 1
+        }
+    }
 	triggered_country_modifier = {
-		potential = { exists = owner owner = { check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 } } }
+		potential = {
+            exists = owner
+            owner = {
+                NOT = { has_policy_flag = touhou_miko_admin_mode_admin_cap }
+                check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 }
+            }
+        }
 		modifier = {
 			empire_size_add = -1
 		}
 		mult = planet_weak_genso_job_produce_faith_modifier
 	}
+    triggered_country_modifier = {
+        potential = {
+            exists = owner
+            owner = {
+                has_policy_flag = touhou_miko_admin_mode_admin_cap
+                check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 }
+            }
+        }
+        modifier = {
+            country_admin_cap_add = 1
+        }
+        mult = planet_weak_genso_job_produce_faith_modifier
+    }
 	triggered_country_modifier = {
 		potential = { exists = owner owner = { check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 } } }
-		psionic_aura_effectiveness_mult = 0.005
+		psionic_aura_effectiveness_mult = 0.0025
 	}
 	triggered_country_modifier = {
 		potential = { exists = owner owner = { check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 } } }
-		psionic_aura_effectiveness_mult = 0.005
+		psionic_aura_effectiveness_mult = 0.0025
 		mult = planet_weak_genso_job_produce_faith_modifier
 	}
 	
@@ -1086,6 +1121,7 @@ spth_spellcard_foundry = {
 			sr_lingli = 0.3
 		}
 		upkeep = {
+            trigger = { planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier } }
 			energy = 3
 			minerals = 3
 			alloys = 2
@@ -1115,7 +1151,10 @@ spth_spellcard_foundry = {
 			sr_lingli = 0.2
 		}
 		upkeep = {
-			trigger = { owner = { has_touhou_ascension_tier_3 = yes } }
+			trigger = {
+                owner = { has_touhou_ascension_tier_3 = yes }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
+            }
 			energy = 2
 			minerals = 2
 			alloys = 2
@@ -1130,7 +1169,10 @@ spth_spellcard_foundry = {
 			sr_lingli = 0.1
 		}
 		upkeep = {
-			trigger = { owner = { has_touhou_ascension_tier_4 = yes } }
+			trigger = {
+                owner = { has_touhou_ascension_tier_4 = yes }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
+            }
 			energy = 1
 			minerals = 1
 			alloys = 1
@@ -1346,17 +1388,17 @@ spth_story_factory_worker = {
 			resource_1 = alloys count_1 = 1 resource_2 = consumer_goods count_2 = 0.125
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_resource type = "produces"
+			script = jobs/spth_job_ap_resource_produce type = "produces"
 			resource = "alloys = 2 consumer_goods = 0.25"
 			ap = 2 job_type = "weak"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_city_resource type = "produces"
+			script = jobs/spth_job_ap_resource_produce type = "produces"
 			resource = "alloys = 1 consumer_goods = 0.125"
 			ap = 2 job_type = "weak"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_resource type = "produces"
+			script = jobs/spth_job_ap_resource_produce type = "produces"
 			resource = "alloys = 2.5 consumer_goods = 0.3"
 			ap = 3 job_type = "weak"
 		}
@@ -1366,7 +1408,7 @@ spth_story_factory_worker = {
 			ap = 3 job_type = "weak"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_resource type = "produces"
+			script = jobs/spth_job_ap_resource_produce type = "produces"
 			resource = "alloys = 2.5 consumer_goods = 0.3 sr_living_metal = 0.3"
 			ap = 4 job_type = "weak"
 		}
@@ -1739,6 +1781,7 @@ spth_story_chemist = {
 			sr_lingli = 0.02
 		}
 		upkeep = {
+            trigger = { planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier } }
 			minerals = 6
 			energy = 3
 			sr_lingli = 0.02
@@ -1758,6 +1801,7 @@ spth_story_chemist = {
 			sr_lingli = 0.02
 			trigger = {
 				owner = { has_touhou_ascension_tier_3 = yes }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 			}
 			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
 		}
@@ -1775,6 +1819,7 @@ spth_story_chemist = {
 			sr_lingli = 0.02
 			trigger = {
 				owner = { has_touhou_ascension_tier_4 = yes }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 			}
 			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
 		}
@@ -1899,6 +1944,7 @@ th_doll_master = {
 		planet_pop_assembly_add = 3
 	}
 	triggered_planet_modifier = {
+        potential = { planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier } }
 		planet_pop_assembly_add = 3
 		mult = planet.planet_weak_genso_job_upkeep_faith_modifier
 	}
@@ -1913,6 +1959,7 @@ th_doll_master = {
 		potential = {
 			exists = owner
 			owner = { has_touhou_ascension_tier_2 = yes }
+            planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 		}
 		planet_pop_assembly_add = 1
 		mult = planet.planet_weak_genso_job_upkeep_faith_modifier
@@ -1928,6 +1975,7 @@ th_doll_master = {
 		potential = {
 			exists = owner
 			owner = { has_touhou_ascension_tier_3 = yes }
+            planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 		}
 		planet_pop_assembly_add = 1
 		mult = planet.planet_weak_genso_job_upkeep_faith_modifier
@@ -1943,6 +1991,7 @@ th_doll_master = {
 		potential = {
 			exists = owner
 			owner = { has_touhou_ascension_tier_4 = yes }
+            planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 		}
 		planet_pop_assembly_add = 1
 		mult = planet.planet_weak_genso_job_upkeep_faith_modifier

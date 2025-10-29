@@ -5,18 +5,10 @@ touhou_changed_difficulty = {
 }
 touhou_difficulty_bonus_player = {
     optimize_memory
-    if = {
-        limit = { has_country_flag = touhou_player_bonus_fired }
-        remove_country_flag = touhou_player_bonus_fired
-        if = {
-            limit = { spth_has_ag_mod = yes }
-            remove_modifier = touhou_difficulty_player_ag
-        } else = {
-            remove_modifier = touhou_difficulty_player_basic
-            remove_modifier = touhou_difficulty_player_hard
-            remove_modifier = touhou_difficulty_player_lunatic
-        }
-    }
+    if = { limit = { has_modifier = touhou_difficulty_player_ag } remove_modifier = touhou_difficulty_player_ag }
+    if = { limit = { has_modifier = touhou_difficulty_player_basic } remove_modifier = touhou_difficulty_player_basic }
+    if = { limit = { has_modifier = touhou_difficulty_player_hard } remove_modifier = touhou_difficulty_player_hard }
+    if = { limit = { has_modifier = touhou_difficulty_player_lunatic } remove_modifier = touhou_difficulty_player_lunatic }
     set_country_flag = touhou_player_bonus_fired
     if = {
         limit = { spth_has_ag_mod = yes }
@@ -35,6 +27,12 @@ touhou_difficulty_bonus_player = {
             add_modifier = { modifier = touhou_difficulty_player_lunatic mult = touhou_scaled_difficulty }
         }
         clear_variable = touhou_scaled_difficulty
+    }
+    every_controlled_fleet = {
+        every_controlled_ship = {
+            limit = { check_modifier_value = { modifier = ship_is_touhou_mod_ag_difficulty_bonus_ship value != 0 } }
+            touhou_difficulty_bonus_ag_ship = yes
+        }
     }
 }
 touhou_difficulty_bonus = {

@@ -715,3 +715,47 @@ touhou_repair_ship_shield_overflow = {
         repair_shield_percentage = $perc$
     }
 }
+
+touhou_create_fe_ancient_ship = {
+    optimize_memory
+    create_fleet = {
+        name = NAME_th_fallen_empire_union_fallen_ship_fleet
+        settings = { can_disband = no uses_naval_capacity = no spawn_debris = no }
+        effect = {
+            set_owner = prev
+            set_location = prev.capital_scope
+            create_ship = {
+                name = NAME_th_fallen_empire_union_fallen_ship
+                design = NAME_th_fallen_empire_union_fallen_ship
+                effect = {
+                    ag_difficulty_bonus = yes
+                    set_ship_flag = touhou_fe_union_ship
+                    set_ship_flag = touhou_fe_union_ship_locked
+                }
+            }
+            while = { count = 2 create_ship = { random_existing_design = massive_ship_fallen_empire } }
+            while = { count = 10 create_ship = { random_existing_design = large_ship_fallen_empire } }
+            while = { count = 20 create_ship = { random_existing_design = small_ship_fallen_empire } }
+            set_fleet_flag = touhou_fe_union_ship
+            set_fleet_flag = touhou_fe_union_ship_locked
+        }
+    }
+}
+
+touhou_great_patron_dragon_accord_4_select_planet = {
+    optimize_memory
+    random_owned_planet = {
+        limit = {
+            solar_system = {
+                has_psionic_aura = yes
+                aura_owner = { is_same_value = root }
+            }
+            has_deposit = d_hakurei_barrier
+            NOT = { has_planet_flag = touhou_great_patron_dragon_accord_4_planet_lock }
+            [[has_flag] has_planet_flag = touhou_great_patron_dragon_accord_4 ]
+            [[not_has_flag] NOT = { has_planet_flag = touhou_great_patron_dragon_accord_4 } ]
+        }
+        set_timed_planet_flag = { flag = touhou_great_patron_dragon_accord_4_planet_lock days = 1 }
+        save_event_target_as = touhou_great_patron_dragon_accord_4_planet_$id$
+    }
+}
