@@ -425,6 +425,9 @@ touhou_ac_keiki_spawn_country = {
 }
 touhou_ac_keiki_remove_leader = {
     optimize_memory
+    remove_country_flag = touhou_keiki_official_active
+    remove_country_flag = touhou_keiki_admiral_active
+    remove_country_flag = touhou_keiki_commander_active
     if = {
         limit = { exists = event_target:touhou_ac_keiki_leader_@root }
         event_target:touhou_ac_keiki_leader_@root = {
@@ -447,6 +450,7 @@ touhou_ac_keiki_remove_leader = {
 }
 touhou_ac_keiki_spawn_leader_official = {
     optimize_memory
+    set_country_flag = touhou_keiki_official_active
     spth_effect_leader_init_spawner_default_effect = {
         ID = touhou_keiki
         CLASS = official
@@ -469,6 +473,7 @@ touhou_ac_keiki_spawn_leader_official = {
 }
 touhou_ac_keiki_spawn_leader_admiral = {
     optimize_memory
+    set_country_flag = touhou_keiki_admiral_active
     spth_effect_leader_init_spawner_default_effect = {
         ID = touhou_keiki
         CLASS = commander
@@ -491,6 +496,7 @@ touhou_ac_keiki_spawn_leader_admiral = {
 }
 touhou_ac_keiki_spawn_leader_commander = {
     optimize_memory
+    set_country_flag = touhou_keiki_commander_active
     spth_effect_leader_init_spawner_default_effect = {
         ID = touhou_keiki
         CLASS = commander
@@ -758,4 +764,28 @@ touhou_great_patron_dragon_accord_4_select_planet = {
         set_timed_planet_flag = { flag = touhou_great_patron_dragon_accord_4_planet_lock days = 1 }
         save_event_target_as = touhou_great_patron_dragon_accord_4_planet_$id$
     }
+}
+
+touhou_gateway_master_node_flags_cleans_up_effect = {
+    optimize_memory
+    remove_country_flag = touhou_gateway_network_policy_whitelist
+    remove_country_flag = touhou_gateway_network_policy_blacklist
+    every_country = {
+        prev = {
+            if = {
+                limit = { has_country_flag = touhou_gateway_network_allow_@prev }
+                remove_country_flag = touhou_gateway_network_allow_@prev
+            }
+            if = {
+                limit = { has_country_flag = touhou_gateway_network_disallow_@prev }
+                remove_country_flag = touhou_gateway_network_disallow_@prev
+            }
+        }
+    }
+    [[clear_global_event_target]
+        if = {
+            limit = { exists = event_target:touhou_gateway_network_controller }
+            clear_global_event_target = touhou_gateway_network_controller
+        }
+    ]
 }

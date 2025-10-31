@@ -228,3 +228,67 @@ spth_system_selector_confirm_fleet_project = {
         }
     }
 }
+spth_system_selector_confirm_spawn_dreamworld_gateway = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            if = {
+                limit = { is_scope_type = galactic_object }
+                save_event_target_as = spth_system_selector_target
+            } else_if = {
+                limit = { exists = solar_system }
+                solar_system = {
+                    save_event_target_as = spth_system_selector_target
+                }
+            } else = {
+                from = {
+                    country_event = { id = toho.4011 }
+                    country_event = { id = toho.4012 }
+                }
+            }
+            if = {
+                limit = { exists = event_target:spth_system_selector_target }
+                event_target:spth_system_selector_target = {
+                    log = "选中了星系[This.GetName]QAQ"
+                    if = {
+                        limit = { spth_can_not_jump_in_system = yes }
+                        from = {
+                            country_event = { id = toho.4011 }
+                            country_event = { id = toho.4012 }
+                        }
+                    } else = {
+                        system_event = { id = toho.4013 days = 90 }
+                        spawn_megastructure = {
+                            type = touhou_gateway_network_dreamworld_gateway_alt
+                            coords_from = star
+                            owner = event_target:touhou_gateway_network_controller
+                        }
+                        set_timed_global_flag = { flag = touhou_gateway_spawn_wormhole_cooldown days = 360 }
+                        event_target:touhou_gateway_network_temp_system = {
+                            system_event = { id = toho.4013 days = 90 }
+                            random_system_megastructure = {
+                                limit = {
+                                    OR = {
+                                        is_megastructure_type = touhou_gateway_network_master_node
+                                        is_megastructure_type = touhou_gateway_network_slave_node
+                                    }
+                                }
+                                th_spawn_explosion_particle = { color = purple size = small }
+                                set_timed_megastructure_flag = { flag = touhou_gateway_network_configuring days = 15 }
+                                solar_system = {
+                                    spawn_megastructure = {
+                                        type = touhou_gateway_network_dreamworld_gateway
+                                        coords_from = prev
+                                        owner = event_target:touhou_gateway_network_controller
+                                    }
+                                    set_star_flag = touhou_gateway_network_dreamworld_gateway_activated
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -155,6 +155,51 @@ fleet_event = {
             ancient_titan_touhou_fleet_repair_init_alt = yes
         }
     }
+    # 部署星门框架
+    option = {
+        name = touhou_ship_actions_deploy_gateway
+        custom_tooltip = touhou_ship_actions_deploy_gateway_desc
+        trigger = { any_controlled_ship = { is_ship_size = touhou_makai_gateway_ship } }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                any_controlled_ship = {
+                    is_ship_size = touhou_makai_gateway_ship
+                    has_ship_flag = touhou_ship_actions_deploy_gateway
+                }
+            }
+            custom_tooltip = {
+                fail_text = touhou_ship_actions_deploy_gateway_fail
+                solar_system = {
+                    NOT = { has_star_flag = touhou_ship_actions_deploy_gateway }
+                    NOT = {
+                        any_system_megastructure = {
+                            OR = {
+                                is_megastructure_type = touhou_gateway_network_master_node_damaged
+                                is_megastructure_type = touhou_gateway_network_master_node_locked
+                                is_megastructure_type = touhou_gateway_network_master_node
+                                is_megastructure_type = touhou_gateway_network_slave_node
+                                is_megastructure_type = touhou_gateway_network_master_node_configure
+                                is_megastructure_type = touhou_gateway_network_slave_node_configure
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        hidden_effect = {
+            set_event_locked = yes
+            every_controlled_ship = {
+                limit = { is_ship_size = touhou_makai_gateway_ship }
+                set_timed_ship_flag = { flag = touhou_ship_actions_deploy_gateway days = 11 }
+            }
+            solar_system = {
+                save_event_target_as = spth_deploy_gateway_system
+                set_timed_star_flag = { flag = touhou_ship_actions_deploy_gateway days = 11 }
+            }
+            fleet_event = { id = toho.4019 days = 5 random = 5 }
+        }
+    }
     # Ship Actions
     option = {
         name = touhou_ship_action_ship

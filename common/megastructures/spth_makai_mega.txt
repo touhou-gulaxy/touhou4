@@ -7,7 +7,7 @@ spth_makai_wedge_0 = {
     show_galactic_map_icon = no
     build_time = 1800
     resources = {
-        category = megastructures
+        category = touhou_megastructures
         cost = {
             alloys = 5000
             sr_lingli = 25000
@@ -22,9 +22,10 @@ spth_makai_wedge_0 = {
         country_resource_max_astral_threads_add = 2000
     }
     station_modifier = {
-        catapult_spread_base = 10
+        catapult_spread_base = 40
+        catapult_spread_mult = 0.25
         catapult_range_base = 1000
-        quantum_catapult_megastructure_bypass_windup_mult = -0.90
+        quantum_catapult_megastructure_bypass_windup_mult = -1.00
     }
     bypass_type = quantum_catapult
     potential = { always = no }
@@ -40,7 +41,7 @@ spth_makai_wedge_1 = {
     show_galactic_map_icon = no
     build_time = 5
     resources = {
-        category = megastructures
+        category = touhou_megastructures
         cost = {
             alloys = 5000
             sr_lingli = 25000
@@ -132,7 +133,7 @@ spth_makai_wedge_2 = {
     show_galactic_map_icon = no
     build_time = 5
     resources = {
-        category = megastructures
+        category = touhou_megastructures
         cost = {
             alloys = 5000
             sr_lingli = 25000
@@ -197,4 +198,362 @@ spth_makai_wedge_2 = {
     }
     dismantle_potential = { always = no }
     ai_weight = { weight = 1000 }
+}
+
+touhou_gateway_network_master_node_damaged = {
+    entity = "touhou_gateway_purple_ruined_entity"
+    construction_entity = "spth_empty_planet"
+    portrait = GFX_megastructure_construction_background
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+    }
+    construction_blocks_and_blocked_by = self_type
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = { }
+}
+touhou_gateway_network_master_node_locked = {
+    entity = "touhou_gateway_purple_entity"
+    construction_entity = "spth_empty_planet"
+    portrait = GFX_megastructure_construction_background
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+        produces = {
+            physics_research = 200
+            society_research = 50
+            engineering_research = 100
+        }
+        upkeep = {
+            astral_threads = 10
+            sr_lingli = 50
+        }
+    }
+    upgrade_from = { touhou_gateway_network_master_node_damaged }
+    construction_blocks_and_blocked_by = self_type
+    build_time = 3600
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        from = {
+            country_event = { id = toho.4006 }
+        }
+    }
+    potential = { has_technology = tech_touhou_gateway_network_master_node_repair }
+    possible = { from = { has_technology = tech_touhou_gateway_network_master_node_repair } }
+}
+touhou_gateway_network_master_node = {
+    entity = "touhou_gateway_purple_unlocked_entity"
+    construction_entity = "spth_empty_planet"
+    portrait = GFX_spth_everspace_jump_gate
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+        produces = {
+            physics_research = 400
+            society_research = 100
+            engineering_research = 200
+        }
+        upkeep = {
+            astral_threads = 25
+            sr_lingli = 100
+        }
+    }
+    upgrade_from = { touhou_gateway_network_master_node_locked }
+    construction_blocks_and_blocked_by = self_type
+    build_time = 3600
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        from = {
+            if = {
+                limit = { NOT = { exists = event_target:touhou_gateway_network_controller } }
+                save_global_event_target_as = touhou_gateway_network_controller
+            }
+            if = {
+                limit = { NOT = { is_same_value = event_target:touhou_gateway_network_controller } }
+                clear_global_event_target = touhou_gateway_network_controller
+                save_global_event_target_as = touhou_gateway_network_controller
+            }
+            if = {
+                limit = { NOT = { has_global_flag = toho_4007_fired } }
+                set_global_flag = toho_4007_fired
+                country_event = { id = toho.4007 }
+            }
+        }
+    }
+    potential = { has_technology = tech_touhou_gateway_network_master_unlock }
+    possible = { from = { has_technology = tech_touhou_gateway_network_master_unlock } }
+    country_modifier = {
+        touhou_gateway_network_quantum_catapult_max_add = 2
+    }
+}
+touhou_gateway_network_master_node_configure = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = GFX_spth_everspace_jump_gate
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            sr_lingli = 5000
+            astral_threads = 250
+        }
+    }
+    upgrade_from = { touhou_gateway_network_master_node }
+    construction_blocks_and_blocked_by = self_type
+    potential = {
+        is_same_value = event_target:touhou_gateway_network_controller
+        has_country_flag = tech_touhou_gateway_network_master_unlock
+        NOT = { has_global_flag = touhou_gateway_network_master_node_configure_opened }
+    }
+    possible = { always = yes }
+    build_time = 10
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        save_global_event_target_as = touhou_gateway_network_current_system
+        from = {
+            set_global_flag = touhou_gateway_network_master_node_configure_opened
+            country_event = { id = toho.4008 }
+        }
+        spawn_megastructure = {
+            type = touhou_gateway_network_master_node
+            coords_from = fromfrom
+            owner = from
+        }
+        remove_megastructure = fromfrom
+    }
+    country_modifier = {
+        touhou_gateway_network_quantum_catapult_max_add = 2
+    }
+}
+touhou_gateway_network_slave_node = {
+    entity = "touhou_gateway_purple_sub_entity"
+    construction_entity = "spth_empty_planet"
+    portrait = GFX_spth_everspace_jump_gate
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+        upkeep = {
+            astral_threads = 25
+            sr_lingli = 100
+        }
+    }
+    construction_blocks_and_blocked_by = self_type
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {}
+    potential = { always = no }
+    possible = { always = no }
+}
+touhou_gateway_network_slave_node_configure = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = GFX_spth_everspace_jump_gate
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            sr_lingli = 5000
+            astral_threads = 250
+        }
+    }
+    upgrade_from = { touhou_gateway_network_slave_node }
+    construction_blocks_and_blocked_by = self_type
+    potential = {
+        is_same_value = event_target:touhou_gateway_network_controller
+        has_country_flag = tech_touhou_gateway_network_master_unlock
+        NOT = { has_global_flag = touhou_gateway_network_master_node_configure_opened }
+    }
+    possible = { always = yes }
+    build_time = 10
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        save_global_event_target_as = touhou_gateway_network_current_system
+        from = {
+            set_global_flag = touhou_gateway_network_master_node_configure_opened
+            country_event = { id = toho.4009 }
+        }
+        spawn_megastructure = {
+            type = touhou_gateway_network_slave_node
+            coords_from = fromfrom
+            owner = from
+        }
+        remove_megastructure = fromfrom
+    }
+}
+
+touhou_gateway_network_quantum_catapult = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = "GFX_megastructure_quantum_catapult_background"
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = no
+    show_in_outliner = no
+    potential = { always = no }
+    resources = { category = megastructures }
+    construction_blocks_and_blocked_by = self_type
+    bypass_type = quantum_catapult
+    country_modifier = {
+        touhou_gateway_network_quantum_catapult = 1
+    }
+}
+touhou_gateway_network_galatic_gateway = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = "GFX_megastructure_touhou_drifting_gateway_background"
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = no
+    show_in_outliner = no
+    potential = { always = no }
+    resources = { category = megastructures_gateways }
+    construction_blocks_and_blocked_by = self_type
+    bypass_type = gateway
+}
+touhou_gateway_network_astral_gateway = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = "GFX_spth_everspace_jump_gate"
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = no
+    show_in_outliner = no
+    potential = { always = no }
+    resources = { category = megastructures_gateways }
+    construction_blocks_and_blocked_by = self_type
+    bypass_type = touhou_gateway
+}
+touhou_gateway_network_relay_bypass = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = "GFX_megastructure_hyper_relay_background"
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = no
+    show_in_outliner = no
+    potential = { always = no }
+    resources = { category = megastructures_hyper_relay }
+    construction_blocks_and_blocked_by = self_type
+    bypass_type = relay_bypass
+}
+touhou_gateway_network_lgate = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = "GFX_megastructure_touhou_l_gateway_background"
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = no
+    show_in_outliner = no
+    potential = { always = no }
+    resources = { category = megastructures }
+    construction_blocks_and_blocked_by = self_type
+    bypass_type = relay_bypass
+}
+touhou_gateway_network_shroud_tunnel = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = "GFX_evt_shroud_tunnel"
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = no
+    show_in_outliner = no
+    potential = { always = no }
+    resources = { category = megastructures }
+    construction_blocks_and_blocked_by = self_type
+    bypass_type = shroud_tunnel
+}
+touhou_gateway_network_ag_ancient_eta_gateway = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = "GFX_megastructure_touhou_l_gateway_background"
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = no
+    show_in_outliner = no
+    potential = { always = no }
+    resources = { category = megastructures }
+    construction_blocks_and_blocked_by = self_type
+    bypass_type = shroud_tunnel
+}
+touhou_gateway_network_dreamworld_gateway = {
+    entity = "spth_empty_planet"
+    construction_entity = "spth_empty_planet"
+    portrait = "GFX_evt_touhou_makai_bg"
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = no
+    show_in_outliner = no
+    potential = { always = no }
+    resources = { category = megastructures }
+    construction_blocks_and_blocked_by = self_type
+    bypass_type = touhou_gateway_wormhole
+}
+touhou_gateway_network_dreamworld_gateway_alt = {
+    entity = "touhou_gateway_wormhole_entity"
+    construction_entity = "spth_empty_planet"
+    portrait = "GFX_evt_touhou_makai_bg"
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = no
+    show_in_outliner = no
+    potential = { always = no }
+    resources = { category = megastructures }
+    construction_blocks_and_blocked_by = self_type
+    bypass_type = touhou_gateway_wormhole
 }

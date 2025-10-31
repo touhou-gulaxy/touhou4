@@ -5914,8 +5914,27 @@ country_event = {
 country_event = {
     id = toho.8304
     title = toho.8304.name
-    desc = toho.8304.desc.1
-    desc = toho.8304.desc.2
+    desc = {
+        trigger = { always = yes }
+        text = toho.8304.desc.1
+        text = toho.8304.desc.2
+    }
+    desc = {
+        trigger = {
+            has_global_flag = synth_queen_happened
+            NOT = { has_global_flag = synth_queen_defeated }
+        }
+        text = toho.8304.desc.cetana.1
+        text = toho.8304.desc.cetana.2
+    }
+    desc = {
+        trigger = {
+            has_global_flag = ai_invasion_ongoing
+        }
+        text = toho.8304.desc.ai_crisis.1
+        text = toho.8304.desc.ai_crisis.2
+        text = toho.8304.desc.ai_crisis.3
+    }
     is_triggered_only = yes
     trigger = {
         OR = {
@@ -5947,6 +5966,26 @@ country_event = {
     show_sound = event_psionic
     option = {
         name = toho.8304.a
+        trigger = {
+            hidden_trigger = {
+                NOT = { has_country_flag = touhou_keiki_official_active }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = toho.8304.switch_fail
+                OR = {
+                    NOT = { exists = event_target:touhou_ac_keiki_leader_@root }
+                    event_target:touhou_ac_keiki_leader_@root = {
+                        OR = {
+                            NOR = { exists = fleet exists = planet }
+                            AND = { exists = fleet fleet = { is_in_combat = no } }
+                            AND = { exists = planet planet = { has_ground_combat = no is_occupied_flag = no } }
+                        }
+                    }
+                }
+            }
+        }
         response_text = toho.8304.a.response
         hidden_effect = {
             touhou_ac_keiki_remove_leader = yes
@@ -5955,6 +5994,26 @@ country_event = {
     }
     option = {
         name = toho.8304.b
+        trigger = {
+            hidden_trigger = {
+                NOT = { has_country_flag = touhou_keiki_commander_active }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = toho.8304.switch_fail
+                OR = {
+                    NOT = { exists = event_target:touhou_ac_keiki_leader_@root }
+                    event_target:touhou_ac_keiki_leader_@root = {
+                        OR = {
+                            NOR = { exists = fleet exists = planet }
+                            AND = { exists = fleet fleet = { is_in_combat = no } }
+                            AND = { exists = planet planet = { has_ground_combat = no is_occupied_flag = no } }
+                        }
+                    }
+                }
+            }
+        }
         response_text = toho.8304.b.response
         hidden_effect = {
             touhou_ac_keiki_remove_leader = yes
@@ -5963,17 +6022,275 @@ country_event = {
     }
     option = {
         name = toho.8304.c
+        trigger = {
+            hidden_trigger = {
+                NOT = { has_country_flag = touhou_keiki_admiral_active }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = toho.8304.switch_fail
+                OR = {
+                    NOT = { exists = event_target:touhou_ac_keiki_leader_@root }
+                    event_target:touhou_ac_keiki_leader_@root = {
+                        OR = {
+                            NOR = { exists = fleet exists = planet }
+                            AND = { exists = fleet fleet = { is_in_combat = no } }
+                            AND = { exists = planet planet = { has_ground_combat = no is_occupied_flag = no } }
+                        }
+                    }
+                }
+            }
+        }
         response_text = toho.8304.c.response
         hidden_effect = {
             touhou_ac_keiki_remove_leader = yes
             touhou_ac_keiki_spawn_leader_admiral = yes
         }
     }
+    # 特殊，你能出任多个职位吗？
+    option = {
+        name = toho.8304.d
+        trigger = { NOT = { has_country_flag = toho_8304_d_fired } }
+        allow = { hidden_trigger = { NOT = { has_country_flag = toho_8304_d_fired } } }
+        hidden_effect = { set_country_flag = toho_8304_d_fired }
+        is_dialog_only = yes
+        response_text = toho.8304.d.response
+    }
+    option = {
+        name = toho.8304.crisis.synth_queen.a
+        allow = {
+            resource_stockpile_compare = {
+                resource = sr_lingli
+                value >= 64000
+            }
+            resource_stockpile_compare = {
+                resource = sr_zro
+                value >= 3200
+            }
+        }
+        trigger = {
+            NOT = { has_country_flag = toho_8304_crisis_synth_queen_a_fired }
+            has_global_flag = synth_queen_happened
+            NOT = { has_global_flag = synth_queen_defeated }
+            any_situation = { is_situation_type = situation_synth_queen_player_facing }
+        }
+        response_text = toho.8304.crisis.synth_queen.a.response
+        add_resource = { sr_lingli = -64000 sr_zro = -3200 }
+        hidden_effect = { set_timed_country_flag = { flag = toho_8304_crisis_synth_queen_a_fired days = 1800 } }
+        synth_queen_progress_situation = { SCORE = 2 }
+    }
+    option = {
+        name = toho.8304.crisis.synth_queen.b
+        trigger = {
+            NOT = { has_country_flag = toho_8304_crisis_synth_queen_b_fired }
+            has_global_flag = synth_queen_happened
+            NOT = { has_global_flag = synth_queen_defeated }
+            any_situation = { is_situation_type = situation_synth_queen_player_facing }
+        }
+        allow = {
+            resource_stockpile_compare = {
+                resource = sr_lingli
+                value >= 16000
+            }
+            resource_stockpile_compare = {
+                resource = sr_zro
+                value >= 1600
+            }
+        }
+        response_text = toho.8304.crisis.synth_queen.b.response
+        hidden_effect = {
+            set_country_flag = protected_from_queen_storm
+            set_country_flag = toho_8304_crisis_synth_queen_b_fired
+        }
+        add_resource = { sr_lingli = -16000 sr_zro = -1600 }
+        synth_queen_progress_situation = { SCORE = 1 }
+    }
+    option = {
+        name = toho.8304.crisis.synth_queen.c
+        custom_tooltip = toho.8304.crisis.synth_queen.c.effect
+        trigger = {
+            NOT = { has_country_flag = toho_8304_crisis_synth_queen_c_fired }
+            has_global_flag = synth_queen_happened
+            NOT = { has_global_flag = synth_queen_defeated }
+        }
+        allow = {
+            resource_stockpile_compare = {
+                resource = sr_lingli
+                value >= 32000
+            }
+            resource_stockpile_compare = {
+                resource = sr_zro
+                value >= 5000
+            }
+        }
+        response_text = toho.8304.crisis.synth_queen.c.response
+        add_resource = { sr_lingli = -32000 sr_zro = -5000 }
+        hidden_effect = {
+            set_country_flag = toho_8304_crisis_synth_queen_c_fired
+        }
+        country_event = { id = toho.8308 days = 15 random = 15 }
+    }
+    # 你了解古代ai吗？
+    option = {
+        name = toho.8304.ag
+        trigger = {
+            NOT = { has_country_flag = toho_8304_ag_fired }
+            OR = {
+                touhou_has_ancient_ai_lost_ancient_ship = yes
+                touhou_has_ancient_ai_kappa_ancient_computer = yes
+                touhou_has_ancient_ai_epsilon_titan_leader = yes
+            }
+        }
+        allow = { hidden_trigger = { NOT = { has_country_flag = toho_8304_ag_fired } } }
+        hidden_effect = { set_country_flag = toho_8304_ag_fired }
+        is_dialog_only = yes
+        response_text = toho.8304.ag.response
+    }
+    # 备份星光二号
+    option = {
+        name = toho.8304.ag.save_leader_lost_ancient_ship
+        trigger = {
+            NOT = { has_country_flag = touhou_keiki_saved_leader_lost_ancient_ship }
+            has_country_flag = toho_8304_ag_fired
+            touhou_has_ancient_ai_lost_ancient_ship = yes
+        }
+        allow = {
+            exists = event_target:ag_starlight_2_ship
+            hidden_trigger = {
+                exists = event_target:ag_lost_ancient_ship_country
+                exists = event_target:ag_lost_ancient_ship_owner
+                is_same_value = event_target:ag_lost_ancient_ship_owner
+            }
+            event_target:ag_lost_ancient_ship_country = { opinion = { who = event_target:ag_lost_ancient_ship_owner value >= 10 } }
+            custom_tooltip = {
+                fail_text = "toho.8304.ag.save_leader_lost_ancient_ship.fail.a"
+                OR = {
+                    NOT = { exists = event_target:ag_starlight_2_ship }
+                    event_target:ag_starlight_2_ship = { OR = {
+                        AND = {
+                            is_scope_type = ship
+                            exists = fleet
+                            fleet = { is_in_combat = no }
+                        }
+                        AND = {
+                            is_scope_type = leader
+                            OR = {
+                                NOR = { exists = fleet exists = planet }
+                                AND = { exists = fleet fleet = { is_in_combat = no } }
+                                AND = { exists = planet planet = { has_ground_combat = no is_occupied_flag = no } }
+                            }
+                        }
+                    } }
+                }
+            }
+            custom_tooltip = {
+                fail_text = "toho.8304.ag.save_leader_lost_ancient_ship.fail.b"
+                OR = {
+                    NOT = { exists = event_target:ag_starlight_2_ship }
+                    event_target:ag_starlight_2_ship = { OR = {
+                        is_scope_type = leader
+                        AND = {
+                            is_scope_type = ship
+                            has_hp_percentage > 0.85
+                        }
+                    } }
+                }
+            }
+        }
+        hidden_effect = { set_country_flag = touhou_keiki_saved_leader_lost_ancient_ship }
+        response_text = toho.8304.ag.save_leader_lost_ancient_ship.response
+    }
+    # 备份曙光之星
+    option = {
+        name = toho.8304.ag.save_leader_epsilon_titan_leader
+        trigger = {
+            NOT = { has_country_flag = touhou_keiki_saved_leader_epsilon_titan_leader }
+            has_country_flag = toho_8304_ag_fired
+            touhou_has_ancient_ai_lost_ancient_ship = yes
+        }
+        allow = {
+            exists = event_target:ag_epsilon_titan_leader
+            hidden_trigger = {
+                exists = event_target:ag_epsilon_titan_leader_country
+                exists = event_target:ag_epsilon_titan_leader_owner
+                is_same_value = event_target:ag_epsilon_titan_leader_owner
+            }
+            event_target:ag_epsilon_titan_leader_country = { opinion = { who = event_target:ag_epsilon_titan_leader_owner value >= 15 } }
+            custom_tooltip = {
+                fail_text = "toho.8304.ag.save_leader_epsilon_titan_leader.fail"
+                OR = {
+                    NOT = { exists = event_target:ag_epsilon_titan_leader }
+                    event_target:ag_epsilon_titan_leader = { OR = {
+                        NOR = { exists = fleet exists = planet }
+                        AND = { exists = fleet fleet = { is_in_combat = no } }
+                        AND = { exists = planet planet = { has_ground_combat = no is_occupied_flag = no } }
+                    } }
+                }
+            }
+        }
+        hidden_effect = { set_country_flag = touhou_keiki_saved_leader_epsilon_titan_leader }
+        response_text = toho.8304.ag.save_leader_epsilon_titan_leader.response
+    }
+    # 恢复星光二号
+    option = {
+        name = toho.8304.ag.restore_leader_lost_ancient_ship
+        trigger = {
+            has_country_flag = touhou_keiki_saved_leader_lost_ancient_ship
+            exists = event_target:ag_lost_ancient_ship_owner
+            is_same_value = event_target:ag_lost_ancient_ship_owner
+            NOT = { exists = event_target:ag_starlight_2_ship }
+        }
+        allow = {
+            NOT = { exists = event_target:ag_starlight_2_ship }
+            hidden_trigger = {
+                exists = event_target:ag_lost_ancient_ship_country
+                exists = event_target:ag_lost_ancient_ship_owner
+                is_same_value = event_target:ag_lost_ancient_ship_owner
+            }
+            event_target:ag_lost_ancient_ship_country = { opinion = { who = event_target:ag_lost_ancient_ship_owner value >= 0 } }
+        }
+        response_text = toho.8304.ag.restore_leader_lost_ancient_ship.response
+        hidden_effect = {
+            event_target:ag_lost_ancient_ship_country = {
+                add_opinion_modifier = { modifier = touhou_opinion_keiki_restored_leader who = root }
+            }
+            ag_lost_ancient_ship_leader_sci_spawn = yes
+        }
+    }
+    # 恢复曙光之星
+    option = {
+        name = toho.8304.ag.restore_leader_epsilon_titan_leader
+        trigger = {
+            has_country_flag = touhou_keiki_saved_leader_epsilon_titan_leader
+            exists = event_target:ag_epsilon_titan_leader_owner
+            is_same_value = event_target:ag_epsilon_titan_leader_owner
+            NOT = { exists = event_target:ag_epsilon_titan_leader }
+        }
+        allow = {
+            NOT = { exists = event_target:ag_epsilon_titan_leader }
+            hidden_trigger = {
+                exists = event_target:ag_epsilon_titan_leader_country
+                exists = event_target:ag_epsilon_titan_leader_owner
+                is_same_value = event_target:ag_epsilon_titan_leader_owner
+            }
+            event_target:ag_epsilon_titan_leader_country = { opinion = { who = event_target:ag_epsilon_titan_leader_owner value >= 0 } }
+        }
+        response_text = toho.8304.ag.restore_leader_epsilon_titan_leader.response
+        hidden_effect = {
+            event_target:ag_epsilon_titan_leader_country = {
+                add_opinion_modifier = { modifier = touhou_opinion_keiki_restored_leader who = root }
+            }
+            ag_epsilon_titan_leader_adm_spawn = yes
+        }
+    }
+    # 进入浅层虚境
     option = {
         name = toho.8304.shroud
         trigger = { touhou_is_shroud_inhibited = no }
         country_event = { id = toho.8305 }
     }
+    # 特殊时期，不能进哦
     option = {
         name = toho.8304.shroud.sp
         trigger = { touhou_is_shroud_inhibited = yes }
@@ -6131,6 +6448,63 @@ country_event = {
         hidden_effect = {
             fire_on_action = { on_action = on_patron_delve_failed }
         }
+    }
+}
+country_event = {
+    id = toho.8308
+    title = toho.8308.name
+    desc = toho.8308.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_synth_queen_room }
+    option = {
+        name = TH_SO_INTERESTRING
+        hidden_effect = {
+            save_global_event_target_as = touhou_defeated_synth_queen
+            random_system = {
+                limit = {
+                    has_star_flag = synth_queen_capital
+                }
+                every_ship_in_system = {
+                    limit = {
+                        is_ship_size = synth_queen_titan
+                    }
+                    fleet = {
+                        set_owner = root
+                    }
+                    set_disabled = no
+                }
+            }
+            every_galaxy_planet = {
+                limit = {
+                    has_planet_flag = synth_queen_bastille
+                }
+                change_pc = pc_shattered
+                clear_deposits = yes
+                clear_planet_modifiers = yes
+            }
+            random_country = {
+                limit = {
+                    is_country_type = awakened_synth_queen
+                }
+                every_owned_fleet = {
+                    delete_fleet = this
+                }
+                every_owned_leader = {
+                    kill_leader = {
+                        show_notification = no
+                    }
+                }
+            }
+            stop_crisis_sound = yes
+            end_crisis = yes
+            # from = { set_country_flag = with_great_power_achievement }
+            remove_global_flag = synth_queen_ongoing
+            set_global_flag = synth_queen_defeated
+        }
+        country_event = { id = toho.23020 }
     }
 }
 
@@ -8844,6 +9218,789 @@ country_event = {
 	option = { name = spth_test_text }
 	option = { name = spth_test_text }
 }
+country_event = {
+    id = toho.4006
+    title = toho.4006.name
+    desc = toho.4006.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    option = { name = TH_INTERESTRING }
+}
+country_event = {
+    id = toho.4007
+    title = toho.4007.name
+    desc = toho.4007.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    option = { name = TH_INTERESTRING }
+}
+country_event = {
+    id = toho.4008
+    title = toho.4008.name
+    desc = toho.4008.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = touhou_gateway_config_window
+    custom_gui_option = touhou_gateway_config_option
+    picture_event_data = { room = spth_es2_aethon_room }
+    show_sound = event_mystic_reveal
+    trigger = { exists = event_target:touhou_gateway_network_current_system }
+    after = {
+        remove_global_flag = touhou_gateway_network_master_node_configure_opened
+        clear_global_event_target = touhou_gateway_network_current_system
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { exists = event_target:touhou_gateway_network_controller } }
+            save_global_event_target_as = touhou_gateway_network_controller
+        }
+        if = {
+            limit = {
+                event_target:touhou_gateway_network_controller = {
+                    NOR = {
+                        has_country_flag = touhou_gateway_network_policy_whitelist
+                        has_country_flag = touhou_gateway_network_policy_blacklist
+                    }
+                }
+            }
+            event_target:touhou_gateway_network_controller = {
+                set_country_flag = touhou_gateway_network_policy_blacklist
+            }
+        }
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_quantum_catapult
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_galatic_gateway
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_astral_gateway
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_acl_mode
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_dreamworld_gateway
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_relay_bypass
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_lgate_active
+    }
+    option = {
+        name = toho.4008.exit
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = toho.4009
+    title = toho.4008.name
+    desc = toho.4008.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = touhou_gateway_config_window
+    custom_gui_option = touhou_gateway_config_option
+    picture_event_data = { room = spth_es2_aethon_room }
+    show_sound = event_mystic_reveal
+    trigger = { exists = event_target:touhou_gateway_network_current_system }
+    after = {
+        remove_global_flag = touhou_gateway_network_master_node_configure_opened
+        clear_global_event_target = touhou_gateway_network_current_system
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { exists = event_target:touhou_gateway_network_controller } }
+            save_global_event_target_as = touhou_gateway_network_controller
+        }
+        if = {
+            limit = {
+                event_target:touhou_gateway_network_controller = {
+                    NOR = {
+                        has_country_flag = touhou_gateway_network_policy_whitelist
+                        has_country_flag = touhou_gateway_network_policy_blacklist
+                    }
+                }
+            }
+            event_target:touhou_gateway_network_controller = {
+                set_country_flag = touhou_gateway_network_policy_blacklist
+            }
+        }
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_quantum_catapult
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_galatic_gateway
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_astral_gateway
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_acl_mode
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_dreamworld_gateway
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_relay_bypass
+    }
+    option = {
+        name = "BUTTON_TEXT_NULL"
+        is_dialog_only = yes
+        response_text = toho.4008.desc
+        custom_gui = touhou_gateway_config_lgate_active
+    }
+    option = {
+        name = toho.4008.sub
+        hidden_effect = {
+            event_target:touhou_gateway_network_current_system = {
+                random_system_megastructure = {
+                    limit = { is_megastructure_type = touhou_gateway_network_slave_node }
+                    create_fleet = {
+                        name = NAME_touhou_makai_gateway_ship_fleet
+                        settings = { spawn_debris = no }
+                        effect = {
+                            set_owner = event_target:touhou_gateway_network_controller
+                            set_location = { target = prev distance = 0 angle = random }
+                            create_ship = {
+                                name = NAME_touhou_makai_gateway_ship
+                                random_existing_design = touhou_makai_gateway_ship
+                                prefix = no
+                            }
+                        }
+                    }
+                    remove_megastructure = this
+                }
+            }
+        }
+    }
+    option = {
+        name = toho.4008.exit
+        default_hide_option = yes
+    }
+}
+
+country_event = {
+    id = toho.4010
+    title = toho.4010.name
+    desc = {
+        trigger = { NOT = {
+            has_country_flag = touhou_gateway_country_selector
+        } }
+        text = "toho.4010.name"
+    }
+    desc = {
+        trigger = { has_country_flag = touhou_gateway_country_selector has_country_flag = touhou_gateway_network_policy_whitelist }
+        text = "toho.4010.desc.whitelist"
+    }
+    desc = {
+        trigger = { has_country_flag = touhou_gateway_country_selector has_country_flag = touhou_gateway_network_policy_blacklist }
+        text = "toho.4010.desc.blacklist"
+    }
+    show_sound = event_mystic_reveal
+
+    is_triggered_only = yes
+
+    diplomatic = yes
+    custom_gui = "touhou_country_selector_window"
+
+    picture_event_data = { room = spth_throne_room }
+
+    trigger = { NOT = { has_global_flag = touhou_country_selector_opened } }
+    immediate = {
+        set_global_flag = touhou_country_selector_opened
+        if = {
+            limit = { NOT = { has_global_flag = touhou_country_selector_initialized } }
+            touhou_country_selector_init_effect = yes
+            touhou_set_country_event_targets = yes
+        }
+    }
+    option = {
+        name = "touhou_country_selector.1.1"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_1 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 1 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_1 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.2"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_2 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 2 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_2 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.3"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_3 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 3 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_3 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.4"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_4 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 4 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_4 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.5"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_5 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 5 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_5 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.6"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_6 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 6 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_6 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.7"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_7 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 7 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_7 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.8"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_8 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 8 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_8 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.9"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_9 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 9 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_9 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.10"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_10 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 10 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_10 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.11"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_11 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 11 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_11 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = "touhou_country_selector.1.12"
+        custom_gui = "touhou_country_selector_option"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        allow = {
+        }
+        trigger = { exists = event_target:touhou_country_selector_marked_country_12 }
+        hidden_effect = { touhou_selected_country_effect = { touhou_country_seq = 12 } }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_option_dummy"
+        is_dialog_only = yes
+        response_text = "touhou_country_selector.1.response"
+        trigger = { NOT = { exists = event_target:touhou_country_selector_marked_country_12 } }
+        allow = { always = no }
+    }
+
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_countries_page_first_option"
+        custom_tooltip = "touhou_country_selector_to_first_page"
+        custom_tooltip = "touhou_country_selector_current_page_desc"
+        allow = { custom_tooltip = {
+            fail_text = "touhou_country_selector_first_page"
+            check_variable = { which = touhou_country_selector_marked_page value > 1 }
+        } }
+        hidden_effect = {
+            set_variable = { which = touhou_country_selector_marked_page value = 1 }
+            remove_global_flag = touhou_country_selector_opened
+            country_event = { id = toho.4010 }
+        }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_countries_page_prev_option"
+        custom_tooltip = "touhou_country_selector_to_prev_page"
+        custom_tooltip = "touhou_country_selector_current_page_desc"
+        allow = { custom_tooltip = {
+            fail_text = "touhou_country_selector_first_page"
+            check_variable = { which = touhou_country_selector_marked_page value > 1 }
+        } }
+        hidden_effect = {
+            subtract_variable = { which = touhou_country_selector_marked_page value = 1 }
+            remove_global_flag = touhou_country_selector_opened
+            country_event = { id = toho.4010 }
+        }
+    }
+    option = {
+        name = "touhou_confirm"
+        custom_gui = "touhou_country_selector_confirm_option"
+        allow = {
+        }
+        hidden_effect = {
+            remove_global_flag = touhou_country_selector_opened
+            fire_on_action = { on_action = touhou_on_country_selector_confirm }
+            # Need to clear flags in other events!
+            # country_event = { id = touhou_country_selector.2 days = 1 }
+        }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_countries_page_next_option"
+        custom_tooltip = "touhou_country_selector_to_next_page"
+        custom_tooltip = "touhou_country_selector_current_page_desc"
+        allow = { custom_tooltip = {
+            fail_text = "touhou_country_selector_last_page"
+            check_variable = {
+                which = touhou_country_selector_marked_page
+                value < touhou_country_selector_marked_pages_total
+            }
+        } }
+        hidden_effect = {
+            change_variable = { which = touhou_country_selector_marked_page value = 1 }
+            remove_global_flag = touhou_country_selector_opened
+            country_event = { id = toho.4010 }
+        }
+    }
+    option = {
+        name = ""
+        custom_gui = "touhou_country_selector_countries_page_last_option"
+        custom_tooltip = "touhou_country_selector_to_last_page"
+        custom_tooltip = "touhou_country_selector_current_page_desc"
+        allow = { custom_tooltip = {
+            fail_text = "touhou_country_selector_last_page"
+            check_variable = {
+                which = touhou_country_selector_marked_page
+                value < touhou_country_selector_marked_pages_total
+            }
+        } }
+        hidden_effect = {
+            set_variable = { which = touhou_country_selector_marked_page value = touhou_country_selector_marked_pages_total }
+            remove_global_flag = touhou_country_selector_opened
+            country_event = { id = toho.4010 }
+        }
+    }
+    option = {
+        name = "touhou_country_selector_show_description"
+        custom_gui = "touhou_country_selector_show_description_option"
+        is_dialog_only = yes
+        response_text = "toho.4010.name"
+        trigger = { NOR = {
+            has_country_flag = touhou_gateway_network_policy_whitelist
+            has_country_flag = touhou_gateway_network_policy_blacklist
+        } }
+    }
+    option = {
+        name = "touhou_country_selector_show_description"
+        custom_gui = "touhou_country_selector_show_description_option"
+        is_dialog_only = yes
+        response_text = "toho.4010.desc.whitelist"
+        trigger = { has_country_flag = touhou_gateway_network_policy_whitelist }
+    }
+    option = {
+        name = "touhou_country_selector_show_description"
+        custom_gui = "touhou_country_selector_show_description_option"
+        is_dialog_only = yes
+        response_text = "toho.4010.desc.blacklist"
+        trigger = { has_country_flag = touhou_gateway_network_policy_blacklist }
+    }
+    option = {
+        name = "touhou_cancel"
+        custom_gui = "touhou_country_selector_option"
+        default_hide_option = yes
+        hidden_effect = {
+            remove_global_flag = touhou_country_selector_opened
+            touhou_country_selector_cleans_up_effect = yes
+            touhou_clear_country_selection = yes
+        }
+    }
+}
+
+country_event = {
+    id = toho.4011
+    title = touhou_ship_actions.3.name
+    desc = toho.4011.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_system_selector_window
+    custom_gui_option = spth_system_selector_option
+    immediate = {
+        set_country_flag = has_spth_system_selector_opened
+    }
+    show_sound = event_mystic_reveal
+    option = {
+        name = "spth_system_selector_target_confirm"
+        custom_gui = spth_system_selector_confirm_spawn_dreamworld_gateway
+    }
+    option = {
+        name = "spth_system_selector_target_abort"
+        default_hide_option = yes
+        hidden_effect = {
+            clear_global_event_target = touhou_gateway_network_temp_system
+        }
+    }
+    after = {
+        hidden_effect = {
+            remove_country_flag = has_spth_system_selector_opened
+        }
+    }
+}
+country_event = {
+    id = toho.4012
+    is_triggered_only = yes
+    title = spth_system_selector_target_warning
+    desc = toho.4012.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_travel_room }
+    option = {
+        name = spth_system_selector_target_confirm
+        default_hide_option = yes
+    }
+}
+system_event = {
+    id = toho.4013
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        any_system_megastructure = {
+            OR = {
+                is_megastructure_type = touhou_gateway_network_dreamworld_gateway
+                is_megastructure_type = touhou_gateway_network_dreamworld_gateway_alt
+            }
+        }
+    }
+    immediate = {
+        random_system_megastructure = {
+            limit = {
+                OR = {
+                    is_megastructure_type = touhou_gateway_network_dreamworld_gateway
+                    is_megastructure_type = touhou_gateway_network_dreamworld_gateway_alt
+                }
+            }
+            th_spawn_explosion_particle = { color = pink size = small }
+            remove_megastructure = this
+        }
+    }
+}
+country_event = {
+    id = toho.4014
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { has_country_flag = touhou_gateway_config_astral_gateway_acl_switch }
+    immediate = {
+        remove_country_flag = touhou_gateway_config_astral_gateway_acl_switch
+        every_country = {
+            limit = { has_country_flag = touhou_country_selector_selected_country }
+            remove_country_flag = touhou_country_selector_selected_country
+            root = {
+                if = {
+                    limit = { has_country_flag = touhou_gateway_network_policy_whitelist NOT = { has_country_flag = touhou_gateway_network_allow_@prev } }
+                    set_country_flag = touhou_gateway_network_allow_@prev
+                }
+                else_if = {
+                    limit = { has_country_flag = touhou_gateway_network_policy_blacklist NOT = { has_country_flag = touhou_gateway_network_disallow_@prev } }
+                    set_country_flag = touhou_gateway_network_disallow_@prev
+                }
+            }
+        }
+    }
+}
+country_event = {
+    id = toho.4015
+    is_triggered_only = yes
+    title = toho.4015.name
+    desc = toho.4015.desc
+    location = event_target:spth_target_system.star
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_throne_room }
+    show_sound = event_yellow_alert
+    option = {
+        name = TH_SO_BAD
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = toho.4016
+    is_triggered_only = yes
+    title = toho.4016.name
+    desc = toho.4016.desc
+    location = event_target:spth_target_system.star
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_throne_room }
+    show_sound = event_mystic_reveal
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+}
+# on_megastructure_ownerless, gateway closed when ownerless.
+system_event = {
+    id = toho.4017
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = fromfrom
+        from = { is_megastructure_type = touhou_gateway_network_master_node }
+    }
+    immediate = {
+        save_event_target_as = spth_target_system
+        fromfrom = {
+            country_event = { id = toho.4015 }
+            touhou_gateway_master_node_flags_cleans_up_effect = { clear_global_event_target = yes }
+        }
+    }
+}
+# on_megastructure_change_owner, gateway owner change with control station.
+country_event = {
+    id = toho.4018
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { from = { is_megastructure_type = touhou_gateway_network_master_node } }
+    immediate = {
+        from.solar_system = { save_event_target_as = spth_target_system }
+        country_event = { id = toho.4016 }
+        if = {
+            limit = {
+                exists = fromfrom
+                fromfrom = {
+                    exists = event_target:touhou_gateway_network_controller
+                    is_same_value = event_target:touhou_gateway_network_controller
+                }
+            }
+            fromfrom = {
+                country_event = { id = toho.4015 }
+                touhou_gateway_master_node_flags_cleans_up_effect = { clear_global_event_target = yes }
+            }
+        } else_if = {
+            limit = { exists = event_target:touhou_gateway_network_controller }
+            event_target:touhou_gateway_network_controller = {
+                country_event = { id = toho.4015 }
+                touhou_gateway_master_node_flags_cleans_up_effect = { clear_global_event_target = yes }
+            }
+        }
+        save_global_event_target_as = touhou_gateway_network_controller
+        set_country_flag = touhou_gateway_network_policy_blacklist
+    }
+}
+fleet_event = {
+    id = toho.4019
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this exists = owner exists = event_target:spth_deploy_gateway_system
+        any_controlled_ship = { is_ship_size = touhou_makai_gateway_ship }
+    }
+    immediate = {
+        random_controlled_ship = {
+            limit = { is_ship_size = touhou_makai_gateway_ship }
+            delete_ship = this
+        }
+        set_event_locked = no
+        event_target:spth_deploy_gateway_system = {
+            spawn_megastructure = {
+                type = touhou_gateway_network_slave_node
+                coords_from = root
+                owner = root.owner
+            }
+        }
+    }
+}
 
 country_event = {
 	id = toho.5000
@@ -9205,5 +10362,167 @@ situation_event = {
         owner.capital_scope = {
             add_deposit = d_touhou_nanites_factory
         }
+    }
+}
+
+# Final Speech - Shroud Ending
+country_event = {
+    id = toho.23020
+    title = "toho.23020.name"
+    diplomatic_title = "toho.23020.name"
+    desc = "toho.23020.desc"
+    show_sound = crisis_23020_desc
+
+    diplomatic = yes
+
+    event_window_type = crisis_leader_conversation
+    situation = event_target:synth_queen_doomclock_situation
+
+    picture_event_data = {
+        portrait = event_target:synth_queen_country.ruler
+        room = event_target:synth_queen_country.owner
+    }
+    picture = GFX_crisis_conversation_bg_synth_queen
+
+    is_triggered_only = yes
+
+    immediate = {
+        create_species = {
+            name = "NAME_Cetana"
+            class = "ROBOT"
+            namelist = "CETANA"
+            portrait = "synth_queen"
+            traits = {
+                trait = "trait_mechanical"
+            }
+            effect = {
+                save_event_target_as = synth_queen_species
+            }
+        }
+        create_country = {
+            name = "NAME_Synth_Queen"
+            type = "synth_queen"
+            species = event_target:synth_queen_species
+            name_list = "CETANA"
+            flag = {
+                icon = {
+                    category = "special"
+                    file = "synth_queen.dds"
+                }
+                background = {
+                    category = "backgrounds"
+                    file = "flag_BG_13.dds"
+                }
+                colors = {
+                    "burgundy"
+                    "burgundy"
+                    "null"
+                    "null"
+                }
+            }
+            effect = {
+                save_event_target_as = synth_queen_country
+                establish_communications = root
+                create_leader = {
+                    class = commander
+                    species = event_target:synth_queen_country
+                    name = "NAME_Cetana"
+                    immortal = yes
+                    skill = 10
+                    event_leader = yes
+                    skip_background_generation = yes
+                    set_age = 126872
+                    custom_description = cetana_desc
+                    traits = {
+                        0 = subclass_commander_councilor
+                    }
+                    effect = {
+                        change_leader_portrait = cetana_empty
+                    }
+                }
+                set_leader = last_created_leader
+            }
+        }
+    }
+
+    #Reshaped
+    option = {
+        name = crisis.23020.a
+        is_dialog_only = yes
+        response_text = toho.23020.a.reply
+        sound = crisis_23020_1_reply
+        trigger = {
+            NOT = {
+                has_country_flag = toho.crisis.8295.1.flag
+            }
+        }
+        hidden_effect = {
+            set_country_flag = toho.crisis.8295.1.flag
+        }
+    }
+
+    option = {
+        name = crisis.23020.1.a
+        custom_tooltip = crisis.23020.1.a.tt
+        sound = crisis_23020_1_reply
+        trigger = {
+            has_country_flag = toho.crisis.8295.1.flag
+        }
+        hidden_effect = {
+            remove_country_flag = toho.crisis.8295.1.flag
+        }
+    }
+
+    after = {
+        defeating_synth_queen_rewards = yes
+        hidden_effect = {
+            every_country = {
+                limit = {
+                    is_synth_queen_country_type = yes
+                }
+                destroy_country = yes
+            }
+            every_country = {
+                remove_country_flag = synth_queen_player_can_see_doomclock
+            }
+            every_country = {
+                limit = {
+                    has_modifier = queenexecutioner
+                }
+                remove_modifier = queenexecutioner
+            }
+            every_country = {
+                limit = {
+                    has_modifier = queenslayer
+                }
+                remove_modifier = queenslayer
+            }
+            every_country = {
+                limit = {
+                    NOT = { is_same_value = event_target:touhou_defeated_synth_queen }
+                }
+                country_event = {
+                    id = toho.23030
+                    days = 15
+                }
+            }
+        }
+    }
+}
+
+# Cetana Defeated - Psionics, but everyone else finds out
+country_event = {
+    id = toho.23030
+    title = "toho.23030.name"
+    desc = "toho.23030.desc"
+    picture = GFX_evt_crisis_defeated
+    show_sound = event_celebration
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_crisis_defeated_room }
+    option = {
+        name = EXCELLENT
     }
 }

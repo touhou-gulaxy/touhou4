@@ -28,6 +28,110 @@ th_jiejie_tunnel = {
 	}
 }
 
+touhou_gateway = {
+    name = touhou_gateway
+    is_pathfind = yes
+    uses_action = no
+    always_active = yes
+    requires_exploration = no
+    windup_time = 0
+    winddown_time = 0
+    ftl_multiplier = 0
+    icon_frame = 42
+    remember_instances = no
+    galactic_map_tooltip_header = touhou_gateway
+    galactic_map_tooltip_desc = touhou_gateway_desc
+    connection_type = any_other
+    can_bypass_be_locked = no
+    animation_time = 1
+    ftl_ship_effect = "gateway_ftl_ship_effect_entity"
+    ftl_bypass_effect = "gateway_ftl_bypass_effect_entity"
+
+    country_can_use = {
+        custom_tooltip = {
+            fail_text = touhou_gateway_access_denied
+            OR = {
+                AND = {
+                    NOT = { exists = event_target:touhou_gateway_network_controller }
+                    OR = {
+                        NOT = { exists = from }
+                        from = {
+                            NOR = {
+                                has_closed_borders = root
+                                is_hostile_to = root
+                            }
+                        }
+                    }
+                }
+                AND = {
+                    exists = event_target:touhou_gateway_network_controller
+                    is_same_value = event_target:touhou_gateway_network_controller
+                }
+                AND = {
+                    exists = event_target:touhou_gateway_network_controller
+                    event_target:touhou_gateway_network_controller = {
+                        NOR = {
+                            has_country_flag = touhou_gateway_network_policy_whitelist
+                            has_country_flag = touhou_gateway_network_policy_blacklist
+                            is_same_value = root
+                            has_closed_borders = root
+                            is_hostile = root
+                        }
+                    }
+                }
+                AND = {
+                    exists = event_target:touhou_gateway_network_controller
+                    event_target:touhou_gateway_network_controller = {
+                        has_country_flag = touhou_gateway_network_policy_blacklist
+                        NOT = { has_country_flag = touhou_gateway_network_disallow_@root }
+                    }
+                }
+                AND = {
+                    exists = event_target:touhou_gateway_network_controller
+                    event_target:touhou_gateway_network_controller = {
+                        has_country_flag = touhou_gateway_network_policy_whitelist
+                        has_country_flag = touhou_gateway_network_allow_@root
+                    }
+                }
+            }
+        }
+    }
+    on_action = on_entering_touhou_gateway
+}
+touhou_gateway_wormhole = {
+    name = touhou_gateway_wormhole
+    is_pathfind = yes
+    uses_action = no
+    always_active = yes
+    requires_exploration = no
+    windup_time = 0
+    winddown_time = 0
+    ftl_multiplier = 0
+    icon_frame = 12
+    remember_instances = no
+    galactic_map_tooltip_header = touhou_gateway_wormhole
+    galactic_map_tooltip_desc = touhou_gateway_wormhole_desc
+    connection_type = any_other
+    can_bypass_be_locked = no
+    animation_time = 1
+    ftl_ship_effect = "wormhole_ftl_ship_effect_entity"
+    ftl_bypass_effect = "wormhole_ftl_bypass_effect_entity"
+    country_can_use = {
+        custom_tooltip = {
+            fail_text = "NATURAL_WORMHOLE_COUNTRY_CANNOT_USE"
+            OR = {
+                NOT = { exists = from }
+                from = { OR = {
+                    NOT = { has_closed_borders = root }
+                    is_at_war_with = root
+                    is_touhou_common_country = no
+                } }
+            }
+        }
+    }
+    on_action = on_entering_touhou_gateway_wormhole
+}
+
 spth_lunar_portal = {
 	name = spth_lunar_outpost_portal
 	is_pathfind = yes
