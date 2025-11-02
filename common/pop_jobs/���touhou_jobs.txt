@@ -1,0 +1,164 @@
+# 巫女-统治者
+miko = {
+    category = ruler
+    swappable_data = {
+        default = {
+            building_icon = building_bl
+            condition_string = RULER_JOB_TRIGGER
+            icon = miko
+        }
+        swap_type = {
+            name = miko_swap_sanae
+            building_icon = building_suwa
+            condition_string = RULER_JOB_TRIGGER
+            icon = sanae
+            trigger = { has_building = building_spth_moriya_shrine }
+            weight = 10
+        }
+    }
+
+    possible_pre_triggers = {
+        has_owner = yes
+        is_enslaved = no
+        is_being_purged = no
+        is_being_assimilated = no
+        is_sapient = yes
+    }
+    possible_precalc = can_fill_ruler_job
+    possible = { can_pop_fill_touhou_job = yes }
+    can_be_automated = no
+    resources = {
+        category = planet_miko
+        inline_script = { script = jobs/spth_job_single_produce resource = unity count = 12 }
+        inline_script = { script = jobs/spth_job_single_produce resource = physics_research count = 4 }
+        inline_script = { script = jobs/spth_job_single_produce resource = engineering_research count = 4 }
+        inline_script = { script = jobs/spth_job_single_produce resource = society_research count = 4 }
+        inline_script = { script = jobs/spth_job_single_produce resource = sr_lingli count = 1 }
+        inline_script = { script = jobs/spth_job_single_ap_produce ap = 3 resource = astral_threads count = 0.25 }
+        inline_script = { script = jobs/spth_job_single_upkeep resource = consumer_goods count = 2 }
+        upkeep = {
+            trigger = { exists = owner owner = { check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 } } }
+            sr_zro = 1.0
+        }
+        upkeep = {
+            trigger = {
+                exists = owner owner = { check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 } }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
+            }
+            sr_zro = 1.0
+            mult = planet.planet_weak_genso_job_upkeep_faith_modifier
+        }
+    }
+
+    triggered_planet_modifier = {
+        potential = { always = yes }
+        modifier = {
+            planet_amenities_add = 300
+        }
+        mult = value:scripted_modifier_mult|MODIFIER|pop_job_amenities_mult|
+    }
+
+    triggered_planet_modifier = {
+        potential = { spth_check_gensokyo_auth = yes }
+        modifier = {
+            planet_barrier_capacity_add = 0.5
+            planet_crime_add = -2.5
+        }
+    }
+
+    triggered_country_modifier = {
+        potential = { spth_check_gensokyo_auth = { not_policy_flag = touhou_miko_admin_mode_admin_cap } }
+        modifier = {
+            empire_size_add = -2
+        }
+    }
+    triggered_country_modifier = {
+        potential = { spth_check_gensokyo_auth = { policy_flag = touhou_miko_admin_mode_admin_cap } }
+        modifier = {
+            country_admin_cap_add = 2
+        }
+    }
+    triggered_country_modifier = {
+        potential = { spth_check_gensokyo_auth = { not_policy_flag = touhou_miko_admin_mode_admin_cap } }
+        modifier = {
+            empire_size_add = -1
+        }
+        mult = planet_weak_genso_job_produce_faith_modifier
+    }
+    triggered_country_modifier = {
+        potential = { spth_check_gensokyo_auth = { policy_flag = touhou_miko_admin_mode_admin_cap } }
+        modifier = {
+            country_admin_cap_add = 1
+        }
+        mult = planet_weak_genso_job_produce_faith_modifier
+    }
+    triggered_country_modifier = {
+        potential = { spth_check_gensokyo_auth = { flag = touhou_great_patron_dragon_accord_2 } }
+        modifier = {
+            country_admin_cap_add = 1
+        }
+    }
+    triggered_country_modifier = {
+        potential = {
+            exists = owner
+            owner = {
+                NOT = { has_policy_flag = touhou_miko_admin_mode_admin_cap }
+                check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 }
+            }
+        }
+        modifier = {
+            empire_size_add = -1
+        }
+        mult = planet_weak_genso_job_produce_faith_modifier
+    }
+    triggered_country_modifier = {
+        potential = {
+            exists = owner
+            owner = {
+                has_policy_flag = touhou_miko_admin_mode_admin_cap
+                check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 }
+            }
+        }
+        modifier = {
+            country_admin_cap_add = 1
+        }
+        mult = planet_weak_genso_job_produce_faith_modifier
+    }
+    triggered_country_modifier = {
+        potential = { exists = owner owner = { check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 } } }
+        psionic_aura_effectiveness_mult = 0.0025
+    }
+    triggered_country_modifier = {
+        potential = { exists = owner owner = { check_modifier_value = { modifier = unlock_touhou_miko_psionic_produce value > 0 } } }
+        psionic_aura_effectiveness_mult = 0.0025
+        mult = planet_weak_genso_job_produce_faith_modifier
+    }
+
+    tags = { touhou_job touhou_miko unity amenities astral_threads touhou_unity touhou_amenities touhou_astral_threads }
+    weight = {
+        weight = @spth_ruler_job_weight
+        mult = value:job_weights_modifier|JOB|politician|RESOURCE|unity|
+        mult = value:scripted_modifier_job_weight_mult|MODIFIER|pop_job_amenities_mult|
+        modifier = {
+            factor = 0.1
+            has_citizenship_rights = no
+            NOT = { pop_group_has_trait = trait_mechanical }
+        }
+        modifier = {
+            factor = 1.2
+            pop_group_has_trait = trait_touhou
+        }
+        # crisis purge
+        modifier = {
+            factor = 0.01
+            exists = planet
+            exists = planet.controller
+            planet.controller = {
+                OR = {
+                    is_country_type = swarm
+                    is_country_type = ai_empire
+                }
+            }
+        }
+    }
+}
