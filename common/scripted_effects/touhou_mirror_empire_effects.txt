@@ -1,0 +1,458 @@
+touhou_mirror_empire_create_country = {
+    optimize_memory
+    if = {
+        limit = { NOT = { exists = event_target:touhou_mirror_empire } }
+        create_species = {
+            name = "NAME_touhou_mirror_empire_species"
+            class = THSC
+            portrait = touhou2
+            traits = random
+            immortal = yes
+            effect = {
+                save_global_event_target_as = touhou_mirror_empire_species
+            }
+        }
+        create_country = {
+            name = touhou_mirror_empire
+            type = touhou_mirror_empire
+            species = event_target:touhou_mirror_empire_species
+            flag = event_target:touhou_mirror_empire_root
+            name_list = event_target:touhou_mirror_empire_root
+            effect = {
+                set_graphical_culture = event_target:touhou_mirror_empire_root
+                set_country_flag = touhou_mod_country
+                set_country_flag = touhou_crisis_country
+                set_country_flag = touhou_mirror_empire
+                set_country_flag = touhou_mirror_empire_by_@event_target:touhou_mirror_empire_root
+                set_country_flag = protected_from_queen_storm
+                add_modifier = { modifier = touhou_immune_from_terrify }
+                save_global_event_target_as = touhou_mirror_empire
+                touhou_mirror_empire_switch_tech_level = yes
+                if = {
+                    limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 3 } }
+                    create_ship_design = { design = NAME_touhou_mirror_empire_starbase_3 }
+                    add_ship_design = last_created_design
+                } else_if = {
+                    limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 1 } }
+                    create_ship_design = { design = NAME_touhou_mirror_empire_starbase_1 }
+                    add_ship_design = last_created_design
+                } else_if = {
+                    limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 2 } }
+                    create_ship_design = { design = NAME_touhou_mirror_empire_starbase_2 }
+                    add_ship_design = last_created_design
+                } else = {
+                    create_ship_design = { design = NAME_touhou_mirror_empire_starbase }
+                    add_ship_design = last_created_design
+                }
+                # activate_fog_machine = spth_kamikakushi_cloud
+                # fog_machine_auto_tracking = yes
+                [[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
+                every_playable_country = {
+                    limit = { NOT = { is_same_value = prev } }
+                    establish_communications_no_message = prev
+                    add_intel = { who = prev amount = 70 }
+                }
+                every_country = {
+                    limit = {
+                        OR = {
+                            is_country_type = default
+                            is_country_type = fallen_empire
+                            is_country_type = awakened_fallen_empire
+                        }
+                        NOT = { has_communications = prev }
+                    }
+                    establish_communications_no_message = prev
+                    add_intel = { who = prev amount = 70 }
+                }
+                country_event = { id = touhou_mirror_empire.20 days = 360 random = 180 }
+            }
+        }
+    }
+}
+
+# event_target:touhou_mirror_empire_root: 触发的玩家帝国
+touhou_mirror_empire_debug_set_root_country = {
+    optimize_memory
+    if = {
+        limit = { NOT = { exists = event_target:touhou_mirror_empire_root } }
+        if = {
+            limit = { NOT = { has_global_flag = touhou_mirror_empire_no_root_country } }
+            if = {
+                limit = { any_playable_country = { has_authority = auth_gensokyo is_ai = no } }
+                random_playable_country = {
+                    limit = { has_authority = auth_gensokyo is_ai = no }
+                    save_global_event_target_as = touhou_mirror_empire_root
+                }
+            } else_if = {
+                limit = { any_playable_country = { has_authority = auth_gensokyo is_ai = yes } }
+                random_playable_country = {
+                    limit = { has_authority = auth_gensokyo is_ai = yes }
+                    save_global_event_target_as = touhou_mirror_empire_root
+                }
+            } else_if = {
+                limit = { any_playable_country = { is_ai = no } }
+                random_playable_country = {
+                    limit = { is_ai = no }
+                    save_global_event_target_as = touhou_mirror_empire_root
+                }
+            } else = {
+                set_global_flag = touhou_mirror_empire_no_root_country
+            }
+        }
+    }
+}
+touhou_mirror_empire_set_tech_level = {
+    optimize_memory
+    event_target:touhou_mirror_empire = {
+        set_variable = { which = touhou_mirror_empire_tech_level value = $level$ }
+    }
+}
+touhou_mirror_empire_switch_tech_level = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_global_flag = touhou_mirror_empire_switch_tech_level_cooldown } }
+        set_timed_global_flag = { flag = touhou_mirror_empire_switch_tech_level_cooldown days = 5 }
+        event_target:touhou_mirror_empire = {
+            if = {
+                limit = { NOT = { is_variable_set = touhou_mirror_empire_tech_level } }
+                touhou_mirror_empire_set_tech_level = { level = 0 }
+            }
+        }
+        if = {
+            limit = { exists = event_target:touhou_mirror_empire_root }
+            event_target:touhou_mirror_empire_root = {
+                if = {
+                    limit = { spth_has_ag_mod = yes }
+                    if = {
+                        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 3 } }
+                        break = yes
+                    } else_if = {
+                        limit = {
+                            OR = {
+                                count_owned_ship = { limit = { ag_is_ancient_titan = yes } count >= @touhou_mirror_empire_tech_level_ag_titan_count }
+                                count_owned_ship = { limit = { ag_is_ancient_ship = yes } count >= @touhou_mirror_empire_tech_level_ag_ship_count }
+                            }
+                        }
+                        touhou_mirror_empire_set_tech_level = { level = 3 }
+                        break = yes
+                    }
+                    if = {
+                        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 1 } }
+                        break = yes
+                    } else_if = {
+                        limit = { has_technology = tech_lunar_capital_parts }
+                        touhou_mirror_empire_set_tech_level = { level = 1 }
+                        break = yes
+                    }
+                    if = {
+                        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 2 } }
+                        break = yes
+                    } else_if = {
+                        limit = {
+                            calc_true_if = {
+                                amount >= 3
+                                has_technology = tech_th_armor_scarlet_psionic
+                                has_technology = tech_th_shield_barrier_psionic
+                                OR = {
+                                    has_technology = tech_th_shield_barrier_psionic_story
+                                    has_technology = tech_th_armor_barrier_psionic_story
+                                }
+                                has_technology = tech_touhou_psionic_lighting
+                                has_technology = tech_touhou_psionic_lighting_pd
+                                has_technology = tech_touhou_psionic_lighting_xl
+                                has_technology = tech_touhou_psionic_lighting_t
+                                has_technology = tech_trait_touhou_psionic
+                                has_technology = tech_th_ship_part_mokou
+                            }
+                        }
+                        touhou_mirror_empire_set_tech_level = { level = 2 }
+                        break = yes
+                    }
+                    if = {
+                        limit = { touhou_mirror_empire_check_tech_level = { relation = "!=" value = 0 } }
+                        touhou_mirror_empire_set_tech_level = { level = 0 }
+                        break = yes
+                    }
+                } else = {
+                    if = {
+                        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 1 } }
+                        break = yes
+                    } else_if = {
+                        limit = { has_technology = tech_lunar_capital_parts }
+                        touhou_mirror_empire_set_tech_level = { level = 1 }
+                        break = yes
+                    }
+                    if = {
+                        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 2 } }
+                        break = yes
+                    } else_if = {
+                        limit = {
+                            calc_true_if = {
+                                amount >= 3
+                                has_technology = tech_th_armor_scarlet_psionic
+                                has_technology = tech_th_shield_barrier_psionic
+                                OR = {
+                                    has_technology = tech_th_shield_barrier_psionic_story
+                                    has_technology = tech_th_armor_barrier_psionic_story
+                                }
+                                has_technology = tech_touhou_psionic_lighting
+                                has_technology = tech_touhou_psionic_lighting_pd
+                                has_technology = tech_touhou_psionic_lighting_xl
+                                has_technology = tech_touhou_psionic_lighting_t
+                                has_technology = tech_trait_touhou_psionic
+                                has_technology = tech_th_ship_part_mokou
+                            }
+                        }
+                        touhou_mirror_empire_set_tech_level = { level = 2 }
+                        break = yes
+                    }
+                    if = {
+                        limit = { touhou_mirror_empire_check_tech_level = { relation = "!=" value = 0 } }
+                        touhou_mirror_empire_set_tech_level = { level = 0 }
+                        break = yes
+                    }
+                }
+            }
+        }
+    }
+}
+touhou_mirror_empire_set_fleet_leader = {
+    optimize_memory
+}
+touhou_mirror_empire_create_vanguard_fleet = {
+    optimize_memory
+    if = {
+        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 3 } }
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_vanguard_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_vanguard_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_battlecruiser_alice_3 = 4
+            touhou_mirror_empire_battlecruiser_scarlet_3 = 6
+            touhou_mirror_empire_battlecruiser_marisa_3 = 6
+            touhou_mirror_empire_battlecruiser_reimu_3 = 4
+            touhou_mirror_empire_kamikakushi_cruiser_3 = 10
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    } else_if = {
+        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 1 } }
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_vanguard_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_vanguard_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_battlecruiser_alice_1 = 4
+            touhou_mirror_empire_battlecruiser_scarlet_1 = 6
+            touhou_mirror_empire_battlecruiser_marisa_1 = 6
+            touhou_mirror_empire_battlecruiser_reimu_1 = 4
+            touhou_mirror_empire_kamikakushi_cruiser_1 = 10
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    } else_if = {
+        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 2 } }
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_vanguard_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_vanguard_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_battlecruiser_alice_2 = 4
+            touhou_mirror_empire_battlecruiser_scarlet_2 = 6
+            touhou_mirror_empire_battlecruiser_marisa_2 = 6
+            touhou_mirror_empire_battlecruiser_reimu_2 = 4
+            touhou_mirror_empire_kamikakushi_cruiser_2 = 10
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    } else = {
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_vanguard_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_vanguard_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_battlecruiser_alice = 4
+            touhou_mirror_empire_battlecruiser_scarlet = 6
+            touhou_mirror_empire_battlecruiser_marisa = 6
+            touhou_mirror_empire_battlecruiser_reimu = 4
+            touhou_mirror_empire_kamikakushi_cruiser = 10
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    }
+}
+touhou_mirror_empire_create_attack_fleet = {
+    optimize_memory
+    if = {
+        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 3 } }
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_attack_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_attack_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_command_dreadnought_3 = 1
+            touhou_mirror_empire_battlecruiser_alice_3 = 10
+            touhou_mirror_empire_battlecruiser_scarlet_3 = 15
+            touhou_mirror_empire_battlecruiser_marisa_3 = 15
+            touhou_mirror_empire_battlecruiser_reimu_3 = 10
+            touhou_mirror_empire_kamikakushi_cruiser_3 = 20
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    } else_if = {
+        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 1 } }
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_attack_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_attack_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_command_dreadnought_1 = 1
+            touhou_mirror_empire_battlecruiser_alice_1 = 10
+            touhou_mirror_empire_battlecruiser_scarlet_1 = 15
+            touhou_mirror_empire_battlecruiser_marisa_1 = 15
+            touhou_mirror_empire_battlecruiser_reimu_1 = 10
+            touhou_mirror_empire_kamikakushi_cruiser_1 = 20
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    } else_if = {
+        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 2 } }
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_attack_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_attack_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_command_dreadnought_2 = 1
+            touhou_mirror_empire_battlecruiser_alice_2 = 10
+            touhou_mirror_empire_battlecruiser_scarlet_2 = 15
+            touhou_mirror_empire_battlecruiser_marisa_2 = 15
+            touhou_mirror_empire_battlecruiser_reimu_2 = 10
+            touhou_mirror_empire_kamikakushi_cruiser_2 = 20
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    } else = {
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_attack_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_attack_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_command_dreadnought = 1
+            touhou_mirror_empire_battlecruiser_alice = 10
+            touhou_mirror_empire_battlecruiser_scarlet = 15
+            touhou_mirror_empire_battlecruiser_marisa = 15
+            touhou_mirror_empire_battlecruiser_reimu = 10
+            touhou_mirror_empire_kamikakushi_cruiser = 20
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    }
+}
+touhou_mirror_empire_create_ancient_titan_fleet = {
+    optimize_memory
+    if = {
+        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 3 } }
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_ancient_titan_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_ancient_titan_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_ancient_titan = 1
+            touhou_mirror_empire_command_dreadnought_3 = 2
+            touhou_mirror_empire_battlecruiser_alice_3 = 10
+            touhou_mirror_empire_battlecruiser_scarlet_3 = 15
+            touhou_mirror_empire_battlecruiser_marisa_3 = 15
+            touhou_mirror_empire_battlecruiser_reimu_3 = 10
+            touhou_mirror_empire_kamikakushi_cruiser_3 = 20
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    } else_if = {
+        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 1 } }
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_ancient_titan_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_ancient_titan_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_ancient_titan = 1
+            touhou_mirror_empire_command_dreadnought_1 = 2
+            touhou_mirror_empire_battlecruiser_alice_1 = 10
+            touhou_mirror_empire_battlecruiser_scarlet_1 = 15
+            touhou_mirror_empire_battlecruiser_marisa_1 = 15
+            touhou_mirror_empire_battlecruiser_reimu_1 = 10
+            touhou_mirror_empire_kamikakushi_cruiser_1 = 20
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    } else_if = {
+        limit = { touhou_mirror_empire_check_tech_level = { relation = "=" value = 2 } }
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_ancient_titan_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_ancient_titan_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_ancient_titan = 1
+            touhou_mirror_empire_command_dreadnought_2 = 2
+            touhou_mirror_empire_battlecruiser_alice_2 = 10
+            touhou_mirror_empire_battlecruiser_scarlet_2 = 15
+            touhou_mirror_empire_battlecruiser_marisa_2 = 15
+            touhou_mirror_empire_battlecruiser_reimu_2 = 10
+            touhou_mirror_empire_kamikakushi_cruiser_2 = 20
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    } else = {
+        spth_create_fleet = {
+            NAME = NAME_touhou_mirror_empire_ancient_titan_fleet
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:touhou_mirror_empire
+            location = event_target:touhou_mirror_empire_spawnpoint
+            flag = touhou_mirror_empire_ancient_titan_fleet
+            flag2 = touhou_mirror_empire_fleet
+            flag3 = touhou_mirror_empire_enable_move
+            touhou_mirror_empire_ancient_titan = 1
+            touhou_mirror_empire_command_dreadnought = 2
+            touhou_mirror_empire_battlecruiser_alice = 10
+            touhou_mirror_empire_battlecruiser_scarlet = 15
+            touhou_mirror_empire_battlecruiser_marisa = 15
+            touhou_mirror_empire_battlecruiser_reimu = 10
+            touhou_mirror_empire_kamikakushi_cruiser = 20
+            kamikakushi_bonus = yes
+            evt_target = touhou_mirror_empire_fleet
+        }
+    }
+}
