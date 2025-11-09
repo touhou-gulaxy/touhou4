@@ -898,3 +898,169 @@ touhou_weapon_fire_aoe_damage = {
         }
     }
 }
+
+touhou_remove_planet = {
+    optimize_memory
+    if = { limit = { is_star = yes } change_pc = pc_spth_void }
+    else = { change_pc = pc_spth_void_planet }
+    planet_event = { id = toho.4020 days = 1 }
+}
+# planet scope
+touhou_create_shell_world_layer = {
+    optimize_memory
+    set_planet_flag = has_megastructure
+    save_event_target_as = ag_shell_world_prev_layer
+    set_planet_entity = { entity = "ag_void_entity" }
+    if = {
+        limit = { ag_is_shell_world = no }
+        set_variable = { which = ag_shell_world_layer value = 0 }
+        change_variable = { which = ag_num_shell_world_layers value = 1 }
+        save_event_target_as = ag_shell_world_base_layer_temp
+        if = {
+            limit = { OR = { is_colonizable = yes is_under_colonization = yes is_colony = yes } }
+            ag_set_shell_world_background_init = yes
+            ag_set_shell_world_base = yes
+            ag_shell_world_deposit_swap = yes
+            ag_set_shell_world_capital = { ag_scope = this }
+        }
+    }
+    else = { event_target:ag_shell_world_base_layer_@this = {
+        if = { limit = { exists = event_target:ag_shell_world_surface_layer_@this } clear_global_event_target = ag_shell_world_surface_layer_@this }
+        save_event_target_as = ag_shell_world_base_layer_temp
+        change_variable = { which = ag_num_shell_world_layers value = 1 }
+        clear_global_event_target = ag_shell_world_base_layer_@this
+    } }
+    if = {
+        limit = { has_moon = yes }
+        every_moon = {
+            root = { prevprev.owner = { add_resource = { minerals = 5000 multiplier = prevprev.trigger:planet_size } } }
+            touhou_remove_planet = yes
+        }
+    }
+    solar_system = {
+        spawn_planet = {
+            name = NAME_touhou_new_shell_world
+            class = "pc_ag_shell_world_surface"
+            location = prev
+            orbit_location = yes
+            orbit_distance_offset = 0.001
+            size = 1
+            has_ring = no
+            init_effect = {
+                set_planet_entity = { entity = "ag_shell_world_planet_01_entity" }
+                set_surveyed = { surveyed = yes surveyor = prevprev.owner }
+                set_all_comms_surveyed = yes
+                clear_blockers = yes
+                clear_planet_modifiers = yes
+                set_planet_flag = megastructure
+                set_planet_flag = is_megastructure
+                set_planet_size = prevprev.trigger:planet_size
+                change_planet_size = 1
+                set_variable = { which = ag_shell_world_layer value = prevprev.ag_shell_world_layer }
+                change_variable = { which = ag_shell_world_layer value = 1 }
+                save_event_target_as = ag_shell_world_new_layer
+                save_global_event_target_as = ag_shell_world_next_layer_@event_target:ag_shell_world_prev_layer
+                set_planet_flag = ag_shell_world_surface_layer
+                [[flag] set_planet_flag = $flag$ ]
+                set_owner = prevprev.owner
+                set_controller = prevprev.owner
+                create_pop_group = { species = prevprev.owner.species size = 100 }
+                ag_set_shell_world_capital = { ag_scope = prevprev }
+                save_event_target_as = $target$
+            }
+        }
+    }
+    save_global_event_target_as = ag_shell_world_prev_layer_@event_target:ag_shell_world_new_layer
+    if = { limit = { has_planet_flag = ag_shell_world_surface_layer } remove_planet_flag = ag_shell_world_surface_layer }
+    if = { limit = { is_planet_class = pc_ag_shell_world_surface } ag_change_pc = { ag_planet_class = pc_ag_shell_world } }
+    event_target:ag_shell_world_base_layer_temp = {
+        save_global_event_target_as = ag_shell_world_base_layer_@event_target:ag_shell_world_new_layer
+    }
+    event_target:ag_shell_world_new_layer = {
+        save_global_event_target_as = ag_shell_world_surface_layer_@event_target:ag_shell_world_base_layer_temp
+    }
+    if = {
+        limit = { exists = owner }
+        owner = {
+            [[mega_built_flag] set_country_flag = has_built_or_repaired_megastructure ]
+            [[notification]
+                if = {
+                    limit = { NOT = { has_country_flag = ag_built_first_shell_world } }
+                    set_country_flag = ag_built_first_shell_world
+                    country_event = { id = toho.4021 }
+                }
+                else = {
+                    create_message = {
+                        type = touhou_shell_world_built
+                        localization = touhou_shell_world_built_desc
+                        days = 5
+                        target = event_target:ag_shell_world_new_layer
+                    }
+                }
+            ]
+        }
+    }
+}
+touhou_create_damaged_shell_world_layer = {
+    optimize_memory
+    save_event_target_as = ag_shell_world_base_layer_temp
+    create_ambient_object = { type = "abandoned_starbase_01_object" location = this }
+    reroll_random = yes
+    random_list = {
+        10 = { last_created_ambient_object = { set_location = { target = prev distance = 0 angle = random } } }
+        10 = { last_created_ambient_object = { set_location = { target = prev distance = 5 angle = random } } }
+        10 = { last_created_ambient_object = { set_location = { target = prev distance = 10 angle = random } } }
+    }
+    while = {
+        count = 3
+        create_ambient_object = { type = "small_debris_object" location = this }
+        reroll_random = yes
+        random_list = {
+            10 = { last_created_ambient_object = { set_location = { target = prev distance = 5 angle = random } } }
+            10 = { last_created_ambient_object = { set_location = { target = prev distance = 10 angle = random } } }
+            10 = { last_created_ambient_object = { set_location = { target = prev distance = 15 angle = random } } }
+        }
+    }
+    set_planet_flag = $prev_layer_type$
+    set_planet_flag = has_megastructure
+    if = {
+        limit = { NOT = { is_variable_set = ag_shell_world_layer } }
+        set_variable = { which = ag_shell_world_layer value = $init_layer$ }
+    }
+    set_variable = { which = ag_num_shell_world_layers value = $init_num_layer$ }
+    solar_system = {
+        spawn_planet = {
+            class = "pc_ag_shell_world_damaged"
+            location = prev
+            orbit_location = yes
+            orbit_distance_offset = 0.001
+            size = 17
+            has_ring = no
+            init_effect = {
+                set_name = "touhou_megastructure_shell_world_damaged"
+                clear_blockers = yes
+                clear_planet_modifiers = yes
+                set_planet_flag = megastructure
+                set_planet_flag = is_megastructuree
+                set_variable = { which = ag_shell_world_layer value = 1 }
+                save_global_event_target_as = ag_shell_world_next_layer_@prevprev
+                save_global_event_target_as = ag_shell_world_surface_layer_@prevprev
+                prevprev = {
+                    save_global_event_target_as = ag_shell_world_prev_layer_@prev
+                    save_global_event_target_as = ag_shell_world_base_layer_@prev
+                }
+                solar_system = {
+                    spawn_megastructure = {
+                        type = ag_megastructure_shell_world_damaged
+                        planet = prev
+                        init_effect = {
+                            prevprev = { save_global_event_target_as = ag_shell_world_damaged_megastructure_@prev }
+                            save_global_event_target_as = ag_shell_world_damaged_planet_@prevprev
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

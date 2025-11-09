@@ -10003,6 +10003,369 @@ fleet_event = {
     }
 }
 
+planet_event = {
+    id = toho.4020
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { exists = this }
+    immediate = { remove_planet = yes }
+}
+country_event = {
+    id = toho.4021
+    is_triggered_only = yes
+    title = toho.4021.name
+    desc = toho.4021.desc
+    location = event_target:ag_target_system
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = touhou_shell_world_room }
+    show_sound = event_think_tank_build_complete
+    option = {
+        name = toho.4021.a
+        default_hide_option = yes
+    }
+}
+country_event = {
+    id = toho.4022
+    is_triggered_only = yes
+    title = toho.4022.name
+    desc = toho.4022.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = touhou_shell_world_room }
+    trigger = {
+        NOT = { has_country_flag = toho_4022_fired }
+        has_authority = auth_gensokyo has_origin = origin_touhou_shell_world
+        any_owned_planet = { is_colony = yes has_planet_flag = origin_touhou_shell_world_system_planet }
+        check_modifier_value = { modifier = touhou_fallen_starship_lunar_capital_blocker_fixed value > 0 }
+        check_modifier_value = { modifier = touhou_fallen_starship_makai_blocker_fixed value > 0 }
+        has_technology = tech_housing_1
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { exists = event_target:touhou_origin_shell_world_@root } }
+            random_owned_planet = {
+                limit = { is_colony = yes has_planet_flag = origin_touhou_shell_world_system_planet }
+                save_global_event_target_as = touhou_origin_shell_world_@root
+            }
+        }
+        event_target:touhou_origin_shell_world_@root = {
+            set_planet_flag = touhou_origin_shell_world_triggered_story
+        }
+        set_country_flag = toho_4022_fired
+    }
+    option = {
+        name = toho.4022.a
+        default_hide_option = yes
+        start_situation = {
+            type = situation_touhou_shell_world_explore
+            target = root
+        }
+    }
+}
+situation_event = {
+    id = toho.4023
+    is_triggered_only = yes
+    title = toho.4023.name
+    desc = toho.4023.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_liquid_darkness_room }
+    trigger = {
+        NOT = {
+            has_situation_flag = toho_4023_fired
+            has_situation_flag = touhou_shell_world_explore_approach_tech
+        }
+        situation_progress >= 75 exists = owner
+        owner = {
+            OR = {
+                has_technology = tech_mine_dark_matter
+                resource_income_compare = { resource = sr_dark_matter value >= 50 }
+            }
+        }
+    }
+    immediate = {
+        set_situation_flag = toho_4023_fired
+        set_timed_situation_flag = { flag = touhou_shell_world_explore_approach_tech days = 29 }
+    }
+    option = {
+        name = toho.4023.a
+        default_hide_option = yes
+        set_situation_approach = situation_touhou_shell_world_explore_approach_living_metal
+    }
+    option = {
+        name = toho.4023.b
+    }
+    after = {
+
+    }
+}
+situation_event = {
+    id = toho.4024
+    is_triggered_only = yes
+    title = toho.4024.name
+    desc = toho.4024.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_astral_rift_crystal_3_room }
+    trigger = {
+        NOT = {
+            has_situation_flag = toho_4024_fired
+            has_situation_flag = touhou_shell_world_explore_approach_tech
+        }
+        situation_progress >= 150 exists = owner
+        owner = {
+            OR = {
+                has_technology = tech_astral_harvesting
+                any_relation = {
+                    AND = {
+                        is_country_type = default
+                        has_communications = root
+                        has_research_agreement = root
+                        has_technology = tech_astral_harvesting
+                    }
+                }
+            }
+        }
+    }
+    immediate = {
+        set_situation_flag = toho_4024_fired
+        set_timed_situation_flag = { flag = touhou_shell_world_explore_approach_tech days = 29 }
+    }
+    option = {
+        name = toho.4024.a
+        allow = {
+            owner = {
+                resource_stockpile_compare = {
+                    resource = astral_threads
+                    value >= 200
+                }
+            }
+        }
+        owner = {
+            add_resource = { astral_threads = -200 }
+        }
+        set_situation_approach = situation_touhou_shell_world_explore_approach_astral
+        event_target:touhou_origin_shell_world_@root.owner = {
+            add_deposit = d_touhou_shell_world_astral_layer
+        }
+    }
+    option = {
+        name = toho.4024.b
+        default_hide_option = yes
+    }
+}
+situation_event = {
+    inline_script = {
+        script = events/touhou_shell_world_explor_event_template
+        id = 4025 progress = 25 room = touhou_shell_world_room
+    }
+}
+situation_event = {
+    inline_script = {
+        script = events/touhou_shell_world_explor_event_template
+        id = 4026 progress = 100 room = spth_ancient_city_dark_room
+    }
+}
+situation_event = {
+    inline_script = {
+        script = events/touhou_shell_world_explor_event_template_2_option
+        id = 4027 progress = 200 room = spth_ancient_databank_room option = toho.4027.b
+    }
+}
+situation_event = {
+    id = toho.4028
+    is_triggered_only = yes
+    title = toho.4028.name
+    desc = toho.4028.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_star_pulsar_room }
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.125 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.333 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.467 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.679 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.954 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 2.114 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 2.514 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 2.717 } }
+        }
+    }
+    option = {
+        name = toho.4028.a
+        default_hide_option = yes
+    }
+    option = {
+        name = TH_INTERESTRING
+    }
+    after = {
+        event_target:touhou_origin_shell_world_@root.owner = {
+            add_deposit = d_spirit_power_spring
+        }
+    }
+}
+situation_event = {
+    inline_script = {
+        script = events/touhou_shell_world_explor_event_template
+        id = 4029 progress = 350 room = spth_ancient_records_room
+    }
+}
+situation_event = {
+    inline_script = {
+        script = events/touhou_shell_world_explor_event_template
+        id = 4030 progress = 400 room = spth_small_space_battle_room
+    }
+}
+situation_event = {
+    inline_script = {
+        script = events/touhou_shell_world_explor_event_template
+        id = 4031 progress = 450 room = spth_ancient_records_room
+    }
+}
+situation_event = {
+    id = toho.4032
+    is_triggered_only = yes
+    title = toho.4032.name
+    desc = toho.4032.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_analyzing_artifacts_room }
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.125 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.333 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.467 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.679 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 1.954 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 2.114 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 2.514 } }
+            10 = { set_variable = { which = situation_touhou_shell_world_explore_random value = 2.717 } }
+        }
+    }
+    option = {
+        name = toho.4032.a
+        default_hide_option = yes
+    }
+    option = {
+        name = TH_INTERESTRING
+    }
+    after = {
+        owner = {
+            touhou_give_tech_option = { touhou_tech = tech_nanite_repair_system research_point = yes }
+        }
+    }
+}
+situation_event = {
+    inline_script = {
+        script = events/touhou_shell_world_explor_event_template
+        id = 4033 progress = 700 room = spth_resource_cache_room
+    }
+}
+situation_event = {
+    inline_script = {
+        script = events/touhou_shell_world_explor_event_template
+        id = 4034 progress = 900 room = spth_skrand_ship_room
+    }
+    after = {
+        owner = {
+            hidden_effect = { set_country_flag = spth_past_legacy_barrier_shield }
+            touhou_give_tech_option = { touhou_tech = tech_th_armor_spiritual_power_story research_point = yes }
+            touhou_give_tech_option = { touhou_tech = tech_th_shield_barrier_story research_point = yes }
+            give_specimen = { key = touhou_shell_world_ancient_data_empty origin = touhou_shell_world }
+        }
+    }
+}
+situation_event = {
+    id = toho.4035
+    is_triggered_only = yes
+    title = toho.4035.name
+    desc = toho.4035.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_analyzing_artifacts_room }
+    immediate = {
+        owner = {
+            set_country_flag = tech_lunar_capital_frigate
+            set_country_flag = tech_lunar_capital_parts
+            set_country_flag = tech_lunar_capital_ships
+        }
+    }
+    option = {
+        name = toho.4035.a
+        default_hide_option = yes
+    }
+    option = {
+        name = TH_INTERESTRING
+    }
+    after = {
+        destroy_situation = this
+        owner = {
+            random_situation = {
+                limit = { is_situation_type = situation_touhou_shell_world_durability }
+                destroy_situation = this
+            }
+            event_target:touhou_origin_shell_world_@this = {
+                add_modifier = { modifier = touhou_shell_world_fixed days = -1 }
+            }
+            hidden_effect = { set_country_flag = touhou_can_give_tech_ag_shell_world_construction }
+            if = {
+                limit = {
+                    has_technology = tech_habitat_3
+                    has_technology = tech_mega_engineering
+                    has_technology = tech_orbital_ring_tier_1
+                }
+                touhou_give_tech_option = { touhou_tech = tech_ag_shell_world_construction progress = 0.25 research_point = yes }
+            } else = {
+                custom_tooltip = toho.4035.effect
+            }
+            touhou_give_tech_option = { touhou_tech = tech_touhou_ship_optimize_cost }
+            touhou_give_tech_option = { touhou_tech = tech_lunar_capital_frigate }
+            touhou_give_tech_option = { touhou_tech = tech_lunar_capital_parts }
+            touhou_give_tech_option = { touhou_tech = tech_lunar_capital_ships }
+        }
+    }
+}
+country_event = {
+    id = toho.4036
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = touhou_give_tech_ag_shell_world_construction_fired }
+        has_country_flag = touhou_can_give_tech_ag_shell_world_construction
+        has_authority = auth_gensokyo is_ai = no
+        NOR = {
+            has_technology = tech_ag_shell_world_construction
+            has_tech_option = tech_ag_shell_world_construction
+        }
+        has_technology = tech_habitat_3
+        has_technology = tech_mega_engineering
+        has_technology = tech_orbital_ring_tier_1
+    }
+    immediate = { set_country_flag = touhou_give_tech_ag_shell_world_construction_fired }
+    title = toho.4036.name
+    desc = toho.4036.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = touhou_shell_world_room }
+    option = {
+        name = toho.4036.a
+        default_hide_option = yes
+        touhou_give_tech_option = { touhou_tech = tech_ag_shell_world_construction progress = 0.25 research_point = yes }
+    }
+}
+
+
 country_event = {
 	id = toho.5000
 	title = BUTTON_TEXT_NULL
