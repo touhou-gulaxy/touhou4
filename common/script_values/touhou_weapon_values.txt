@@ -304,7 +304,19 @@ touhou_aoe_hit_damage_factor = {
     add = modifier:$size_tag$_slot_weapon_damage_mult
     add = modifier:weapon_role_artillery_weapon_damage_mult
     add = modifier:ship_weapon_damage
+    [[extra_tag]]
     mult = 0.50
+    min = 1
+}
+touhou_aoe_hit_damage_lunar_capital_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_type_energy_weapon_damage_mult
+    add = modifier:weapon_type_$tag1$_weapon_damage_mult
+    add = modifier:$size_tag$_slot_weapon_damage_mult
+    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = modifier:weapon_archaeotech_weapon_damage_mult
+    add = modifier:ship_weapon_damage
     min = 1
 }
 touhou_aoe_hit_damage_factor_2 = {
@@ -317,12 +329,42 @@ touhou_aoe_hit_damage = {
     mult = value:touhou_aoe_hit_damage_factor|tag1|$tag1$|tag2|$tag2$|size_tag|$size_tag$|
     mult = value:touhou_aoe_hit_damage_factor_2|layer|$layer$|
 }
+touhou_aoe_hit_damage_lunar_capital = {
+    base = @touhou_aoe_damage_lunar_$type$_$size$
+    mult = value:touhou_aoe_hit_damage_lunar_capital_factor|tag1|lunar_capital|size_tag|$size_tag$|
+    mult = value:touhou_aoe_hit_damage_factor_2|layer|$layer$|
+}
 
 # mod = 1 - ori
-# mod = -0.90 - ori
+# mod = 0.1 - ori
 # mod = 1 + ori
 touhou_minefield_starbase_debuff = {
     base = $base$
     subtract = modifier:$modifier$
     [[capped] min = $capped$ ]
+}
+
+touhou_leader_spark_damage_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 1
+}
+touhou_leader_spark_damage_factor_2 = {
+    base = 1
+    add = modifier:ship_$layer$_damage_mult
+    min = 1
+}
+touhou_leader_spark_damage = {
+    base = $base$
+    modifier = {
+        is_variable_set = touhou_leader_spark_damage_random_$type$
+        mult = touhou_leader_spark_damage_random_$type$
+    }
+    floor = yes
+    mult = owner.value:touhou_leader_spark_damage_factor
+    mult = owner.value:touhou_leader_spark_damage_factor_2|layer|$layer$|
+    mult = $factor$
+    [[neg] mult = -1 ]
 }
