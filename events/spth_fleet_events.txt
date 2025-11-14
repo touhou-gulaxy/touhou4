@@ -1575,12 +1575,15 @@ country_event = {
                 remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
             }
             set_fleet_flag = ship_spth_yuyuko_fan_display_fired
-            create_ambient_object = {
-                type = spth_th07_yuyuko_fan_object
-                location = this
-                use_3d_location = yes
-                entity_offset_height = 16
-                effect = { set_ambient_object_flag = ship_spth_yuyuko_fan_@prev }
+            if = {
+                limit = { NOT = { any_owned_ship = { is_ship_size = touhou_gunpower_turret_stationary } } }
+                create_ambient_object = {
+                    type = spth_th07_yuyuko_fan_object
+                    location = this
+                    use_3d_location = yes
+                    entity_offset_height = 16
+                    effect = { set_ambient_object_flag = ship_spth_yuyuko_fan_@prev }
+                }
             }
             last_created_ambient_object = { set_location = { target = prev distance = 0 angle = random } }
             fleet_event = { id = spth_fleet.1201 days = 1 }
@@ -3142,6 +3145,39 @@ fleet_event = {
                 remove_modifier = TH_dynamic_reset_ship_monthly_hull_damage
             }
             remove_fleet_flag = fleet_immune_to_ship_monthly_hull_damage_fired
+        }
+    }
+}
+
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.2010
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfrom = {
+            NOT = { has_fleet_flag = touhou_eirin_turret_deploy_fired }
+            NOT = { has_fleet_flag = touhou_gunpower_turret_has_order }
+            any_owned_ship = { is_ship_size = touhou_gunpower_turret_moveable }
+        }
+        OR = {
+            has_policy_flag = touhou_eirin_turret_deploy_half
+            has_policy_flag = touhou_eirin_turret_deploy_full
+        }
+    }
+    immediate = {
+        fromfrom = { set_fleet_flag = touhou_eirin_turret_deploy_fired }
+        switch = {
+            trigger = has_policy_flag
+            touhou_eirin_turret_deploy_half = {
+                fromfrom = { fire_on_action = { on_action = on_touhou_gunpower_turret_deploy_alt } }
+            }
+            touhou_eirin_turret_deploy_full = {
+                fromfrom = { fire_on_action = { on_action = on_touhou_gunpower_turret_deploy } }
+            }
         }
     }
 }

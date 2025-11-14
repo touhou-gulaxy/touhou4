@@ -51,6 +51,7 @@ weapon_component_template = {
         size = point_defence life_steal = 0 slot_tag = "weapon_type_point_defense"
         set = "th_gravity_cannon_set" gfx = th_gravity_cannon_pd_weapon_teal
     }
+    point_defence_targets = { strike_craft missile }
 }
 weapon_component_template = {
     key = th_fallen_empire_union_torpedo
@@ -146,4 +147,207 @@ weapon_component_template = {
         custom_tooltip = th_toyohime_weapon_instant_kill_effect
         hidden_effect = { touhou_fe_union_spiritual_power_torpedo_instant_kill_on_hit = yes }
     }
+}
+
+
+weapon_component_template = {
+    key = touhou_gunpower_turret_t_weapon
+    icon = GFX_ship_part_touhou_gunpower_turret_t_weapon
+    custom_tooltip = touhou_gunpower_turret_t_weapon_tt
+    inline_script = {
+        script = ship_components/touhou_gravity_cannon_turret_weapon_script
+        size = titanic life_steal = 0.25 slot_tag = "t_slot weapon_type_touhou_dynamic_damage_ag weapon_type_touhou_gunpower_turret_main_weapon"
+        set = "th_gravity_cannon_set_lunar_huge" gfx = th_gravity_cannon_t_sp_weapon_pink
+    }
+    on_hit = {
+        custom_tooltip = touhou_gunpower_turret_t_weapon_on_hit
+        hidden_effect = {
+            if = {
+                limit = { exists = from from = { NOT = { has_ship_flag = touhou_gunpower_turret_t_weapon_cooldown } } }
+                from = {
+                    if = {
+                        limit = { NOT = { is_variable_set = touhou_gunpower_turret_t_weapon_fire_count } }
+                        set_variable = { which = touhou_gunpower_turret_t_weapon_fire_count value = 0 }
+                    }
+                    change_variable = { which = touhou_gunpower_turret_t_weapon_fire_count value = 1 }
+                    if = {
+                        limit = { check_variable = { which = touhou_gunpower_turret_t_weapon_fire_count value >= 7 } }
+                        set_timed_ship_flag = {
+                            flag = touhou_gunpower_turret_t_weapon_cooldown
+                            days = value:touhou_gunpower_turret_t_weapon_cooldown
+                        }
+                        add_modifier = {
+                            modifier = touhou_gunpower_turret_t_weapon days = 1
+                            time_multiplier = value:touhou_gunpower_turret_t_weapon_cooldown|add|1|
+                            mult = value:touhou_gunpower_turret_t_weapon_damage_factor
+                        }
+                    } else = {
+                        touhou_weapon_fire_aoe_damage_lunar_gravity_cannon = { size = titanic size_tag = t type = gravity_cannon }
+                        prev = {
+                            create_ambient_object = {
+                                type = th_gravity_cannon_sp_weapon_hit
+                                location = this
+                                duration = 10
+                                use_3d_location = yes
+                                entity_offset = { min = 0 max = 0 }
+                                entity_offset_angle = { min = 0 max = 0 }
+                                entity_offset_height = { min = 0 max = 0 }
+                                entity_scale_to_size = no
+                                scale = 0.8
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    prerequisites = { "tech_touhou_gunpower_turret_gravity_cannon" }
+}
+weapon_component_template = {
+    key = touhou_gunpower_turret_t_weapon_alt
+    icon = GFX_ship_part_touhou_gunpower_turret_t_weapon
+    inline_script = {
+        script = ship_components/touhou_gravity_cannon_turret_weapon_alt_script
+        size = titanic life_steal = 0 slot_tag = "t_slot weapon_type_touhou_dynamic_damage_ag"
+        set = "th_gravity_cannon_set_lunar_huge" gfx = th_gravity_cannon_t_weapon_pink
+    }
+    on_hit = {
+        custom_tooltip = touhou_gunpower_turret_t_weapon_alt_on_hit
+        hidden_effect = {
+            touhou_weapon_fire_aoe_damage_lunar_gravity_cannon = { size = extra_large size_tag = t type = gravity_cannon }
+        }
+    }
+    prerequisites = { "tech_touhou_gunpower_turret_gravity_cannon" }
+}
+weapon_component_template = {
+    key = touhou_gunpower_turret_l_weapon
+    icon = GFX_ship_part_touhou_gunpower_turret_l_weapon
+    inline_script = {
+        script = ship_components/touhou_gravity_cannon_turret_weapon_script
+        size = large life_steal = 0 slot_tag = "l_slot"
+        set = "th_gravity_cannon_set_lunar" gfx = th_gravity_cannon_l_weapon_pink
+    }
+    prerequisites = { "tech_touhou_gunpower_turret_gravity_cannon" }
+}
+weapon_component_template = {
+    key = touhou_gunpower_turret_m_weapon
+    icon = GFX_ship_part_touhou_gunpower_turret_m_weapon
+    inline_script = {
+        script = ship_components/touhou_gravity_cannon_turret_weapon_script
+        size = medium life_steal = 0 slot_tag = "m_slot"
+        set = "th_gravity_cannon_set_lunar" gfx = th_gravity_cannon_m_weapon_pink
+    }
+    prerequisites = { "tech_touhou_gunpower_turret_gravity_cannon" }
+}
+weapon_component_template = {
+    key = touhou_gunpower_turret_pd_weapon
+    icon = GFX_ship_part_touhou_gunpower_turret_pd_weapon
+    inline_script = {
+        script = ship_components/touhou_gravity_cannon_turret_weapon_script
+        size = point_defence life_steal = 0 slot_tag = "weapon_type_point_defense"
+        set = "th_gravity_cannon_set_lunar" gfx = th_gravity_cannon_pd_weapon_pink
+    }
+    point_defence_targets = { strike_craft missile }
+    prerequisites = { "tech_touhou_gunpower_turret_gravity_cannon" }
+}
+
+weapon_component_template = {
+    key = touhou_gunpower_turret_t_weapon_common
+    icon = GFX_ship_part_moon_van
+    custom_tooltip = touhou_gunpower_turret_t_weapon_common_tt
+    inline_script = {
+        script = ship_components/touhou_super_turret_weapon_script
+        size = titanic life_steal = 0.25 slot_tag = "t_slot weapon_type_touhou_dynamic_damage_ag weapon_type_touhou_gunpower_turret_main_weapon"
+        set = "th_spiritual_power_cannon_set_huge" gfx = lunar_capital_weapon_extra_laser
+    }
+    on_hit = {
+        custom_tooltip = touhou_gunpower_turret_t_weapon_on_hit
+        hidden_effect = {
+            if = {
+                limit = { exists = from from = { NOT = { has_ship_flag = touhou_gunpower_turret_t_weapon_cooldown } } }
+                from = {
+                    if = {
+                        limit = { NOT = { is_variable_set = touhou_gunpower_turret_t_weapon_fire_count } }
+                        set_variable = { which = touhou_gunpower_turret_t_weapon_fire_count value = 0 }
+                    }
+                    change_variable = { which = touhou_gunpower_turret_t_weapon_fire_count value = 1 }
+                    if = {
+                        limit = { check_variable = { which = touhou_gunpower_turret_t_weapon_fire_count value >= 7 } }
+                        set_timed_ship_flag = {
+                            flag = touhou_gunpower_turret_t_weapon_cooldown
+                            days = value:touhou_gunpower_turret_t_weapon_cooldown
+                        }
+                        add_modifier = {
+                            modifier = touhou_gunpower_turret_t_weapon days = 1
+                            time_multiplier = value:touhou_gunpower_turret_t_weapon_cooldown|add|1|
+                            mult = value:touhou_gunpower_turret_t_weapon_damage_factor
+                        }
+                    } else = {
+                        touhou_weapon_fire_aoe_damage_lunar_turret_weapon = { size = titanic size_tag = t type = gravity_cannon }
+                        prev = {
+                            create_ambient_object = {
+                                type = th_gravity_cannon_sp_weapon_hit
+                                location = this
+                                duration = 10
+                                use_3d_location = yes
+                                entity_offset = { min = 0 max = 0 }
+                                entity_offset_angle = { min = 0 max = 0 }
+                                entity_offset_height = { min = 0 max = 0 }
+                                entity_scale_to_size = no
+                                scale = 0.8
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    prerequisites = { "tech_touhou_gunpower_turret" }
+}
+weapon_component_template = {
+    key = touhou_gunpower_turret_t_weapon_alt_common
+    icon = GFX_ship_part_moon_van
+    inline_script = {
+        script = ship_components/touhou_super_turret_weapon_script
+        size = titanic life_steal = 0 slot_tag = "t_slot weapon_type_touhou_dynamic_damage_ag"
+        set = "th_spiritual_power_cannon_set_huge" gfx = lunar_capital_weapon_extra_laser_alt
+    }
+    on_hit = {
+        custom_tooltip = touhou_gunpower_turret_t_weapon_alt_on_hit
+        hidden_effect = {
+            touhou_weapon_fire_aoe_damage_lunar_turret_weapon = { size = extra_large size_tag = t type = gravity_cannon }
+        }
+    }
+    prerequisites = { "tech_touhou_gunpower_turret" }
+}
+weapon_component_template = {
+    key = touhou_gunpower_turret_l_weapon_common
+    icon = GFX_ship_part_moon_battery
+    inline_script = {
+        script = ship_components/touhou_super_turret_weapon_script
+        size = large life_steal = 0 slot_tag = "l_slot"
+        set = "th_spiritual_power_cannon_set" gfx = spth_mix_mid_bullet_ballistic
+    }
+    prerequisites = { "tech_touhou_gunpower_turret" }
+}
+weapon_component_template = {
+    key = touhou_gunpower_turret_m_weapon_common
+    icon = GFX_ship_part_moon_battery
+    inline_script = {
+        script = ship_components/touhou_super_turret_weapon_script
+        size = medium life_steal = 0 slot_tag = "m_slot"
+        set = "th_spiritual_power_cannon_set" gfx = spth_mix_mid_1_bullet_ballistic
+    }
+    prerequisites = { "tech_touhou_gunpower_turret" }
+}
+weapon_component_template = {
+    key = touhou_gunpower_turret_pd_weapon_common
+    icon = GFX_th_weapon_mofashu_lunar
+    inline_script = {
+        script = ship_components/touhou_super_turret_weapon_script
+        size = point_defence life_steal = 0 slot_tag = "weapon_type_point_defense"
+        set = "th_spiritual_power_cannon_set" gfx = spth_fantasia_bullet_5_2_GG_bullet_ballistic
+    }
+    point_defence_targets = { strike_craft missile }
+    prerequisites = { "tech_touhou_gunpower_turret" }
 }
