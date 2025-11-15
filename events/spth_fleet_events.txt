@@ -3181,3 +3181,144 @@ country_event = {
         }
     }
 }
+
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.2011
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_common_country = yes
+        # exists = event_target:touhou_magical_mallet_user_@this
+        has_any_touhou_magical_mallet_fleet_effect_fired = yes
+        fromfrom = { NOT = { has_fleet_flag = any_touhou_magical_mallet_event_fired } }
+    }
+    immediate = {
+        switch = {
+            trigger = has_country_flag
+            touhou_magical_mallet_a_fired = {
+                fromfrom = {
+                    set_timed_fleet_flag = { flag = any_touhou_magical_mallet_event_fired days = 30 }
+                }
+                fromfromfrom = {
+                    every_owned_ship = {
+                        add_modifier = {
+                            modifier = touhou_magical_mallet_a_modifier days = 11
+                            mult = value:touhou_magical_mallet_modifier_mult|base|0.2|factor|0.1|
+                        }
+                    }
+                }
+            }
+            touhou_magical_mallet_cruse_a_fired = {
+                if = {
+                    limit = { NOT = { has_country_flag = touhou_magical_mallet_cruse_a_fired } }
+                    fromfrom = {
+                        set_timed_fleet_flag = { flag = any_touhou_magical_mallet_event_fired days = 30 }
+                        every_owned_ship = {
+                            add_modifier = {
+                                modifier = touhou_magical_mallet_a_modifier days = 11
+                                mult = value:touhou_magical_mallet_modifier_mult|base|0.2|factor|0.1|
+                            }
+                        }
+                    }
+                }
+            }
+            touhou_magical_mallet_b_fired = {
+                fromfrom = {
+                    set_timed_fleet_flag = { flag = any_touhou_magical_mallet_event_fired days = 30 }
+                }
+                fromfromfrom = {
+                    every_owned_ship = {
+                        spth_reduce_armor_max = { percent = 1.0 }
+                        spth_reduce_shield_max = { percent = 1.0 }
+                        add_modifier = {
+                            modifier = touhou_magical_mallet_b_modifier days = 1
+                            time_multiplier = value:touhou_magical_mallet_modifier_mult|base|4|factor|2|
+                        }
+                    }
+                }
+            }
+            touhou_magical_mallet_cruse_b_fired = {
+                if = {
+                    limit = { NOT = { has_country_flag = touhou_magical_mallet_cruse_b_fired } }
+                    fromfrom = {
+                        set_timed_fleet_flag = { flag = any_touhou_magical_mallet_event_fired days = 30 }
+                        every_owned_ship = {
+                            spth_reduce_armor_max = { percent = 1.0 }
+                            spth_reduce_shield_max = { percent = 1.0 }
+                            add_modifier = {
+                                modifier = touhou_magical_mallet_b_modifier days = 1
+                                time_multiplier = value:touhou_magical_mallet_modifier_mult|base|4|factor|2|
+                            }
+                        }
+                    }
+                }
+            }
+            touhou_magical_mallet_d_fired = {
+                fromfrom = {
+                    set_timed_fleet_flag = { flag = any_touhou_magical_mallet_event_fired days = 30 }
+                }
+                fromfromfrom = {
+                    every_owned_ship = {
+                        touhou_set_terrify = {
+                            days = value:touhou_magical_mallet_modifier_mult|base|4|factor|1|
+                        }
+                    }
+                }
+            }
+            touhou_magical_mallet_cruse_d_fired = {
+                if = {
+                    limit = { NOT = { has_country_flag = touhou_magical_mallet_cruse_d_fired } }
+                    fromfrom = {
+                        set_timed_fleet_flag = { flag = any_touhou_magical_mallet_event_fired days = 90 }
+                        every_owned_ship = {
+                            touhou_set_terrify = {
+                                days = value:touhou_magical_mallet_modifier_mult|base|4|factor|1|
+                            }
+                        }
+                    }
+                }
+            }
+            touhou_magical_mallet_e_fired = {
+                fromfrom = {
+                    set_timed_fleet_flag = { flag = any_touhou_magical_mallet_event_fired days = 30 }
+                }
+                fromfromfrom = {
+                    every_owned_ship = {
+                        add_modifier = {
+                            modifier = touhou_magical_mallet_e_modifier days = 1
+                            time_multiplier = value:touhou_magical_mallet_modifier_mult|base|8|factor|2|
+                            multiplier = value:touhou_magical_mallet_modifier_mult|base|1|factor|0.25|
+                        }
+                    }
+                }
+            }
+            touhou_magical_mallet_cruse_e_fired = {
+                if = {
+                    limit = { NOT = { has_country_flag = touhou_magical_mallet_cruse_e_fired } }
+                    fromfrom = {
+                        set_timed_fleet_flag = { flag = any_touhou_magical_mallet_event_fired days = 90 }
+                        every_owned_ship = {
+                            add_modifier = {
+                                modifier = touhou_magical_mallet_e_modifier days = 1
+                                time_multiplier = value:touhou_magical_mallet_modifier_mult|base|4|factor|1|
+                                multiplier = value:touhou_magical_mallet_modifier_mult|base|1|factor|0.25|
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+ship_event = {
+    id = spth_fleet.2012
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        remove_terrified = yes
+    }
+}

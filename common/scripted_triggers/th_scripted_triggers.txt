@@ -663,6 +663,13 @@ spth_is_touhou_deposit = {
         is_deposit_type = d_spirit_power_spring_city
         is_deposit_type = d_hakurei_barrier
         is_deposit_type = d_hakurajinjia
+        is_deposit_type = d_hakurei_shrine
+        is_deposit_type = d_hakugyokurou
+        is_deposit_type = d_sakura_tree
+        is_deposit_type = d_touhou_library
+        is_deposit_type = d_chireiden
+        is_deposit_type = d_yukari_home
+        is_deposit_type = d_myouren_temple
         is_deposit_type = d_spth_lunar_capital_ruins
         is_deposit_type = d_spth_lunar_capital_centre_ruins
         is_deposit_type = d_spth_torifune_ruin
@@ -940,7 +947,7 @@ use_touhou_starting_district = {
         is_planet_class = pc_spiritual_power_habitat
         is_planet_class = pc_ringworld_th
         has_planet_flag = use_touhou_starting_district
-        # has_planet_flag = has_shell_world_touhou_gensokyo_city
+        has_planet_flag = has_shell_world_touhou_gensokyo_city
     }
 }
 
@@ -1237,5 +1244,50 @@ touhou_country_selector_country_selected_trigger = {
         AND = { check_variable = { which = touhou_country_selector_marked_page value = 198 } has_country_flag = touhou_country_selected_198_$ag_country_seq$ }
         AND = { check_variable = { which = touhou_country_selector_marked_page value = 199 } has_country_flag = touhou_country_selected_199_$ag_country_seq$ }
         AND = { check_variable = { which = touhou_country_selector_marked_page value = 200 } has_country_flag = touhou_country_selected_200_$ag_country_seq$ }
+    }
+}
+
+touhou_magical_mallet_check = {
+    optimize_memory
+    resource_stockpile_compare = { value >= value:touhou_magical_mallet_cost|type|$type$| resource = touhou_magic_power }
+    resource_stockpile_compare = { value >= value:touhou_magical_mallet_cost|type|$type$|factor|200| resource = sr_lingli }
+    resource_stockpile_compare = { value >= value:touhou_magical_mallet_cost|type|$type$|factor|100| resource = sr_fuka }
+    custom_tooltip = {
+        fail_text = touhou_magical_mallet_fail_no_leader
+        NOT = { exists = event_target:touhou_magical_mallet_user_@this }
+    }
+    custom_tooltip = {
+        fail_text = touhou_magical_mallet_fail_cooldown
+        NOT = { has_country_flag = touhou_magical_mallet_cooldown }
+    }
+}
+has_any_touhou_magical_mallet_fleet_effect_fired = {
+    optimize_memory
+    OR = {
+        has_country_flag = touhou_magical_mallet_a_fired
+        has_country_flag = touhou_magical_mallet_cruse_a_fired
+        has_country_flag = touhou_magical_mallet_b_fired
+        has_country_flag = touhou_magical_mallet_cruse_b_fired
+        has_country_flag = touhou_magical_mallet_c_fired
+        has_country_flag = touhou_magical_mallet_cruse_c_fired
+        has_country_flag = touhou_magical_mallet_d_fired
+        has_country_flag = touhou_magical_mallet_cruse_d_fired
+    }
+}
+touhou_never_set_terrify_ship = {
+    optimize_memory
+    OR = {
+        is_touhou_flagship = yes
+        is_touhou_support_ship = yes
+        check_modifier_value = { modifier = touhou_can_never_be_terrify value != 0 }
+        is_ship_class = shipclass_starbase
+        ag_is_ancient_titan = yes
+        ag_is_ancient_titan_alt = yes
+        ag_is_zeta_crisis_ship = yes
+        ship_size_multiplier >= 64
+        kuat_ship_is_super_flagship = yes
+        kuat_ship_is_standard_flagship = yes
+        kuat_ship_is_sub_flagship = yes
+        kuat_ship_is_movable_mega_starbase = yes
     }
 }

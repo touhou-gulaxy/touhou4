@@ -114,6 +114,96 @@ country_event = {
         shift_ethic = ethic_materialist
     }
 }
+country_event = {
+    id = toho.16
+    title = toho.16.name
+    desc = toho.16.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_leader_function_ui
+    custom_gui_option = spth_leader_function_button
+    picture_event_data = {
+        room = shining_needle_castle_room
+        portrait = event_target:touhou_magical_mallet_user_@this
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { is_variable_set = touhou_magical_mallet_duration } }
+            set_variable = { which = touhou_magical_mallet_duration value = 180 }
+        }
+        if = {
+            limit = { NOT = { is_variable_set = touhou_magical_mallet_strength } }
+            set_variable = { which = touhou_magical_mallet_strength value = @touhou_magical_mallet_strength_average }
+        }
+    }
+    after = {
+        if = {
+            limit = { has_country_flag = touhou_magical_mallet_should_close }
+            hidden_effect = {
+                remove_country_flag = touhou_magical_mallet_should_close
+                remove_country_flag = touhou_magical_mallet_opened
+            }
+        } else = { country_event = { id = toho.16 } }
+    }
+    # 调整持续时间
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_magical_mallet_duration_button
+    }
+    # 调整影响程度
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_magical_mallet_strength_button
+    }
+    option = {
+        name = toho.16.a
+        custom_tooltip = toho.16.a.effect
+        allow = { touhou_magical_mallet_check = { type = a } }
+        touhou_magical_mallet_fire_effect = { type = a }
+    }
+    option = {
+        name = toho.16.b
+        custom_tooltip = toho.16.b.effect
+        allow = { touhou_magical_mallet_check = { type = b } }
+        touhou_magical_mallet_fire_effect = { type = b }
+    }
+    option = {
+        name = toho.16.c
+        custom_tooltip = toho.16.c.effect
+        allow = { touhou_magical_mallet_check = { type = c } }
+        touhou_magical_mallet_fire_effect = { type = c save_temp_days = yes delay_event = toho.17 modifier = touhou_magical_mallet_c_modifier base_modifier = pop_bonus_workforce_mult modifier_base = 0.4 modifier_factor = 0.1 }
+    }
+    option = {
+        name = toho.16.d
+        custom_tooltip = toho.16.d.effect
+        allow = { touhou_magical_mallet_check = { type = d } }
+        touhou_magical_mallet_fire_effect = { type = d }
+    }
+    option = {
+        name = toho.16.e
+        custom_tooltip = toho.16.e.effect
+        allow = { touhou_magical_mallet_check = { type = e } }
+        touhou_magical_mallet_fire_effect = { type = e }
+    }
+    option = {
+        name = TH_EXIT
+        default_hide_option = yes
+        hidden_effect = { set_country_flag = touhou_magical_mallet_should_close }
+    }
+}
+country_event = {
+    id = toho.17
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        remove_modifier = touhou_magical_mallet_c_modifier
+        add_modifier = {
+            modifier = touhou_magical_mallet_c_modifier days = 1
+            time_multiplier = touhou_magical_mallet_duration_temp_c
+            mult = value:touhou_magical_mallet_modifier_value|base|-0.2|factor|-0.05|modifier|pop_bonus_workforce_mult|
+        }
+    }
+}
 
 ##########建议列8000-8999号事件为各种杂项事件########
 ########9000-9004为巨像
@@ -1209,6 +1299,9 @@ country_event = {
 				flag_shikieiki = { root = { spth_effect_init_shikieiki_effect = yes } }
 				flag_yuza = { root = { spth_effect_init_yuza_effect = yes } }
 				flag_komachi = { root = { spth_effect_init_komachi_effect = yes } }
+                flag_kagerou = { root = { spth_effect_init_kagerou_effect = yes } }
+                flag_shinmyoumaru = { root = { spth_effect_init_shinmyoumaru_effect = yes } }
+                flag_seija = { root = { spth_effect_init_seija_effect = yes } }
 				flag_remilia = {
 					root = {
 						spth_effect_respawn_ruler_leader = { ID = remilia }
@@ -7282,7 +7375,7 @@ country_event = {
 country_event = {
     id = toho.8408
     title = "curse.bestowed"
-    desc = { trigger = { is_robot_empire = no is_gestalt = no } text = utopia.3182.desc }
+    desc = { trigger = { is_robot_empire = no is_gestalt = no } text = utopia.3182.desc_organic_non_gestalt }
     desc = { trigger = { is_robot_empire = yes is_gestalt = no } text = utopia.3182.desc_machine_non_gestalt }
     desc = { trigger = { is_gestalt = yes } text = utopia.3182.desc_gestalt }
     is_triggered_only = yes

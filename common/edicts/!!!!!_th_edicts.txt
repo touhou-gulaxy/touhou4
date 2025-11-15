@@ -123,12 +123,20 @@ spth_planet_dicisions_th_deposits_build = {
 	effect = {
 		every_owned_planet = {
 			limit = {
-				is_artificial = no
-				NOT = { is_planet_class = pc_machine }
-				NOT = { is_planet_class = pc_hive }
-				NOT = { is_planet_class = pc_city }
-				has_deposit = d_hakurei_barrier
-				NOT = { check_variable = { which = th_deposits_num value >= 6 } }
+                has_deposit = d_hakurei_barrier
+                NOT = { check_variable = { which = th_deposits_num value >= 7 } }
+                OR = {
+                    AND = {
+                        is_artificial = no
+                        NOT = { is_planet_class = pc_machine }
+                        NOT = { is_planet_class = pc_hive }
+                        NOT = { is_planet_class = pc_city }
+                    }
+                    AND = {
+                        ag_is_shell_world = yes
+                        check_modifier_value = { modifier = touhou_can_shellworld_use_th_deposits_build value != 0 }
+                    }
+                }
 			}
 			select_decision = { name = th_deposits_build }
 		}
@@ -370,6 +378,33 @@ spth_enable_psionic_inhibitors = {
         hidden_effect = { remove_country_flag = ag_disable_psionic_inhibitors }
     }
     ai_weight = { weight = 0 }
+}
+touhou_magical_mallet = {
+    length = -1
+    icon = GFX_edict_type_magical_mallet
+    potential = {
+        is_ai = no
+        has_authority = auth_gensokyo
+        has_country_flag = th_shinmyoumaru_get
+    }
+    allow = {
+        custom_tooltip = {
+            fail_text = touhou_magical_mallet_fail_no_leader
+            NOT = { exists = event_target:touhou_magical_mallet_user_@this }
+        }
+        custom_tooltip = {
+            fail_text = touhou_magical_mallet_fail_cooldown
+            NOT = { has_country_flag = touhou_magical_mallet_cooldown }
+        }
+        custom_tooltip = {
+            fail_text = touhou_magical_mallet_fail_has_open
+            NOT = { has_country_flag = touhou_magical_mallet_opened }
+        }
+    }
+    effect = {
+        set_country_flag = touhou_magical_mallet_opened
+        country_event = { id = toho.16 }
+    }
 }
 
 hmx_hellsing = {

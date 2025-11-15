@@ -160,17 +160,25 @@ country_event = {
 		has_edict = spth_planet_dicisions_th_deposits_build
 	}
 	immediate = {
-		every_owned_planet = {
-			limit = {
-				is_artificial = no
-				NOT = { is_planet_class = pc_machine }
-				NOT = { is_planet_class = pc_hive }
-				NOT = { is_planet_class = pc_city }
-				has_deposit = d_hakurei_barrier
-				NOT = { check_variable = { which = th_deposits_num value >= 6 } }
-			}
-			select_decision = { name = th_deposits_build }
-		}
+        every_owned_planet = {
+            limit = {
+                has_deposit = d_hakurei_barrier
+                NOT = { check_variable = { which = th_deposits_num value >= 7 } }
+                OR = {
+                    AND = {
+                        is_artificial = no
+                        NOT = { is_planet_class = pc_machine }
+                        NOT = { is_planet_class = pc_hive }
+                        NOT = { is_planet_class = pc_city }
+                    }
+                    AND = {
+                        ag_is_shell_world = yes
+                        check_modifier_value = { modifier = touhou_can_shellworld_use_th_deposits_build value != 0 }
+                    }
+                }
+            }
+            select_decision = { name = th_deposits_build }
+        }
 	}
 }
 

@@ -1229,3 +1229,30 @@ touhou_create_damaged_shell_world_layer = {
     }
 }
 
+touhou_magical_mallet_fire_effect = {
+    optimize_memory
+    hidden_effect = {
+        add_resource = { touhou_magic_power = -1 sr_lingli = -200 sr_fuka = -200 mult = value:touhou_magical_mallet_cost|type|$type$| }
+        set_timed_country_flag = { flag = touhou_magical_mallet_cooldown days = value:touhou_magical_mallet_cooldown }
+        if = { limit = { NOT = { has_country_flag = has_any_touhou_magical_mallet_fired } } set_country_flag = has_any_touhou_magical_mallet_fired }
+        set_timed_country_flag = { flag = touhou_magical_mallet_$type$_fired days = touhou_magical_mallet_duration }
+        [[save_temp_days] set_variable = { which = touhou_magical_mallet_duration_temp_$type$ value = touhou_magical_mallet_duration } ]
+        [[delay_event] country_event = { id = $delay_event$ days = touhou_magical_mallet_duration } ]
+        [[modifier] add_modifier = { modifier = $modifier$ days = 1 time_multiplier = touhou_magical_mallet_duration mult = value:touhou_magical_mallet_modifier_value|base|$modifier_base$|factor|$modifier_factor$|modifier|$base_modifier$| } ]
+        set_variable = { which = touhou_magical_mallet_duration_2x_$type$ value = touhou_magical_mallet_duration }
+        multiply_variable = { which = touhou_magical_mallet_duration_2x_$type$ value = 2 }
+        set_timed_country_flag = { flag = touhou_magical_mallet_cruse_$type$_fired days = touhou_magical_mallet_duration_2x_$type$ }
+        if = { limit = { NOT = { has_country_flag = has_any_touhou_magical_mallet_cruse_fired } } set_country_flag = has_any_touhou_magical_mallet_cruse_fired }
+        clear_variable = touhou_magical_mallet_duration_2x_$type$
+        set_country_flag = touhou_magical_mallet_should_close
+    }
+}
+touhou_set_terrify = {
+    optimize_memory
+    if = {
+        limit = { touhou_never_set_terrify_ship = no }
+        set_terrified_by = event_target:touhou_terrify_root
+        ship_event = { id = spth_fleet.2012 days = $days$ }
+    }
+}
+
