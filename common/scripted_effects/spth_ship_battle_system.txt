@@ -37,22 +37,22 @@ spth_super_carrier_init_system_self = {
             # set_variable = { which = spth_super_carrier_inv_max value = 10 }
             ship_event = { id = spth_fleet.1001 days = 1 }
         }
-        every_owned_ship = {
-            limit = { has_hp < 4800000 }
-            set_variable = { which = spth_super_carrier_hull_standard value = trigger:has_hp }
-            change_variable = { which = spth_super_carrier_hull_standard value = modifier:ship_hull_add }
-            change_variable = { which = spth_super_carrier_hull_standard value = 1080000 }
-            if = {
-                limit = {
-                    check_variable_arithmetic = {
-                        which = spth_super_carrier_hull_standard
-                        multiply = modifier:ship_hull_mult
-                        value < 10000000
-                    }
-                }
-                add_modifier = { modifier = spth_super_carrier_protect days = 15 }
-            }
-        }
+        # every_owned_ship = {
+        #     limit = { has_hp < 4800000 }
+        #     set_variable = { which = spth_super_carrier_hull_standard value = trigger:has_hp }
+        #     change_variable = { which = spth_super_carrier_hull_standard value = modifier:ship_hull_add }
+        #     change_variable = { which = spth_super_carrier_hull_standard value = 1080000 }
+        #     if = {
+        #         limit = {
+        #             check_variable_arithmetic = {
+        #                 which = spth_super_carrier_hull_standard
+        #                 multiply = modifier:ship_hull_mult
+        #                 value < 10000000
+        #             }
+        #         }
+        #         add_modifier = { modifier = spth_super_carrier_protect days = 15 }
+        #     }
+        # }
         fleet_event = { id = spth_fleet.1005 }
     }
 }
@@ -66,12 +66,22 @@ spth_super_carrier_main_system_self = {
         owner = { set_variable = { which = spth_super_carrier_inv_counter value = 0 } }
     }
     if = {
-        limit = { check_variable = { which = spth_super_carrier_combat_days value <= 10 } }
-        fleet = { every_owned_ship = { spth_repair_ship_perc = { all_hp = yes ar_perc = 0.2 } } }
+        limit = { check_variable = { which = spth_super_carrier_combat_days value <= 5 } }
+        fleet = { every_owned_ship = { spth_repair_ship_perc = { ar_perc = 0.25 sh_perc = 0.25 } } }
     } else = {
         if = {
             limit = { check_variable_arithmetic = { which = spth_super_carrier_combat_days modulo = 3 value = 0 } }
-            fleet = { every_owned_ship = { spth_repair_ship_perc = { all_hp = yes } } }
+            fleet = {
+                every_owned_ship = {
+                    limit = { has_max_hp < 200000000 }
+                    set_variable = { which = touhou_calc_temp_hull_value value = value:touhou_calc_temp_hull_value|factor|0.25| }
+                    if = {
+                        limit = { check_variable = { which = touhou_calc_temp_hull_value value > 0 } }
+                        set_variable = { which = touhou_calc_temp_hull_value value = -200 }
+                    }
+                    reduce_hp = touhou_calc_temp_hull_value
+                }
+            }
         }
     }
     fleet = {
@@ -199,7 +209,7 @@ spth_super_carrier_on_hit_effect = {
     create_ambient_object = {
         type = th_invisible_object
         location = this
-        duration = 10
+        duration = 20
         entity_offset = 0
         entity_offset_angle = 0
         entity_offset_height = 0
@@ -209,8 +219,8 @@ spth_super_carrier_on_hit_effect = {
     create_ambient_object = {
         type = th_invisible_object
         location = this
-        duration = 10
-        entity_offset = 40
+        duration = 20
+        entity_offset = 80
         entity_offset_angle = 0
         entity_offset_height = 0
         use_3d_location = yes
@@ -219,14 +229,30 @@ spth_super_carrier_on_hit_effect = {
     create_ambient_object = {
         type = th_invisible_object
         location = this
-        duration = 10
-        entity_offset = 100
+        duration = 20
+        entity_offset = 200
         entity_offset_angle = 0
         entity_offset_height = 0
         use_3d_location = yes
         effect = { save_event_target_as = target_d_outer }
     }
     from = {
+        if = {
+            limit = { exists = owner owner = {
+                has_modifier = touhou_spellcard_41_cap
+            } }
+            prev.fleet = {
+                while = {
+                    count = value:touhou_spellcard_41_chain_amount
+                    random_owned_ship = {
+                        limit = { NOT = { has_ship_flag = touhou_spellcard_41_target } }
+                        set_timed_ship_flag = { flag = touhou_spellcard_41_target days = 1 }
+                        spth_reduce_armor_max = { percent = 0.10 }
+                        th_spawn_explosion_particle = { color = purple size = small }
+                    }
+                }
+            }
+        }
         save_event_target_as = shooter
         fleet = {
             every_combatant_fleet = {
@@ -260,48 +286,48 @@ spth_super_carrier_on_hit_effect = {
             }
         }
     }
-    solar_system = {
-        create_fleet = {
-            name = th_weapon_yuzhu_ultra_instant_kill_aura
-            settings = {
-                can_upgrade = no
-                spawn_debris = no
-                can_change_leader = no
-                uses_naval_capacity = no
-                is_boss = yes
-                is_ultra_boss = yes
-                garrison = no
-                can_change_composition = no
-            }
-            effect = {
-                set_owner = event_target:shooter.owner
-                create_ship = {
-                    design = th_weapon_yuzhu_ultra_special_effect_instant_kill
-                    effect = {
-                        set_name = th_weapon_yuzhu_ultra_instant_kill_aura
-                        set_ship_flag = spth_invincible
-                        set_disable_at_health = 0.01
-                        ship_event = { id = Th_dynamic_battle_vict.47 days = 2 }
-                    }
-                }
-                create_ship = {
-                    design = th_weapon_yuzhu_ultra_special_effect_common
-                    effect = {
-                        set_name = th_weapon_yuzhu_ultra_damage_aura
-                        set_ship_flag = spth_invincible
-                        set_disable_at_health = 0.01
-                    }
-                }
-                set_location = {
-                    target = prevprev
-                    distance = 0
-                    angle = random
-                }
-                set_event_locked = yes
-                fleet_event = { id = spth_fleet.1006 days = 3 }
-            }
-        }
-    }
+    # solar_system = {
+    #     create_fleet = {
+    #         name = th_weapon_yuzhu_ultra_instant_kill_aura
+    #         settings = {
+    #             can_upgrade = no
+    #             spawn_debris = no
+    #             can_change_leader = no
+    #             uses_naval_capacity = no
+    #             is_boss = yes
+    #             is_ultra_boss = yes
+    #             garrison = no
+    #             can_change_composition = no
+    #         }
+    #         effect = {
+    #             set_owner = event_target:shooter.owner
+    #             create_ship = {
+    #                 design = th_weapon_yuzhu_ultra_special_effect_instant_kill
+    #                 effect = {
+    #                     set_name = th_weapon_yuzhu_ultra_instant_kill_aura
+    #                     set_ship_flag = spth_invincible
+    #                     set_disable_at_health = 0.01
+    #                     ship_event = { id = Th_dynamic_battle_vict.47 days = 2 }
+    #                 }
+    #             }
+    #             create_ship = {
+    #                 design = th_weapon_yuzhu_ultra_special_effect_common
+    #                 effect = {
+    #                     set_name = th_weapon_yuzhu_ultra_damage_aura
+    #                     set_ship_flag = spth_invincible
+    #                     set_disable_at_health = 0.01
+    #                 }
+    #             }
+    #             set_location = {
+    #                 target = prevprev
+    #                 distance = 0
+    #                 angle = random
+    #             }
+    #             set_event_locked = yes
+    #             fleet_event = { id = spth_fleet.1006 days = 3 }
+    #         }
+    #     }
+    # }
 }
 
 spth_toyohime_instant_kill_on_hit = {
@@ -329,10 +355,107 @@ spth_toyohime_instant_kill_on_hit = {
                 modifier = th_toyohime_instant_kill_buff
                 mult = value:th_instant_kill_value|base_dmg|10000|final_dmg|720000000|size_damage_factor|0.25|
             }
+            create_ambient_object = {
+                type = touhou_lunar_superlaser_instant_kill_upgrade
+                location = this
+                duration = 10
+                use_3d_location = yes
+                entity_offset = { min = 0 max = 0 }
+                entity_offset_angle = { min = 0 max = 0 }
+                entity_offset_height = { min = $min_height|0$ max = $max_height|0$ }
+                entity_scale_to_size = no
+                scale = 0.1
+            }
         }
         reduce_shield = 922337203
         repair_armor_amount = -922337202
-        th_spawn_explosion_particle = { color = pink size = large }
+        create_ambient_object = {
+            type = lunar_capital_superlaser_instant_kill_hit_explosion
+            location = this
+            duration = 10
+            use_3d_location = yes
+            entity_offset = { min = 0 max = 0 }
+            entity_offset_angle = { min = 0 max = 0 }
+            entity_offset_height = { min = $min_height|0$ max = $max_height|0$ }
+            entity_scale_to_size = no
+            scale = 0.5
+        }
+    } else = {
+        from = {
+            if = {
+                limit = { has_modifier = th_toyohime_instant_kill_buff }
+                remove_modifier = th_toyohime_instant_kill_buff
+            }
+        }
+    }
+}
+touhou_fe_union_singularity_torpedo_instant_kill_on_hit = {
+    optimize_memory
+    from = {
+        if = {
+            limit = { NOT = { is_variable_set = ship_toyohime_instant_kill_used } }
+            set_variable = { which = ship_toyohime_instant_kill_used value = 0 }
+        }
+    }
+    if = {
+        limit = {
+            from = {
+                check_variable_arithmetic = {
+                    which = modifier:ship_toyohime_instant_kill
+                    subtract = ship_toyohime_instant_kill_used
+                    value > 0
+                }
+            }
+        }
+        from = {
+            set_variable = { which = ship_toyohime_instant_kill_debug value = modifier:ship_toyohime_instant_kill }
+            set_ship_flag = has_toyohime_instant_kill
+            add_modifier = {
+                modifier = th_toyohime_instant_kill_buff
+                mult = value:th_instant_kill_value|base_dmg|2400|final_dmg|720000000|size_damage_factor|0.25|tag3|weapon_type_gravity|tag4|weapon_type_touhou_difficulty_player|tag5|weapon_archaeotech|
+            }
+        }
+        reduce_shield = 922337203
+        repair_armor_amount = -922337202
+        th_spawn_explosion_particle = { color = pink size = medium }
+    } else = {
+        from = {
+            if = {
+                limit = { has_modifier = th_toyohime_instant_kill_buff }
+                remove_modifier = th_toyohime_instant_kill_buff
+            }
+        }
+    }
+}
+touhou_fe_union_spiritual_power_torpedo_instant_kill_on_hit = {
+    optimize_memory
+    from = {
+        if = {
+            limit = { NOT = { is_variable_set = ship_toyohime_instant_kill_used } }
+            set_variable = { which = ship_toyohime_instant_kill_used value = 0 }
+        }
+    }
+    if = {
+        limit = {
+            from = {
+                check_variable_arithmetic = {
+                    which = modifier:ship_toyohime_instant_kill
+                    subtract = ship_toyohime_instant_kill_used
+                    value > 0
+                }
+            }
+        }
+        from = {
+            set_variable = { which = ship_toyohime_instant_kill_debug value = modifier:ship_toyohime_instant_kill }
+            set_ship_flag = has_toyohime_instant_kill
+            add_modifier = {
+                modifier = th_toyohime_instant_kill_buff
+                mult = value:th_instant_kill_value|base_dmg|1600|final_dmg|720000000|size_damage_factor|0.75|tag1|weapon_type_kinetic|tag3|weapon_type_gravity|tag4|weapon_type_touhou_difficulty_player|tag5|weapon_archaeotech|
+            }
+        }
+        reduce_shield = 922337203
+        repair_armor_amount = -922337202
+        th_spawn_explosion_particle = { color = pink size = medium }
     } else = {
         from = {
             if = {
@@ -355,5 +478,58 @@ th_toyohime_weapon_sp_hit_effect = {
         limit = { check_variable = { which = th_toyohime_weapon_$size$_hit_count value >= 10 } }
         set_variable = { which =  th_toyohime_weapon_$size$_hit_count value = 0 }
         add_modifier = { modifier = "th_toyohime_weapon_$size$_effect_final" days = 5 }
+    }
+}
+
+touhou_superstarbase_test_spawn = {
+    optimize_memory
+    while = {
+        count = 6
+        create_fleet = {
+            name = "NAME_touhou_superstarbase_move_fleet"
+            settings = {
+                can_upgrade = no
+                can_change_composition = no
+                can_change_leader = no
+                spawn_debris = no
+            }
+            effect = {
+                set_owner = event_target:spth_test_country
+                create_ship = {
+                    name = "NAME_touhou_superstarbase_move"
+                    random_existing_design = touhou_superstarbase_move
+                    prefix = no
+                    effect = {
+                        fire_on_action = {
+                            on_action = on_ship_built
+                            scopes = { from = prev }
+                        }
+                    }
+                }
+                set_location = { target = prev distance = 50 angle = 0 }
+            }
+        }
+    }
+}
+touhou_superstarbase_spawn = {
+    optimize_memory
+    create_fleet = {
+        name = "NAME_touhou_superstarbase_move_fleet"
+        settings = {
+            can_upgrade = no
+            can_change_composition = no
+            can_change_leader = no
+            spawn_debris = no
+        }
+        effect = {
+            set_owner = $owner$
+            create_ship = {
+                name = "NAME_touhou_superstarbase_move"
+                design = event_target:touhou_design_ship
+                prefix = no
+                effect = { set_ship_flag = $ship_flag$ }
+            }
+            set_location = { target = prev distance = 50 angle = $angle$ }
+        }
     }
 }

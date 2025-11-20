@@ -5,6 +5,203 @@ namespace = th_leader_sp
 @skill_support_t1 = 0.1
 @skill_support_t2 = 0.2
 
+# Triggers when trying to open the diplomacy view for countries with custom diplomacy.
+# Country scope
+# This = target country (player)
+# From = source country
+country_event = {
+    id = th_leader_sp.1
+    title = th_leader_sp.1.name
+    is_triggered_only = yes
+    trigger = {
+        OR = {
+            from = { is_same_value = root }
+            AND = {
+                NOT = { has_country_flag = touhou_kosuzu_country_contact_fired }
+                from = { is_country_type = touhou_kosuzu_country }
+            }
+        }
+        has_authority = auth_gensokyo is_ai = no
+        exists = event_target:touhou_kosuzu_country_@root
+    }
+    immediate = {
+        set_country_flag = touhou_kosuzu_country_contact_fired
+    }
+    after = {
+        remove_country_flag = touhou_kosuzu_country_contact_fired
+    }
+    desc = {
+        trigger = { always = yes }
+        text = th_leader_sp.1.desc.1
+        text = th_leader_sp.1.desc.2
+        text = th_leader_sp.1.desc.3
+        text = th_leader_sp.1.desc.4
+    }
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { room = touhou_suzunaan_room }
+    option = {
+        name = th_leader_sp.1.a
+        is_dialog_only = yes
+        response_text = th_leader_sp.1.a.response
+        allow = { NOT = { has_modifier = touhou_kosuzu_country_modifier_upkeep } }
+        add_modifier = { modifier = touhou_kosuzu_country_modifier_upkeep days = 1800 }
+        locked_random_list = {
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_1 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_2 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_3 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_4 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_5 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_6 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_7 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_8 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_9 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_10 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_11 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_12 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_13 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_14 days = 1800 } }
+            1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_15 days = 1800 } }
+        }
+    }
+    option = {
+        name = th_leader_sp.1.b
+        response_text = th_leader_sp.1.b.response
+        custom_tooltip = th_leader_sp.1.b.effect
+        trigger = { hidden_trigger = { NOT = { has_country_flag = disable_leader_trait_kosuzu_book_skill } } }
+        allow = { hidden_trigger = { NOT = { has_country_flag = disable_leader_trait_kosuzu_book_skill } } }
+        hidden_effect = {
+            set_country_flag = disable_leader_trait_kosuzu_book_skill
+        }
+    }
+    option = {
+        name = th_leader_sp.1.b.alt
+        response_text = th_leader_sp.1.b.alt.response
+        custom_tooltip = th_leader_sp.1.b.alt.effect
+        trigger = { hidden_trigger = { has_country_flag = disable_leader_trait_kosuzu_book_skill } }
+        allow = { hidden_trigger = { has_country_flag = disable_leader_trait_kosuzu_book_skill } }
+        hidden_effect = {
+            remove_country_flag = disable_leader_trait_kosuzu_book_skill
+        }
+    }
+    option = {
+        name = th_leader_sp.1.c
+        is_dialog_only = yes
+        response_text = th_leader_sp.1.c.response
+        custom_tooltip = th_leader_sp.1.c.effect
+        trigger = {
+            hidden_trigger = {
+                OR = {
+                    NOT = { is_variable_set = touhou_kosuzu_book_count }
+                    check_variable = { which = touhou_kosuzu_book_count value <= 6 }
+                }
+                NOT = { has_country_flag = touhou_kosuzu_book_sample_cooldown }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = th_leader_sp.1.c.fail
+                OR = {
+                    NOT = { is_variable_set = touhou_kosuzu_book_count }
+                    check_variable = { which = touhou_kosuzu_book_count value <= 6 }
+                }
+            }
+            custom_tooltip = {
+                fail_text = th_leader_sp.1.c.fail.cooldown
+                NOT = { has_country_flag = touhou_kosuzu_book_sample_cooldown }
+            }
+        }
+        hidden_effect = {
+            set_timed_country_flag = { flag = touhou_kosuzu_book_sample_cooldown days = 360 }
+            if = {
+                limit = { NOT = { is_variable_set = touhou_kosuzu_book_count } }
+                set_variable = { which = touhou_kosuzu_book_count value = 0 }
+            }
+            change_variable = { which = touhou_kosuzu_book_count value = 1 }
+            reroll_random = yes
+            random_list = {
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_a_brief_history_of_time }
+                    give_specimen = { key = touhou_a_brief_history_of_time origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_bayi_first_aid }
+                    give_specimen = { key = touhou_bayi_first_aid origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_magic_guide_book }
+                    give_specimen = { key = touhou_magic_guide_book origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_marisa_magic_guide_book }
+                    give_specimen = { key = touhou_marisa_magic_guide_book origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_pulp_fiction }
+                    give_specimen = { key = touhou_pulp_fiction origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_universal_repair_manual }
+                    give_specimen = { key = touhou_universal_repair_manual origin = touhou_kosuzu_country }
+                }
+            }
+        }
+    }
+    option = {
+        name = th_leader_sp.1.d
+        is_dialog_only = yes
+        response_text = th_leader_sp.1.d.response
+        trigger = { hidden_trigger = { NOT = { has_relic = r_touhou_gumon_shiki } } }
+        allow = { hidden_trigger = { NOT = { has_relic = r_touhou_gumon_shiki } } }
+        add_relic = r_touhou_gumon_shiki
+    }
+    option = {
+        name = th_leader_sp.1.f
+        is_dialog_only = yes
+        response_text = th_leader_sp.1.f.response
+        trigger = { hidden_trigger = { NOT = { has_country_flag = leader_trait_kosuzu_space_skill } } }
+        allow = {
+            custom_tooltip = {
+                fail_text = th_leader_sp.1.f.fail
+                any_owned_fleet = { is_in_combat = yes }
+            }
+            hidden_trigger = { NOT = { has_country_flag = leader_trait_kosuzu_space_skill } }
+        }
+        hidden_effect = {
+            set_timed_country_flag = { flag = leader_trait_kosuzu_space_skill days = 1800 }
+            every_owned_fleet = {
+                limit = { is_in_combat = yes }
+                every_owned_ship = { add_modifier = { modifier = touhou_kosuzu_fleet_modifier days = 90 } }
+            }
+        }
+    }
+    option = {
+        name = th_leader_sp.1.exit
+        response_text = th_leader_sp.1.exit.response
+    }
+}
+country_event = {
+    id = th_leader_sp.2
+    title = th_leader_sp.2.name
+    desc = th_leader_sp.2.desc
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = th_leader_sp_2_fired } }
+    immediate = { set_country_flag = th_leader_sp_2_fired }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = touhou_event_suzunaan_1_room }
+    show_sound = event_celebration
+    option = {
+        name = th_leader_sp.2.a
+        custom_tooltip = th_leader_sp.2.a.effect
+        default_hide_option = yes
+    }
+}
+
 # 绀珠之药
 country_event = {
     id = th_leader_sp.100
@@ -299,9 +496,13 @@ planet_event = {
         if = {
             limit = { check_modifier_value = { modifier = planet_kaguya_protect_duration value > 45 } }
             add_planet_devastation = -100
+            set_planet_flag = planet_kaguya_protect_90
+            set_planet_flag = planet_kaguya_protect_fired
             planet_event = { id = th_leader_sp.208 days = 90 }
         } else = {
             add_planet_devastation = -100
+            set_planet_flag = planet_kaguya_protect_45
+            set_planet_flag = planet_kaguya_protect_fired
             planet_event = { id = th_leader_sp.208 days = 45 }
         }
         planet_event = { id =  th_leader_sp.209 days = 1 }
@@ -332,6 +533,7 @@ planet_event = {
                 clear_variable = planet_kaguya_protect_time
                 remove_planet_flag = planet_kaguya_protect_90
                 remove_planet_flag = planet_kaguya_protect_45
+                remove_planet_flag = planet_kaguya_protect_fired
             } else = { planet_event = { id =  th_leader_sp.209 days = 1 } }
             add_planet_devastation = -100
             change_variable = { which = planet_kaguya_protect_time value = 1 }
@@ -339,6 +541,7 @@ planet_event = {
             clear_variable = planet_kaguya_protect_time
             remove_planet_flag = planet_kaguya_protect_90
             remove_planet_flag = planet_kaguya_protect_45
+            remove_planet_flag = planet_kaguya_protect_fired
         }
     }
 }
@@ -429,6 +632,118 @@ fleet_event = {
             50 = { every_owned_ship = { repair_armor_percentage = 1.0 } }
         }
         fleet_event = { id = th_leader_sp.214 days = 4 }
+    }
+}
+
+leader_event = {
+    id = th_leader_sp.300
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        spth_is_touhou_gensokyo_leader = yes
+        exists = owner owner = { touhou_has_psionic = yes }
+    }
+    immediate = {
+        spth_add_trait = { trait = leader_trait_touhou_psionic }
+    }
+}
+
+leader_event = {
+    id = th_leader_sp.300
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        spth_is_touhou_gensokyo_leader = yes
+        spth_has_ag_mod = yes
+        NOT = { has_trait = leader_trait_touhou_ancient_knowledges }
+        OR = {
+            has_trait = leader_trait_akyuu
+            has_trait = leader_trait_eirin
+            has_trait = leader_trait_kaguya
+            has_trait = leader_trait_yukari
+            has_trait = leader_trait_alice
+            has_trait = leader_trait_komachi
+            has_trait = leader_trait_touhou_keiki
+        }
+    }
+    immediate = {
+        spth_add_trait = { trait = leader_trait_touhou_ancient_knowledges }
+    }
+}
+country_event = {
+    id = th_leader_sp.301
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = th_leader_sp_301_fired }
+        has_authority = auth_gensokyo
+        touhou_has_psionic = yes
+    }
+    immediate = {
+        set_country_flag = th_leader_sp_301_fired
+        every_owned_leader = {
+            limit = { spth_is_touhou_gensokyo_leader = yes }
+            spth_add_trait = { trait = leader_trait_touhou_psionic }
+        }
+    }
+}
+country_event = {
+    id = th_leader_sp.302
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = disable_jump_drive_cooldown_malus }
+        has_authority = auth_gensokyo
+        has_country_flag = th_yukari_get
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { has_country_flag = disable_jump_drive_cooldown_malus } }
+            set_country_flag = disable_jump_drive_cooldown_malus
+        }
+    }
+}
+leader_event = {
+    id = th_leader_sp.303
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        check_modifier_value = {
+            modifier = touhou_disable_jump_drive_cooldown_malus
+            value > 0
+        }
+    }
+    immediate = {
+        owner = {
+            set_country_flag = disable_jump_drive_cooldown_malus
+        }
+    }
+}
+event = {
+    id = th_leader_sp.304
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { spth_has_ag_mod = yes }
+    immediate = {
+        random_playable_country = {
+            limit = { has_authority = auth_gensokyo }
+            every_owned_leader = {
+                limit = {
+                    spth_is_touhou_gensokyo_leader = yes
+                    NOT = { has_trait = leader_trait_touhou_ancient_knowledges }
+                    OR = {
+                        has_trait = leader_trait_akyuu
+                        has_trait = leader_trait_eirin
+                        has_trait = leader_trait_kaguya
+                        has_trait = leader_trait_yukari
+                        has_trait = leader_trait_alice
+                        has_trait = leader_trait_komachi
+                        has_trait = leader_trait_touhou_keiki
+                    }
+                }
+                spth_add_trait = { trait = leader_trait_touhou_ancient_knowledges }
+            }
+        }
     }
 }
 
@@ -541,6 +856,136 @@ country_event = {
     }
 }
 
+# on_ground_combat_started
+# This = planet
+# From = country attacking
+planet_event = {
+    id = th_leader_sp.903
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        planet_event = { id = th_leader_sp.904 days = 1 }
+        planet_event = { id = th_leader_sp.906 days = 1 }
+    }
+}
+planet_event = {
+    id = th_leader_sp.904
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_planet_flag = th_leader_sp_904_fired }
+        has_ground_combat = yes
+        any_ground_combat_attacker = {
+            exists = leader
+            leader = {
+                OR = {
+                    check_modifier_value = { modifier = touhou_leader_kill_army_chance value > 0 }
+                    check_modifier_value = { modifier = touhou_leader_kill_army_perc value > 0 }
+                    check_modifier_value = { modifier = touhou_leader_damage_army_effect value > 0 }
+                }
+            }
+        }
+    }
+    immediate = {
+        set_planet_flag = th_leader_sp_904_fired
+        touhou_leader_special_army_effect_init = { who = attacker }
+        planet_event = { id = th_leader_sp.905 }
+    }
+}
+# cycle
+planet_event = {
+    id = th_leader_sp.905
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { has_ground_combat = yes }
+            touhou_leader_special_army_effect_loop = { who = attacker opposite_who = defender }
+            planet_event = { id = th_leader_sp.905 days = 5 }
+        } else = {
+            remove_planet_flag = th_leader_sp_904_fired
+        }
+    }
+}
+planet_event = {
+    id = th_leader_sp.906
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        any_ground_combat_defender = {
+            exists = leader
+            leader = {
+                OR = {
+                    check_modifier_value = { modifier = touhou_leader_kill_army_chance value > 0 }
+                    check_modifier_value = { modifier = touhou_leader_kill_army_perc value > 0 }
+                    check_modifier_value = { modifier = touhou_leader_damage_army_effect value > 0 }
+                }
+            }
+        }
+    }
+    immediate = {
+        set_planet_flag = th_leader_sp_906_fired
+        touhou_leader_special_army_effect_init = { who = defender }
+        planet_event = { id = th_leader_sp.907 }
+    }
+}
+# cycle
+planet_event = {
+    id = th_leader_sp.907
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { has_ground_combat = yes }
+            touhou_leader_special_army_effect_loop = { who = defender opposite_who = attacker }
+            planet_event = { id = th_leader_sp.907 days = 5 }
+        } else = {
+            remove_planet_flag = th_leader_sp_906_fired
+        }
+    }
+}
+# An army has been killed in ground combat
+# This = owner
+# From = army
+# FromFrom = opponent
+# FromFromFrom = planet
+country_event = {
+    id = th_leader_sp.908
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        fromfromfrom = {
+            has_ground_combat = yes
+            OR = {
+                any_ground_combat_attacker = { check_modifier_value = { modifier = touhou_leader_has_heal_army_effect value > 0 } }
+                any_ground_combat_defender = { check_modifier_value = { modifier = touhou_leader_has_heal_army_effect value > 0 } }
+            }
+        }
+    }
+    immediate = {
+        fromfromfrom = {
+            if = {
+                limit = {
+                    any_ground_combat_attacker = {
+                        exists = owner owner = { is_same_value = root.fromfrom }
+                        check_modifier_value = { modifier = touhou_leader_has_heal_army_effect value > 0 }
+                    }
+                }
+                every_ground_combat_attacker = {
+                    limit = { is_in_frontline = yes }
+                    damage_army = value:touhou_leader_heal_army_effect_value
+                }
+            } else = {
+                every_ground_combat_defender = {
+                    limit = { is_in_frontline = yes }
+                    damage_army = value:touhou_leader_heal_army_effect_value
+                }
+            }
+        }
+    }
+}
+
+
 # 敌后大生产 月度刷新
 country_event = {
     id = th_leader_sp.1000
@@ -593,6 +1038,188 @@ country_event = {
                 add_resource = { food = 1 multiplier = prev.leader.TH_leader_produce_factor }
             }
             clear_variable = TH_leader_army_count
+        }
+    }
+}
+# This = owner of fleet 1 (combatant)
+# From = owner of fleet 2 (destroyed)
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = th_leader_sp.1001
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        from = { is_touhou_common_country = yes }
+        fromfrom = {
+            NOT = { has_fleet_flag = fleet_th_star_pirate_stole_fired }
+            check_modifier_value = { modifier = fleet_th_has_star_pirate value != 0 }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_timed_fleet_flag = { flag = fleet_th_star_pirate_stole_fired days = 30 }
+        }
+        from = {
+            reroll_random = yes
+            random_list = {
+                20 = { add_resource = { energy = -2 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                20 = { add_resource = { minerals = -2 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                20 = { add_resource = { food = -2 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                10 = { add_resource = { alloys = -1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                10 = { add_resource = { consumer_goods = -1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                10 = { add_resource = { unity = -1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                10 = { add_resource = { sr_lingli = -1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                10 = { add_resource = { sr_fuka = -1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                5 = { add_resource = { volatile_motes = -1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                5 = { add_resource = { exotic_gases = -1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                5 = { add_resource = { rare_crystals = -1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+                5 = { add_resource = { trade = -1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            }
+        }
+        reroll_random = yes
+        random_list = {
+            20 = { add_resource = { energy = 2 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            20 = { add_resource = { minerals = 2 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            20 = { add_resource = { food = 2 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            10 = { add_resource = { alloys = 1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            10 = { add_resource = { consumer_goods = 1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            10 = { add_resource = { unity = 1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            10 = { add_resource = { sr_lingli = 1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            10 = { add_resource = { sr_fuka = 1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            5 = { add_resource = { volatile_motes = 1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            5 = { add_resource = { exotic_gases = 1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            5 = { add_resource = { rare_crystals = 1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+            5 = { add_resource = { trade = 1 mult = root.fromfrom.trigger:count_used_naval_cap } }
+        }
+    }
+}
+# Planet has taken damage from orbital bombardment - Damage is applied daily
+# This = Planet
+# From = Bombarder
+planet_event = {
+    id = th_leader_sp.1002
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_planet_flag = planet_touhou_hina_skill_fired }
+        has_orbital_bombardment = yes exists = leader
+        leader = { spth_is_touhou_gensokyo_leader = yes has_trait = leader_trait_hina }
+        OR = {
+            check_modifier_value = { modifier = planet_touhou_hina_skill value > 0 }
+            check_modifier_value = { modifier = planet_touhou_hina_skill_2 value > 0 }
+            check_modifier_value = { modifier = planet_touhou_hina_skill_4 value > 0 }
+        }
+    }
+    immediate = {
+        set_timed_planet_flag = { flag = planet_touhou_hina_skill_fired days = 30 }
+        set_variable = { which = planet_touhou_hina_skill value = leader.trigger:has_base_skill }
+        if = {
+            limit = { check_variable = { which = planet_touhou_hina_skill value > 10 } }
+            set_variable = { which = planet_touhou_hina_skill value = 10 }
+        }
+        set_variable = { which = touhou_hina_debuff_cap value = 1 }
+        change_variable = { which = touhou_hina_debuff_cap value = modifier:planet_touhou_hina_skill }
+        if = {
+            limit = { check_variable = { which = touhou_hina_debuff_cap value < 0.01 } }
+            set_variable = { which = touhou_hina_debuff_cap value = 0.01 }
+        }
+        if = {
+            limit = { NOT = { has_planet_flag = planet_touhou_hina_skill_4_cooldown } }
+            set_timed_planet_flag = { flag = planet_touhou_hina_skill_4_cooldown days = 180 }
+            spth_create_fleet = {
+                NAME = leader_trait_hina_fleet
+                can_disband = no is_boss = yes
+                OWNER = root.owner can_change_leader = no
+                location = prev uses_naval_capacity = no
+                flag = planet_touhou_hina_skill_4_fleet
+                NAME_TH_battle_cruiser_ghost = 24
+                evt_target = planet_touhou_hina_skill_4_fleet
+                fleet_action_delayed = spth_fleet.1006
+                DAYS = 30 DAYS_RANDOM = 0
+            }
+            event_target:planet_touhou_hina_skill_4_fleet = {
+                every_owned_ship = { spth_create_jump_particle_effect = yes }
+            }
+        }
+        every_fleet_in_orbit = {
+            limit = {
+                exists = owner owner = { is_same_value = root.from }
+                OR = {
+                    is_ship_class = shipclass_military
+                    is_ship_class = shipclass_military_special
+                }
+            }
+            add_modifier = {
+                modifier = planet_touhou_hina_skill_buff days = 29
+                mult = value:touhou_hina_debuff|modifier|ship_orbital_bombardment_mult|
+            }
+            reroll_random = yes
+            random_list = {
+                1 = {
+                    modifier = {
+                        is_variable_set = planet_touhou_hina_skill
+                        add = planet_touhou_hina_skill
+                    }
+                    add_modifier = { modifier = planet_touhou_hina_skill_2_buff days = 29 }
+                }
+                19 = {
+                    modifier = {
+                        is_variable_set = planet_touhou_hina_skill
+                        subtract = planet_touhou_hina_skill
+                    }
+                }
+            }
+        }
+        clear_variable = planet_touhou_hina_skill
+        clear_variable = touhou_hina_debuff_cap
+    }
+}
+# An army has been killed in ground combat
+# This = owner
+# From = army
+# FromFrom = opponent
+# FromFromFrom = planet
+country_event = {
+    id = th_leader_sp.1003
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_authority = auth_gensokyo is_touhou_common_country = yes
+        fromfromfrom = {
+            exists = leader NOT = { has_planet_flag = planet_touhou_hina_army_skill_fired }
+            leader = { spth_is_touhou_gensokyo_leader = yes has_trait = leader_trait_hina }
+        }
+    }
+    immediate = {
+        fromfromfrom = {
+            set_timed_planet_flag = { flag = planet_touhou_hina_army_skill_fired days = 5 }
+            if = {
+                limit = {
+                    any_ground_combat_defender = {
+                        is_same_value = root.from
+                    }
+                }
+                reroll_random = yes
+                random_list = {
+                    10 = { random_ground_combat_attacker = { remove_army = yes } }
+                    10 = { while = { count = 2 random_ground_combat_attacker = { remove_army = yes } } }
+                    10 = { while = { count = 3 random_ground_combat_attacker = { remove_army = yes } } }
+                }
+            } else_if = {
+                limit = {
+                    any_ground_combat_attacker = {
+                        is_same_value = root.from
+                    }
+                }
+                reroll_random = yes
+                random_list = {
+                    10 = { random_ground_combat_defender = { remove_army = yes } }
+                    10 = { while = { count = 2 random_ground_combat_defender = { remove_army = yes } } }
+                    10 = { while = { count = 3 random_ground_combat_defender = { remove_army = yes } } }
+                }
+            }
         }
     }
 }

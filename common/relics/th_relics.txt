@@ -2,6 +2,7 @@
 @th_activation_cost = 100
 ##博物志
 r_th_latency = {
+    can_be_stolen = no
 	activation_duration = 30
 	portrait = "GFX_relic_th_latency"
 	sound = "relic_activation_the_omnicodex"
@@ -37,13 +38,52 @@ r_th_latency = {
 		}
 		custom_tooltip = th_relic_cooldown
 		hidden_effect = {
-			set_timed_country_flag = {
-				flag = th_card_cooldown
-				days = 360
-			}
+            if = {
+                limit = { check_modifier_value = { modifier = country_touhou_gumon_shiki_effect value != 0 } }
+                set_timed_country_flag = {
+                    flag = th_card_cooldown
+                    days = 180
+                }
+            } else = {
+                set_timed_country_flag = {
+                    flag = th_card_cooldown
+                    days = 360
+                }
+            }
 		}
 	}
 	# Possible check for activation
+}
+r_touhou_gumon_shiki = {
+    activation_duration = 3600
+    portrait = "GFX_relic_touhou_gumon_shiki"
+    sound = "relic_activation_khans_throne"
+    score = 2000
+    resources = {
+        category = relics
+        cost = { influence = 100 }
+    }
+    possible = {
+        custom_tooltip = {
+            fail_text = "requires_relic_no_cooldown"
+            NOT = { has_modifier = relic_activation_cooldown }
+        }
+        is_ai = no
+    }
+    active_effect = {
+        add_modifier = {
+            modifier = "relic_activation_cooldown"
+            days = 1800
+        }
+        add_modifier = {
+            modifier = r_touhou_gumon_shiki_modifier
+            days = 3600
+        }
+    }
+    ai_weight = {
+        weight = 100
+    }
+    can_be_stolen = no
 }
 r_th_yin_yang_orb = {
 	activation_duration = 3600
@@ -116,6 +156,7 @@ r_th_yin_yang_orb = {
 	}
 }
 r_th_gap_kamikakushi = {
+    can_be_stolen = no
 	activation_duration = @th_triumph_duration
 	portrait = "GFX_relic_th_yakumo"
 	sound = "relic_activation_the_surveyor"

@@ -1,0 +1,68 @@
+ag_ancient_eta_gateway = {
+    name = ag_ancient_eta_gateway
+    is_pathfind = yes
+    uses_action = no
+    always_active = yes
+    requires_exploration = no
+    windup_time = 4
+    winddown_time = 4
+    ftl_multiplier = 5
+    icon_frame = 65
+    remember_instances = no
+    galactic_map_tooltip_header = ag_ancient_eta_gateway
+    galactic_map_tooltip_desc = ag_ancient_eta_gateway_desc
+    connection_type = any_other
+    can_bypass_be_locked = no
+    animation_time = 1
+    ftl_ship_effect = "gateway_ftl_ship_effect_entity"
+    ftl_bypass_effect = "gateway_ftl_bypass_effect_entity"
+
+    country_can_use = {
+        custom_tooltip = {
+            fail_text = ag_ancient_eta_gateway_cannot_use
+            OR = {
+                # ag_is_common_country = no
+                AND = {
+                    NOT = { exists = event_target:ag_eta_gateway_controller }
+                    OR = {
+                        NOT = { exists = from }
+                        from = { NOR = {
+                            has_closed_borders = root
+                            is_hostile = root
+                        } }
+                    }
+                }
+                AND = {
+                    exists = event_target:ag_eta_gateway_controller
+                    is_same_value = event_target:ag_eta_gateway_controller
+                }
+                AND = {
+                    exists = event_target:ag_eta_gateway_controller
+                    event_target:ag_eta_gateway_controller = { NOR = {
+                        has_country_flag = ag_ancient_eta_gateway_policy_white
+                        has_country_flag = ag_ancient_eta_gateway_policy_black
+                        is_same_value = root
+                        has_closed_borders = root
+                        is_hostile = root
+                    } }
+                }
+                AND = {
+                    exists = event_target:ag_eta_gateway_controller
+                    event_target:ag_eta_gateway_controller = {
+                        has_country_flag = ag_ancient_eta_gateway_policy_white
+                        has_country_flag = ag_ancient_eta_gateway_allows_@root
+                    }
+                }
+                AND = {
+                    exists = event_target:ag_eta_gateway_controller
+                    event_target:ag_eta_gateway_controller = {
+                        has_country_flag = ag_ancient_eta_gateway_policy_black
+                        NOT = { has_country_flag = ag_ancient_eta_gateway_disallows_@root }
+                    }
+                }
+            }
+        }
+    }
+
+    on_action = "ag_on_entering_ancient_eta_gateway"
+}

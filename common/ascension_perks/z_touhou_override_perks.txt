@@ -1,0 +1,984 @@
+@ascension_path_base_weight = 100
+@ascension_path_synergy_weight = 2
+@ascension_path_anti_synergy_weight = 0.5
+@ascension_path_mindwardens_present = 0.3
+
+#################
+# GENERIC ASCENSION PERKS
+#################
+
+ap_defender_of_the_galaxy = {
+    possible = {
+        custom_tooltip = {
+            fail_text = "requires_ascension_perks_3"
+            num_ascension_perks > 2
+        }
+    }
+    custom_tooltip = ap_defender_of_the_galaxy_modifier_desc
+
+    modifier = {
+        block_any_other_crisis_path = 1
+        damage_vs_country_type_synth_queen_mult = 0.5
+        damage_vs_country_type_awakened_synth_queen_mult = 0.5
+        damage_vs_country_type_synth_queen_convoys_mult = 0.5
+        damage_vs_country_type_synth_queen_outposts_mult = 0.5
+        damage_vs_country_type_swarm_mult = 0.5
+        damage_vs_country_type_extradimensional_mult = 0.5
+        damage_vs_country_type_extradimensional_2_mult = 0.5
+        damage_vs_country_type_extradimensional_3_mult = 0.5
+        damage_vs_country_type_ai_empire_mult = 0.5
+        damage_vs_country_type_gray_goo_mult = 0.5
+        damage_vs_player_crisis_mult = 0.5
+        add_attunement_the_cradle_of_souls = @ascension_perk_attunement1
+    }
+
+    on_enabled = {
+        custom_tooltip = "ap_defender_of_the_galaxy_effect_opinion"
+        # see triggered_opinion_ap_defender_of_the_galaxy
+    }
+
+    tradition_swap = {
+        name = ap_defender_of_the_galaxy
+        inherit_effects = no
+        inherit_icon = yes
+        trigger = {
+            has_grand_archive_dlc = yes
+        }
+
+        custom_tooltip = ap_defender_of_the_galaxy_voidworm_modifier_desc
+
+        modifier = {
+            block_any_other_crisis_path = 1
+            damage_vs_country_type_synth_queen_mult = 0.5
+            damage_vs_country_type_awakened_synth_queen_mult = 0.5
+            damage_vs_country_type_synth_queen_convoys_mult = 0.5
+            damage_vs_country_type_synth_queen_outposts_mult = 0.5
+            damage_vs_country_type_swarm_mult = 0.5
+            damage_vs_country_type_extradimensional_mult = 0.5
+            damage_vs_country_type_extradimensional_2_mult = 0.5
+            damage_vs_country_type_extradimensional_3_mult = 0.5
+            damage_vs_country_type_ai_empire_mult = 0.5
+            damage_vs_country_type_gray_goo_mult = 0.5
+            damage_vs_player_crisis_mult = 0.5
+            damage_vs_country_type_voidworms_mult = @ap_defender_of_the_galaxy_voidworm_dmg_mult
+            damage_vs_country_type_voidworms_crisis_mult = @ap_defender_of_the_galaxy_voidworm_dmg_mult
+            damage_vs_country_type_voidworms_treasure_hunters_mult = @ap_defender_of_the_galaxy_voidworm_dmg_mult
+            damage_vs_country_type_frenzied_voidworms_mult = @ap_defender_of_the_galaxy_voidworm_dmg_mult
+            add_attunement_the_cradle_of_souls = @ascension_perk_attunement1
+        }
+
+        on_enabled = {
+            custom_tooltip = "ap_defender_of_the_galaxy_effect_opinion"
+            # see triggered_opinion_ap_defender_of_the_galaxy
+        }
+
+        weight = {
+            factor = 1
+        }
+    }
+
+    potential = {
+        NOR = {
+            has_ascension_perk = ap_defender_of_the_galaxy
+            has_ascension_perk = ap_become_the_crisis
+            has_ascension_perk = ap_cosmogenesis
+            has_ascension_perk = ap_behemoths
+            has_origin = origin_endbringers # Endbringers are technically a crisis as well
+        }
+        NOT = { check_modifier_value = { modifier = block_ap_defender_of_the_galaxy value != 0 } }
+        NOT = { check_modifier_value = { modifier = block_any_other_crisis_path value != 0 } }
+    }
+
+    ai_weight = {
+        factor = 5
+        modifier = {
+            factor = 5
+            OR = {
+                has_crisis = yes
+                any_country = {
+                    relative_power = {
+                        who = prev
+                        value > equivalent
+                    }
+                    OR = {
+                        has_ascension_perk = ap_become_the_crisis
+                        has_ascension_perk = ap_cosmogenesis
+                    }
+                }
+            }
+        }
+        modifier = {
+            factor = 0
+            NOR = {
+                is_xenophile = yes
+                is_galactic_custodian = yes
+                is_galactic_emperor = yes
+                has_valid_civic = civic_hive_familiar_face
+                any_country = {
+                    OR = {
+                        has_crisis_level = crisis_level_5
+                        has_crisis_level = crisis_cosmogenesis_level_5
+                        is_crisis_faction = yes
+                    }
+                }
+            }
+        }
+        modifier = {
+            factor = 100
+            OR = {
+                is_galactic_custodian = yes
+                is_galactic_emperor = yes
+            }
+        }
+        modifier = {
+            factor = 0.25
+            NOT = {
+                any_country = {
+                    OR = {
+                        has_crisis_level = crisis_level_5
+                        has_crisis_level = crisis_cosmogenesis_level_5
+                        is_crisis_faction = yes
+                    }
+                }
+            }
+        }
+    }
+}
+
+#################
+# NEMESIS ASCENSION PERKS
+#################
+
+ap_become_the_crisis = {
+    modifier = {
+        block_any_other_crisis_path = 1
+    }
+    potential = {
+        has_nemesis = yes
+        NOR = {
+            has_ascension_perk = ap_become_the_crisis
+            has_ascension_perk = ap_cosmogenesis
+            has_ascension_perk = ap_behemoths
+            has_ascension_perk = ap_defender_of_the_galaxy
+            has_origin = origin_slavers
+            has_origin = origin_endbringers # No additional crisis for Endbringers
+        }
+        is_wilderness_empire = no
+        NOT = { check_modifier_value = { modifier = block_ap_become_the_crisis value != 0 } }
+        NOT = { check_modifier_value = { modifier = block_any_other_crisis_path value != 0 } }
+    }
+
+    possible = {
+        custom_tooltip = {
+            fail_text = "requires_independence"
+            is_subject = no
+        }
+        custom_tooltip = {
+            fail_text = "must_not_be_custodian"
+            is_galactic_custodian = no
+        }
+        custom_tooltip = {
+            fail_text = "must_not_be_emperor"
+            is_galactic_emperor = no
+        }
+        custom_tooltip = {
+            fail_text = "must_finish_shroud_forged_situation"
+            OR = {
+                NOT = { has_origin = origin_shroud_forged }
+                NOT = {
+                    any_situation = {
+                        is_situation_type = situation_shroud_forged
+                    }
+                }
+            }
+        }
+        custom_tooltip = {
+            fail_text = "locked_by_shroud_forged_situation"
+            OR = {
+                NOT = { has_origin = origin_shroud_forged }
+                NOT = { has_country_flag = finish_shroud_forged_liberation_flag }
+            }
+        }
+        if = {
+            limit = {
+                OR = {
+                    NOT = { has_origin = origin_shroud_forged }
+                    NOT = { has_country_flag = shroud_forged_can_become_the_crisis }
+                }
+            }
+            custom_tooltip = {
+                fail_text = "requires_ascension_perks_3"
+                num_ascension_perks > 2
+            }
+            NOR = {
+                has_ethic = ethic_xenophile
+                has_ethic = ethic_fanatic_xenophile
+                has_ethic = ethic_pacifist
+                has_ethic = ethic_fanatic_pacifist
+                has_civic = civic_machine_servitor
+                has_valid_civic = civic_hive_familiar_face
+            }
+        }
+    }
+
+    on_enabled = {
+        hidden_effect = {
+            set_ai_personality = became_the_crisis
+            country_event = { id = timeline.69 } # Timeline Become the crisis
+        }
+        activate_crisis_progression = nemesis_path
+    }
+
+    ai_weight = {
+        factor = 7.5
+        modifier = {
+            factor = 0
+            NOR = {
+                is_militarist = yes
+                is_xenophobe = yes
+                is_gestalt = yes
+            }
+        }
+        modifier = {
+            factor = 10
+            is_homicidal = yes
+        }
+        modifier = {
+            factor = 2
+            has_tradition = tr_supremacy_finish
+        }
+        modifier = {
+            factor = 0
+            galaxy_percentage < 0.1
+        }
+        modifier = {
+            factor = 2
+            galaxy_percentage > 0.2
+        }
+        modifier = {
+            factor = 0
+            count_playable_country = {
+                count > 1
+                limit = {
+                    has_ascension_perk = ap_become_the_crisis
+                }
+            }
+        }
+        modifier = {
+            factor = 0
+            blocks_disruptive_gameplay = yes
+        }
+    }
+}
+
+#################
+# MACHINE AGE ASCENSION PERKS
+#################
+
+ap_cosmogenesis = {
+    modifier = {
+        block_any_other_crisis_path = 1
+    }
+    potential = {
+        has_machine_age_dlc = yes
+        NOR = {
+            has_ascension_perk = ap_become_the_crisis
+            has_ascension_perk = ap_cosmogenesis
+            has_ascension_perk = ap_defender_of_the_galaxy
+            has_ascension_perk = ap_behemoths
+            has_origin = origin_slavers # No crisis for MSI
+            has_origin = origin_endbringers # No additional crisis for Endbringers
+        }
+        is_wilderness_empire = no
+        NOT = { check_modifier_value = { modifier = block_ap_cosmogenesis value != 0 } }
+        NOT = { check_modifier_value = { modifier = block_any_other_crisis_path value != 0 } }
+    }
+
+    possible = {
+        custom_tooltip = {
+            fail_text = "requires_ascension_perks_3"
+            num_ascension_perks > 2
+        }
+        custom_tooltip = {
+            fail_text = "requires_independence"
+            is_subject = no
+        }
+        custom_tooltip = {
+            fail_text = "must_not_be_custodian"
+            is_galactic_custodian = no
+        }
+        custom_tooltip = {
+            fail_text = "must_not_be_emperor"
+            is_galactic_emperor = no
+        }
+    }
+
+    on_enabled = {
+        hidden_effect = {
+            set_variable = {
+                which = cosmogenesis_world_advanced_logic_produced
+                value = 0
+            }
+        }
+        activate_crisis_progression = cosmogenesis_path
+    }
+
+    ai_weight = {
+        factor = 7.5
+        modifier = {
+            factor = 0
+            OR = {
+                is_egalitarian = yes
+                is_xenophile = yes
+            }
+        }
+        modifier = {
+            factor = 2
+            has_tradition = tr_discovery_finish
+        }
+        modifier = {
+            factor = 2
+            has_ascension_perk = ap_technological_ascendancy
+        }
+        modifier = {
+            factor = 2
+            has_ascension_perk = ap_enigmatic_engineering
+        }
+        modifier = {
+            factor = 2
+            vassals > 0
+            any_subject = {
+                any_agreement = {
+                    has_active_specialization = specialist_scholarium
+                }
+            }
+        }
+        modifier = {
+            factor = 10
+            has_country_flag = whisperers_covenant_confirmed
+        }
+        modifier = {
+            factor = 0
+            galaxy_percentage < 0.1
+        }
+        modifier = {
+            factor = 2
+            galaxy_percentage > 0.2
+        }
+    }
+}
+
+#################
+# BIOGENESIS
+#################
+
+ap_behemoths = {
+    modifier = {
+        block_any_other_crisis_path = 1
+    }
+    potential = {
+        has_biogenesis_dlc = yes
+        NOR = {
+            has_ascension_perk = ap_become_the_crisis
+            has_ascension_perk = ap_cosmogenesis
+            has_ascension_perk = ap_behemoths
+            has_ascension_perk = ap_defender_of_the_galaxy
+            has_origin = origin_slavers # No crisis for MSI
+            has_origin = origin_endbringers # No additional crisis for Endbringers
+        }
+        NOT = { check_modifier_value = { modifier = block_ap_behemoths value != 0 } }
+        NOT = { check_modifier_value = { modifier = block_any_other_crisis_path value != 0 } }
+    }
+
+    possible = {
+        custom_tooltip = {
+            fail_text = "requires_ascension_perks_3"
+            num_ascension_perks > 2
+        }
+        custom_tooltip = {
+            fail_text = "requires_independence"
+            is_subject = no
+        }
+        custom_tooltip = {
+            fail_text = "must_not_be_custodian"
+            is_galactic_custodian = no
+        }
+        custom_tooltip = {
+            fail_text = "must_not_be_emperor"
+            is_galactic_emperor = no
+        }
+        custom_tooltip = {
+            fail_text = "must_use_bioships"
+            country_uses_bio_ships = yes
+        }
+        NOR = {
+            has_ethic = ethic_xenophile
+            has_ethic = ethic_fanatic_xenophile
+            has_ethic = ethic_pacifist
+            has_ethic = ethic_fanatic_pacifist
+        }
+    }
+
+    on_enabled = {
+        activate_crisis_progression = behemoth_path
+    }
+
+    ai_weight = {
+        factor = 7.5
+        modifier = {
+            factor = 0
+            is_xenophile = yes
+            is_spiritualist = yes
+        }
+
+        modifier = {
+            factor = 0.5
+            is_lithoid = yes
+        }
+
+        modifier = {
+            factor = 4
+            is_homicidal = yes
+        }
+
+        modifier = {
+            factor = 6
+            has_civic = civic_hive_devouring_swarm
+        }
+
+        modifier = {
+            factor = 2
+            has_tradition = tr_enmity_finish
+        }
+        modifier = {
+            factor = 2
+            has_ascension_perk = ap_engineered_evolution
+        }
+        modifier = {
+            factor = 2
+            has_ascension_perk = ap_nihilistic_acquisition
+        }
+        modifier = {
+            factor = 10
+            has_country_flag = eater_covenant_confirmed
+        }
+        modifier = {
+            factor = 0
+            galaxy_percentage < 0.1
+        }
+        modifier = {
+            factor = 2
+            galaxy_percentage > 0.2
+        }
+    }
+}
+
+# Genetic Ascension  (regular empires & Hive Minds)
+ap_engineered_evolution = {
+    on_enabled = {
+        if = {
+            limit = {
+                has_biogenesis_dlc = yes
+                is_wilderness_empire = no
+            }
+            hidden_effect = {
+                country_event = { id = bio.1 }
+            }
+            custom_tooltip = "engineered_evolution_biogenesis_tt"
+            set_country_flag = genomic_research_facility_unlocked
+        }
+        else_if = {
+            limit = {
+                has_biogenesis_dlc = yes
+                is_wilderness_empire = yes
+            }
+            hidden_effect = {
+                country_event = { id = bio.1 }
+            }
+            custom_tooltip = "engineered_evolution_wilderness_tt"
+        }
+        else = {
+            custom_tooltip = "engineered_evolution_tooltip"
+        }
+    }
+    possible = {
+        custom_tooltip = {
+            fail_text = "synthetic_empire_biological_ascension"
+            NOT = { has_trait = trait_mechanical }
+        }
+        if = {
+            limit = {
+                NOR = {
+                    has_origin = origin_clone_army
+                    has_origin = origin_overtuned
+                }
+            }
+            custom_tooltip = {
+                fail_text = "requires_ascension_perks_2"
+                num_ascension_perks > 1
+            }
+        }
+
+        if = {
+            limit = {
+                has_origin = origin_overtuned
+            }
+            custom_tooltip = {
+                fail_text = "requires_ascension_perks_1"
+                num_ascension_perks > 0
+            }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_the_flesh_is_weak"
+            NOT = { has_ascension_perk = ap_the_flesh_is_weak }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_organo_machine_interfacing"
+            NOT = { has_ascension_perk = ap_organo_machine_interfacing }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_mind_over_matter"
+            has_psionic_ascension = no
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_synthetic_evolution"
+            NOT = { has_ascension_perk = ap_synthetic_evolution }
+        }
+        custom_tooltip = {
+            fail_text = "requires_free_tradition_tree"
+            num_tradition_categories < @max_tradition_trees
+        }
+        custom_tooltip = {
+            fail_text = mod_block_ap_engineered_evolution_tooltip
+            NOT = { check_modifier_value = { modifier = block_ap_engineered_evolution value != 0 } }
+        }
+        if = {
+            limit = {
+                has_origin = origin_clone_army
+            }
+            custom_tooltip = {
+                fail_text = "clone_soldier_locked_genes"
+                OR = {
+                    has_country_flag = clone_army_fertility_unlocked
+                    has_country_flag = clone_army_full_potential
+                }
+            }
+        }
+    }
+
+    potential = {
+        OR = {
+            has_utopia = yes
+            has_biogenesis_dlc = yes
+        }
+        NOR = {
+            has_ascension_perk = ap_engineered_evolution
+            is_machine_empire = yes
+            has_origin = origin_shroudwalker_apprentice
+            has_origin = origin_cybernetic_creed
+            has_origin = origin_synthetic_fertility
+            has_origin = origin_endbringers
+        }
+        is_mechanical_empire = no
+        is_individual_machine = no
+        is_cyborg_empire = no
+        is_natural_design_empire = no
+        NOT = { has_valid_civic = civic_augmentation_bazaars }
+        is_chosen_empire = no
+        is_entropy_drinkers_empire = no
+    }
+
+    tradition_swap = {
+        inherit_effects = yes
+        inherit_icon = yes
+        name = ap_engineered_evolution_wilderness
+        trigger = {
+            is_wilderness_empire = yes
+        }
+    }
+
+    ai_weight = {
+        factor = @ascension_path_base_weight
+        modifier = {
+            factor = @ascension_path_synergy_weight
+            has_engineered_evolution_synergy = yes
+        }
+        modifier = {
+            factor = @ascension_path_mindwardens_present
+            any_country = {
+                has_origin = origin_mindwardens
+            }
+        }
+    }
+}
+
+# Cyborg Ascension (regular empires)
+ap_the_flesh_is_weak = {
+    on_enabled = {
+        custom_tooltip = "flesh_is_weak_tooltip"
+    }
+    possible = {
+        custom_tooltip = {
+            fail_text = "synthetic_empire_synthetic_ascension"
+            NOT = { has_trait = trait_mechanical }
+        }
+        custom_tooltip = {
+            fail_text = "requires_ascension_perks_2"
+            OR = {
+                num_ascension_perks > 1
+                has_origin = origin_cybernetic_creed
+                has_origin = origin_unplugged
+            }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_engineered_evolution"
+            NOT = { has_ascension_perk = ap_engineered_evolution }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_mind_over_matter"
+            has_psionic_ascension = no
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_synthetic_evolution"
+            NOT = { has_ascension_perk = ap_synthetic_evolution }
+        }
+        custom_tooltip = {
+            fail_text = "requires_free_tradition_tree"
+            num_tradition_categories < @max_tradition_trees
+        }
+        custom_tooltip = {
+            fail_text = mod_block_ap_the_flesh_is_weak_tooltip
+            NOT = { check_modifier_value = { modifier = block_ap_the_flesh_is_weak value != 0 } }
+        }
+    }
+
+    potential = {
+        OR = {
+            has_utopia = yes
+            has_machine_age_dlc = yes
+        }
+        NOR = {
+            has_ascension_perk = ap_the_flesh_is_weak
+            has_origin = origin_shroudwalker_apprentice
+            has_origin = origin_cybernetic_creed
+            has_origin = origin_synthetic_fertility
+            has_origin = origin_evolutionary_predators
+            has_origin = origin_endbringers
+            AND = {
+                has_origin = origin_unplugged
+                OR = {
+                    has_country_flag = is_decyberized
+                    has_country_flag = is_cyberized
+                }
+            }
+        }
+        is_gestalt = no
+        is_individual_machine = no
+        is_natural_design_empire = no
+        is_chosen_empire = no
+        owner_species = {
+            NOT = { has_trait = trait_unplugged_decyberized }
+        }
+        is_entropy_drinkers_empire = no
+    }
+
+    ai_weight = {
+        factor = @ascension_path_base_weight
+        modifier = {
+            factor = @ascension_path_anti_synergy_weight
+            has_flesh_is_weak_anti_synergy = yes
+        }
+        modifier = {
+            factor = @ascension_path_mindwardens_present
+            any_country = {
+                has_origin = origin_mindwardens
+            }
+        }
+    }
+}
+
+# Synthetic Ascension (regular empires)
+ap_synthetic_evolution = {
+    on_enabled = {
+        custom_tooltip = "synthetic_evolution_tooltip"
+        if = {
+            limit = {
+                has_origin = origin_necrophage
+                has_trait = trait_necrophage
+            }
+            custom_tooltip = disables_necrophage_features
+        }
+        if = {
+            limit = {
+                has_origin = origin_clone_army
+                OR = {
+                    has_trait = trait_clone_soldier_infertile
+                    has_trait = trait_clone_soldier_infertile_full_potential
+                    has_trait = trait_clone_soldier_fertile
+                }
+            }
+            custom_tooltip = disables_clone_army_origin_features
+        }
+        if = {
+            limit = {
+                has_origin = origin_overtuned
+            }
+            custom_tooltip = disables_overtuned_features
+        }
+        if = {
+            limit = {
+                OR = {
+                    has_valid_civic = civic_idyllic_bloom
+                    has_valid_civic = civic_hive_idyllic_bloom
+                }
+            }
+            custom_tooltip = disables_idyllic_bloom
+        }
+    }
+    possible = {
+        custom_tooltip = {
+            fail_text = "synthetic_empire_synthetic_ascension"
+            NOT = { has_trait = trait_mechanical }
+        }
+        custom_tooltip = {
+            fail_text = "requires_ascension_perks_2"
+            num_ascension_perks > 1
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_engineered_evolution"
+            NOT = { has_ascension_perk = ap_engineered_evolution }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_the_flesh_is_weak"
+            NOT = { has_ascension_perk = ap_the_flesh_is_weak }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_mind_over_matter"
+            has_psionic_ascension = no
+        }
+        custom_tooltip = {
+            fail_text = "requires_free_tradition_tree"
+            num_tradition_categories < @max_tradition_trees
+        }
+        custom_tooltip = {
+            fail_text = mod_block_ap_synthetic_evolution_tooltip
+            NOT = { check_modifier_value = { modifier = block_ap_synthetic_evolution value != 0 } }
+        }
+    }
+
+    potential = {
+        OR = {
+            has_utopia = yes
+            has_machine_age_dlc = yes
+        }
+        NOR = {
+            has_ascension_perk = ap_synthetic_evolution
+            is_machine_empire = yes
+            has_origin = origin_shroudwalker_apprentice
+            has_origin = origin_cybernetic_creed
+            has_origin = origin_synthetic_fertility
+            has_origin = origin_evolutionary_predators
+            has_origin = origin_endbringers
+            has_tradition = tr_cybernetics_adopt
+        }
+        is_gestalt = no
+        is_mechanical_empire = no
+        is_natural_design_empire = no
+        NOT = { has_valid_civic = civic_augmentation_bazaars }
+        is_individual_machine = no
+        owner_species = {
+            NOT = { has_trait = trait_unplugged_decyberized }
+        }
+        is_chosen_empire = no
+        is_entropy_drinkers_empire = no
+    }
+
+    ai_weight = {
+        factor = @ascension_path_base_weight
+        modifier = {
+            factor = @ascension_path_synergy_weight
+            has_synthetic_evolution_synergy = yes
+        }
+        modifier = {
+            factor = @ascension_path_anti_synergy_weight
+            has_synthetic_evolution_anti_synergy = yes
+        }
+        modifier = {
+            factor = @ascension_path_mindwardens_present
+            any_country = {
+                has_origin = origin_mindwardens
+            }
+        }
+        modifier = {
+            factor = 0
+            blocks_ai_synthetic_evolution = yes
+        }
+    }
+}
+
+# Psionic Ascension
+ap_mind_over_matter = {
+    on_enabled = {
+        custom_tooltip = "mind_over_matter_tooltip"
+    }
+    possible = {
+        custom_tooltip = {
+            fail_text = "synthetic_empire_psionic_ascension"
+            NOT = { has_trait = trait_mechanical }
+        }
+        if = {
+            limit = {
+                OR = {
+                    is_synthetic_empire = no
+                    has_origin = origin_shroud_forged
+                    is_chosen_empire = yes
+                }
+            }
+            custom_tooltip = {
+                fail_text = "requires_ascension_perks_2"
+                num_ascension_perks > 1
+            }
+        }
+        else_if = {
+            custom_tooltip = {
+                fail_text = "requires_ascension_perks_3"
+                num_ascension_perks > 2
+            }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_engineered_evolution"
+            NOT = { has_ascension_perk = ap_engineered_evolution }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_the_flesh_is_weak"
+            NOT = { has_ascension_perk = ap_the_flesh_is_weak }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_synthetic_evolution"
+            NOT = { has_ascension_perk = ap_synthetic_evolution }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_synthetic_age"
+            NOT = { has_ascension_perk = ap_synthetic_age }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_organo_machine_interfacing"
+            NOR = {
+                has_ascension_perk = ap_organo_machine_interfacing
+                has_ascension_perk = ap_organo_machine_interfacing_assimilator
+            }
+        }
+        custom_tooltip = {
+            fail_text = "requires_free_tradition_tree"
+            num_tradition_categories < @max_tradition_trees
+        }
+        custom_tooltip = {
+            fail_text = mod_block_ap_mind_over_matter_tooltip
+            NOT = { check_modifier_value = { modifier = block_ap_mind_over_matter value != 0 } }
+        }
+        if = {
+            limit = {
+                has_origin = origin_unplugged
+            }
+            custom_tooltip = {
+                fail_text = "requires_unplugged_decyberized"
+                has_country_flag = is_decyberized
+            }
+        }
+        if = {
+            limit = { has_origin = origin_shroud_forged }
+            if = {
+                limit = {
+                    any_situation = {
+                        is_situation_type = situation_shroud_forged
+                    }
+                }
+                custom_tooltip = {
+                    fail_text = "shroud_forged_situation_ongoing"
+                    always = no
+                }
+            }
+            else = {
+                custom_tooltip = {
+                    fail_text = "shroud_forged_liberation_acquired"
+                    NOT = { has_country_flag = finish_shroud_forged_liberation_flag }
+                }
+            }
+        }
+    }
+
+    potential = {
+        OR = {
+            has_utopia = yes
+            has_shroud_dlc = yes
+        }
+        NOR = {
+            has_country_flag = ratling_country
+            has_ascension_perk = ap_mind_over_matter
+            has_origin = origin_shroudwalker_apprentice
+            has_origin = origin_cybernetic_creed
+            has_origin = origin_synthetic_fertility
+            has_origin = origin_evolutionary_predators
+            has_origin = origin_wilderness
+            has_valid_civic = civic_augmentation_bazaars
+            has_origin = origin_mindwardens
+            has_origin = origin_endbringers
+        }
+        OR = {
+            has_shroud_dlc = yes # Shroud DLC allows gestalt/machines to become Psionic
+            AND = {
+                is_gestalt = no
+                is_mechanical_empire = no
+                OR = {
+                    is_cyborg_empire = no
+                    AND = {
+                        has_origin = origin_unplugged
+                        NOT = { has_country_flag = is_cyberized }
+                    }
+                }
+                is_individual_machine = no
+            }
+        }
+        is_natural_design_empire = no
+        if = {
+            limit = { has_origin = origin_shroud_forged }
+            NOT = { has_country_flag = finish_shroud_forged_control_flag }
+        }
+    }
+
+    tradition_swap = {
+        name = ap_interdimensional_processing
+        inherit_name = no
+        inherit_icon = no
+        inherit_effects = yes
+        trigger = {
+            has_shroud_dlc = yes
+            is_synthetic_empire = yes
+        }
+        weight = { factor = 1 }
+    }
+
+    ai_weight = {
+        factor = @ascension_path_base_weight
+        modifier = {
+            factor = @ascension_path_synergy_weight
+            has_mind_over_matter_synergy = yes
+        }
+        modifier = {
+            factor = @ascension_path_synergy_weight
+            # We want more psionic AIs when someone's playing Mindwardens, so you should ascend if at least you're not materialist
+            is_materialist = no
+            any_country = {
+                has_origin = origin_mindwardens
+            }
+        }
+        modifier = {
+            factor = @ascension_path_anti_synergy_weight
+            has_mind_over_matter_anti_synergy = yes
+        }
+        modifier = {
+            factor = 0
+            has_origin = origin_mindwardens
+        }
+    }
+}

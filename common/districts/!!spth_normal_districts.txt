@@ -430,8 +430,18 @@ district_spth_sp_produce = {
     }
     potential = {
         spth_check_gensokyo_auth = yes
-        NOT = { uses_district_set = cosmogenesis_world }
-        has_building_kuat_command_center_auto = no
+        OR = {
+            NOT = { uses_district_set = cosmogenesis_world }
+            has_planet_flag = has_shell_world_touhou_gensokyo_city
+        }
+        # has_building_kuat_command_center_auto = no
+        #         spth_check_gensokyo_auth = yes
+        #         use_touhou_starting_district = no
+        #         NOT = { uses_district_set = cosmogenesis_world }
+        #         if = {
+        #             limit = { spth_has_kuat_mod = yes }
+        #             has_building_kuat_command_center_auto = no
+        #         }
     }
 
     conversion_ratio = 1
@@ -440,6 +450,225 @@ district_spth_sp_produce = {
         district_nexus
         district_hive
         district_arcology_housing
+        district_spth_sp_produce_swap
+    }
+
+    resources = {
+        category = planet_districts
+        cost = {
+            minerals = 1000
+            sr_lingli = 250
+        }
+        cost = {
+            trigger = { use_touhou_starting_district = yes }
+            minerals = 1000
+            sr_lingli = 250
+        }
+        produces = {
+            sr_lingli = 0.5
+        }
+        produces = {
+            trigger = {
+                owner = { has_touhou_ascension_tier_3 = yes }
+            }
+            sr_lingli = 1
+        }
+        produces = {
+            trigger = {
+                owner = { has_touhou_ascension_tier_4 = yes }
+            }
+            sr_lingli = 2
+        }
+        produces = {
+            trigger = {
+                OR = {
+                    is_planet_class = pc_gensokyo_planet
+                    is_planet_class = pc_gensokyo_city
+                    is_planet_class = pc_ringworld_th
+                    has_planet_flag = has_shell_world_touhou_gensokyo_city
+                }
+            }
+            sr_lingli = 1.5
+        }
+        produces = {
+            trigger = {
+                is_planet_class = pc_gensokyo_planet
+                has_designation = col_spth_gensokyo_planet
+            }
+            sr_lingli = 2.85
+            mult = value:gensokyo_planet_drp_mult|job|th_monk|districts|district_spth_sp_produce|buildings|building_spth_spellcard_workshop|category|spth_monk|
+        }
+        upkeep = {
+            trigger = {
+                is_planet_class = pc_gensokyo_planet
+                has_designation = col_spth_gensokyo_planet
+            }
+            energy = 20.14
+            food = 8.35
+            mult = value:gensokyo_planet_upkeep_mult|job|th_monk|districts|district_spth_sp_produce|buildings|building_spth_spellcard_workshop|category|spth_monk|
+        }
+        upkeep = {
+            energy = 5
+        }
+    }
+
+    planet_modifier = {
+        planet_housing_add = 500
+        job_th_monk_add = 100
+    }
+    triggered_planet_modifier = {
+        potential = {
+            spth_has_ag_mod = yes
+            uses_district_set = ag_ancient_ringworld
+        }
+        planet_housing_add = 1500
+        planet_amenities_add = 500
+        planet_jobs_sr_lingli_produces_mult = 0.05
+        job_th_monk_add = 500
+    }
+
+    triggered_planet_modifier = {
+        potential = {
+            exists = owner
+            owner = {
+                is_regular_empire = yes
+                has_touhou_ascension_tier_3 = yes
+            }
+        }
+        modifier = {
+            job_th_monk_add = 100
+        }
+    }
+    triggered_planet_modifier = {
+        potential = {
+            spth_has_ag_mod = yes
+            uses_district_set = ag_ancient_ringworld
+            exists = owner
+            owner = {
+                is_regular_empire = yes
+                has_touhou_ascension_tier_3 = yes
+            }
+        }
+        job_th_monk_add = 500
+    }
+    triggered_planet_modifier = {
+        potential = {
+            exists = owner
+            owner = {
+                is_regular_empire = yes
+                has_touhou_ascension_tier_4 = yes
+            }
+        }
+        modifier = {
+            job_th_monk_add = 25
+        }
+    }
+    triggered_planet_modifier = {
+        potential = {
+            spth_has_ag_mod = yes
+            uses_district_set = ag_ancient_ringworld
+            exists = owner
+            owner = {
+                is_regular_empire = yes
+                has_touhou_ascension_tier_4 = yes
+            }
+        }
+        job_th_monk_add = 350
+    }
+    triggered_planet_modifier = {
+        potential = { has_designation = col_spth_spiritual_power }
+        modifier = {
+            job_th_monk_add = 25
+        }
+    }
+    triggered_planet_modifier = {
+        potential = {
+            spth_has_ag_mod = yes
+            uses_district_set = ag_ancient_ringworld
+            has_designation = col_spth_spiritual_power
+        }
+        job_th_monk_add = 400
+    }
+
+    triggered_planet_modifier = {
+        potential = { has_designation = col_spth_gensokyo_planet }
+        modifier = {
+            job_th_monk_add = 75
+        }
+    }
+    triggered_planet_modifier = {
+        potential = {
+            OR = {
+                is_planet_class = pc_gensokyo_planet
+                is_planet_class = pc_gensokyo_city
+                is_planet_class = pc_ringworld_th
+                has_planet_flag = has_shell_world_touhou_gensokyo_city
+            }
+        }
+        modifier = {
+            job_th_monk_add = 100
+        }
+    }
+    inline_script = { script = districts/spth_gensokyo_city_housing }
+
+    triggered_name = { trigger = { is_common_district_spth_sp_produce = yes } text = district_spth_sp_produce_common_name }
+    triggered_flavor_desc = { trigger = { is_common_district_spth_sp_produce = yes } text = district_spth_sp_produce_common_flavor_desc }
+    inline_script = { script = districts/spth_sp_produce_triggered_sub_titles }
+    ai_weight = { base = 114514 }
+    on_built = {
+        if = {
+            limit = {
+                exists = owner
+                owner = { has_patron_counter = touhou_po_build_sp_building }
+            }
+            owner = {
+                add_patron_objective_counter = {
+                    counter = touhou_po_build_sp_building
+                    amount = 1
+                }
+            }
+        }
+    }
+}
+
+district_spth_sp_produce_swap = {
+    base_buildtime = 480
+    is_capped_by_modifier = no
+    expansion_planner = yes
+    show_on_uncolonized = {
+        exists = from
+        from = { has_authority = auth_gensokyo }
+    }
+
+    triggered_desc = {
+        trigger = { uses_district_set = gensokyo_planet exists = owner owner = { is_touhou_country = yes } }
+        text = gensokyo_planet_district_tooltip
+    }
+    triggered_desc = {
+        trigger = { uses_district_set = gensokyo_planet exists = owner owner = { is_touhou_country = yes } }
+        text = district_spth_sp_produce_gensokyo_planet_tooltip
+    }
+    zone_slots = {
+        slot_spth_sp_produce_common
+    }
+    potential = {
+        always = no
+        # spth_check_gensokyo_auth = yes
+        # use_touhou_starting_district = no
+        # NOT = { uses_district_set = cosmogenesis_world }
+        # if = {
+        #     limit = { spth_has_kuat_mod = yes }
+        #     has_building_kuat_command_center_auto = no
+        # }
+    }
+
+    conversion_ratio = 1
+    convert_to = {
+        district_city
+        district_nexus
+        district_hive
+        district_arcology_housing
+        district_spth_sp_produce
     }
 
     resources = {
@@ -598,31 +827,24 @@ district_spth_sp_produce = {
     }
     inline_script = { script = districts/spth_gensokyo_city_housing }
 
-    ai_weight = {
-        weight = 1
-    }
     triggered_name = { trigger = { is_common_district_spth_sp_produce = yes } text = district_spth_sp_produce_common_name }
     triggered_flavor_desc = { trigger = { is_common_district_spth_sp_produce = yes } text = district_spth_sp_produce_common_flavor_desc }
     inline_script = { script = districts/spth_sp_produce_triggered_sub_titles }
     ai_weight = { base = 114514 }
-}
-district_spth_sp_produce_swap = {
-    is_capped_by_modifier = no
-    icon = district_gensokyo_shengong
-    has_primary_zone = yes
-    custom_gui = touhou_planet_district_entry_sp_produce
-    zone_slots = {
-        slot_empty
+    on_built = {
+        if = {
+            limit = {
+                exists = owner
+                owner = { has_patron_counter = touhou_po_build_sp_building }
+            }
+            owner = {
+                add_patron_objective_counter = {
+                    counter = touhou_po_build_sp_building
+                    amount = 1
+                }
+            }
+        }
     }
-    show_on_uncolonized = {
-        always = no
-    }
-    potential = {
-        always = no
-    }
-    triggered_name = { trigger = { is_common_district_spth_sp_produce = yes } text = district_spth_sp_produce_common_name }
-    triggered_flavor_desc = { trigger = { is_common_district_spth_sp_produce = yes } text = district_spth_sp_produce_common_flavor_desc }
-    inline_script = { script = districts/spth_sp_produce_triggered_sub_titles }
 }
 
 # district_spth_sp_produce_cosmogenesis_world = {

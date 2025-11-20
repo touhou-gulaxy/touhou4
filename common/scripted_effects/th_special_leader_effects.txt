@@ -24,14 +24,17 @@ spth_add_trait_no_notify = {
 
 spth_effect_leader_init_species = {
     optimize_memory
-    create_species = {
-        name = NAME_$ID$
-        class = HUM
-        portrait = spth_por_$ID$
-        namelist = random
-        traits = { }
-        allow_negative_traits = no
-        effect = { save_global_event_target_as = spth_container_species_$ID$ }
+    if = {
+        limit = { NOT = { exists = event_target:spth_container_species_$ID$ } }
+        create_species = {
+            name = NAME_$ID$
+            class = HUM
+            portrait = spth_por_$ID$
+            namelist = random
+            traits = { }
+            allow_negative_traits = no
+            effect = { save_global_event_target_as = spth_container_species_$ID$ }
+        }
     }
 }
 
@@ -69,6 +72,7 @@ spth_effect_leader_init_spawner_default_effect = {
         randomize_traits = no
         event_leader = no # Leader is allowed to lead factions and win elections
         skip_background_generation = yes
+        tier = leader_tier_touhou
         # background_ethic = ethic_spiritualist
 
         traits = {
@@ -82,11 +86,17 @@ spth_effect_leader_init_spawner_default_effect = {
             set_leader_flag = legendary_leader
             set_leader_flag = should_not_have_upkeep
             set_leader_flag = immune_to_negative_traits
+            set_leader_flag = should_not_take_leader_cap
             add_skill_without_trait_selection = @\[ $SKILL|5$ - 1 ]
             set_leader_flag = flag_$ID$
             set_leader_flag = spth_sp_leader
             change_leader_portrait = spth_por_$ID$
-            clear_global_event_target = spth_container_species_$ID$
+            fire_on_action = {
+                on_action = touhou_on_leader_spawned
+                scopes = {
+                    from = event_target:spth_container_species_$ID$
+                }
+            }
         }
     }
     set_country_flag = th_$ID$_get
@@ -554,12 +564,197 @@ spth_effect_init_kokoro_effect = {
     }
 }
 
+spth_effect_init_karakasa_effect = {
+    optimize_memory
+    # 特殊 - 小伞
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = karakasa
+        CLASS = official
+    }
+}
+
 spth_effect_init_alice_effect = {
     optimize_memory
     # 特殊 - 爱丽丝
     spth_effect_leader_init_spawner_default_effect = {
         ID = alice
         CLASS = commander
+    }
+}
+
+spth_effect_init_shikieiki_effect = {
+    optimize_memory
+    # 特殊 - 四季映姬
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = shikieiki
+        CLASS = official
+    }
+}
+
+spth_effect_init_komachi_effect = {
+    optimize_memory
+    # 特殊 - 小野塚小町
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = komachi
+        CLASS = commander
+    }
+}
+
+spth_effect_init_yuza_effect = {
+    optimize_memory
+    # 特殊 - 花妈
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = yuza
+        CLASS = commander
+    }
+}
+
+spth_effect_init_kagerou_effect = {
+    optimize_memory
+    # 特殊 - 狼
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = kagerou
+        CLASS = commander
+    }
+}
+
+spth_effect_init_seija_effect = {
+    optimize_memory
+    # 特殊 - 天邪鬼
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = seija
+        CLASS = commander
+    }
+}
+
+spth_effect_init_shinmyoumaru_effect = {
+    optimize_memory
+    # 特殊 - 针妙丸
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = shinmyoumaru
+        CLASS = official
+    }
+    last_created_leader = {
+        if = {
+            limit = { prev = { is_scope_valid = yes is_scope_type = country } }
+            save_event_target_as = touhou_magical_mallet_user_@prev
+        } else_if = {
+            limit = { prev = { is_scope_valid = yes exists = owner } }
+            save_event_target_as = touhou_magical_mallet_user_@prev.owner
+        }
+    }
+}
+
+spth_effect_init_hina_effect = {
+    optimize_memory
+    # 特殊 - 厄神
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = hina
+        CLASS = official
+    }
+    last_created_leader = {
+        add_trait = { trait = leader_trait_hina_doll }
+    }
+    if = {
+        limit = { NOT = { is_variable_set = touhou_hina_skill_factor } }
+        set_variable = { which = touhou_hina_skill_factor value = 1 }
+    }
+}
+
+spth_effect_init_kosuzu_effect = {
+    optimize_memory
+    # 特殊 - 防撞桶
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = kosuzu
+        CLASS = official
+    }
+    last_created_leader = {
+        add_trait = { trait = leader_trait_kosuzu_book }
+        save_global_event_target_as = touhou_kosuzu_@prev
+    }
+    touhou_kosuzu_spawn_country = yes
+}
+
+spth_effect_init_sagume_effect = {
+    optimize_memory
+    # 特殊 - 探女
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = sagume
+        CLASS = commander
+        AGE = 126872
+    }
+    last_created_leader = {
+        spth_add_trait_no_notify = { trait = leader_trait_lunar_capital_player }
+        spth_add_trait_no_notify = { trait = leader_trait_touhou_moon_van }
+        spth_add_trait_no_notify = { trait = leader_trait_touhou_lunarian }
+        spth_add_trait_no_notify = { trait = leader_trait_lunar_godness }
+        spth_add_trait_no_notify = { trait = leader_trait_gensokyo_godness }
+        spth_add_trait_no_notify = { trait = leader_trait_sagume_1 }
+    }
+}
+
+spth_effect_init_doremy_sweet_effect = {
+    optimize_memory
+    # 特殊 - 123
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = doremy_sweet
+        CLASS = $class$
+        AGE = 123123
+    }
+    last_created_leader = {
+        spth_add_trait_no_notify = { trait = leader_trait_dream_world }
+        spth_add_trait_no_notify = { trait = leader_trait_dream_eater }
+        spth_add_trait_no_notify = { trait = leader_trait_dream_master }
+        spth_add_trait_no_notify = { trait = leader_trait_doremy_level }
+        spth_add_trait_no_notify = { trait = leader_trait_doremy_sweet_book }
+        spth_add_trait_no_notify = { trait = leader_trait_dream_soul }
+        if = {
+            limit = { NOT = { is_variable_set = doremy_sweet_clothes_diff } }
+            set_variable = { which = doremy_sweet_clothes_diff value = 1 }
+        }
+        if = {
+            limit = { NOT = { is_variable_set = doremy_sweet_faces_diff } }
+            set_variable = { which = doremy_sweet_faces_diff value = 1 }
+        }
+    }
+}
+
+# test only
+spth_effect_init_doremy_sweet_effect_test = {
+    optimize_memory
+    # 特殊 - 123
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = doremy_sweet
+        CLASS = commander
+        AGE = 123123
+    }
+    last_created_leader = {
+        spth_add_trait_no_notify = { trait = leader_trait_dream_world }
+        spth_add_trait_no_notify = { trait = leader_trait_dream_eater }
+        spth_add_trait_no_notify = { trait = leader_trait_dream_master }
+        spth_add_trait_no_notify = { trait = leader_trait_doremy_level }
+        spth_add_trait_no_notify = { trait = leader_trait_doremy_sweet_book }
+        spth_add_trait_no_notify = { trait = leader_trait_dream_soul }
+        if = {
+            limit = { NOT = { is_variable_set = doremy_sweet_clothes_diff } }
+            set_variable = { which = doremy_sweet_clothes_diff value = 1 }
+        }
+        if = {
+            limit = { NOT = { is_variable_set = doremy_sweet_faces_diff } }
+            set_variable = { which = doremy_sweet_faces_diff value = 1 }
+        }
+    }
+}
+touhou_test_effect_init_metric = {
+    optimize_memory
+    # 特殊 - 度规
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = doremy_sweet
+        CLASS = commander
+        AGE = 126871
+    }
+    last_created_leader = {
+        change_leader_portrait = touhou_standard_metric_portrait
     }
 }
 

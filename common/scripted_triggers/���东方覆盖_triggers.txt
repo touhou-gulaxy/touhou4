@@ -1,0 +1,221 @@
+is_capturable_space_critter_country_type = {
+    optimize_memory
+    OR = {
+        is_tiyanki_country_type = yes
+        is_amoeba_country_type = yes
+        is_crystal_country_type = yes
+        is_voidworms_country_type = yes
+        is_cutholoids_country_type = yes
+        is_country_type = kedama
+    }
+}
+has_encountered_kedama = {
+    optimize_memory
+    exists = event_target:kedama_country
+    has_communications = event_target:kedama_country
+}
+has_encountered_any_fauna = {
+    optimize_memory
+    OR = {
+        has_country_flag = ag_forced_encounter_fauna
+        has_encountered_tiyanki = yes
+        has_encountered_space_amoeba = yes
+        has_encountered_crystalline_entity = yes
+        has_encountered_voidworm = yes
+        has_encountered_cutholoid = yes
+        has_encountered_kedama = yes
+    }
+}
+
+# 灵能光环相关，兼容古代帝国
+check_aura_suppressors = {
+    optimize_memory
+    NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value != 0 } } }
+    OR = {
+        any_system_colony = {
+            OR = {
+                has_active_building = building_psionic_suppressor
+                has_active_building = building_ancient_ward_2
+            }
+        }
+        has_megastructure = shroud_seal
+        check_variable_arithmetic = { which = value:count_neighbor_shroud_seals value > 0 }
+
+        any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value != 0 } }
+        tc_check_aura_suppressors = yes
+    }
+}
+
+# 人偶一些trigger，sb驴为什么连这个也要覆盖？
+is_domestic_robot = {
+    optimize_memory
+    OR = {
+        has_trait = trait_robot_domestic_protocols
+        has_trait = trait_th_alice_doll
+    }
+    exists = owner
+    has_citizenship_type = {
+        type = citizenship_robot_servitude
+        country = owner
+    }
+}
+can_set_ai_policy = {
+    optimize_memory
+    is_mechanical_empire = no
+    OR = {
+        has_technology = tech_synthetic_workers
+        has_technology = tech_sapient_ai
+        has_technology = tech_trait_th_alice_doll
+        any_relation = {
+            has_communications = prev
+            OR = {
+                has_technology = tech_synthetic_workers
+                has_technology = tech_sapient_ai
+                is_machine_empire = yes
+                is_individual_machine = yes
+            }
+            OR = {
+                is_country_type = default
+                has_ai_personality_behaviour = robot_exploiter
+                has_ai_personality_behaviour = robot_liberator
+            }
+        }
+    }
+}
+can_fill_specialist_job_trigger = {
+    optimize_memory
+    custom_tooltip = SPECIALIST_JOB_TRIGGER
+    hidden_trigger = {
+        NOT = { has_ethic = ethic_gestalt_consciousness }
+        exists = owner
+        OR = {
+            is_enslaved = no
+            has_slavery_type = { type = slavery_indentured }
+        }
+        is_being_purged = no
+        is_being_assimilated = no
+        NOT = { has_trait = trait_syncretic_proles }
+        # Rule out Traits for servitude & lack of free will
+        can_think = yes
+        NOT = {	has_pop_group_flag = cant_work }
+        # Rule out Disconnected Drones
+        has_disconnected_drone_citizenship_type = no
+        OR = {
+            NOT = { has_trait = trait_mechanical }
+            has_trait = trait_th_alice_doll
+            owner = { has_technology = tech_droid_workers }
+        }
+        NOT = {
+            has_citizenship_type = {
+                type = citizenship_organic_trophy
+                country = owner
+            }
+        }
+        if = {
+            limit = {
+                divinity_right_to_work_job_check_trigger_exempt = no
+            }
+            divinity_right_to_work_job_check_trigger_specialist = yes
+        }
+    }
+}
+complex_specialist_job_check_trigger = {
+    optimize_memory
+    hidden_trigger = {
+        exists = owner
+        OR = {
+            NOT = { has_trait = trait_mechanical }
+            has_trait = trait_th_alice_doll
+            AND = {
+                owner = { has_technology = tech_droid_workers }
+                owner = { NOT = { has_policy_flag = ai_outlawed } }
+            }
+        }
+    }
+}
+can_be_leader = {
+    optimize_memory
+    OR = {
+        has_citizenship_rights = yes
+        has_citizenship_type = { type = citizenship_shroud_touched country = root }
+    }
+    # Rule out Traits for servitude & lack of free will
+    can_think = yes
+    OR = {
+        is_robot_pop_group = no
+        if = {
+            limit = { has_trait = trait_th_alice_doll }
+            root = {
+                OR = {
+                    has_authority = auth_gensokyo
+                    is_machine_empire = yes
+                    is_mechanical_empire = yes
+                    is_individual_machine = yes
+                    has_country_flag = synthetic_fertility_no_bodies_left
+                }
+            }
+        } else = {
+            root = {
+                OR = {
+                    has_technology = tech_synthetic_leaders
+                    is_machine_empire = yes
+                    is_mechanical_empire = yes
+                    is_individual_machine = yes
+                    has_country_flag = synthetic_fertility_no_bodies_left
+                }
+            }
+        }
+    }
+    OR = {
+        is_same_species = root
+        root = {
+            NAND = {
+                has_origin = origin_necrophage
+                has_trait = trait_necrophage
+            }
+        }
+    }
+}
+
+# 岗位swap，采用古代帝国的modifier方案
+enforcer_is_telepath_trigger = {
+    optimize_memory
+    exists = planet
+    planet = { OR = {
+        has_building = building_psi_corps
+        AND = {
+            exists = planet.orbital_defence.starbase
+            planet.orbital_defence.starbase = { has_starbase_building = ring_psi_corps }
+        }
+        has_planet_flag = enforcer_is_telepath_trigger
+        NOT = { check_modifier_value = { modifier = enforcer_is_telepath_trigger value = 0 } }
+    } }
+}
+politician_is_science_director = {
+    exists = owner
+    OR = {
+        owner = {
+            has_valid_civic = civic_technocracy
+        }
+        has_building = building_institute
+        has_building = building_vultaum_reality_computer
+        has_building = building_fe_lab_1
+        has_building = building_fe_lab_2
+        has_planet_flag = politician_is_science_director
+        NOT = { check_modifier_value = { modifier = politician_is_science_director value = 0 } }
+    }
+}
+physicist_is_astral_researcher_trigger = {
+    optimize_memory
+    exists = planet
+    planet = {
+        OR = {
+            has_building = building_astral_siphon_1
+            has_building = building_astral_siphon_2
+            has_building = building_astral_siphon_3
+            has_planet_flag = physicist_is_astral_researcher_trigger
+            NOT = { check_modifier_value = { modifier = physicist_is_astral_researcher_trigger value = 0 } }
+        }
+    }
+}
+

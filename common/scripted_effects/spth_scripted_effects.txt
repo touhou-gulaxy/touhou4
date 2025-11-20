@@ -767,6 +767,10 @@ spth_precursor_unlock_makai_ship_core = {
 	every_owned_ship = {
 		limit = { is_ship_size = spth_makai_ship_core_0 }
 		fleet = {
+            if = {
+                limit = { exists = leader }
+                leader = { unassign_leader = this }
+            }
 			create_ship = {
 				name = NAME_spth_makai_ship_core_1
 				design = NAME_spth_makai_ship_core_1
@@ -878,21 +882,32 @@ spth_set_stage_crisis_sound = {
 				spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_2 }
 			} else = { spth_set_crisis_sound = { sound = spth_crisis_kamikakushi_stage_1 } }
 		} else = { stop_crisis_sound = yes }
-	}
+	} else_if = {
+        limit = { has_global_flag = spth_lunar_capital_psi_crisis_begin }
+        if = {
+            limit = { NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended } }
+            spth_set_crisis_sound = { sound = lunar_capital_psi_crisis_stage_1 }
+        } else = { stop_crisis_sound = yes }
+    }
 }
 spth_astral_thread_small_reward = {
 	optimize_memory
+	random_archaeological_site = {
+		limit = { is_site_type = site_touhou_astral_signals }
+		log = "[This.Planet.GetName] site"
+		prev = { set_location = { target = prev distance = 25 angle = random } }
+	}
 	owner = {
 		custom_tooltip = astral_threads_found
 		locked_random_list = {
 			1 = {
-				add_resource_astral_threads = { VALUE = 40 ADD = $ADD$ }
+				add_resource_astral_threads = { VALUE = 40 ADD = 20 }
 			}
 			1 = {
-				add_resource_astral_threads = { VALUE = 50 ADD = $ADD$ }
+				add_resource_astral_threads = { VALUE = 50 ADD = 25 }
 			}
 			1 = {
-				add_resource_astral_threads = { VALUE = 60 ADD = $ADD$ }
+				add_resource_astral_threads = { VALUE = 60 ADD = 30 }
 			}
 		}
 	}
@@ -966,6 +981,7 @@ spth_create_kamikakushi_fallen_empire = {
 			set_country_flag = protected_from_queen_storm
 			set_country_flag = spth_kamikakushi_fallen_empire
 			set_country_flag = touhou_mod_country
+			add_modifier = { modifier = touhou_immune_from_terrify }
 			set_graphical_culture = strg_01
 			add_modifier = { modifier = spth_kamikakushi days = -1 }
 			add_resource = {
@@ -995,7 +1011,7 @@ spth_create_kamikakushi_fallen_empire = {
 				}
 				if = {
 					limit = { NOT = { has_country_flag = kamikakushi_fallen_empire_trigger_empire } }
-					country_event = { id = spth_precursor.203 }
+					country_event = { id = spth_precursor.203 days = 10 }
 				}
 			}
 		}
@@ -1037,4 +1053,69 @@ spth_create_kuat_fleet = {
 			spth_init_special_ship_flag = yes
 		}
 	}
+}
+
+touhou_destroy_orbital_ring = {
+	optimize_memory
+	if = {
+		limit = { exists = orbital_defence }
+		destroy_fleet = orbital_defence
+		if = {
+			limit = { always = $spawn_debris|no$ }
+			planet = {
+				set_planet_flag = ruined_orbital_ring_planet
+				remove_planet_flag = has_megastructure
+				save_event_target_as = ruined_orbital_ring_planet
+			}
+			solar_system = {
+				spawn_megastructure = {
+					type = "orbital_ring_ruined"
+					planet = event_target:ruined_orbital_ring_planet
+					init_effect = {
+						set_owner = prev.owner
+						create_ambient_object = { type = "medium_debris_01_object" location = this }
+						last_created_ambient_object = { set_location = { target = prev distance = 8 angle = 90 } }
+						create_ambient_object = { type = "medium_debris_02_object" location = this }
+						last_created_ambient_object = { set_location = { target = prev distance = 3 angle = 270 } }
+					}
+				}
+			}
+		}
+	}
+}
+touhou_spawn_lathe_cracker_effect = {
+	optimize_memory
+	create_ambient_object = {
+		location = this
+		type = habitat_cracker_object
+		duration = 5
+		use_3d_location = yes
+		base_angle_towards = star
+		entity_face_object = star
+		entity_offset = { min = 0 max = 0 }
+		entity_scale_to_size = yes
+		scale = 0.10
+	}
+	save_event_target_as = target_lathe
+	solar_system = {
+		spawn_megastructure = { type = cosmogenesis_world_ruined owner = this.owner coords_from = prev }
+		random_system_planet = {
+			limit = { has_planet_flag = has_cosmogenesis_world }
+			remove_planet_flag = has_cosmogenesis_world
+			remove_planet_flag = has_megastructure
+		}
+	}
+	remove_planet = yes
+}
+touhou_destroy_habitable_ringworld = {
+	optimize_memory
+	change_pc = pc_ringworld_habitable_damaged
+}
+
+touhou_change_patron_type = {
+    optimize_memory
+    if = {
+        limit = { has_patron_relation = { patron = $patron$ contact = completed } }
+        replace_patron = { new_patron = $new_patron$ replaced_patron = $patron$ }
+    }
 }

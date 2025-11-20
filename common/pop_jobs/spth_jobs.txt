@@ -1,102 +1,3 @@
-# 巫女-统治者
-miko = {
-	category = ruler
-	swappable_data = {
-		default = {
-			building_icon = building_bl
-			condition_string = RULER_JOB_TRIGGER
-			icon = miko
-		}
-		swap_type = {
-			name = miko_swap_sanae
-			building_icon = building_spth_moriya_shrine
-			condition_string = RULER_JOB_TRIGGER
-			icon = sanae
-			trigger = { has_building = building_spth_moriya_shrine }
-			weight = 10
-		}
-	}
-	
-	possible_pre_triggers = {
-		has_owner = yes
-		is_enslaved = no
-		is_being_purged = no
-		is_being_assimilated = no
-		is_sapient = yes
-	}
-	possible_precalc = can_fill_ruler_job
-	possible = { can_pop_fill_touhou_job = yes }
-	
-	resources = {
-		category = planet_miko
-		inline_script = { script = jobs/spth_job_single_produce resource = unity count = 12 }
-		inline_script = { script = jobs/spth_job_single_produce resource = physics_research count = 4 }
-		inline_script = { script = jobs/spth_job_single_produce resource = engineering_research count = 4 }
-		inline_script = { script = jobs/spth_job_single_produce resource = society_research count = 4 }
-		inline_script = { script = jobs/spth_job_single_produce resource = sr_lingli count = 1 }
-		inline_script = { script = jobs/spth_job_single_ap_produce ap = 3 resource = astral_threads count = 0.25 }
-		inline_script = { script = jobs/spth_job_single_upkeep resource = consumer_goods count = 2 }
-	}
-	
-	triggered_planet_modifier = {
-		potential = { always = yes }
-		modifier = {
-			planet_amenities_add = 300
-		}
-		mult = value:scripted_modifier_mult|MODIFIER|pop_job_amenities_mult|
-	}
-	
-	triggered_planet_modifier = {
-		potential = { spth_check_gensokyo_auth = yes }
-		modifier = {
-			planet_barrier_capacity_add = 0.5
-			planet_crime_add = -2.5
-		}
-	}
-
-	triggered_country_modifier = {
-		potential = { spth_check_gensokyo_auth = yes }
-		modifier = {
-			empire_size_add = -2
-		}
-	}
-	triggered_country_modifier = {
-		potential = { spth_check_gensokyo_auth = yes }
-		modifier = {
-			empire_size_add = -1
-		}
-		mult = planet.planet_weak_genso_job_produce_faith_modifier
-	}
-	
-	tags = { touhou_job touhou_miko unity amenities astral_threads touhou_unity touhou_amenities touhou_astral_threads }
-	weight = {
-		weight = @spth_ruler_job_weight
-		mult = value:job_weights_modifier|JOB|politician|RESOURCE|unity|
-		mult = value:scripted_modifier_job_weight_mult|MODIFIER|pop_job_amenities_mult|
-		modifier = {
-			factor = 0.1
-			has_citizenship_rights = no
-			NOT = { pop_group_has_trait = trait_mechanical }
-		}
-		modifier = {
-			factor = 1.2
-			pop_group_has_trait = trait_touhou
-		}
-		# crisis purge
-		modifier = {
-			factor = 0.01
-			exists = planet
-			exists = planet.controller
-			planet.controller = {
-				OR = {
-					is_country_type = swarm
-					is_country_type = ai_empire
-				}
-			}
-		}
-	}
-}
-
 # 幻想铸造工
 genso_foundry = {
 	category = specialist
@@ -116,7 +17,7 @@ genso_foundry = {
 	}
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
-	
+	can_be_automated = no
 	resources = {
 		category = planet_metallurgists
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = alloys count = 6 }
@@ -166,6 +67,7 @@ genso_artisan = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	resources = {
 		category = planet_artisans
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = consumer_goods count = 6 }
@@ -214,18 +116,17 @@ genso_researcher_physics = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	resources = {
-		category = planet_researchers
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = physics_research count = 8 }
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = engineering_research count = 4 }
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = society_research count = 4 }
+		category = planet_touhou_researcher
+		inline_script = { script = jobs/spth_job_t2_single_produce resource = physics_research count = 12 }
 		inline_script = { script = jobs/spth_job_t2_upkeep resource = "consumer_goods = 4 sr_lingli = 1 rare_crystals = 0.5" }
 	}
 
 	inline_script = {
 		script = jobs/spth_job_planet_modifier_2
-		mod1 = planet_researchers_physics_research_produces_add val1 = 0.25
-		mod2 = planet_researchers_physics_research_produces_mult val2 = 0.025
+		mod1 = planet_researchers_physics_research_produces_add val1 = 0.2
+		mod2 = planet_researchers_physics_research_produces_mult val2 = 0.02
 	}
 
 	tags = { touhou_job touhou_bouns touhou_research research }
@@ -272,18 +173,17 @@ genso_researcher_society = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	resources = {
-		category = planet_researchers
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = physics_research count = 4 }
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = engineering_research count = 4 }
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = society_research count = 8 }
+		category = planet_touhou_researcher
+		inline_script = { script = jobs/spth_job_t2_single_produce resource = society_research count = 12 }
 		inline_script = { script = jobs/spth_job_t2_upkeep resource = "consumer_goods = 4 sr_lingli = 1 exotic_gases = 0.5" }
 	}
 
 	inline_script = {
 		script = jobs/spth_job_planet_modifier_2
-		mod1 = planet_researchers_society_research_produces_add val1 = 0.25
-		mod2 = planet_researchers_society_research_produces_mult val2 = 0.025
+		mod1 = planet_researchers_society_research_produces_add val1 = 0.2
+		mod2 = planet_researchers_society_research_produces_mult val2 = 0.02
 	}
 
 	tags = { touhou_job touhou_bouns touhou_research research }
@@ -330,18 +230,17 @@ genso_researcher_engineering = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	resources = {
-		category = planet_researchers
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = physics_research count = 4 }
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = engineering_research count = 8 }
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = society_research count = 4 }
+		category = planet_touhou_researcher
+		inline_script = { script = jobs/spth_job_t2_single_produce resource = engineering_research count = 12 }
 		inline_script = { script = jobs/spth_job_t2_upkeep resource = "consumer_goods = 4 sr_lingli = 1 volatile_motes = 0.5" }
 	}
 
 	inline_script = {
 		script = jobs/spth_job_planet_modifier_2
-		mod1 = planet_researchers_engineering_research_produces_add val1 = 0.25
-		mod2 = planet_researchers_engineering_research_produces_mult val2 = 0.025
+		mod1 = planet_researchers_engineering_research_produces_add val1 = 0.2
+		mod2 = planet_researchers_engineering_research_produces_mult val2 = 0.02
 	}
 
 	tags = { touhou_job touhou_bouns touhou_research research }
@@ -388,8 +287,9 @@ genso_construction_worker = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	resources = {
-		category = planet_researchers
+		category = planet_touhou_researcher
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = physics_research count = 4 }
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = engineering_research count = 4 }
 		inline_script = { script = jobs/spth_job_t2_single_upkeep resource = consumer_goods count = 1 }
@@ -436,6 +336,7 @@ genso_miner = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	resources = {
 		category = planet_miners
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = minerals count = 12 }
@@ -482,6 +383,7 @@ genso_technician = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	resources = {
 		category = planet_technician
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = energy count = 16 }
@@ -534,6 +436,7 @@ genso_farmer = {
 		inline_script = { script = jobs/spth_job_t2_single_upkeep resource = sr_lingli count = 3 }
 	}
 
+	can_be_automated = no
 	inline_script = {
 		script = jobs/spth_job_planet_modifier_2
 		mod1 = planet_farmers_food_produces_add val1 = 0.25
@@ -574,12 +477,13 @@ genso_enforcer = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	planet_modifier = {
 		planet_defense_armies_add = 3
 	}
 
 	resources = {
-		category = planet_researchers
+		category = planet_touhou_enforcers
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = unity count = 6 }
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = society_research count = 6 }
 		inline_script = { script = jobs/spth_job_t2_single_upkeep resource = sr_lingli count = 2 }
@@ -634,6 +538,7 @@ genso_soldier = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	country_modifier = {
 		country_naval_cap_add = 20
 	}
@@ -643,7 +548,7 @@ genso_soldier = {
 	}
 
 	resources = {
-		category = planet_researchers
+		category = planet_touhou_soldiers
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = unity count = 6 }
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = society_research count = 6 }
 		inline_script = { script = jobs/spth_job_t2_single_upkeep resource = sr_lingli count = 2 }
@@ -710,8 +615,9 @@ genso_healthcare = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	resources = {
-		category = planet_researchers
+		category = planet_touhou_doctors
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = unity count = 6 }
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = society_research count = 6 }
 		inline_script = { script = jobs/spth_job_t2_single_upkeep resource = consumer_goods count = 2 }
@@ -726,7 +632,7 @@ genso_healthcare = {
 
 	inline_script = {
 		script = jobs/spth_job_planet_modifier_1
-		mod1 = pop_environment_tolerance val1 = 0.30
+		mod1 = pop_environment_tolerance val1 = 0.20
 	}
 
 	tags = { touhou_job touhou_bouns touhou_pop_growth pop_growth unity }
@@ -763,6 +669,7 @@ genso_entertainer = {
 	possible_precalc = can_fill_specialist_job
 	possible = { can_pop_fill_touhou_job = yes }
 
+	can_be_automated = no
 	resources = {
 		category = planet_entertainers
 		inline_script = { script = jobs/spth_job_t2_single_produce resource = unity count = 18 }
@@ -816,6 +723,7 @@ genso_trader = {
 
 	possible_precalc = can_fill_specialist_job
 
+	can_be_automated = no
 	resources = {
 		category = planet_traders
 		inline_script = { script = jobs/spth_job_single_upkeep resource = consumer_goods count = 4 }
@@ -915,59 +823,59 @@ spth_human_trader = {
 			unity = 2
 		}
 		produces = {
-			trigger = { planet = { spth_has_farming_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_farming_designation = yes } }
 			food = 3
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
-			trigger = { planet = { spth_has_mining_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_mining_designation = yes } }
 			minerals = 2
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
-			trigger = { planet = { spth_has_generator_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_generator_designation = yes } }
 			energy = 2
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
-			trigger = { planet = { spth_has_rural_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_rural_designation = yes } }
 			food = 1
 			minerals = 1
 			energy = 1
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
-			trigger = { planet = { spth_has_research_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_research_designation = yes } }
 			physics_research = 1.5
 			engineering_research = 1.5
 			society_research = 1.5
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
-			trigger = { planet = { spth_has_foundry_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_foundry_designation = yes } }
 			alloys = 1.5
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
-			trigger = { planet = { spth_has_factory_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_factory_designation = yes } }
 			consumer_goods = 2
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
-			trigger = { planet = { spth_has_industrial_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_industrial_designation = yes } }
 			alloys = 1
 			consumer_goods = 1
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
-			trigger = { planet = { spth_has_refinery_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_refinery_designation = yes } }
 			rare_crystals = 0.5
 			exotic_gases = 0.5
 			volatile_motes = 0.5
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
-			trigger = { planet = { spth_has_unity_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_unity_designation = yes } }
 			unity = 2
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
@@ -979,6 +887,7 @@ spth_human_trader = {
 			trade = 6
 		}
 		produces = {
+            trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier } }
 			trade = 6
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
@@ -987,7 +896,7 @@ spth_human_trader = {
 			trade = 6
 		}
 		produces = {
-			trigger = { planet = { spth_has_trade_designation = yes } }
+			trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier spth_has_trade_designation = yes } }
 			trade = 6
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
@@ -1037,6 +946,7 @@ spth_spellcard_foundry = {
 		is_being_assimilated = no
 		is_sapient = yes
 	}
+	can_be_automated = no
 	possible = { can_pop_fill_touhou_job = yes }
 	resources = {
 		category = planet_spth_spellcard_specialist
@@ -1047,6 +957,7 @@ spth_spellcard_foundry = {
 			sr_lingli = 0.3
 		}
 		upkeep = {
+            trigger = { planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier } }
 			energy = 3
 			minerals = 3
 			alloys = 2
@@ -1076,7 +987,10 @@ spth_spellcard_foundry = {
 			sr_lingli = 0.2
 		}
 		upkeep = {
-			trigger = { owner = { has_touhou_ascension_tier_3 = yes } }
+			trigger = {
+                owner = { has_touhou_ascension_tier_3 = yes }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
+            }
 			energy = 2
 			minerals = 2
 			alloys = 2
@@ -1091,7 +1005,10 @@ spth_spellcard_foundry = {
 			sr_lingli = 0.1
 		}
 		upkeep = {
-			trigger = { owner = { has_touhou_ascension_tier_4 = yes } }
+			trigger = {
+                owner = { has_touhou_ascension_tier_4 = yes }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
+            }
 			energy = 1
 			minerals = 1
 			alloys = 1
@@ -1172,6 +1089,14 @@ spth_story_researcher = {
 			condition_string = SPECIALIST_JOB_TRIGGER
 			icon = spth_story_researcher
 		}
+        swap_type = {
+            trigger = { exists = owner check_modifier_value = { modifier = touhou_researcher_is_kosuzu_swap value > 0 } }
+            name = touhou_researcher_kosuzu
+            desc = touhou_researcher_kosuzu
+            icon = fe_archivist
+            building_icon = building_suzunaan
+            weight = 2
+        }
 	}
 	possible_pre_triggers = {
 		has_owner = yes
@@ -1184,10 +1109,10 @@ spth_story_researcher = {
 
 	inline_script = {
 		script = jobs/spth_common_research_produce
-		base = 5 city_base = 0.5 upkeep = 2 lingli_upkeep = 0.08 unity = 0.5
-		ap_2_base = 0.5 ap_2_city_base = 0.5 ap_2_upkeep = 1 ap_2_lingli_upkeep = 0.12
-		ap_3_base = 1 ap_3_city_base = 0.7 ap_3_upkeep = 2 ap_3_lingli_upkeep = 0.16
-		ap_4_base = 1.5 ap_4_city_base = 0.7 ap_4_upkeep = 3 ap_4_lingli_upkeep = 0.2
+		base = 4 city_base = 0.5 upkeep = 2 lingli_upkeep = 0.08 unity = 0.5
+		ap_2_base = 0.5 ap_2_city_base = 0.25 ap_2_upkeep = 1 ap_2_lingli_upkeep = 0.12
+		ap_3_base = 1 ap_3_city_base = 0.25 ap_3_upkeep = 2 ap_3_lingli_upkeep = 0.16
+		ap_4_base = 1.5 ap_4_city_base = 0.5 ap_4_upkeep = 3 ap_4_lingli_upkeep = 0.2
 		hm_upkeep = -1 hm_upkeep_a = 1.25
 		ap_2_hm_upkeep = -0.5 ap_2_hm_upkeep_a = 0.6
 		ap_3_hm_upkeep = -1 ap_3_hm_upkeep_a = 1.15
@@ -1239,11 +1164,10 @@ spth_story_chief_researcher = {
 
 	inline_script = {
 		script = jobs/spth_chief_research_produce
-		base = 6 city_base = 0.8 unity = 1
-		ap_2_base = 1 ap_2_city_base = 0.8
-		ap_3_base = 1 ap_3_city_base = 1.2
-		ap_4_base = 2 ap_4_city_base = 1.2
-		energy = 0.1 minerals = 0.1
+		base = 6 city_base = 0.5 unity = 1
+		ap_2_base = 1 ap_2_city_base = 0.5
+		ap_3_base = 1 ap_3_city_base = 0.5
+		ap_4_base = 2 ap_4_city_base = 1.0
 	}
 
 	inline_script = {
@@ -1308,17 +1232,17 @@ spth_story_factory_worker = {
 			resource_1 = alloys count_1 = 1 resource_2 = consumer_goods count_2 = 0.125
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_resource type = "produces"
+			script = jobs/spth_job_ap_resource_produce type = "produces"
 			resource = "alloys = 2 consumer_goods = 0.25"
 			ap = 2 job_type = "weak"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_city_resource type = "produces"
+			script = jobs/spth_job_ap_resource_produce type = "produces"
 			resource = "alloys = 1 consumer_goods = 0.125"
 			ap = 2 job_type = "weak"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_resource type = "produces"
+			script = jobs/spth_job_ap_resource_produce type = "produces"
 			resource = "alloys = 2.5 consumer_goods = 0.3"
 			ap = 3 job_type = "weak"
 		}
@@ -1328,7 +1252,7 @@ spth_story_factory_worker = {
 			ap = 3 job_type = "weak"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_resource type = "produces"
+			script = jobs/spth_job_ap_resource_produce type = "produces"
 			resource = "alloys = 2.5 consumer_goods = 0.3 sr_living_metal = 0.3"
 			ap = 4 job_type = "weak"
 		}
@@ -1528,8 +1452,8 @@ spth_story_miner = {
 			script = jobs/spth_job_twin_ap_city_produce ap = 4
 			resource_1 = minerals count_1 = 2 resource_2 = nanites count_2 = 0.25
 		}
-		inline_script = { script = jobs/spth_job_single_upkeep resource = energy count = 2 }
-		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = 3 resource = energy count = 3 }
+		inline_script = { script = jobs/spth_job_single_upkeep resource = energy count = 1.5 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = 3 resource = energy count = 2.5 }
 		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = 4 resource = energy count = 4 }
 	}
 
@@ -1589,8 +1513,8 @@ spth_story_farmer = {
 			script = jobs/spth_job_twin_ap_city_produce ap = 4
 			resource_1 = food count_1 = 3 resource_2 = sr_zro count_2 = 0.15
 		}
-		inline_script = { script = jobs/spth_job_single_upkeep resource = energy count = 2 }
-		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = 3 resource = energy count = 3 }
+		inline_script = { script = jobs/spth_job_single_upkeep resource = energy count = 1.5 }
+		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = 3 resource = energy count = 2.5 }
 		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = 4 resource = energy count = 3 }
 	}
 
@@ -1632,16 +1556,17 @@ spth_story_chemist = {
 	possible = { can_pop_fill_touhou_job = yes }
 
 	resources = {
-		category = planet_chemists
+		category = planet_touhou_chemists
 		produces = {
 			exotic_gases = 0.6
 			volatile_motes = 0.6
 			rare_crystals = 0.6
 		}
 		produces = {
-			exotic_gases = 0.3
-			volatile_motes = 0.3
-			rare_crystals = 0.3
+            trigger = { planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier } }
+			exotic_gases = 0.6
+			volatile_motes = 0.6
+			rare_crystals = 0.6
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
@@ -1654,11 +1579,12 @@ spth_story_chemist = {
 		}
 		produces = {
 			trigger = {
+                planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier }
 				owner = { has_touhou_ascension_tier_2 = yes }
 			}
-			exotic_gases = 0.25
-			volatile_motes = 0.25
-			rare_crystals = 0.25
+			exotic_gases = 0.5
+			volatile_motes = 0.5
+			rare_crystals = 0.5
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
@@ -1671,11 +1597,12 @@ spth_story_chemist = {
 		}
 		produces = {
 			trigger = {
+                planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier }
 				owner = { has_touhou_ascension_tier_3 = yes }
 			}
-			exotic_gases = 0.5
-			volatile_motes = 0.5
-			rare_crystals = 0.5
+			exotic_gases = 1
+			volatile_motes = 1
+			rare_crystals = 1
 			mult = planet.planet_weak_genso_job_produce_faith_modifier
 		}
 		produces = {
@@ -1688,6 +1615,7 @@ spth_story_chemist = {
 		}
 		produces = {
 			trigger = {
+                planet = { is_variable_set = planet_weak_genso_job_produce_faith_modifier }
 				owner = { has_touhou_ascension_tier_4 = yes }
 			}
 			exotic_gases = 1
@@ -1701,6 +1629,7 @@ spth_story_chemist = {
 			sr_lingli = 0.02
 		}
 		upkeep = {
+            trigger = { planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier } }
 			minerals = 6
 			energy = 3
 			sr_lingli = 0.02
@@ -1720,6 +1649,7 @@ spth_story_chemist = {
 			sr_lingli = 0.02
 			trigger = {
 				owner = { has_touhou_ascension_tier_3 = yes }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 			}
 			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
 		}
@@ -1737,6 +1667,7 @@ spth_story_chemist = {
 			sr_lingli = 0.02
 			trigger = {
 				owner = { has_touhou_ascension_tier_4 = yes }
+                planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 			}
 			mult = planet.planet_weak_genso_job_upkeep_faith_modifier
 		}
@@ -1856,10 +1787,12 @@ th_doll_master = {
 		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = 3 resource = consumer_goods count = 5 }
 		inline_script = { script = jobs/spth_job_single_ap_upkeep ap = 4 resource = consumer_goods count = 5 }
 	}
+	can_be_automated = no
 	planet_modifier = {
 		planet_pop_assembly_add = 3
 	}
 	triggered_planet_modifier = {
+        potential = { planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier } }
 		planet_pop_assembly_add = 3
 		mult = planet.planet_weak_genso_job_upkeep_faith_modifier
 	}
@@ -1874,6 +1807,7 @@ th_doll_master = {
 		potential = {
 			exists = owner
 			owner = { has_touhou_ascension_tier_2 = yes }
+            planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 		}
 		planet_pop_assembly_add = 1
 		mult = planet.planet_weak_genso_job_upkeep_faith_modifier
@@ -1889,6 +1823,7 @@ th_doll_master = {
 		potential = {
 			exists = owner
 			owner = { has_touhou_ascension_tier_3 = yes }
+            planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 		}
 		planet_pop_assembly_add = 1
 		mult = planet.planet_weak_genso_job_upkeep_faith_modifier
@@ -1904,6 +1839,7 @@ th_doll_master = {
 		potential = {
 			exists = owner
 			owner = { has_touhou_ascension_tier_4 = yes }
+            planet = { is_variable_set = planet_weak_genso_job_upkeep_faith_modifier }
 		}
 		planet_pop_assembly_add = 1
 		mult = planet.planet_weak_genso_job_upkeep_faith_modifier

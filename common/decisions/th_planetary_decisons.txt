@@ -10,17 +10,12 @@ th_deposits_build = {
 	}
 
 	potential = {
-		is_artificial = no
+        is_artificial = no
 		NOT = { is_planet_class = pc_machine }
 		NOT = { is_planet_class = pc_hive }
 		NOT = { is_planet_class = pc_city }
 		has_deposit = d_hakurei_barrier
-		NOT = {
-			check_variable = {
-				which = th_deposits_num
-				value >= 6
-			}
-		}
+		NOT = { check_variable = { which = th_deposits_num value >= 7 } }
 	}
 
 	prerequisites = {
@@ -42,10 +37,100 @@ th_deposits_build = {
 				10 = { add_deposit = d_false_heaven_shield }
 				5 = { add_deposit = d_wifi_tower }
 				5 = { add_deposit = d_hakurajinjia }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_hakurei_shrine }
+                    add_deposit = d_hakurei_shrine
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_sakura_tree }
+                    add_deposit = d_sakura_tree
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_touhou_library }
+                    add_deposit = d_touhou_library
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_chireiden }
+                    add_deposit = d_chireiden
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_yukari_home }
+                    add_deposit = d_yukari_home
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_myouren_temple }
+                    add_deposit = d_myouren_temple
+                }
 				20 = { add_deposit = d_mosen }
 			}
 		}
 	}
+}
+th_deposits_build_shell_world = {
+    owned_planets_only = yes
+    icon = decison_th_uncover
+    enactment_time = 360
+    resources = {
+        category = decisions
+        cost = {
+            sr_lingli = 500
+        }
+    }
+
+    potential = {
+        ag_is_shell_world = yes
+        check_modifier_value = { modifier = touhou_can_shellworld_use_th_deposits_build value != 0 }
+        has_deposit = d_hakurei_barrier
+        NOT = { check_variable = { which = th_deposits_num value >= 7 } }
+    }
+
+    prerequisites = {
+        tech_th_deposits_uncover
+    }
+
+    effect = {
+        custom_tooltip = decision_th_deposits_uncovered_effect
+        hidden_effect = {
+            change_variable = {
+                which = th_deposits_num
+                value = 1
+            }
+            random_list = {
+                20 = { add_deposit = d_zhulin }
+                10 = { add_deposit = d_yokai_mountain }
+                10 = { add_deposit = d_sunshine_flower_field }
+                10 = { add_deposit = d_th_underway }
+                10 = { add_deposit = d_false_heaven_shield }
+                5 = { add_deposit = d_wifi_tower }
+                5 = { add_deposit = d_hakurajinjia }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_hakurei_shrine }
+                    add_deposit = d_hakurei_shrine
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_sakura_tree }
+                    add_deposit = d_sakura_tree
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_touhou_library }
+                    add_deposit = d_touhou_library
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_chireiden }
+                    add_deposit = d_chireiden
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_yukari_home }
+                    add_deposit = d_yukari_home
+                }
+                5 = {
+                    modifier = { factor = 0 has_deposit = d_myouren_temple }
+                    add_deposit = d_myouren_temple
+                }
+                20 = { add_deposit = d_mosen }
+            }
+        }
+    }
 }
 spth_investigate_torifune_arc = {
 	owned_planets_only = yes
@@ -117,6 +202,7 @@ spth_build_spth_capital_shirne = {
 			has_building = building_ancient_palace
 			has_building = building_nirvana_empire_palace
 			has_building = building_hab_system_capital
+            has_building = ag_shell_world_capital_lv4
 		}
 		NOR = {
 			has_building = building_spth_old_shirne
@@ -141,6 +227,7 @@ spth_build_spth_capital_shirne = {
 			remove_building = building_ancient_palace
 			remove_building = building_nirvana_empire_palace
 			remove_building = building_hab_system_capital
+            remove_building = ag_shell_world_capital_lv4
 			add_building = building_spth_old_shirne
 		}
 	}
@@ -181,7 +268,7 @@ spth_advanced_plantary_shield = {
 spth_remove_lunar_capital_planet_effect = {
 	owned_planets_only = yes
 	icon = decision_extradimensional_experimentation
-	enactment_time = 360
+	enactment_time = 30
 	resources = {
 		category = decisions
 		cost = {
@@ -470,3 +557,40 @@ decision_disappear_barrier_aethon_adjust_obelisk = {
 		}
 	}
 }
+
+touhou_shell_world_durability_spiritual_power_inject = {
+    owned_planets_only = yes
+    enactment_time = 15
+    resources = {
+        category = decisions
+        cost = {
+            sr_lingli = 2000
+            energy = 1000
+        }
+    }
+    potential = {
+        NOT = { has_planet_flag = touhou_shell_world_fixed }
+        has_planet_flag = origin_touhou_shell_world_system_planet
+        has_deposit = d_hakurei_barrier
+        from = { has_authority = auth_gensokyo is_ai = no }
+    }
+    allow = {
+        custom_tooltip = {
+            fail_text = touhou_shell_world_durability_spiritual_power_inject_cooldown
+            NOT = { has_planet_flag = touhou_shell_world_durability_spiritual_power_inject_cooldown }
+        }
+    }
+    effect = {
+        custom_tooltip = touhou_shell_world_durability_spiritual_power_inject_effect
+        hidden_effect = {
+            set_timed_planet_flag = { flag = touhou_shell_world_durability_spiritual_power_inject_cooldown days = 360 }
+            from = {
+                random_situation = {
+                    limit = { is_situation_type = situation_touhou_shell_world_durability }
+                    set_timed_situation_flag = { flag = situation_touhou_shell_world_durability_spiritual_power days = 90 }
+                }
+            }
+        }
+    }
+}
+

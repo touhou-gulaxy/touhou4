@@ -109,6 +109,125 @@ country_event = {
     }
 }
 
+country_event = {
+    id = spth_precursor.50
+    title = spth_precursor.50.name
+    desc = spth_precursor.50.desc
+    is_triggered_only = yes
+    location = event_target:spth_precursor_makai_network_system
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = hakuri_shrine_night_room }
+    show_sound = event_mystic_reveal_light
+    option = {
+        name = TH_ACKNOWLEDGED
+    }
+}
+country_event = {
+    id = spth_precursor.51
+    title = spth_precursor.51.name
+    desc = spth_precursor.51.desc
+    is_triggered_only = yes
+    location = event_target:spth_precursor_makai_network_system
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = hakuri_shrine_night_room }
+    show_sound = event_mystic_reveal_light
+    option = {
+        name = TH_INTERESTRING
+    }
+}
+fleet_event = {
+    id = spth_precursor.52
+    title = spth_precursor.52.name
+    desc = spth_precursor.52.desc
+    is_triggered_only = yes
+    trigger = {
+        exists = owner
+        from = { has_star_flag = spth_precursor_makai_network_system }
+        owner = { NOT = { has_country_flag = spth_precursor_52_fired } }
+    }
+    immediate = { owner = { set_country_flag = spth_precursor_52_fired } }
+    location = event_target:spth_precursor_makai_network_system_planet
+    show_sound = event_mystic_reveal_light
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_in_orbit_room }
+    option = {
+        name = TH_SO_INTERESTRING
+        default_hide_option = yes
+    }
+}
+planet_event = {
+    id = spth_precursor.53
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_planet_flag = spth_precursor_makai_network_system_planet
+        NOT = { has_planet_flag = spth_precursor_53_fired }
+    }
+    immediate = {
+        set_planet_flag = spth_precursor_53_fired
+        owner = { country_event = { id = spth_precursor.54 days = 180 random = 180 } }
+    }
+}
+country_event = {
+    id = spth_precursor.54
+    title = spth_precursor.54.name
+    desc = spth_precursor.54.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ancient_city_light_room }
+    show_sound = event_wind_ruins
+    location = event_target:spth_precursor_makai_network_system_planet
+    trigger = {
+        event_target:spth_precursor_makai_network_system_planet = {
+            NOT = { has_planet_flag = spth_precursor_54_fired }
+        }
+    }
+    immediate = {
+        event_target:spth_precursor_makai_network_system_planet = {
+            set_planet_flag = spth_precursor_54_fired
+        }
+    }
+    option = {
+        name = TH_SO_INTERESTRING
+        default_hide_option = yes
+        enable_special_project = {
+            name = spth_precursor_makai_network_repair
+            location = event_target:spth_precursor_makai_network_system_planet
+            owner = root
+        }
+    }
+}
+country_event = {
+    id = spth_precursor.55
+    title = spth_precursor.55.name
+    desc = spth_precursor.55.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ancient_city_light_room }
+    show_sound = event_wind_ruins
+    location = event_target:spth_precursor_makai_network_system_planet
+    immediate = { set_country_flag = tech_touhou_gateway_network_master_node_unlock_shield }
+    option = {
+        name = TH_SO_INTERESTRING
+        default_hide_option = yes
+        touhou_give_tech_option = {
+            touhou_tech = tech_touhou_gateway_network_master_node_unlock_shield
+            research_point = yes
+        }
+    }
+}
+
+
 # triggered on_survey_planet
 # this = ship
 # root = ship
@@ -668,6 +787,86 @@ country_event = {
 
 # 隙间之里堕落
 # 不明信号，一段时间后刷
+# 隙间之里入侵后不刷
+event = {
+    id = spth_precursor.199
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { NOT = { has_global_flag = spth_precursor_201_triggered } }
+    immediate = {
+        random_list = {
+            10 = {
+                modifier = {
+                    add = 10
+                    any_playable_country = { has_origin = origin_gensokyo_ringworld }
+                }
+                if = {
+                    limit = { any_playable_country = { has_origin = origin_gensokyo_ringworld } }
+                    random_playable_country = {
+                        limit = { is_ai = no has_origin = origin_gensokyo_ringworld }
+                        country_event = { id = spth_precursor.201 days = 45 }
+                    }
+                } else = {
+                    random_playable_country = {
+                        limit = { is_ai = no has_authority = auth_gensokyo }
+                        country_event = { id = spth_precursor.201 days = 45 }
+                    }
+                }
+            }
+            90 = {
+                modifier = {
+                    add = -10
+                    any_playable_country = { has_origin = origin_gensokyo_ringworld }
+                }
+            }
+        }
+        reroll_random = yes
+    }
+}
+event = {
+    id = spth_precursor.200
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_global_flag = spth_precursor_201_triggered }
+        has_global_flag = spth_kamikaushi_crisis_ended
+    }
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            20 = {
+                modifier = {
+                    factor = 0              # 隙间之里天灾期间不刷
+                    has_global_flag = spth_kamikaushi_crisis_start
+                    NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+                }
+                modifier = { factor = 0 mid_game_years_passed < 0 }
+                modifier = { factor = 0.5 end_game_years_passed < 0 }
+                modifier = { factor = 2 end_game_years_passed >= 15 }
+                modifier = { factor = 2 has_global_flag = spth_kamikaushi_crisis_ended }
+                modifier = {
+                    factor = 2              # 古代帝国，探索大麦哲伦后
+                    is_variable_set = ag_exploration_target_status_lmc
+                    check_variable = { which = ag_exploration_target_status_lmc value = 1 }
+                }
+                if = {
+                    limit = { any_playable_country = { has_origin = origin_gensokyo_ringworld } }
+                    random_playable_country = {
+                        limit = { is_ai = no has_origin = origin_gensokyo_ringworld }
+                        country_event = { id = spth_precursor.201 days = 45 random = 45 }
+                    }
+                } else = {
+                    random_playable_country = {
+                        limit = { is_ai = no has_authority = auth_gensokyo }
+                        country_event = { id = spth_precursor.201 days = 45 random = 45 }
+                    }
+                }
+            }
+            80 = {
+            }
+        }
+    }
+}
 country_event = {
     id = spth_precursor.201
     title = spth_precursor.201.name
@@ -677,7 +876,10 @@ country_event = {
     custom_gui = spth_event_large_window
     custom_gui_option = spth_event_large_ui_option
     picture_event_data = { room = spth_mysterious_signal_room }
-    immediate = { set_global_flag = spth_precursor_201_triggered }
+    immediate = {
+        set_global_flag = spth_precursor_201_triggered
+        set_timed_global_flag = { flag = spth_precursor_201_triggered_recent days = 360 }
+    }
     option = {
         name = TH_INTERESTRING
         default_hide_option = yes
@@ -691,7 +893,24 @@ country_event = {
 country_event = {
     id = spth_precursor.202
     title = spth_precursor.202.name
-    desc = spth_precursor.202.desc
+    desc = {
+        trigger = {
+            has_global_flag = spth_kamikaushi_crisis_intro
+            has_global_flag = spth_kamikaushi_crisis_ended
+        }
+        text = spth_precursor.202.desc.after_crisis
+    }
+    desc = {
+        trigger = {
+            has_global_flag = spth_kamikaushi_crisis_intro
+            NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        }
+        text = spth_precursor.202.desc.befor_crisis
+    }
+    desc = {
+        trigger = { NOT = { has_global_flag = spth_kamikaushi_crisis_intro } }
+        text = spth_precursor.202.desc
+    }
     is_triggered_only = yes
     diplomatic = yes
     custom_gui = spth_special_diplomacy_window
@@ -701,8 +920,7 @@ country_event = {
         spth_spawn_kamikakushi_fallen_empire = yes
     }
     picture_event_data = {
-        room = kamikakushi_1_room
-        portrait = event_target:spth_kamikakushi_fallen_empire.ruler
+        room = no_video_feed_room
     }
     option = {
         name = spth_precursor.202.a
@@ -746,11 +964,11 @@ country_event = {
     show_sound = event_mysterious_signal
     picture_event_data = {
         room = kamikakushi_1_room
-        portrait = event_target:contact_empire.ruler
+        portrait = event_target:spth_kamikakushi_fallen_empire.ruler
     }
     option = {
         name = spth_precursor.204.a
-        trigger = { NOT = { is_same_empire = event_target:enemy_empire } }
+        # trigger = { NOT = { is_same_empire = event_target:enemy_empire } }
     }
     option = {
         name = spth_precursor.204.b
@@ -770,7 +988,25 @@ country_event = {
             limit = { has_country_flag = spth_kamikakushi_fallen_empire_enable_refresh }
             spth_refresh_kamikakushi_awaken_empire_fleets = yes
         }
-        country_event = { id = spth_precursor.205 days = 540 random = 90 }
+        country_event = { id = spth_precursor.205 days = 1080 random = 720 }
+    }
+}
+country_event = {
+    id = spth_precursor.206
+    title = spth_precursor.206.name
+    desc = spth_precursor.206.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fallen_empire_room }
+    show_sound = event_alien_signal
+    location = from
+    option = {
+        name = spth_precursor.206.a
+    }
+    option = {
+        name = spth_precursor.206.b
     }
 }
 # 你灾飞我让你飞起来
@@ -779,6 +1015,7 @@ country_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
+        NOT = { has_country_flag = spth_on_country_crisis_level_5_fired }
         is_country_type = default is_ai = no
         OR = {
             has_crisis_level = crisis_level_5
@@ -787,6 +1024,7 @@ country_event = {
         }
     }
     immediate = {
+        set_country_flag = spth_on_country_crisis_level_5_fired
         if = {
             limit = { has_authority = auth_gensokyo }
             fire_on_action = { on_action = spth_on_country_crisis_level_5_gensokyo }
@@ -800,7 +1038,12 @@ country_event = {
     title = spth_precursor.215.name
     desc = spth_precursor.215.desc
     is_triggered_only = yes
-    trigger = { exists = event_target:spth_awaken_empire_kamikakushi }
+    trigger = {
+        NOT = { has_global_flag = kamikakushi_fallen_empire_awaken }
+        exists = event_target:spth_kamikakushi_fallen_empire
+        has_crisis_level = crisis_level_5
+    }
+    immediate = { set_global_flag = kamikakushi_fallen_empire_awaken }
     diplomatic = yes
     custom_gui = spth_special_diplomacy_window
     custom_gui_option = spth_special_diplomacy_option
@@ -842,3 +1085,91 @@ country_event = {
         }
     }
 }
+# 隙间之里或其他天灾即将入侵，老登要觉醒辣！
+country_event = {
+    id = spth_precursor.216
+    title = spth_precursor.216.name
+    desc = spth_precursor.216.desc
+    is_triggered_only = yes
+    trigger = {
+        exists = event_target:spth_kamikakushi_fallen_empire
+    }
+    diplomatic = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    picture_event_data = {
+        room = kamikakushi_1_room
+        portrait = event_target:spth_kamikakushi_fallen_empire.ruler
+    }
+    option = {
+        name = spth_precursor.216.a
+        default_hide_option = yes
+    }
+}
+event = {
+    id = spth_precursor.217
+    hide_window = yes
+    fire_only_once = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_global_flag = kamikakushi_fallen_empire_awaken }
+        exists = event_target:spth_kamikakushi_fallen_empire
+        any_country = { touhou_is_known_crisis_faction = yes }
+    }
+    immediate = {
+        set_global_flag = kamikakushi_fallen_empire_awaken
+        event_target:spth_kamikakushi_fallen_empire = {
+            spth_make_kamikakushi_fallen_empire_awake = yes
+            add_modifier = { modifier = spth_kamikakushi_awaken_modifier }
+            set_country_flag = spth_kamikakushi_fallen_empire_enable_refresh
+            if = {
+                limit = { NOT = { has_country_flag = spth_precursor_205_fired } }
+                set_country_flag = spth_precursor_205_fired
+                country_event = { id = spth_precursor.205 }
+            }
+        }
+        every_playable_country = {
+            country_event = { id = spth_precursor.216 days = 10 }
+        }
+    }
+}
+
+# Fired whenever a new owner is set for a planet,
+# be it after a war or through a trade
+# From = Country scope (new owner)
+# This = Planet scope
+planet_event = {
+    id = spth_precursor.218
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = {
+        solar_system = { has_star_flag = spth_real_kamikakushi_capital }
+        NOT = { has_planet_flag = spth_precursor_218_fired }
+    }
+    immediate = {
+        set_planet_flag = spth_precursor_218_fired
+        from = {
+            country_event = { id = spth_precursor.219 }
+        }
+    }
+}
+country_event = {
+    id = spth_precursor.219
+    title = spth_precursor.219.name
+    desc = spth_precursor.219.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    show_sound = event_mysterious_signal
+    picture_event_data = {
+        room = spth_ancient_databank_room
+    }
+    option = {
+        name = spth_precursor.219.a
+        default_hide_option = yes
+        add_relic = r_th_gap_kamikakushi
+    }
+}
+

@@ -53,6 +53,104 @@ spth_planet_dicisions_convert_disable = {
 		}
 	}
 }
+spth_planet_dicisions_shrine = {
+	length = -1
+	icon = GFX_edict_type_touhou
+	potential = {
+		is_ai = no
+		has_authority = auth_gensokyo
+	}
+	prerequisites = { tech_build_spth_capital_shirne }
+	effect = {
+		every_owned_planet = {
+			limit = {
+				is_colony = yes
+				OR = {
+					has_building = building_system_capital
+					has_building = building_ancient_palace
+					has_building = building_nirvana_empire_palace
+					has_building = building_hab_system_capital
+                    has_building = ag_shell_world_capital_lv4
+				}
+				NOR = {
+					has_building = building_spth_old_shirne
+					has_building = building_spth_planet_shirne
+				}
+				# allow
+				NOR = {
+					has_modifier = resort_colony
+					has_modifier = slave_colony
+					has_building = building_imperial_capital
+				}
+				sapient_pop_amount >= 6000
+			}
+			select_decision = { name = spth_build_spth_capital_shirne }
+		}
+	}
+}
+spth_refresh_designs = {
+	length = 30
+	icon = GFX_edict_type_touhou
+	potential = {
+		is_ai = no
+		has_authority = auth_gensokyo
+	}
+	effect = {
+		hidden_effect = {
+			every_owned_design = {
+				limit = {
+					OR = {
+						is_ship_size = science
+						is_ship_size = transport
+						is_ship_size = constructor
+						is_ship_size = colonizer
+						is_ship_size = guided_sapience_colonizer
+					}
+				}
+				prev = { remove_ship_design = prev }
+			}
+			refresh_auto_generated_ship_designs = yes
+		}
+	}
+}
+spth_planet_dicisions_th_deposits_build = {
+	length = -1
+	icon = GFX_edict_type_touhou
+	potential = {
+		is_ai = no
+		has_authority = auth_gensokyo
+	}
+	prerequisites = { tech_th_deposits_uncover }
+	effect = {
+		every_owned_planet = {
+			limit = {
+                has_deposit = d_hakurei_barrier
+                NOT = { check_variable = { which = th_deposits_num value >= 7 } }
+                OR = {
+                    AND = {
+                        is_artificial = no
+                        NOT = { is_planet_class = pc_machine }
+                        NOT = { is_planet_class = pc_hive }
+                        NOT = { is_planet_class = pc_city }
+                    }
+                    AND = {
+                        ag_is_shell_world = yes
+                        check_modifier_value = { modifier = touhou_can_shellworld_use_th_deposits_build value != 0 }
+                    }
+                }
+			}
+            if = {
+                limit = {
+                    ag_is_shell_world = yes
+                    check_modifier_value = { modifier = touhou_can_shellworld_use_th_deposits_build value != 0 }
+                }
+                select_decision = { name = th_deposits_build_shell_world }
+            } else = {
+                select_decision = { name = th_deposits_build }
+            }
+		}
+	}
+}
 spth_mod_menu = {
 	length = -1
 	icon = GFX_edict_type_touhou
@@ -104,23 +202,6 @@ spth_auto_combat_all_disable = {
 		}
 	}
 }
-# spth_no_grow ={
-# 	icon = "GFX_edict_type_touhou"
-# 	length = -1
-# 	potential = { always = no }
-# 	modifier = {
-# 		logistic_growth_mult = -99999
-# 	}
-# }
-# spth_no_assm ={
-# 	icon = "GFX_edict_type_touhou"
-# 	length = -1
-# 	potential = { always = no }
-# 	modifier = {
-# 		planet_pop_assembly_mult = -99999
-# 		bonus_pop_growth_mult = -99999
-# 	}
-# }
 spth_build_auto_ringworld = {
 	icon = GFX_edict_type_touhou
 	length = -1
@@ -201,6 +282,7 @@ spth_specimen_focus = {
 	modifier = {
 		specimen_spth_extra_produce_mult = 0.15
 	}
+    ai_weight = { weight = 514 }
 }
 spth_spiritual_power_subsidies = {
 	length = -1
@@ -223,7 +305,7 @@ spth_spiritual_power_subsidies = {
 	potential = { has_authority = auth_gensokyo }
 	prerequisites = { tech_global_production_strategy }
 	show_tech_unlock_if = { has_authority = auth_gensokyo }
-	ai_weight = { weight = 10 }
+    ai_weight = { weight = 514 }
 }
 spth_spellcard_subsidies = {
 	length = -1
@@ -246,7 +328,92 @@ spth_spellcard_subsidies = {
 	potential = { has_authority = auth_gensokyo }
 	prerequisites = { tech_global_production_strategy }
 	show_tech_unlock_if = { has_authority = auth_gensokyo }
-	ai_weight = { weight = 10 }
+    ai_weight = { weight = 514 }
+}
+spth_psionic = {
+	length = -1
+	icon = GFX_edict_type_touhou_psionic
+	resources = {
+		category = edicts
+		cost = {
+			sr_zro = 200
+			sr_lingli = 500
+			multiplier = value:edict_size_effect
+		}
+		upkeep = {
+			sr_zro = 10
+			sr_lingli = 25
+			multiplier = value:edict_size_effect
+		}
+	}
+	modifier = {
+        unlock_touhou_ruler_psionic_effect = 1
+		unlock_touhou_miko_psionic_produce = 1
+		planet_barrier_produce_mult = 0.10
+		ship_ftl_jumpdrive_range_mult = 0.5
+		ship_jumpdrive_cooldown_mult = -0.10
+		relay_bypass_ship_windup_mult = -0.4
+	}
+	potential = {
+		has_authority = auth_gensokyo
+		check_modifier_value = { modifier = unlock_edict_spth_psionic value > 0 }
+	}
+	ai_weight = { weight = 514 }
+}
+spth_disable_psionic_inhibitors = {
+    length = 1
+    icon = "GFX_edict_type_touhou_psionic"
+    potential = {
+        is_ai = no # spth_has_ag_mod = no
+        NOT = { has_country_flag = ag_disable_psionic_inhibitors }
+        has_technology = "tech_touhou_psionic_inhibitor"
+    }
+    effect = {
+        custom_tooltip = "edict_spth_disable_psionic_inhibitors_effect"
+        hidden_effect = { set_country_flag = ag_disable_psionic_inhibitors }
+    }
+    ai_weight = { weight = 0 }
+}
+spth_enable_psionic_inhibitors = {
+    length = 1
+    icon = "GFX_edict_type_touhou_psionic"
+    potential = {
+        is_ai = no # spth_has_ag_mod = no
+        has_country_flag = ag_disable_psionic_inhibitors
+        has_technology = "tech_touhou_psionic_inhibitor"
+    }
+    effect = {
+        custom_tooltip = "edict_spth_enable_psionic_inhibitors_effect"
+        hidden_effect = { remove_country_flag = ag_disable_psionic_inhibitors }
+    }
+    ai_weight = { weight = 0 }
+}
+touhou_magical_mallet = {
+    length = -1
+    icon = GFX_edict_type_magical_mallet
+    potential = {
+        is_ai = no
+        has_authority = auth_gensokyo
+        has_country_flag = th_shinmyoumaru_get
+    }
+    allow = {
+        custom_tooltip = {
+            fail_text = touhou_magical_mallet_fail_no_leader
+            NOT = { exists = event_target:touhou_magical_mallet_user_@this }
+        }
+        custom_tooltip = {
+            fail_text = touhou_magical_mallet_fail_cooldown
+            NOT = { has_country_flag = touhou_magical_mallet_cooldown }
+        }
+        custom_tooltip = {
+            fail_text = touhou_magical_mallet_fail_has_open
+            NOT = { has_country_flag = touhou_magical_mallet_opened }
+        }
+    }
+    effect = {
+        set_country_flag = touhou_magical_mallet_opened
+        country_event = { id = toho.16 }
+    }
 }
 
 hmx_hellsing = {

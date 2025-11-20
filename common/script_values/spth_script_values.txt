@@ -224,6 +224,15 @@ spth_max_armor_value = {
 	[[neg] mult = -1 ]
 	min = 0
 }
+# curr = max * prec
+spth_armor_value = {
+    base = 0
+    add = trigger:has_max_armor_hp
+    mult = trigger:has_armor_percentage
+    floor = yes
+    [[neg] mult = -1 ]
+    min = 0
+}
 spth_reduce_shield_value = {
 	base = 0
 	add = trigger:has_shield_hp
@@ -437,34 +446,6 @@ yin_yang_orb_drp_mult = {
 	}
 	mult = value:yin_yang_orb_drp_count|active_factor|$active_factor$|
 }
-# 基础*(ship_weapon_damage+能量+灵力+修正)*(1+船体伤害)*(1+大小倍率计算)=final
-# 修正 = final/(1+大小倍率计算)/(1+船体伤害)/基础 - ship_weapon_damage - 能量 - 灵力
-th_instant_kill_hull_damage = {
-	base = 0
-	add = 1
-	add = modifier:ship_hull_damage_mult
-	add = $weapon_hull_damage$
-	min = 1
-}
-th_instant_kill_size_factor = {
-	base = 0
-	add = $size_damage_factor$
-	mult = 8
-	add = 1
-}
-th_instant_kill_value = {
-	base = 0
-	add = $final_dmg$
-	divide = value:th_instant_kill_size_factor|size_damage_factor|$size_damage_factor$|
-	divide = value:th_instant_kill_hull_damage|weapon_hull_damage|$weapon_hull_damage|0$|
-	divide = $base_dmg$
-	subtract = modifier:ship_weapon_damage
-	subtract = modifier:weapon_type_$tag1|energy$_weapon_damage_mult
-	subtract = modifier:weapon_type_$tag2|lingli$_weapon_damage_mult
-	[[tag3] subtract = modifier:weapon_type_$tag3$_weapon_damage_mult ]
-	[[tag4] subtract = modifier:weapon_type_$tag4$_weapon_damage_mult ]
-	abs = yes
-}
 
 touhou_extra_export_value = {
 	base = 0
@@ -509,14 +490,20 @@ th_koishi_status_4_value = {
 spth_super_carrier_computer_damage_reduce_value_1 = {
 	base = 0
 	add = trigger:has_max_hp
-	mult = 0.1
+	mult = 0.05
 }
 spth_super_carrier_computer_damage_reduce_value = {
 	base = 0
 	add = trigger:has_hp
 	add = value:spth_super_carrier_computer_damage_reduce_value_1
 	mult = 0.01
-	max = 6400
+	max = 4800
+}
+touhou_spellcard_21_damage_reduce_value = {
+    base = 0
+    add = trigger:has_max_hp
+    subtract = trigger:has_hp
+    min = 0
 }
 spth_cluster34_psi_random_planet_count = {
 	base = 0
@@ -533,4 +520,307 @@ spth_cluster34_psi_random_planet_count = {
 	mult = 0.2
 	floor = yes
 	max = 4
+}
+
+touhou_country_command_limit_mult = {
+	base = 1
+	add = modifier:command_limit_mult
+}
+touhou_country_command_limit = {
+	base = 50
+	add = modifier:command_limit_add
+	mult = value:touhou_country_command_limit_mult
+	max = 1000
+	min = 50
+}
+
+touhou_lunar_psi_planet_debuff_multiplier = {
+	base = 0
+	add = modifier:$modifier$
+	min = 0
+	add = $base$
+}
+
+touhou_calc_temp_hull_value = {
+    base = 0
+    add = trigger:has_max_hp
+    mult = $factor$
+    mult = -1
+    min = -200
+    max = -10000000
+}
+
+touhou_spellcard_point_max_mult = {
+    base = 1
+    add = modifier:touhou_spellcard_point_max_mult
+    min = 0.1
+}
+touhou_spellcard_point_max = {
+    base = @touhou_spellcard_total_point_base
+    add = modifier:touhou_spellcard_point_max_add
+    mult = value:touhou_spellcard_point_max_mult
+}
+touhou_spellcard_point_used = {
+    base = 0
+    add = modifier:touhou_spellcard_point_use_add
+}
+touhou_spellcard_point_cap_max_mult = {
+    base = 1
+    add = modifier:touhou_spellcard_upkeep_max_mult
+    min = 0.1
+}
+touhou_spellcard_point_cap_max = {
+    base = @touhou_spellcard_total_point_upkeep_cap_base
+    add = modifier:touhou_spellcard_upkeep_max_add
+    mult = value:touhou_spellcard_point_cap_max_mult
+}
+touhou_spellcard_point_cap_used = {
+    base = 0
+    add = modifier:touhou_spellcard_upkeep_add
+}
+
+lunar_capital_psi_mirror_ship_extra = {
+    base = 0
+    add = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+    square_root = yes
+    add = 4
+}
+lunar_capital_psi_mirror_ship_factor = {
+    base = 1
+    modifier = { add = 1 has_global_flag = spth_lunar_capital_crisis_phantasm }
+    modifier = {
+        add = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+        touhou_check_diffiulty_lteq = { value = 4 }
+    }
+    modifier = {
+        add = value:lunar_capital_psi_mirror_ship_extra
+        touhou_check_diffiulty_gteq = { value = 5 }
+    }
+}
+lunar_capital_psi_mirror_ship_count = {
+    base = 1
+    modifier = { add = 1 touhou_check_diffiulty_gteq = { value = 3 } }
+    modifier = { add = 1 touhou_check_diffiulty_gteq = { value = 4 } }
+    modifier = { add = 1 touhou_check_diffiulty_gteq = { value = 8 } }
+    modifier = { add = 1 has_global_flag = spth_lunar_capital_crisis_phantasm }
+    mult = value:lunar_capital_psi_mirror_ship_factor
+    modifier = { mult = 2 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value <= 1 } } }
+    modifier = { mult = 2 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value <= 2 } } }
+    modifier = { mult = 2 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value <= 4 } } }
+    modifier = { mult = 2 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value <= 8 } } }
+    modifier = { mult = 0.5 event_target:spth_lunar_capital_psi_country = { check_variable = { which = touhou_mirror_design_ship_size value >= 32 } } }
+    abs = yes
+    min = 1
+}
+# easy -> 5
+# normal -> 25
+# hard -> 99
+# lunatic -> 200
+# od -> 500
+lunar_capital_psi_mirror_damage_reduction_max = {
+    base = 5
+    modifier = { add = 7.5 touhou_check_diffiulty_gteq = { value = 2 } }
+    modifier = { add = 20.5 touhou_check_diffiulty_gteq = { value = 3 } }
+    modifier = { add = 17 touhou_check_diffiulty_gteq = { value = 4 } }
+    modifier = { add = 12.5 touhou_check_diffiulty_gteq = { value = 8 } }
+    modifier = { mult = 2 has_global_flag = spth_lunar_capital_crisis_phantasm }
+    mult = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+}
+lunar_capital_psi_mirror_damage_reduction = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger = count_owned_ship
+        trigger_scope = event_target:touhou_pick_mirror_country
+        parameters = { limit = { design = { has_design_flag = touhou_mirror_design } } }
+        mode = add
+        mult = event_target:spth_lunar_capital_psi_country.touhou_mirror_design_ship_size
+    }
+    max = value:lunar_capital_psi_mirror_damage_reduction_max
+}
+
+touhou_leader_kill_army_perc_factor = {
+    base = 0
+    add = event_target:touhou_leader_kill_army_perc_$who$.modifier:touhou_leader_kill_army_perc
+    min = 0
+    max = 1
+}
+touhou_leader_kill_army_perc_amount = {
+    base = 0
+    add = trigger:count_ground_combat_$opposite_who$
+    mult = value:touhou_leader_kill_army_perc_factor|who|$who$|
+    min = 4
+}
+touhou_leader_heal_army_effect_value = {
+    base = 0
+    add = leader.modifier:touhou_leader_heal_army_effect
+    mult = -1
+}
+
+touhou_max_owned_touhou_fe_union_titan = {
+    base = 1
+    add = modifier:ag_country_max_all_ancient_ships_add
+    add = modifier:ag_country_max_touhou_fe_union_titans_add
+    floor = yes
+}
+
+touhou_num_owned_touhou_fe_union_titan = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger = count_owned_ship
+        trigger_scope = this
+        parameters = { limit = { is_ship_size = touhou_fe_union_titan } }
+        mode = add
+    }
+    complex_trigger_modifier = {
+        trigger = count_owned_megastructure
+        trigger_scope = this
+        parameters = { limit = { OR = {
+            AND = { always = $th_stage_0|yes$ is_megastructure_type = touhou_fe_union_titan_0 }
+            AND = { always = $th_stage_1|yes$ is_megastructure_type = touhou_fe_union_titan_1 }
+            AND = { always = $ag_stage_0|yes$ is_megastructure_type = ag_touhou_fe_union_titan_megastructure_0 }
+            AND = { always = $ag_stage_1|yes$ is_megastructure_type = ag_touhou_fe_union_titan_megastructure_1 }
+        } } }
+        mode = add
+    }
+    modifier = { add = ag_num_touhou_fe_union_titan_debris is_variable_set = ag_num_touhou_fe_union_titan_debris check_variable = { which = ag_num_touhou_fe_union_titan_debris value > 0 } }
+}
+
+country_admin_cap_factor = {
+    base = 1
+    mult = modifier:country_admin_cap_mult
+    min = 0
+}
+country_admin_cap_value = {
+    base = 0
+    add = modifier:country_admin_cap_add
+    mult = value:country_admin_cap_factor
+}
+
+touhou_gateway_network_quantum_catapult_max_factor = {
+    base = 1
+    add = modifier:touhou_gateway_network_quantum_catapult_max_mult
+    min = 0.1
+}
+touhou_gateway_network_quantum_catapult_max = {
+    base = 0
+    add = modifier:touhou_gateway_network_quantum_catapult_max_add
+    mult = value:touhou_gateway_network_quantum_catapult_max_factor
+    min = 1
+}
+
+fleet_th_star_pirate_value = {
+    base = 0
+    add = modifier:weapon_type_$type$_weapon_damage_mult
+    mult = $factor$
+    min = 1
+}
+
+touhou_magic_power_stockpile = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger = resource_stockpile_compare
+        parameters = { resource = touhou_magic_power }
+        mode = add
+    }
+}
+touhou_magic_power_income = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger = resource_income_compare
+        parameters = { resource = touhou_magic_power }
+        mode = add
+    }
+}
+touhou_magical_mallet_strength_square = {
+    base = 10
+    modifier = {
+        add = touhou_magical_mallet_strength
+        is_variable_set = touhou_magical_mallet_strength
+    }
+    square = yes
+}
+touhou_magical_mallet_cost_factor = {
+    base = 0
+    add = value:touhou_magical_mallet_strength_square
+    divide = 100
+}
+touhou_magical_mallet_cost = {
+    base = @touhou_magical_mallet_cost_$type$
+    mult = value:touhou_magical_mallet_cost_factor
+    [[factor] mult = $factor$ ]
+}
+touhou_magical_mallet_cooldown_factor = {
+    base = 0
+    add = value:touhou_magical_mallet_strength_square
+    modifier = {
+        mult = touhou_magical_mallet_strength
+        is_variable_set = touhou_magical_mallet_strength
+    }
+    divide = 100
+}
+touhou_magical_mallet_cooldown = {
+    base = 180
+    modifier = {
+        add = touhou_magical_mallet_duration
+        is_variable_set = touhou_magical_mallet_duration
+    }
+    mult = value:touhou_magical_mallet_cooldown_factor
+}
+touhou_magical_mallet_modifier_value_extra = {
+    base = 0
+    modifier = {
+        add = touhou_magical_mallet_strength
+        is_variable_set = touhou_magical_mallet_strength
+    }
+    mult = $factor$
+}
+touhou_magical_mallet_modifier_value = {
+    base = 0
+    add = $base$
+    add = value:touhou_magical_mallet_modifier_value_extra|factor|$factor$|
+    mult = modifier:$modifier$
+}
+touhou_magical_mallet_modifier_mult = {
+    base = $base$
+    add = value:touhou_magical_mallet_modifier_value_extra|factor|$factor$|
+}
+
+touhou_leader_kill_army_perc_minus = {
+    base = 5
+    modifier = {
+        mult = event_target:touhou_leader_kill_army_perc_$who$.trigger:has_total_skill
+        event_target:touhou_leader_kill_army_perc_$who$ = { has_total_skill <= 19 }
+    }
+    modifier = { mult = 19 event_target:touhou_leader_kill_army_perc_$who$ = { has_total_skill > 19 } }
+}
+
+doremy_sweet_book_weapon_damage_factor = {
+    base = 1
+    add = modifier:weapon_type_$type$_weapon_damage_mult
+    mult = $factor$
+}
+
+touhou_kosuzu_skill_value = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger_scope = event_target:touhou_kosuzu_@root
+        trigger = has_total_skill
+        mode = add
+    }
+    max = 20
+}
+
+touhou_ag_ancient_researcher_produce_factor = {
+    base = 0
+    complex_trigger_modifier = {
+        potential = { spth_has_ag_mod = yes }
+        trigger = resource_stockpile_compare
+        trigger_scope = this
+        parameters = { resource = ag_ancient_knowledge }
+        mode = add
+    }
+    square_root = yes
+    mult = 0.1
+    add = 1
+    [[factor] mult = $factor$ ]
 }

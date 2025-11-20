@@ -120,10 +120,13 @@ fleet_event = {
                         modifier = { factor = value:yukari_kamikakushi_chance_reduce always = yes }
                         reroll_random = yes
                         random_list = {
-                            10 = { clear_shield = yes }
-                            20 = { spth_reduce_shield = { percent = 0.75 factor = 0.75 } }
-                            30 = { spth_reduce_shield = { percent = 0.50 factor = 0.50 } }
-                            40 = { spth_reduce_shield = { percent = 0.25 factor = 0.25 } }
+                            1 = { clear_shield = yes }
+                            4 = { spth_reduce_shield = { percent = 0.25 factor = 0.25 } }
+                            10 = { spth_reduce_shield = { percent = 0.20 factor = 0.20 } }
+                            25 = { spth_reduce_shield = { percent = 0.15 factor = 0.15 } }
+                            40 = { spth_reduce_shield = { percent = 0.10 factor = 0.10 } }
+                            50 = { spth_reduce_shield = { percent = 0.05 factor = 0.05 } }
+                            50 = { spth_reduce_shield = { percent = 0.025 factor = 0.025 } }
                         }
                     }
                     80 = {
@@ -134,13 +137,11 @@ fleet_event = {
                 reroll_random = yes
             }
             set_update_modifiers_batch = end
-            fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
+            fleet_event = { id = Th_dynamic_battle_vict.6 days = 4 }
         } else = {
             remove_fleet_flag = kamikakushi_reduce_triggered
             every_owned_ship = {
-                clear_variable = yukari_kamikakushi_reduce_hardening
-                clear_variable = yukari_kamikakushi_reduce_value
-                TH_clear_all_dynamic_modifier = yes
+                remove_modifier = yukari_kamikakushi_dot_damage
             }
         }
     }
@@ -446,17 +447,17 @@ ship_event = {
     hide_window = yes
     is_triggered_only = yes
     immediate = {
-        remove_modifier = white_fog_upgrade
+        # remove_modifier = white_fog_upgrade
         if = {
             limit = {
                 has_ship_flag = spth_story_crisis_titan_generic_system
                 NOT = { has_ship_flag = spth_story_crisis_extra_generic_system }
             }
-            add_modifier = {
-                modifier = white_fog_cooldown
-                days = 2
-                multiplier = value:spth_story_crisis_titan_generic_damage
-            }
+            # add_modifier = {
+            #     modifier = white_fog_cooldown
+            #     days = 2
+            #     multiplier = value:spth_story_crisis_titan_generic_damage
+            # }
         }
     }
 }
@@ -487,8 +488,8 @@ country_event = {
                     spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 }
                 } else = { spth_repair_ship_perc = { hp_perc = spth_scarlet_harvest_repair ar_perc = spth_scarlet_harvest_repair } }
                 clear_variable = spth_scarlet_harvest_repair
-                add_modifier = { modifier = scarlet_harvest_regen days = 2 }
-                add_modifier = { modifier = scarlet_harvest_upgrade days = 60 }
+                # add_modifier = { modifier = scarlet_harvest_regen days = 2 }
+                # add_modifier = { modifier = scarlet_harvest_upgrade days = 60 }
             }
         }
         fromfromfrom = {
@@ -533,10 +534,10 @@ country_event = {
                                 value = spth_weapon_sakura_point_d_a
                             }
                             # 刷新上限并且给修正
-                            export_modifier_to_variable = {
-                                modifier = weapon_type_sakura_yyk_weapon_damage_mult
-                                variable = spth_weapon_sakura_upgrade_var
-                            }
+                            # export_modifier_to_variable = {
+                            #     modifier = weapon_type_sakura_yyk_weapon_damage_mult
+                            #     variable = spth_weapon_sakura_upgrade_var
+                            # }
                             if = {
                                 limit = { check_variable = { which = spth_weapon_sakura_upgrade_var value > spth_weapon_sakura_upgrade_max } }
                                 multiply_variable = {
@@ -549,7 +550,7 @@ country_event = {
                                     value = spth_story_crisis_titan_energy_var
                                 }
                             }
-                            add_modifier = { modifier = sakura_yyk_upgrade multiplier = spth_weapon_sakura_point_d_a }
+                            # add_modifier = { modifier = sakura_yyk_upgrade multiplier = spth_weapon_sakura_point_d_a }
                         }
                     }
                 }
@@ -853,18 +854,10 @@ country_event = {
                 limit = { NOT = { has_fleet_flag = kamikakushi_reduce_triggered } }
                 set_fleet_flag = kamikakushi_reduce_triggered
                 every_owned_ship = {
-                    set_variable = {
-                        which = yukari_kamikakushi_reduce_value
-                        value = value:yukari_kamikakushi_reduce_value
-                    }
-                    set_variable = {
-                        which = yukari_kamikakushi_reduce_hardening
-                        value = value:yukari_kamikakushi_hardening_reduce_value
-                    }
                     yukari_kamikakushi_reduce_effect = yes
-                    clear_shield = yes
+                    spth_reduce_shield_max = { percent = 0.25 }
                 }
-                fleet_event = { id = Th_dynamic_battle_vict.6 days = 3 }
+                fleet_event = { id = Th_dynamic_battle_vict.6 days = 4 }
             }
         }
     }
@@ -1057,6 +1050,48 @@ country_event = {
     }
 }
 
+country_event = {
+    id = Th_dynamic_battle_vict.1007
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        from = { spth_should_close_combat_system = no }
+        fromfrom = {
+            check_modifier_value = { modifier = ship_provide_spth_damage_reduction_mult_max value > 0 }
+        }
+    }
+    immediate = {
+        fromfromfrom = {
+            if = {
+                limit = { NOT = { has_fleet_flag = ship_spth_damage_reduction_mult_max_fired } }
+                set_fleet_flag = ship_spth_damage_reduction_mult_max_fired
+                every_owned_ship = { ship_spth_damage_reduction_mult_max_refresh = { duration = -1 } }
+                fleet_event = { id = Th_dynamic_battle_vict.1008 days = 3 }
+            }
+        }
+    }
+}
+fleet_event = {
+    id = Th_dynamic_battle_vict.1008
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = { ship_spth_damage_reduction_mult_max_refresh = { duration = -1 } }
+            fleet_event = { id = Th_dynamic_battle_vict.1008 days = 3 }
+        } else = {
+            remove_fleet_flag = ship_spth_damage_reduction_mult_max_fired
+            every_owned_ship = {
+                clear_variable = ship_spth_damage_reduction_mult_max_value
+                clear_variable = ship_spth_damage_reduction_mult_max_buf_value
+                remove_modifier = ship_spth_damage_reduction_mult_max_buf
+            }
+        }
+    }
+}
+
 ##############
 # 天灾武器效果 #
 #############
@@ -1149,7 +1184,7 @@ country_event = {
                     }
                     set_ship_flag = spth_story_crisis_g_system
                     set_variable = { which = spth_story_crisis_g_fire_counter value = 0 }
-                    add_modifier = { modifier = spth_morse_masquerade_cooldown }
+                    # add_modifier = { modifier = spth_morse_masquerade_cooldown }
                 }
                 # 湮灭
                 if = {
@@ -1275,17 +1310,17 @@ country_event = {
                             which = spth_deep_sea_mysteries_var
                             value = spth_story_crisis_titan_generic_var
                         }
-                        add_modifier = {
-                            modifier = spth_deep_sea_mysteries_convert
-                            multiplier = spth_deep_sea_mysteries_var
-                        }
+                        # add_modifier = {
+                        #     modifier = spth_deep_sea_mysteries_convert
+                        #     multiplier = spth_deep_sea_mysteries_var
+                        # }
                         clear_variable = spth_deep_sea_mysteries_var
                     }
                 }
 
                 if = {
                     limit = { has_ship_flag = spth_story_crisis_computer_protect }
-                    add_modifier = { modifier = spth_story_crisis_computer_efficiency }
+                    # add_modifier = { modifier = spth_story_crisis_computer_efficiency }
                 }
                 # 动态武器tag
                 spth_story_crisis_weapon_system_dynamic_tag = yes

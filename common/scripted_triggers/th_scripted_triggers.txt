@@ -6,8 +6,86 @@ touhou_has_psionic = {
     optimize_memory
     OR = {
         owner_species = { has_trait = trait_psionic }
-        owner = { has_psionic_ascension = yes }
+        owner = { touhou_has_psionic_advance_auth = yes }
     }
+}
+touhou_has_psionic_advance_auth = {
+    optimize_memory
+    OR = {
+        has_tradition = tr_psionics_shroud_psychometry
+        has_tradition = tr_psionics_shrouded_encryption
+    }
+    # has_ascension_perk = ap_mind_over_matter
+}
+spth_has_psionic_inhibition_station = {
+    optimize_memory
+    OR = {
+        any_ship_in_system = { check_modifier_value = { modifier = is_psionic_inhibitor value > 0 } }
+        any_neighbor_system = {
+            any_ship_in_system = { check_modifier_value = { modifier = is_psionic_inhibitor value > 0 } }
+        }
+    }
+}
+spth_has_psionic_burster_station = {
+    optimize_memory
+    OR = {
+        any_ship_in_system = { check_modifier_value = { modifier = is_psionic_burster value > 0 } }
+        any_neighbor_system = {
+            any_ship_in_system = { check_modifier_value = { modifier = is_psionic_burster value > 0 } }
+        }
+    }
+}
+spth_system_has_psionic_inhibition_station = {
+    optimize_memory
+    any_ship_in_system = {
+        check_modifier_value = { modifier = is_psionic_inhibitor value > 0 }
+    }
+}
+spth_neighbor_system_has_psionic_inhibition_station = {
+    optimize_memory
+    any_neighbor_system = {
+        check_modifier_value = { modifier = is_psionic_inhibitor value > 0 }
+    }
+}
+system_has_psionic_inhibition_station = {
+    optimize_memory
+    any_ship_in_system = {
+        check_modifier_value = { modifier = is_psionic_inhibitor value > 0 }
+    }
+}
+neighbor_system_has_psionic_inhibition_station = {
+    optimize_memory
+    any_neighbor_system = {
+        check_modifier_value = { modifier = is_psionic_inhibitor value > 0 }
+    }
+}
+spth_system_has_psionic_burster_station = {
+    optimize_memory
+    any_ship_in_system = {
+        check_modifier_value = { modifier = is_psionic_burster value > 0 }
+    }
+}
+spth_neighbor_system_has_psionic_burster_station = {
+    optimize_memory
+    any_neighbor_system = {
+        check_modifier_value = { modifier = is_psionic_burster value > 0 }
+    }
+}
+system_has_psionic_burster_station = {
+    optimize_memory
+    any_ship_in_system = {
+        check_modifier_value = { modifier = is_psionic_burster value > 0 }
+    }
+}
+neighbor_system_has_psionic_burster_station = {
+    optimize_memory
+    any_neighbor_system = {
+        check_modifier_value = { modifier = is_psionic_burster value > 0 }
+    }
+}
+touhou_towards_psionic_advance_auth = {
+    optimize_memory
+    has_country_flag = $TYPE$_government
 }
 has_touhou_ascension_tier = {
     optimize_memory
@@ -129,6 +207,34 @@ spth_should_close_space_shrine_storm = {
     }
 }
 
+touhou_is_shroud_excited = {
+    optimize_memory
+    OR = {
+        has_global_flag = touhou_shroud_excited
+        has_global_flag = ag_shroud_excited
+        touhou_is_lunar_capital_psi_active = yes
+    }
+}
+touhou_is_lunar_capital_psi_active = {
+    optimize_memory
+    has_global_flag = spth_lunar_capital_psi_crisis_begin
+    NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+}
+touhou_is_shroud_inhibited = {
+    optimize_memory
+    OR = {
+        has_global_flag = touhou_shroud_inhibited
+        AND = {
+            has_global_flag = spth_kamikaushi_crisis_start
+            NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+        }
+    }
+}
+has_any_touhou_ruler_patron = {
+    optimize_memory
+    always = no
+}
+
 
 # planet scope
 spth_trigger_planet_barrier_capacity_can_hold = {
@@ -163,7 +269,17 @@ spth_fleet_has_special_leader = {
                 check_modifier_value = { modifier = fleet_th_has_kokoro value != 0 }
                 NOT = { root.fromfromfrom = { has_fleet_flag = has_kokoro_effect_fired } }
             }
+            check_modifier_value = { modifier = fleet_th_has_yuza value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_marisa value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_komachi value != 0 }
             check_modifier_value = { modifier = fleet_th_koishi_skill value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_utsuho value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_youmu value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_flandre value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_sagume value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_doremy_sweet value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_touhou_moon_van value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_star_pirate value != 0 }
         }
     }
 }
@@ -203,6 +319,11 @@ spth_has_kamikakushi_crisis = {
     optimize_memory
     has_global_flag = spth_kamikaushi_crisis_start
     NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+}
+spth_has_lunar_capital_psi_crisis = {
+    optimize_memory
+    has_global_flag = spth_lunar_capital_psi_crisis_begin
+    NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
 }
 spth_can_not_jump_in_system = {
     optimize_memory
@@ -245,6 +366,24 @@ spth_can_not_star_killer_hit_system = {
         has_star_flag = ag_no_star_killer_target_system
         has_star_flag = kuat_cannot_be_hit_by_starkillerbase
         has_star_flag = cannot_be_hit_by_aow_starfall_spear
+    }
+}
+touhou_cannot_destroyed_by_end_of_the_cycle = {
+    optimize_memory
+    OR = {
+        has_star_flag = spth_system
+        has_star_flag = spth_story_lunar_capital_toyohime
+        has_star_flag = spth_lunar_capital_psi_sub_gate_in_system
+        ag_is_ancient_system = yes
+    }
+}
+touhou_system_cannot_destroyed_by_crisis = {
+    optimize_memory
+    OR = {
+        has_star_flag = spth_system
+        has_star_flag = spth_story_lunar_capital_toyohime
+        has_star_flag = spth_lunar_capital_psi_sub_gate_in_system
+        ag_is_ancient_system = yes
     }
 }
 
@@ -290,6 +429,24 @@ is_touhou_tier2_army = {
     }
 }
 
+touhou_is_known_crisis_faction = {
+    optimize_memory
+    OR = {
+        is_country_type = swarm
+        is_country_type = extradimensional
+        is_country_type = extradimensional_2
+        is_country_type = extradimensional_3
+        is_country_type = ai_empire
+        is_country_type = gray_goo
+        is_country_type = awakened_marauders
+        is_country_type = wg_crisis_country
+        is_country_type = afk_crisis_country
+        is_country_type = spth_lunar_capital_psi_fleet
+        is_country_type = ag_zeta_crisis_country
+        is_country_type = ag_ancient_gamma_guardian
+    }
+}
+
 is_touhou_ship = {
     optimize_memory
     check_modifier_value = { modifier = ship_is_touhou_mod_ship value != 0 }
@@ -310,6 +467,24 @@ is_touhou_common_ship = {
     optimize_memory
     check_modifier_value = { modifier = ship_is_spth_common_ship value != 0 }
 }
+is_touhou_cannot_mirror_fleet = {
+    is_ship_class = shipclass_military
+    is_mobile = yes
+    any_owned_ship = {
+        is_touhou_cannot_mirror_ship = yes
+    }
+}
+is_touhou_cannot_mirror_ship = {
+    optimize_memory
+    OR = {
+        has_ship_flag = is_touhou_cannot_mirror_ship
+        check_modifier_value = { modifier = is_touhou_cannot_mirror_ship value > 0 }
+        is_touhou_flagship = yes
+        ag_is_ancient_titan = yes
+        is_designable = yes
+    }
+}
+
 is_touhou_country = {
     optimize_memory
     OR = {
@@ -331,7 +506,6 @@ is_touhou_common_country = {
         is_country_type = awakened_marauders
         is_country_type = primitive
         is_country_type = ratlings
-        is_country_type = prikki
 
         is_country_type = default_ev
 
@@ -355,12 +529,30 @@ is_touhou_crisis_faction = {
         is_country_type = lunar_capital_remain_fleet
         is_country_type = spth_lunar_capital_union_fleet
         is_country_type = spth_lunar_capital_psi_fleet
+        is_country_type = touhou_fe_union_titan_hostile
+    }
+}
+is_touhou_lunar_capital_aura_self_faction = {
+    optimize_memory
+    OR = {
+        is_country_type = lunar_capital_remain_fleet
+        is_country_type = spth_lunar_capital_union_fleet
+        is_country_type = spth_lunar_capital_psi_fleet
+        AND = {
+            has_global_flag = touhou_lunar_psi_extra_ag
+            OR = {
+                is_country_type = ag_zeta_crisis_country
+                is_country_type = ag_zeta_crisis_portal_holder
+                is_country_type = ag_zeta_crisis_relic_country
+            }
+        }
     }
 }
 is_touhou_other_faction = {
     optimize_memory
     OR = {
         is_country_type = kedama
+        # is_country_type = kedama_garrison
         is_country_type = spth_enclave
         is_country_type = spth_makai_defence_system
     }
@@ -403,7 +595,7 @@ spth_not_trigger_extra_life = {
         is_ship_size = TH_super_carrier
         # we do not check ancient titan.
         # and when ag_disable is activated, stop this check.
-        ag_is_ancient_titan_alt = yes
+        ag_is_ancient_titan = yes
         has_ship_flag = ag_set_disable_at_health
     }
 }
@@ -474,6 +666,13 @@ spth_is_touhou_deposit = {
         is_deposit_type = d_spirit_power_spring_city
         is_deposit_type = d_hakurei_barrier
         is_deposit_type = d_hakurajinjia
+        is_deposit_type = d_hakurei_shrine
+        is_deposit_type = d_hakugyokurou
+        is_deposit_type = d_sakura_tree
+        is_deposit_type = d_touhou_library
+        is_deposit_type = d_chireiden
+        is_deposit_type = d_yukari_home
+        is_deposit_type = d_myouren_temple
         is_deposit_type = d_spth_lunar_capital_ruins
         is_deposit_type = d_spth_lunar_capital_centre_ruins
         is_deposit_type = d_spth_torifune_ruin
@@ -490,6 +689,36 @@ spth_is_touhou_deposit = {
         is_deposit_type = d_gensokyo_ringworld
         is_deposit_type = d_gensokyo_ringworld_ruin
         is_deposit_type = d_gensokyo_ringworld_city
+        is_deposit_type = d_touhou_corrupted_jungle
+        is_deposit_type = d_touhou_corrupted_shroudstone
+        is_deposit_type = d_touhou_living_metal_factory
+        is_deposit_type = d_touhou_nanites_factory
+        is_deposit_type = d_touhou_fallen_starship_lunar_capital
+        is_deposit_type = d_touhou_fallen_starship_makai
+        is_deposit_type = d_touhou_fallen_starship_lunar_capital_fixed
+        is_deposit_type = d_touhou_fallen_starship_makai_fixed
+        is_deposit_type = d_touhou_shell_world_astral_layer
+        is_deposit_type = d_touhou_shell_world_light
+        is_deposit_type = d_touhou_shell_world_ancient_lab
+        is_deposit_type = d_touhou_shell_world_arctic_planet
+        is_deposit_type = d_touhou_shell_world_arid_planet
+        is_deposit_type = d_touhou_shell_world_astral_rift
+        is_deposit_type = d_touhou_shell_world_broken_env_system
+        is_deposit_type = d_touhou_shell_world_broken_shipyard
+        is_deposit_type = d_touhou_shell_world_fixed_shipyard
+        is_deposit_type = d_touhou_shell_world_broken_spire
+        is_deposit_type = d_touhou_shell_world_spire
+        is_deposit_type = d_touhou_shell_world_city_ruins
+        is_deposit_type = d_touhou_shell_world_cold_barren_planet
+        is_deposit_type = d_touhou_shell_world_drilling_for_gas
+        is_deposit_type = d_touhou_shell_world_fixed_shipyard
+        is_deposit_type = d_touhou_shell_world_grand_canyon
+        is_deposit_type = d_touhou_shell_world_microscopic_life
+        is_deposit_type = d_touhou_shell_world_molten_planet
+        is_deposit_type = d_touhou_shell_world_temp
+        is_deposit_type = d_touhou_shell_world_power_station
+        is_deposit_type = d_touhou_shell_world_base
+        is_deposit_type = d_touhou_shell_world_ancient_city
     }
 }
 spth_is_no_remove_deposit = {
@@ -718,9 +947,10 @@ use_touhou_starting_district = {
     OR = {
         is_planet_class = pc_gensokyo_city
         is_planet_class = pc_gensokyo_planet
-        is_planet_class = pc_kamikakushi_planet
+        is_planet_class = pc_spiritual_power_habitat
         is_planet_class = pc_ringworld_th
         has_planet_flag = use_touhou_starting_district
+        has_planet_flag = has_shell_world_touhou_gensokyo_city
     }
 }
 
@@ -752,6 +982,18 @@ spth_check_gensokyo_auth = {
         }
         [[CIVIC]
             has_civic = $CIVIC$
+        ]
+        [[tech]
+            has_technology = $tech$
+        ]
+        [[policy_flag]
+            has_policy_flag = $policy_flag$
+        ]
+        [[not_policy_flag]
+            NOT = { has_policy_flag = $not_policy_flag$ }
+        ]
+        [[flag]
+            has_country_flag = $flag$
         ]
     }
 }
@@ -787,5 +1029,306 @@ satori_dynamic_boost_close = {
     OR = {
         has_fleet_flag = TH_sakuya_the_world_dynamic_vict
         has_fleet_flag = TH_koishi_dynamic_vict
+    }
+}
+
+touhou_has_any_vanilla_patron = {
+    optimize_memory
+    OR = {
+        has_patron_relation = { patron = whisperers_in_the_void contact = completed }
+        has_patron_relation = { patron = end_of_the_cycle contact = completed }
+        has_patron_relation = { patron = the_eater_of_worlds contact = completed }
+        has_patron_relation = { patron = the_cradle_of_souls contact = completed }
+        has_patron_relation = { patron = the_instrument_of_desire contact = completed }
+        has_patron_relation = { patron = the_composer_of_strands contact = completed }
+    }
+}
+
+touhou_country_selector_country_selected_trigger = {
+    optimize_memory
+    OR = {
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 1 } has_country_flag = touhou_country_selected_1_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 2 } has_country_flag = touhou_country_selected_2_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 3 } has_country_flag = touhou_country_selected_3_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 4 } has_country_flag = touhou_country_selected_4_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 5 } has_country_flag = touhou_country_selected_5_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 6 } has_country_flag = touhou_country_selected_6_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 7 } has_country_flag = touhou_country_selected_7_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 8 } has_country_flag = touhou_country_selected_8_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 9 } has_country_flag = touhou_country_selected_9_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 10 } has_country_flag = touhou_country_selected_10_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 11 } has_country_flag = touhou_country_selected_11_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 12 } has_country_flag = touhou_country_selected_12_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 13 } has_country_flag = touhou_country_selected_13_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 14 } has_country_flag = touhou_country_selected_14_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 15 } has_country_flag = touhou_country_selected_15_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 16 } has_country_flag = touhou_country_selected_16_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 17 } has_country_flag = touhou_country_selected_17_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 18 } has_country_flag = touhou_country_selected_18_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 19 } has_country_flag = touhou_country_selected_19_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 20 } has_country_flag = touhou_country_selected_20_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 21 } has_country_flag = touhou_country_selected_21_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 22 } has_country_flag = touhou_country_selected_22_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 23 } has_country_flag = touhou_country_selected_23_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 24 } has_country_flag = touhou_country_selected_24_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 25 } has_country_flag = touhou_country_selected_25_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 26 } has_country_flag = touhou_country_selected_26_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 27 } has_country_flag = touhou_country_selected_27_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 28 } has_country_flag = touhou_country_selected_28_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 29 } has_country_flag = touhou_country_selected_29_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 30 } has_country_flag = touhou_country_selected_30_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 31 } has_country_flag = touhou_country_selected_31_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 32 } has_country_flag = touhou_country_selected_32_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 33 } has_country_flag = touhou_country_selected_33_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 34 } has_country_flag = touhou_country_selected_34_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 35 } has_country_flag = touhou_country_selected_35_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 36 } has_country_flag = touhou_country_selected_36_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 37 } has_country_flag = touhou_country_selected_37_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 38 } has_country_flag = touhou_country_selected_38_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 39 } has_country_flag = touhou_country_selected_39_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 40 } has_country_flag = touhou_country_selected_40_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 41 } has_country_flag = touhou_country_selected_41_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 42 } has_country_flag = touhou_country_selected_42_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 43 } has_country_flag = touhou_country_selected_43_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 44 } has_country_flag = touhou_country_selected_44_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 45 } has_country_flag = touhou_country_selected_45_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 46 } has_country_flag = touhou_country_selected_46_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 47 } has_country_flag = touhou_country_selected_47_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 48 } has_country_flag = touhou_country_selected_48_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 49 } has_country_flag = touhou_country_selected_49_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 50 } has_country_flag = touhou_country_selected_50_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 51 } has_country_flag = touhou_country_selected_51_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 52 } has_country_flag = touhou_country_selected_52_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 53 } has_country_flag = touhou_country_selected_53_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 54 } has_country_flag = touhou_country_selected_54_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 55 } has_country_flag = touhou_country_selected_55_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 56 } has_country_flag = touhou_country_selected_56_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 57 } has_country_flag = touhou_country_selected_57_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 58 } has_country_flag = touhou_country_selected_58_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 59 } has_country_flag = touhou_country_selected_59_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 60 } has_country_flag = touhou_country_selected_60_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 61 } has_country_flag = touhou_country_selected_61_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 62 } has_country_flag = touhou_country_selected_62_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 63 } has_country_flag = touhou_country_selected_63_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 64 } has_country_flag = touhou_country_selected_64_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 65 } has_country_flag = touhou_country_selected_65_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 66 } has_country_flag = touhou_country_selected_66_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 67 } has_country_flag = touhou_country_selected_67_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 68 } has_country_flag = touhou_country_selected_68_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 69 } has_country_flag = touhou_country_selected_69_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 70 } has_country_flag = touhou_country_selected_70_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 71 } has_country_flag = touhou_country_selected_71_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 72 } has_country_flag = touhou_country_selected_72_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 73 } has_country_flag = touhou_country_selected_73_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 74 } has_country_flag = touhou_country_selected_74_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 75 } has_country_flag = touhou_country_selected_75_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 76 } has_country_flag = touhou_country_selected_76_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 77 } has_country_flag = touhou_country_selected_77_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 78 } has_country_flag = touhou_country_selected_78_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 79 } has_country_flag = touhou_country_selected_79_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 80 } has_country_flag = touhou_country_selected_80_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 81 } has_country_flag = touhou_country_selected_81_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 82 } has_country_flag = touhou_country_selected_82_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 83 } has_country_flag = touhou_country_selected_83_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 84 } has_country_flag = touhou_country_selected_84_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 85 } has_country_flag = touhou_country_selected_85_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 86 } has_country_flag = touhou_country_selected_86_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 87 } has_country_flag = touhou_country_selected_87_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 88 } has_country_flag = touhou_country_selected_88_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 89 } has_country_flag = touhou_country_selected_89_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 90 } has_country_flag = touhou_country_selected_90_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 91 } has_country_flag = touhou_country_selected_91_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 92 } has_country_flag = touhou_country_selected_92_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 93 } has_country_flag = touhou_country_selected_93_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 94 } has_country_flag = touhou_country_selected_94_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 95 } has_country_flag = touhou_country_selected_95_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 96 } has_country_flag = touhou_country_selected_96_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 97 } has_country_flag = touhou_country_selected_97_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 98 } has_country_flag = touhou_country_selected_98_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 99 } has_country_flag = touhou_country_selected_99_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 100 } has_country_flag = touhou_country_selected_100_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 101 } has_country_flag = touhou_country_selected_101_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 102 } has_country_flag = touhou_country_selected_102_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 103 } has_country_flag = touhou_country_selected_103_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 104 } has_country_flag = touhou_country_selected_104_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 105 } has_country_flag = touhou_country_selected_105_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 106 } has_country_flag = touhou_country_selected_106_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 107 } has_country_flag = touhou_country_selected_107_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 108 } has_country_flag = touhou_country_selected_108_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 109 } has_country_flag = touhou_country_selected_109_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 110 } has_country_flag = touhou_country_selected_110_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 111 } has_country_flag = touhou_country_selected_111_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 112 } has_country_flag = touhou_country_selected_112_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 113 } has_country_flag = touhou_country_selected_113_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 114 } has_country_flag = touhou_country_selected_114_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 115 } has_country_flag = touhou_country_selected_115_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 116 } has_country_flag = touhou_country_selected_116_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 117 } has_country_flag = touhou_country_selected_117_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 118 } has_country_flag = touhou_country_selected_118_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 119 } has_country_flag = touhou_country_selected_119_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 120 } has_country_flag = touhou_country_selected_120_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 121 } has_country_flag = touhou_country_selected_121_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 122 } has_country_flag = touhou_country_selected_122_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 123 } has_country_flag = touhou_country_selected_123_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 124 } has_country_flag = touhou_country_selected_124_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 125 } has_country_flag = touhou_country_selected_125_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 126 } has_country_flag = touhou_country_selected_126_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 127 } has_country_flag = touhou_country_selected_127_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 128 } has_country_flag = touhou_country_selected_128_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 129 } has_country_flag = touhou_country_selected_129_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 130 } has_country_flag = touhou_country_selected_130_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 131 } has_country_flag = touhou_country_selected_131_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 132 } has_country_flag = touhou_country_selected_132_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 133 } has_country_flag = touhou_country_selected_133_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 134 } has_country_flag = touhou_country_selected_134_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 135 } has_country_flag = touhou_country_selected_135_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 136 } has_country_flag = touhou_country_selected_136_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 137 } has_country_flag = touhou_country_selected_137_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 138 } has_country_flag = touhou_country_selected_138_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 139 } has_country_flag = touhou_country_selected_139_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 140 } has_country_flag = touhou_country_selected_140_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 141 } has_country_flag = touhou_country_selected_141_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 142 } has_country_flag = touhou_country_selected_142_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 143 } has_country_flag = touhou_country_selected_143_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 144 } has_country_flag = touhou_country_selected_144_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 145 } has_country_flag = touhou_country_selected_145_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 146 } has_country_flag = touhou_country_selected_146_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 147 } has_country_flag = touhou_country_selected_147_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 148 } has_country_flag = touhou_country_selected_148_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 149 } has_country_flag = touhou_country_selected_149_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 150 } has_country_flag = touhou_country_selected_150_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 151 } has_country_flag = touhou_country_selected_151_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 152 } has_country_flag = touhou_country_selected_152_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 153 } has_country_flag = touhou_country_selected_153_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 154 } has_country_flag = touhou_country_selected_154_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 155 } has_country_flag = touhou_country_selected_155_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 156 } has_country_flag = touhou_country_selected_156_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 157 } has_country_flag = touhou_country_selected_157_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 158 } has_country_flag = touhou_country_selected_158_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 159 } has_country_flag = touhou_country_selected_159_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 160 } has_country_flag = touhou_country_selected_160_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 161 } has_country_flag = touhou_country_selected_161_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 162 } has_country_flag = touhou_country_selected_162_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 163 } has_country_flag = touhou_country_selected_163_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 164 } has_country_flag = touhou_country_selected_164_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 165 } has_country_flag = touhou_country_selected_165_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 166 } has_country_flag = touhou_country_selected_166_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 167 } has_country_flag = touhou_country_selected_167_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 168 } has_country_flag = touhou_country_selected_168_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 169 } has_country_flag = touhou_country_selected_169_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 170 } has_country_flag = touhou_country_selected_170_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 171 } has_country_flag = touhou_country_selected_171_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 172 } has_country_flag = touhou_country_selected_172_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 173 } has_country_flag = touhou_country_selected_173_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 174 } has_country_flag = touhou_country_selected_174_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 175 } has_country_flag = touhou_country_selected_175_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 176 } has_country_flag = touhou_country_selected_176_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 177 } has_country_flag = touhou_country_selected_177_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 178 } has_country_flag = touhou_country_selected_178_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 179 } has_country_flag = touhou_country_selected_179_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 180 } has_country_flag = touhou_country_selected_180_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 181 } has_country_flag = touhou_country_selected_181_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 182 } has_country_flag = touhou_country_selected_182_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 183 } has_country_flag = touhou_country_selected_183_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 184 } has_country_flag = touhou_country_selected_184_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 185 } has_country_flag = touhou_country_selected_185_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 186 } has_country_flag = touhou_country_selected_186_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 187 } has_country_flag = touhou_country_selected_187_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 188 } has_country_flag = touhou_country_selected_188_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 189 } has_country_flag = touhou_country_selected_189_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 190 } has_country_flag = touhou_country_selected_190_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 191 } has_country_flag = touhou_country_selected_191_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 192 } has_country_flag = touhou_country_selected_192_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 193 } has_country_flag = touhou_country_selected_193_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 194 } has_country_flag = touhou_country_selected_194_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 195 } has_country_flag = touhou_country_selected_195_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 196 } has_country_flag = touhou_country_selected_196_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 197 } has_country_flag = touhou_country_selected_197_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 198 } has_country_flag = touhou_country_selected_198_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 199 } has_country_flag = touhou_country_selected_199_$ag_country_seq$ }
+        AND = { check_variable = { which = touhou_country_selector_marked_page value = 200 } has_country_flag = touhou_country_selected_200_$ag_country_seq$ }
+    }
+}
+
+touhou_magical_mallet_check = {
+    optimize_memory
+    resource_stockpile_compare = { value >= value:touhou_magical_mallet_cost|type|$type$| resource = touhou_magic_power }
+    resource_stockpile_compare = { value >= value:touhou_magical_mallet_cost|type|$type$|factor|200| resource = sr_lingli }
+    resource_stockpile_compare = { value >= value:touhou_magical_mallet_cost|type|$type$|factor|100| resource = sr_fuka }
+    custom_tooltip = {
+        fail_text = touhou_magical_mallet_fail_no_leader
+        NOT = { exists = event_target:touhou_magical_mallet_user_@this }
+    }
+    custom_tooltip = {
+        fail_text = touhou_magical_mallet_fail_cooldown
+        NOT = { has_country_flag = touhou_magical_mallet_cooldown }
+    }
+}
+has_any_touhou_magical_mallet_fleet_effect_fired = {
+    optimize_memory
+    OR = {
+        has_country_flag = touhou_magical_mallet_a_fired
+        has_country_flag = touhou_magical_mallet_cruse_a_fired
+        has_country_flag = touhou_magical_mallet_b_fired
+        has_country_flag = touhou_magical_mallet_cruse_b_fired
+        has_country_flag = touhou_magical_mallet_c_fired
+        has_country_flag = touhou_magical_mallet_cruse_c_fired
+        has_country_flag = touhou_magical_mallet_d_fired
+        has_country_flag = touhou_magical_mallet_cruse_d_fired
+    }
+}
+touhou_never_set_terrify_ship = {
+    optimize_memory
+    OR = {
+        is_touhou_flagship = yes
+        is_touhou_support_ship = yes
+        check_modifier_value = { modifier = touhou_can_never_be_terrify value != 0 }
+        is_ship_class = shipclass_starbase
+        ag_is_ancient_titan = yes
+        ag_is_ancient_titan_alt = yes
+        ag_is_zeta_crisis_ship = yes
+        ship_size_multiplier >= 64
+        kuat_ship_is_super_flagship = yes
+        kuat_ship_is_standard_flagship = yes
+        kuat_ship_is_sub_flagship = yes
+        kuat_ship_is_movable_mega_starbase = yes
+    }
+}
+
+touhou_aura_clash_can_attacker_spread_in_system = {
+    optimize_memory
+    if = {
+        limit = { $ATTACKER_SYSTEM$ = { has_psionic_aura = touhou_great_patron_dragon_aura } }
+        always = yes # touhou aura goes where it pleases
+    }
+    else = {
+        is_close_to_psionic_aura_generator_system = { OWNER = $ATTACKER_SYSTEM$.aura_owner }
+        OR = {
+            NOT = { exists = owner }
+            owner = { is_same_value = $ATTACKER_SYSTEM$.aura_owner }
+            AND = {
+                owner = {
+                    is_hostile_towards_aura = {
+                        PSIONIC_OWNER = $ATTACKER_SYSTEM$.aura_owner
+                    }
+                }
+                NOT = { can_system_generate_psionic_aura = { OWNER = owner } }
+            }
+        }
+    }
+}
+
+is_touhou_system = {
+    optimize_memory
+    OR = {
+        has_star_flag = spth_system
+        has_star_flag = spth_enclave_system
+    }
+}
+touhou_synth_queen_no_wipe_system = {
+    optimize_memory
+    OR = {
+        is_touhou_system = yes
+        ag_is_ancient_system = yes
     }
 }

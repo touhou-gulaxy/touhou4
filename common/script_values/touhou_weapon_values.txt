@@ -1,0 +1,445 @@
+# 160000->16倍
+th_yuyuko_butterfly_sp_extra_dmg_factor = {
+    base = 0
+    add = modifier:weapon_type_kinetic_weapon_damage_mult
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    mult = 0.25
+    min = 0.25
+}
+th_yuyuko_butterfly_sp_extra_dmg_even = {
+    base = 0
+    add = trigger:has_hp
+    mult = $multiply$
+    mult = value:th_yuyuko_butterfly_sp_extra_dmg_factor
+    min = 0
+}
+th_yuyuko_butterfly_sp_extra_dmg_odd = {
+    base = 0
+    add = trigger:has_max_hp
+    subtract = trigger:has_hp
+    mult = $multiply$
+    add = 1
+    mult = value:th_yuyuko_butterfly_sp_extra_dmg_factor
+    min = 0
+}
+
+# 基础*(ship_weapon_damage+能量+灵力+修正)*(1+船体伤害)*(1+大小倍率计算)=final
+# 修正 = final/(1+大小倍率计算)/(1+船体伤害)/基础 - ship_weapon_damage - 能量 - 灵力
+th_instant_kill_hull_damage = {
+    base = 0
+    add = 1
+    add = modifier:ship_hull_damage_mult
+    add = $weapon_hull_damage$
+    min = 1
+}
+th_instant_kill_size_factor = {
+    base = 0
+    add = $size_damage_factor$
+    mult = 8
+    add = 1
+}
+th_instant_kill_value = {
+    base = 0
+    add = $final_dmg$
+    divide = value:th_instant_kill_size_factor|size_damage_factor|$size_damage_factor$|
+    divide = value:th_instant_kill_hull_damage|weapon_hull_damage|$weapon_hull_damage|0$|
+    divide = $base_dmg$
+    subtract = modifier:ship_weapon_damage
+    subtract = modifier:weapon_type_$tag1|energy$_weapon_damage_mult
+    subtract = modifier:weapon_type_$tag2|lingli$_weapon_damage_mult
+    [[tag3] subtract = modifier:weapon_type_$tag3$_weapon_damage_mult ]
+    [[tag4] subtract = modifier:weapon_type_$tag4$_weapon_damage_mult ]
+    [[tag5] subtract = modifier:weapon_type_$tag5$_weapon_damage_mult ]
+    [[tag6] subtract = modifier:weapon_type_$tag6$_weapon_damage_mult ]
+    abs = yes
+}
+
+th_kappa_torpedo_modifier_value = {
+    base = 0
+    add = modifier:strike_craft_regeneration_mult
+    subtract = $sub$
+}
+th_kappa_torpedo_hit_buff = {
+    base = 1
+    add = modifier:weapon_type_explosive_weapon_damage_mult
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:s_slot_weapon_damage_mult
+    add = modifier:weapon_type_kappa_weapon_damage_mult
+}
+th_kappa_torpedo_hit_min_damage = {
+    base = 0
+    add = @spth_special_kappa_small_damage_min
+    mult = value:th_kappa_torpedo_hit_buff
+    mult = $perc$
+    [[factor] mult = $factor$ ]
+    min = $min|0$
+}
+th_kappa_torpedo_hit_common_damage = {
+    base = 0
+    add = @spth_special_kappa_medium_damage_min
+    mult = value:th_kappa_torpedo_hit_buff
+    mult = $perc$
+    [[factor] mult = $factor$ ]
+    min = $min|0$
+}
+th_kappa_torpedo_hit_max_damage = {
+    base = 0
+    add = @spth_special_kappa_large_damage_max
+    mult = value:th_kappa_torpedo_hit_buff
+    mult = $perc$
+    [[factor] mult = $factor$ ]
+    min = $min|0$
+}
+
+touhou_ship_action_super_carrier_eater_cooldown_factor = {
+    base = 0
+    add = owner.modifier:ship_fire_rate_mult
+    add = owner.modifier:weapon_type_kinetic_weapon_fire_rate_mult
+    add = owner.modifier:weapon_type_lingli_weapon_fire_rate_mult
+    mult = 0.25
+    add = owner.modifier:ship_touhou_remote_attack_cooldown_speed
+    add = 1
+    min = 0.25
+    max = 360
+}
+touhou_ship_action_super_carrier_eater_cooldown = {
+    base = 0
+    modifier = { add = 720 NOT = { is_variable_set = spth_super_carrier_remote_base_time } }
+    modifier = { add = spth_super_carrier_remote_base_time is_variable_set = spth_super_carrier_remote_base_time }
+    divide = value:touhou_ship_action_super_carrier_eater_cooldown_factor
+    add = 30
+    min = 60
+    max = 1800
+}
+th_ship_hyper_point_add = {
+    base = 0
+    modifier = {
+        add = @th_ship_hyper_point_small ship_size_multiplier <= 4
+    }
+    modifier = {
+        add = @th_ship_hyper_point_medium ship_size_multiplier > 5 ship_size_multiplier <= 8
+    }
+    modifier = {
+        add = @th_ship_hyper_point_large ship_size_multiplier > 9 ship_size_multiplier <= 16
+    }
+    modifier = {
+        add = @th_ship_hyper_point_ultra ship_size_multiplier > 17
+    }
+    min = 1
+    max = 5
+}
+# shield_hp = shield_max * shield_perc
+th_ship_hyper_reduction_value = {
+    base = 0
+    add = trigger:has_shield_hp
+    divide = trigger:has_shield_percentage
+    min = 100
+    max = 9999999
+}
+th_ship_hyper_fire_rate = {
+    base = 0.5
+    add = modifier:$modifier$
+    min = 0.5
+}
+
+touhou_superstarbase_counter = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger = count_ship_in_system
+        mode = add
+        parameters = {
+            limit = { is_ship_size = touhou_superstarbase_move }
+        }
+    }
+}
+
+touhou_mask_of_hope_factor = {
+    base = 1
+    add = modifier:touhou_mask_of_hope_effect
+}
+
+ship_spth_damage_reduction_mult_max_value = {
+    base = 1
+    add = modifier:ship_spth_damage_reduction_mult_max
+}
+# modifier, max->modifier-val=max->val=max-modifier
+ship_spth_damage_reduction_mult_max_buf_value = {
+    base = 0
+    add = modifier:ship_damage_reduction_mult
+    subtract = value:ship_spth_damage_reduction_mult_max_value
+}
+
+yukari_kamikakushi_dot_damage_size_factor = {
+    base = 0
+    add = trigger:ship_size_multiplier
+    square_root = yes
+    min = 1
+    max = 32
+}
+yukari_kamikakushi_dot_damage_max = {
+    base = 50
+    mult = value:yukari_kamikakushi_dot_damage_size_factor
+}
+yukari_kamikakushi_dot_damage = {
+    base = 0
+    add = trigger:has_max_armor_hp
+    mult = 0.001
+    max = value:yukari_kamikakushi_dot_damage_max
+}
+
+concept_touhou_blood_slash_damage = {
+    base = 0
+    add = trigger:has_max_armor_hp
+    mult = trigger:has_armor_percentage
+    mult = 0.01
+    max = 22230
+    min = 1
+}
+concept_touhou_sunbeam_modifier = {
+    base = 0
+    add = event_target:concept_touhou_sunbeam_target.modifier:weapon_type_$tag$_weapon_damage_mult
+    mult = $factor$
+    min = 0
+}
+concept_touhou_sunbeam_damage_factor = {
+    base = 1
+    add = value:concept_touhou_sunbeam_modifier|tag|lingli|factor|0.1|
+    add = value:concept_touhou_sunbeam_modifier|tag|spark|factor|0.25|
+}
+concept_touhou_sunbeam_damage = {
+    base = $base$
+    mult = value:concept_touhou_sunbeam_damage_factor
+    min = $min$
+    max = $max$
+}
+concept_touhou_echo_strike_damage_factor = {
+    base = 1
+    add = value:concept_touhou_sunbeam_modifier|tag|lingli|factor|0.1|
+}
+concept_touhou_echo_strike_damage_modifier = {
+    base = 1
+    add = event_target:touhou_echo_strike_target.modifier:weapon_type_lingli_weapon_damage_mult
+    add = event_target:touhou_echo_strike_target.modifier:weapon_type_xieshi_weapon_damage_mult
+    add = event_target:touhou_echo_strike_target.modifier:weapon_type_kinetic_weapon_damage_mult
+    mult = 0.25
+}
+concept_touhou_echo_strike_damage_factor = {
+    base = 1
+    add = value:concept_touhou_echo_strike_damage_modifier
+    add = event_target:touhou_echo_strike_target.modifier:ship_weapon_damage
+    min = 1
+}
+concept_touhou_echo_strike_damage = {
+    base = @spth_common_energy_$size$_damage_min
+    mult = @spth_common_energy_$size$_armor_damage
+    mult = value:concept_touhou_echo_strike_damage_factor
+    mult = -1
+}
+concept_touhou_cleanse_health_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 1
+}
+concept_touhou_cleanse_health = {
+    base = @spth_common_energy_$size$_damage_min
+    mult = @touhou_spread_weapon_damage_factor
+    mult = value:concept_touhou_cleanse_health_factor
+    mult = -1
+    max = -50
+    min = -14400
+}
+
+touhou_spellcard_41_chain_amount = {
+    base = 0
+    add = trigger:num_ships
+    mult = 0.05
+    floor = yes
+    min = 1
+}
+
+touhou_spellcard_11_value = {
+    base = 0
+    add = event_target:touhou_spellcard_11_target.trigger:has_max_hp
+    subtract = event_target:touhou_spellcard_11_target.trigger:has_hp
+    abs = yes
+    divide = event_target:touhou_spellcard_11_target.trigger:has_max_hp
+    mult = 1.5
+    max = 1.5
+    min = 0
+}
+
+ancient_titan_touhou_fleet_repair_duration_factor = {
+    base = 1
+    add = modifier:ship_ancient_titan_touhou_fleet_repair_mult
+    min = 0.1
+}
+ancient_titan_touhou_fleet_repair_duration = {
+    base = 0
+    add = modifier:ship_ancient_titan_touhou_fleet_repair_add
+    mult = value:ancient_titan_touhou_fleet_repair_duration_factor
+    min = 1
+}
+ancient_titan_touhou_fleet_repair_effect_factor = {
+    base = 1
+    add = modifier:ship_ancient_titan_touhou_fleet_repair_effect_mult
+    min = 0.1
+}
+ancient_titan_touhou_fleet_repair_effect = {
+    base = 0.05
+    add = modifier:ship_ancient_titan_touhou_fleet_repair_effect_add
+    mult = value:ancient_titan_touhou_fleet_repair_effect_factor
+    [[factor] mult = $factor$ ]
+    min = 0.01
+}
+touhou_repair_ship_hull_overflow_value = {
+    base = 0
+    add = trigger:has_max_hp
+    abs = yes
+    mult = -1
+    mult = $factor$
+}
+
+touhou_repair_ship_shield_overflow_value = {
+    base = 0
+    add = value:spth_max_shield_value|percent|$factor$|
+    abs = yes
+    mult = -1
+}
+
+
+touhou_aoe_hit_damage_factor = {
+    base = 2
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_type_$tag1$_weapon_damage_mult
+    add = modifier:weapon_type_$tag2$_weapon_damage_mult
+    add = modifier:$size_tag$_slot_weapon_damage_mult
+    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    [[extra_tag]]
+    mult = 0.50
+    min = 1
+}
+touhou_aoe_hit_damage_lunar_capital_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_type_energy_weapon_damage_mult
+    add = modifier:weapon_type_$tag1$_weapon_damage_mult
+    add = modifier:$size_tag$_slot_weapon_damage_mult
+    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = modifier:weapon_archaeotech_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 1
+}
+touhou_aoe_hit_damage_turret_weapon_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_type_kinetic_weapon_damage_mult
+    add = modifier:$size_tag$_slot_weapon_damage_mult
+    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = modifier:weapon_archaeotech_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 1
+}
+touhou_aoe_hit_damage_factor_2 = {
+    base = 1
+    add = modifier:ship_$layer$_damage_mult
+    min = 1
+}
+touhou_aoe_hit_damage = {
+    base = @touhou_aoe_damage_$size$
+    mult = value:touhou_aoe_hit_damage_factor|tag1|$tag1$|tag2|$tag2$|size_tag|$size_tag$|
+    mult = value:touhou_aoe_hit_damage_factor_2|layer|$layer$|
+}
+touhou_aoe_hit_damage_lunar_capital = {
+    base = @touhou_aoe_damage_lunar_$type$_$size$
+    mult = value:touhou_aoe_hit_damage_lunar_capital_factor|tag1|lunar_capital|size_tag|$size_tag$|
+    mult = value:touhou_aoe_hit_damage_factor_2|layer|$layer$|
+}
+touhou_aoe_hit_damage_gravity_cannon = {
+    base = @touhou_aoe_damage_lunar_$type$_$size$
+    mult = value:touhou_aoe_hit_damage_lunar_capital_factor|tag1|weapon_type_gravity|size_tag|$size_tag$|
+    mult = value:touhou_aoe_hit_damage_factor_2|layer|$layer$|
+}
+touhou_aoe_hit_damage_turret_weapon = {
+    base = @touhou_aoe_damage_lunar_$type$_$size$
+    mult = value:touhou_aoe_hit_damage_turret_weapon_factor|size_tag|$size_tag$|
+    mult = value:touhou_aoe_hit_damage_factor_2|layer|$layer$|
+}
+
+# mod = 1 - ori
+# mod = 0.1 - ori
+# mod = 1 + ori
+touhou_minefield_starbase_debuff = {
+    base = $base$
+    subtract = modifier:$modifier$
+    [[capped] min = $capped$ ]
+}
+
+touhou_leader_spark_damage_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 1
+}
+touhou_leader_spark_damage_factor_2 = {
+    base = 1
+    add = modifier:ship_$layer$_damage_mult
+    min = 1
+}
+touhou_leader_spark_damage = {
+    base = $base$
+    modifier = {
+        is_variable_set = touhou_leader_spark_damage_random_$type$
+        mult = touhou_leader_spark_damage_random_$type$
+    }
+    floor = yes
+    mult = owner.value:touhou_leader_spark_damage_factor
+    mult = owner.value:touhou_leader_spark_damage_factor_2|layer|$layer$|
+    mult = $factor$
+    [[neg] mult = -1 ]
+}
+
+touhou_gunpower_turret_t_weapon_cooldown_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_fire_rate_mult
+    min = 1
+}
+touhou_gunpower_turret_t_weapon_cooldown = {
+    base = 90
+    divide = value:touhou_gunpower_turret_t_weapon_cooldown_factor
+    [[add] add = $add$ ]
+    min = 35
+}
+touhou_gunpower_turret_t_weapon_damage_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_fire_rate_mult
+    add = modifier:weapon_type_energy_weapon_fire_rate_mult
+    add = modifier:weapon_type_gravity_weapon_fire_rate_mult
+    add = modifier:weapon_type_touhou_difficulty_player_weapon_fire_rate_mult
+    add = modifier:weapon_archaeotech_weapon_fire_rate_mult
+    add = modifier:weapon_type_touhou_dynamic_damage_ag_weapon_fire_rate_mult
+    add = modifier:t_slot_weapon_fire_rate_mult
+    add = modifier:ship_weapon_damage
+    add = 1
+}
+
+# mod + ori = touhou_hina_debuff_cap
+# mod = touhou_hina_debuff_cap - ori
+touhou_hina_debuff = {
+    base = 0
+    add = touhou_hina_debuff_cap
+    subtract = modifier:$modifier$
+    [[capped] min = $capped$ ]
+}
+
+touhou_dream_level_factor = {
+    base = 1
+    modifier = { add = touhou_dream_level is_variable_set = touhou_dream_level }
+}
+dream_master_skill_value = {
+    base = 0
+    add = trigger:has_total_skill
+    mult = value:touhou_dream_level_factor
+}

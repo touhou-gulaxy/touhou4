@@ -1,0 +1,459 @@
+namespace = first_contact_critters
+first_contact_event = {
+    id = first_contact_critters.25
+    title = first_contact_critters.25.name
+    desc = {
+        trigger = {
+            hidden:owner = {
+                switch = {
+                    trigger = has_ethic
+                    ethic_fanatic_xenophile = { text = story.101.desc.phile }
+                    ethic_fanatic_xenophobe = { text = story.101.desc.phobe }
+                    ethic_fanatic_militarist = { text = story.101.desc.milit }
+                    ethic_fanatic_pacifist = { text = story.101.desc.pacif }
+                    ethic_fanatic_materialist = { text = story.101.desc.mater }
+                    ethic_xenophile = { text = story.101.desc.phile }
+                    ethic_xenophobe = { text = story.101.desc.phobe}
+                    ethic_militarist = { text = story.101.desc.milit }
+                    ethic_pacifist = { text = story.101.desc.pacif }
+                    ethic_materialist = { text = story.101.desc.mater }
+                    ethic_gestalt_consciousness = { text = story.101.desc.gesta }
+                    default = { text = first_contact_critters.25.desc }
+                }
+            }
+            text = newline
+            success_text = {
+                text = story.101.desc.fruitful
+                hidden:owner = { has_origin = origin_fruitful }
+            }
+            success_text = {
+                text = first_contact_critters.25.desc.primal_calling
+                hidden:owner = { has_origin = origin_primal_calling }
+            }
+        }
+    }
+
+    picture = GFX_evt_friendly_amoeba
+    show_sound = event_space_amoeba
+
+    is_triggered_only = yes
+    first_contact = yes
+
+    immediate = {
+        set_site_progress_locked = yes
+    }
+
+    after = {
+        set_site_progress_locked = no
+        hidden_effect = {
+            fire_on_action = { on_action = on_first_contact_finished_amoeba }
+            owner = {
+                country_event = {
+                    id = grand_archive.200
+                    scopes = {
+                        from = event_target:amoeba_country
+                        fromfrom = root.solar_system
+                    }
+                }
+            }
+        }
+    }
+
+    option = {
+        name = story.101.aa
+        trigger = {
+            owner = {
+                OR = {
+                    is_xenophobe = yes
+                    is_militarist = yes
+                    is_homicidal = yes
+                }
+            }
+        }
+        owner = {
+            add_modifier = {
+                modifier = amoeba_hunting_buff
+                days = -1
+            }
+            increase_hunted_fauna_count = yes
+        }
+        custom_tooltip = story.101.aa.amoebahunt
+        finish_first_contact_effect = yes
+    }
+
+    option = {
+        name = story.101.bb
+        trigger = {
+            owner = {
+                NOT = { has_civic = civic_machine_terminator }
+            }
+        }
+        owner = {
+            capital_scope = {
+                enable_special_project = {
+                    name = "AMOEBAS_PROJECT"
+                    location = this
+                    owner = root.owner
+                }
+            }
+        }
+        finish_first_contact_effect = yes
+    }
+
+    option = {
+        name = story.101.bb.exter
+        trigger = {
+            owner = {
+                has_civic = civic_machine_terminator
+            }
+        }
+        owner = {
+            capital_scope = {
+                enable_special_project = {
+                    name = "AMOEBAS_PROJECT"
+                    location = this
+                    owner = root.owner
+                }
+            }
+        }
+        finish_first_contact_effect = yes
+    }
+
+    option = {
+        name = story.101.cc
+        trigger = {
+            owner = {
+                OR = {
+                    values_others = yes
+                    is_pacifist = yes
+                }
+            }
+        }
+        owner = {
+            capital_scope = {
+                enable_special_project = {
+                    name = "AMOEBAS_PACIFICATION_PROJECT"
+                    location = this
+                    owner = root.owner
+                }
+            }
+        }
+        ai_chance = {
+            factor = 10
+        }
+        finish_first_contact_effect = yes
+    }
+}
+
+namespace = crisis
+# Overwrite Vanilla contents.
+country_event = {
+    id = crisis.6052
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        every_playable_country = {
+            limit = {
+                is_ai = no
+                NOT = { is_same_value = root }
+            }
+            country_event = { id = crisis.6051 }
+        }
+        set_update_modifiers_batch = begin
+        fire_on_action = { on_action = on_crisis_sphere_destroy_system }
+        every_system = { limit = { touhou_system_cannot_destroyed_by_crisis = no } destroy_star_system = yes }
+        set_update_modifiers_batch = end
+        every_country = { limit = { is_touhou_common_country = yes } destroy_country = yes }
+        win = yes
+    }
+}
+
+namespace = shroud
+# Overwrite Vanilla contents.
+country_event = {
+    id = shroud.4972
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        every_playable_country = {
+            limit = {
+                is_ai = no
+                NOT = { is_same_value = root }
+            }
+            country_event = { id = shroud.4971 }
+        }
+        set_update_modifiers_batch = begin
+        every_system = {
+            limit = { ag_is_ancient_system = no }
+            set_star_flag = destroyed_by_end_of_the_cycle
+            destroy_star_system = yes
+        }
+        set_update_modifiers_batch = end
+        fire_on_action = { on_action = on_end_of_the_cycle_destroy_system }
+        every_country = { limit = { touhou_cannot_destroyed_by_end_of_the_cycle = yes } destroy_country = yes }
+        win = yes
+    }
+}
+
+# Shroudwalker Enclave: PATRON ATTUNING
+# This = player country; event_target:shroudwalker_enclave_country = enclave country
+country_event = {
+    id = shroud.5310
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = "enclave_artist_window"
+    custom_gui_option = "enclave_artist_option"
+    picture_event_data = {
+        portrait = event_target:shroudwalker_enclave_country
+        room = shroudwalkers_room
+    }
+    title = enclave.405.name
+    location = event_target:shroudwalker_enclave_system
+
+    desc = shroud.5310.desc
+
+    # Back to menu
+    option = {
+        name = enclave.410.a
+        hidden_effect = {
+            country_event = { id = enclave.405 }
+        }
+    }
+    # 龙神
+    option = {
+        name = touhou_great_patron_dragon
+        trigger = {
+            has_authority = auth_gensokyo
+            has_patron_relation = {
+                patron = touhou_great_patron_dragon
+                contact = completed
+            }
+        }
+        allow = {
+            resource_stockpile_compare = {
+                resource = sr_lingli
+                value >= 2500
+            }
+            resource_stockpile_compare = {
+                resource = influence
+                value >= 50
+            }
+        }
+        add_attunement = { touhou_great_patron_dragon = 200 }
+        shroud_touched_option_cost = {
+            RESOURCE = sr_lingli
+            VALUE = 2500
+        }
+        hidden_effect = {
+            shroud_touched_cooldown = {
+                NAME = shroudwalker_attune_patron_cooldown
+            }
+        }
+    }
+    # Eater of Worlds
+    option = {
+        name = the_eater_of_worlds_color
+        inline_script = {
+            script = shroud/shroud_touched_patron_attune
+            PATRON = the_eater_of_worlds
+        }
+    }
+    # Cradle of Souls
+    option = {
+        name = the_cradle_of_souls_color
+        inline_script = {
+            script = shroud/shroud_touched_patron_attune
+            PATRON = the_cradle_of_souls
+        }
+    }
+    # Instrument of Desire
+    option = {
+        name = the_instrument_of_desire_color
+        inline_script = {
+            script = shroud/shroud_touched_patron_attune
+            PATRON = the_instrument_of_desire
+        }
+    }
+    # Composer of Strands
+    option = {
+        name = the_composer_of_strands_color
+        inline_script = {
+            script = shroud/shroud_touched_patron_attune
+            PATRON = the_composer_of_strands
+        }
+    }
+    # Whisperers in the Void
+    option = {
+        name = whisperers_in_the_void_color
+        inline_script = {
+            script = shroud/shroud_touched_patron_attune
+            PATRON = whisperers_in_the_void
+        }
+    }
+    # Quit
+    option = {
+        name = GOODBYE
+        default_hide_option = yes
+    }
+}
+
+namespace = paragon_2
+
+# Yearly roll for negative trait.
+country_event = {
+    id = paragon_2.1020
+    hide_window = yes
+    is_triggered_only = yes
+
+    immediate = {
+        every_owned_leader = {
+            if = {
+                #log = "[This.GetName], unmodified: [This.leader_pending_negative_traits_unmodified], modified: [scriptval__leader_pending_negative_traits_modified]"
+                # If leader can gain negative traits.
+                limit = {
+                    NOT = { has_leader_flag = immune_to_negative_traits }
+                    is_variable_set = leader_pending_negative_traits_unmodified
+                    check_variable_arithmetic = { which = value:leader_pending_negative_traits_modified value > 0 }
+                }
+                if = {
+                    limit = { is_immortal = yes	}
+                    # Roll the fixed random-check first (cheap), if success: check if leader is eligible (expensive).
+                    #log = "Eligible: [This.GetName], [scriptval__leader_eligible_for_negative_trait_immortal]"
+                    random = {
+                        chance = @negative_trait_yearly_chance_when_eligible_immortal
+                        if = {
+                            limit = { check_variable_arithmetic = { which = value:leader_eligible_for_negative_trait_immortal value > 0 } }
+                            # Add a Negative trait sometime this year.
+                            leader_event = { id = paragon_2.1021 days = 1 random = 358 }
+                        }
+                    }
+                } else = {
+                    # Not Immortal.
+                    # For Mortal leaders, the chance increases once they're eligible for a negative trait.
+                    #log = "Chance %: [This.GetName], [scriptval__leader_yearly_chance_for_negative_trait]"
+                    random = {
+                        chance = value:leader_yearly_chance_for_negative_trait
+                        # Add a Negative trait sometime this year.
+                        leader_event = { id = paragon_2.1021 days = 1 random = 358 }
+                    }
+                }
+            }
+        }
+    }
+}
+
+# Delayed adding of negative trait, from paragon_2.1020
+leader_event = {
+    id = paragon_2.1021
+    is_triggered_only = yes
+    hide_window = yes
+
+    trigger = {
+        exists = owner
+    }
+
+    immediate = {
+        if = {
+            # Double check that leader still has pending negative traits.
+            limit = {
+                NOT = { has_leader_flag = immune_to_negative_traits }
+                check_variable_arithmetic = { which = value:leader_pending_negative_traits_modified value > 0 }
+            }
+            if = {
+                limit = {
+                    owner = {
+                        any_owned_leader = {
+                            spth_is_touhou_gensokyo_leader = yes
+                            has_leader_flag = flag_hina
+                        }
+                    }
+                    NOT = { has_leader_flag = touhou_hina_skill_triggered }
+                }
+                set_timed_leader_flag = { flag = touhou_hina_skill_triggered days = 360 }
+                owner = {
+                    if = {
+                        limit = { NOT = { is_variable_set = touhou_hina_skill_factor } }
+                        set_variable = { which = touhou_hina_skill_factor value = 0 }
+                    }
+                    change_variable = { which = touhou_hina_skill_factor value = 1 }
+                    create_message = {
+                        type = touhou_hina_block_negative_trait
+                        localization = touhou_hina_block_negative_trait_desc
+                        days = 30
+                        variable = {
+                            type = name
+                            localization = LEADER
+                            scope = root
+                        }
+                    }
+                }
+            } else = {
+                # Add a Negative trait and reduce Pending negative traits counter here, so it matches negative traits actually added.
+                add_trait = {
+                    trait = random_negative
+                }
+                subtract_variable = { which = leader_pending_negative_traits_unmodified value = 1 }
+            }
+        }
+    }
+}
+
+
+# namespace = biocrisis
+#
+# # 75 - Behemoth rage check - fired from biocrisis.1 and the yearly pulse then from itself.
+# fleet_event = {
+#     id = biocrisis.75
+#
+#     is_triggered_only = yes
+#     hide_window = yes
+#
+#     immediate = {
+#         #rage check again
+#         fleet_event = { id = biocrisis.75 days = 540 random = 270 }
+#         random_owned_ship = {
+#             set_timed_ship_flag = { flag = rage_checked days = 540 }
+#         }
+#
+#         #actual check
+#         if = {
+#             limit = {
+#                 any_owned_ship = {
+#                     NOT = {
+#                         has_ship_flag = raging
+#                         has_ship_flag = recently_raged
+#                         has_ship_flag = recently_fed
+#                         is_ship_size = behemoth_03
+#                         is_growth_complete = yes
+#                         owner = {
+#                             has_menace_perk	= menp_behemoth_mind_meld
+#                         }
+#                     }
+#                 }
+#
+#             }
+#             random_list = { #effect of cyber mutation
+#                 75 = {
+#                     enrage_behemoth = yes
+#                     random_owned_ship = { save_event_target_as = spth_ship_target }
+#                     fire_on_action = {
+#                         on_action = on_bio_crisis_enrage_behemoth
+#                         scopes = {
+#                             from = event_target:spth_ship_target
+#                             fromfrom = owner
+#                         }
+#                     }
+#                 }
+#
+#                 25 = {
+#                     modifier = {
+#                         factor = 0
+#                         owner = {
+#                             NOT = { has_country_flag = behemoth_mutation_cyber }
+#                         }
+#                     }
+#                 }
+#             }
+#         }
+#     }
+# }

@@ -171,8 +171,8 @@ spth_spawn_kamikakushi_fallen_empire = {
                 spawn_system = {
                     min_distance = 320
                     max_distance = 325
-                    min_orientation_angle = 44
-                    max_orientation_angle = 46
+                    min_orientation_angle = 50
+                    max_orientation_angle = 60
                     initializer = "spth_real_kamikakushi_capital"
                     hyperlane = no
                 }
@@ -182,8 +182,8 @@ spth_spawn_kamikakushi_fallen_empire = {
                     spawn_system = {
                         min_distance = 480
                         max_distance = 485
-                        min_orientation_angle = 44
-                        max_orientation_angle = 46
+                        min_orientation_angle = 50
+                        max_orientation_angle = 60
                         initializer = "spth_real_kamikakushi_capital"
                         hyperlane = no
                     }
@@ -193,8 +193,8 @@ spth_spawn_kamikakushi_fallen_empire = {
                         spawn_system = {
                             min_distance = 500
                             max_distance = 505
-                            min_orientation_angle = 44
-                            max_orientation_angle = 46
+                            min_orientation_angle = 50
+                            max_orientation_angle = 60
                             initializer = "spth_real_kamikakushi_capital"
                             hyperlane = no
                         }
@@ -202,8 +202,8 @@ spth_spawn_kamikakushi_fallen_empire = {
                         spawn_system = {
                             min_distance = 525
                             max_distance = 530
-                            min_orientation_angle = 44
-                            max_orientation_angle = 46
+                            min_orientation_angle = 50
+                            max_orientation_angle = 60
                             initializer = "spth_real_kamikakushi_capital"
                             hyperlane = no
                         }
@@ -265,6 +265,15 @@ spth_spawn_kamikakushi_fallen_empire = {
             from = event_target:spth_real_kamikakushi_system_4
             to = event_target:spth_real_kamikakushi_capital
         }
+        event_target:spth_real_kamikakushi_system_3 = {
+            random_neighbor_system_euclidean = {
+                limit = { NOT = { has_star_flag = lcluster } }
+                add_hyperlane = {
+                    from = this
+                    to = event_target:spth_real_kamikakushi_system_3
+                }
+            }
+        }
     }
     set_spawn_system_batch = end
 }
@@ -325,6 +334,7 @@ spth_spawn_kamikakushi_fallen_empire_fleet = {
             spth_kamikakushi_fallen_battle_cruiser_se = 10
             spth_kamikakushi_fallen_battle_cruiser_ac = 15
             spth_kamikakushi_cruiser_1 = 10
+            kamikakushi_bonus = yes
         }
     }
 }
@@ -364,10 +374,11 @@ spth_make_kamikakushi_fallen_empire_awake = {
         root = {
             save_event_target_as = contact_empire
         }
-        country_event = { id = spth_precursor.204 }
+        country_event = { id = spth_precursor.206 scopes = { from = prev } }
+        country_event = { id = spth_precursor.204 days = 30 random = 30 }
     }
 }
-@kamikakushi_awaken_empire_fleets_max = 9
+@kamikakushi_awaken_empire_fleets_max = 10
 spth_refresh_kamikakushi_awaken_empire_fleets = {
     optimize_memory
     if = {
@@ -396,6 +407,7 @@ spth_refresh_kamikakushi_awaken_empire_fleets = {
                     spth_kamikakushi_fallen_battle_cruiser_se = 10
                     spth_kamikakushi_fallen_battle_cruiser_ac = 15
                     spth_kamikakushi_cruiser_1 = 10
+                    kamikakushi_bonus = yes
                 }
             }
         }
@@ -411,7 +423,7 @@ spth_refresh_kamikakushi_awaken_empire_fleets = {
                     OWNER = event_target:spth_kamikakushi_fallen_empire
                     location = prev
                     flag = spth_kamikakushi_fallen_empire_fleet
-                    flag1 = spth_kamikakushi_fallen_empire_super_fleet
+                    flag2 = spth_kamikakushi_fallen_empire_super_fleet
                     spth_kamikakushi_invader_titan = 2
                     spth_kamikakushi_fallen_battle_cruiser_g = 12
                     spth_kamikakushi_fallen_battle_cruiser_sk = 8
@@ -419,8 +431,14 @@ spth_refresh_kamikakushi_awaken_empire_fleets = {
                     spth_kamikakushi_fallen_battle_cruiser_ac = 12
                     spth_kamikakushi_cruiser_1 = 15
                     spth_kamikakushi_super_carrier = 1
+                    kamikakushi_bonus = yes
                 }
             }
         }
+    }
+
+    every_owned_fleet = {
+        limit = { has_fleet_flag = spth_kamikakushi_fallen_empire_fleet is_fleet_idle = yes }
+        fleet_event = { id = touhou_awaken_empire.12 days = 1 random = 2  }
     }
 }

@@ -44,3 +44,192 @@ touhou_dummy_crisis_sphere_restored = {
     }
     ai_weight = { weight = 1000 }
 }
+
+touhou_disabled_shroud_seal = {
+    entity = "shroud_seal_entity"
+    construction_entity = "shroud_seal_entity"
+    construction_scale = 1.2
+    portrait = "GFX_megastructure_shroud_seal_background"
+    is_shroud_seal = yes
+    place_entity_on_planet_plane = no
+    build_type = inside_gravity_well
+    show_galactic_map_icon = yes
+    entity_offset = { x = -8 y = -8 }
+    build_time = 1800
+    resources = {
+        category = megastructures
+        upkeep = { energy = 25 unity = 200 }
+    }
+    potential = { always = no }
+    construction_blocks_and_blocked_by = none
+    dismantle_time = 480
+    dismantle_potential = { always = yes }
+    can_be_dismantled_by_non_owner = yes
+    dismantle_possible = {
+        solar_system = { is_owned_by = from }
+        if = {
+            limit = { NOT = { is_owned_by = from } }
+            custom_tooltip = shroud_seal_dismantle_conditions_tt
+            hidden_trigger = { solar_system = { NOT = { any_fleet_in_system = {
+                is_ship_class = shipclass_military
+                exists = controller
+                controller = { is_hostile = from }
+            } } } }
+        }
+    }
+    should_ai_dismantle = { always = yes }
+    ai_weight = { base = 0 }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = { }
+    show_in_outliner = no
+}
+
+touhou_fe_union_titan_0 = {
+    entity = "construction_platform_entity"
+    construction_entity = "construction_platform_entity"
+    portrait = "GFX_megastructure_construction_background"
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    build_time = 1080
+    prerequisites = { tech_touhou_fe_union_titan }
+    resources = {
+        category = ag_ancient_megastructures
+        cost = {
+            alloys = 5000
+            sr_living_metal = 10000
+            nanites = 5000
+            sr_dark_matter = 2500
+            sr_lingli = 2500
+            sr_fuka = 2500
+        }
+    }
+    potential = {
+        is_touhou_player_faction = yes
+        has_technology = tech_touhou_fe_union_titan
+    }
+    possible = {
+        custom_tooltip = { fail_text = "requires_inside_border" is_inside_border = from }
+        custom_tooltip = { fail_text = "requires_surveyed_system" NOT = { any_system_planet = { is_surveyed = { who = prev.from status = no } } } }
+        custom_tooltip = {
+            fail_text = "ag_requires_tech_touhou_fe_union_titan"
+            from = { has_technology = tech_touhou_fe_union_titan }
+        }
+        custom_tooltip = {
+            fail_text = "ag_requires_no_existing_touhou_fe_union_titan"
+            from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_fe_union_titan value < value:touhou_max_owned_touhou_fe_union_titan } }
+        }
+    }
+    placement_rules = { planet_possible = { touhou_is_construction_section = yes } }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        fromfrom.planet = { set_planet_flag = has_megastructure }
+        from = {
+            if = {
+                limit = { spth_has_ag_mod = yes }
+                country_event = { id = ag_ancient_knowledge.26 }
+            }
+            country_event = { id = toho.8120 }
+        }
+        every_playable_country = { limit = { NOT = { is_same_value = from } } country_event = { id = toho.8122 } }
+    }
+    construction_blocks_and_blocked_by = self_type
+    ai_weight = { weight = 1000 }
+    dismantle_potential = { always = no }
+}
+touhou_fe_union_titan_1 = {
+    entity = "touhou_fe_union_titan_teal_hull_entity"
+    construction_entity = "touhou_fe_union_titan_teal_hull_entity"
+    portrait = "GFX_megastructure_construction_background"
+    entity_offset = { x = 0 y = 0 }
+
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    build_time = 3960
+
+    resources = {
+        category = ag_ancient_megastructures
+        cost = {
+            alloys = 5000
+            sr_living_metal = 10000
+            nanites = 5000
+            sr_dark_matter = 2500
+            sr_lingli = 2500
+            sr_fuka = 2500
+        }
+    }
+
+    upgrade_from = { touhou_fe_union_titan_0 }
+    potential = { has_technology = "tech_touhou_fe_union_titan" }
+    possible = {
+        custom_tooltip = {
+            fail_text = "ag_requires_no_existing_touhou_fe_union_titan"
+            from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_fe_union_titan|th_stage_0|no|ag_stage_0|no| value < value:touhou_max_owned_touhou_fe_union_titan } }
+        }
+    }
+    placement_rules = { }
+
+    on_build_start = {}
+    on_build_cancel = {}
+    on_build_complete = {
+        fromfrom.planet = { remove_planet_flag = has_megastructure }
+        from = {
+            country_event = { id = toho.8121 }
+            if = {
+                limit = { spth_has_ag_mod = yes }
+                country_event = { id = ag_ancient_knowledge.26 }
+            }
+        }
+        add_threat = { who = from amount = 50 }
+        create_fleet = {
+            name = NAME_touhou_fe_union_titan_fleet
+            settings = { spawn_debris = no }
+            effect = {
+                set_owner = root.from
+                set_fleet_flag = ag_has_ancient_ship_in_fleet
+                set_location = {
+                    target = prev
+                    distance = 1
+                    angle = random
+                }
+                create_ship = {
+                    name = NAME_touhou_fe_union_titan_cyan
+                    design = NAME_touhou_fe_union_titan
+                    prefix = no
+                    effect = {
+                        set_ship_flag = ag_touhou_fe_titan_player
+                        ag_difficulty_bonus = yes
+                        if = {
+                            limit = { spth_has_ag_mod = yes }
+                            add_modifier = { modifier = touhou_fe_union_titan_ag_extra_life }
+                            owner = {
+                                if = {
+                                    limit = { has_modifier = touhou_fe_union_titan_country }
+                                    remove_modifier = touhou_fe_union_titan_country
+                                }
+                                add_modifier = { modifier = touhou_fe_union_titan_country }
+                            }
+                            touhou_difficulty_bonus_ag_ship = yes
+                            ag_set_disable_at_health = { ag_disable_type = ancient_titan }
+                            fire_on_action = { on_action = on_touhou_fe_union_titan_built }
+                        }
+                    }
+                }
+                set_fleet_stance = aggressive
+                set_aggro_range = 500
+                set_aggro_range_measure_from = self
+            }
+        }
+        every_playable_country = { limit = { NOT = { is_same_value = from } } country_event = { id = toho.8123 } }
+        remove_megastructure = fromfrom
+    }
+    construction_blocks_and_blocked_by = self_type
+    ai_weight = { weight = 1000 }
+    dismantle_potential = { always = no }
+}

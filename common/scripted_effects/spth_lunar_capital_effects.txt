@@ -31,6 +31,7 @@ spth_spawn_lunar_capital_union_fleet = {
                 set_graphical_culture = strg_01
                 set_country_flag = touhou_mod_country
                 set_country_flag = spth_lunar_capital_union_fleet_country
+                add_modifier = { modifier = touhou_immune_from_terrify }
                 [[debug_spawn_flag] set_country_flag = spth_debug_spawn_flag ]
                 save_global_event_target_as = spth_lunar_capital_union_fleet_country
                 every_playable_country = {
@@ -230,6 +231,7 @@ spth_lunar_psi_create_country = {
                 set_country_flag = touhou_crisis_country
                 set_country_flag = spth_lunar_capital_psi_country
                 set_country_flag = protected_from_queen_storm
+                add_modifier = { modifier = touhou_immune_from_terrify }
                 if = {
                     limit = { NOT = { has_country_flag = has_given_starbase_lunar_capital_psi_designs } }
                     create_ship_design = { design = NAME_starbase_lunar_capital_psi }
@@ -480,6 +482,172 @@ spth_lunar_psi_create_main_fleet = {
     spth_lunar_psi_add_fleet_counter = yes
     spth_lunar_psi_setup_commander = { fleet = spth_lunar_fleet }
 }
+spth_lunar_psi_pick_mirror_design = {
+    optimize_memory
+    if = {
+        limit = { any_playable_country = { has_authority = auth_gensokyo is_ai = no } }
+        random_playable_country = {
+            limit = { has_authority = auth_gensokyo is_ai = no }
+            save_global_event_target_as = touhou_pick_mirror_country
+        }
+    } else_if = {
+        limit = { any_playable_country = { has_authority = auth_gensokyo } }
+        random_playable_country = {
+            limit = { has_authority = auth_gensokyo }
+            save_global_event_target_as = touhou_pick_mirror_country
+        }
+    } else = {
+        random_playable_country = {
+            save_global_event_target_as = touhou_pick_mirror_country
+        }
+    }
+    if = {
+        limit = { NOT = { exists = event_target:touhou_pick_mirror_country } }
+        set_timed_global_flag = { flag = no_lunar_capital_pick_mirror_country days = 180 }
+    } else = {
+        set_global_flag = spth_lunar_psi_picked_mirror_design
+        event_target:touhou_pick_mirror_country = {
+            if = {
+                limit = { count_owned_fleet = { limit = { is_touhou_cannot_mirror_fleet = no } count > 0 } }
+                random_owned_fleet = {
+                    limit = { is_touhou_cannot_mirror_fleet = no }
+                    random_owned_ship = {
+                        limit = { is_touhou_cannot_mirror_ship = no }
+                        weights = {
+                            base = 10
+                            modifier = { factor = 0.1 design = { has_design_flag = was_touhou_mirror_design } }
+                        }
+                        design = {
+                            save_global_event_target_as = touhou_mirror_design
+                            set_design_flag = touhou_mirror_design
+                            set_design_flag = was_touhou_mirror_design
+                        }
+                        event_target:spth_lunar_capital_psi_country = {
+                            set_variable = {
+                                which = touhou_mirror_design_ship_size
+                                value = prev.trigger:count_used_naval_cap
+                            }
+                        }
+                    }
+                }
+            } else = {
+                random_owned_design = {
+                    limit = { is_ship_class = shipclass_military is_designable = yes }
+                    weights = {
+                        base = 10
+                        modifier = { factor = 0.1 has_design_flag = was_touhou_mirror_design }
+                    }
+                    save_global_event_target_as = touhou_mirror_design
+                    set_design_flag = touhou_mirror_design
+                    set_design_flag = was_touhou_mirror_design
+                    event_target:spth_lunar_capital_psi_country = {
+                        set_variable = {
+                            which = touhou_mirror_design_ship_size
+                            value = prev.value:spth_get_ship_size
+                        }
+                    }
+                }
+            }
+        }
+        event_target:spth_lunar_capital_psi_country = {
+            set_variable = {
+                which = lunar_capital_psi_mirror_ship_count
+                value = value:lunar_capital_psi_mirror_ship_count
+            }
+            set_variable = {
+                which = lunar_capital_psi_mirror_damage_reduction
+                value = value:lunar_capital_psi_mirror_damage_reduction
+            }
+            add_modifier = {
+                modifier = touhou_lunar_psi_extra_41
+                mult = lunar_capital_psi_mirror_damage_reduction
+            }
+        }
+    }
+}
+spth_lunar_psi_create_mirror_fleet = {
+    optimize_memory
+    create_fleet = {
+        name = NAME_lunar_capital_psi_mirror_fleet
+        settings = {
+            can_change_composition = $can_change_composition|yes$
+            uses_naval_capacity = $uses_naval_capacity|no$
+            spawn_debris = $spawn_debris|no$
+            can_disband = $can_disband|no$
+            is_boss = $is_boss|no$
+            can_change_leader = $can_change_leader|yes$
+        }
+        effect = {
+            set_owner = event_target:spth_lunar_capital_psi_country
+            set_location = {
+                target = event_target:spth_lunar_spawnpoint
+                distance = $distance|25$ angle = random
+            }
+            set_fleet_flag = spth_lunar_psi_mirror_fleet
+            set_fleet_flag = spth_lunar_psi_fleet
+            set_fleet_flag = spth_lunar_psi_enable_move
+            set_fleet_bombardment_stance = spth_kamikakushi_crisis
+            create_ship = {
+                design = NAME_lunar_capital_psi_carrier
+                effect = { set_ship_flag = spth_lunar_psi_tmp_ship }
+            }
+            while = {
+                count = event_target:spth_lunar_capital_psi_country.lunar_capital_psi_mirror_ship_count
+                create_ship = {
+                    design = event_target:touhou_mirror_design
+                    effect = {
+                        set_ship_flag = spth_lunar_psi_tmp_ship
+                        set_ship_flag = lunar_capital_psi_mirror_ship
+                        add_modifier = {
+                            modifier = touhou_lunar_psi_extra_41_neg
+                            mult = event_target:spth_lunar_capital_psi_country.lunar_capital_psi_mirror_damage_reduction
+                        }
+                    }
+                }
+            }
+            while = {
+                count = 10
+                create_ship = {
+                    design = NAME_lunar_capital_psi_cruiser
+                    effect = { set_ship_flag = spth_lunar_psi_tmp_ship }
+                }
+            }
+            spth_init_special_ship_flag = yes
+            every_owned_ship = { touhou_difficulty_bonus_ship = { lunar_capital = yes } }
+            save_event_target_as = spth_lunar_fleet
+        }
+    }
+    spth_lunar_psi_setup_commander = { fleet = spth_lunar_fleet }
+}
+spth_lunar_psi_spawn_mirror_fleets_sub_gate = {
+    optimize_memory
+    if = {
+        limit = {
+            has_global_flag = spth_lunar_capital_psi_gate_$spth_id$_spawned
+            NOT = { has_global_flag = spth_lunar_capital_psi_gate_$spth_id$_killed }
+        }
+        random_system = {
+            limit = { has_star_flag = spth_lunar_capital_psi_sub_gate_$spth_id$ }
+            random_system_planet = {
+                limit = { is_primary_star = yes }
+                save_event_target_as = spth_lunar_spawnpoint
+                spth_lunar_psi_create_mirror_fleet = yes
+                if = {
+                    limit = { has_global_flag = spth_lunar_capital_crisis_phantasm }
+                    spth_lunar_psi_create_mirror_fleet = yes
+                }
+                if = {
+                    limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                    spth_lunar_psi_create_mirror_fleet = yes
+                }
+                if = {
+                    limit = { touhou_check_diffiulty_gteq = { value = 8 } }
+                    spth_lunar_psi_create_mirror_fleet = yes
+                }
+            }
+        }
+    }
+}
 spth_lunar_psi_create_defence_fleet = {
     optimize_memory
     spth_create_fleet = {
@@ -541,6 +709,15 @@ spth_lunar_psi_spawn_fleets_sub_gate = {
                     spth_lunar_psi_spawn_starbase = yes
                 }
                 planet_event = { id = lunar_capital_psi.2 days = 5 }
+            }
+            if = {
+                limit = { NOT = { has_global_flag = spth_lunar_capital_psi_gate_$spth_id$_aura_spawned } }
+                set_global_flag = spth_lunar_capital_psi_gate_$spth_id$_aura_spawned
+                spawn_psionic_aura = {
+                    type = lunar_capital_psi_aura
+                    owner = event_target:spth_lunar_capital_psi_country
+                    update_type = no
+                }
             }
         }
     }

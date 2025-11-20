@@ -1,0 +1,118 @@
+weaver_confuser_chance = {
+    base = 1
+    add = $TIER$
+    mult = 15
+    subtract = value:confuser_chance_size_factor
+    mult = value:weapon_confuser_active_chance   # 狡猾狐狸
+    max = 100
+    modifier = { factor = 0 check_modifier_value = { modifier = "ship_spth_immune_to_confuse" value != 0 } }
+    modifier = { factor = 0 check_modifier_value = { modifier = "ag_immune_to_confuse" value != 0 } }
+    modifier = {
+        factor = 0
+        exists = owner
+        owner = { NOR = {
+            if = {
+                limit = { spth_has_ag_mod = no }
+                is_touhou_common_country = yes
+            } else = {
+                ag_is_common_country = yes
+            }
+            is_country_type = pirate
+            is_country_type = nomad
+            is_country_type = marauder_raiders
+            is_country_type = awakened_marauders
+            is_country_type = dormant_marauders
+            is_country_type = ruined_marauders
+        } }
+    }
+    min = 0
+}
+
+immune_chance_terrify = {
+    base = 1
+    add = modifier:immune_chance_terrify
+    min = 0
+}
+ship_terrify_chance = {
+    base = 0
+    modifier = { add = 25 ship_size_multiplier < 2 }
+    modifier = { add = 20 ship_size_multiplier >= 2 ship_size_multiplier < 4 }
+    modifier = { add = 10 ship_size_multiplier >= 4 ship_size_multiplier < 8 }
+    modifier = { add = 3 ship_size_multiplier >= 8 ship_size_multiplier < 16 }
+    modifier = { add = 1 ship_size_multiplier >= 16 }
+    modifier = {
+        factor = 0
+        OR = {
+            has_ship_flag = immune_to_terrify
+            check_modifier_value = { modifier = immune_to_terrify value > 0 }
+        }
+    }
+    mult = value:immune_chance_terrify
+}
+terrify_duration_factor = {
+    base = 1
+    add = modifier:terrify_duration_mult
+    min = 0
+}
+ship_terrify_duration = {
+    base = 0
+    modifier = { add = 10 ship_size_multiplier < 2 }
+    modifier = { add = 8 ship_size_multiplier >= 2 ship_size_multiplier < 4 }
+    modifier = { add = 6 ship_size_multiplier >= 4 ship_size_multiplier < 8 }
+    modifier = { add = 5 ship_size_multiplier >= 8 }
+    add = modifier:terrify_duration_add
+    mult = value:terrify_duration_factor
+}
+
+calc_psionic_aura_monthly_increase = {
+    base = 0
+    modifier = {
+        add = value:calc_psionic_aura_monthly_increase_on_owned_system
+        exists = owner
+        owner = { is_same_value = root.aura_owner }
+        desc = tech_psionic_aura
+    }
+    modifier = {
+        add = value:calc_intensity_from_sector_leader
+        exists = sector
+        sector = {
+            is_owned_by = root.aura_owner
+            sector_capital = {
+                exists = leader
+                leader = { has_psionic_leader_trait = yes }
+            }
+        }
+        desc = INTENSITY_FROM_PSIONIC_SECTOR_LEADER
+    }
+    modifier = {
+        add = value:calc_intensity_from_neighbor_auras
+        desc = INTENSITY_FROM_NEARBY_AURAS
+    }
+    modifier = {
+        add = value:count_planet_type_in_system|TYPE|pc_shrouded|VALUE|@shrouded_planet_intensity|
+        any_system_planet = { is_planet_class = pc_shrouded }
+        desc = INTENSITY_FROM_SHROUDED_PLANETS
+    }
+    modifier = {
+        factor = 0
+        system_has_psionic_inhibition_station = yes
+        system_has_psionic_burster_station = no
+    }
+    modifier = {
+        factor = 0.25
+        spth_system_has_psionic_inhibition_station = yes
+        desc = "AFFECTED_BY_PSIONIC_SUPPRESSORS"
+    }
+    modifier = {
+        factor = 1.25
+        spth_system_has_psionic_burster_station = yes
+        desc = AFFECTED_BY_PSIONIC_BURSTER
+    }
+}
+
+edict_size_effect = {
+    base = 0.01
+    mult = trigger:empire_sprawl_over_cap
+    add = 1
+    min = 1
+}
