@@ -1,0 +1,1167 @@
+# first_contact scope. Effects to opinion and stuff from stages before the last may be applied here, TBD.
+finish_first_contact_effect = {
+    optimize_memory
+    owner = {
+        set_country_flag = first_contact_completed@root.contact_country
+    }
+    if = {
+        limit = {
+            exists = reverse_first_contact
+        }
+        hidden_effect = {
+            contact_country = {
+                create_message = {
+                    type = MESSAGE_FIRST_CONTACT_ABORTED_THEY_COMPLETED
+                    localization = MESSAGE_FIRST_CONTACT_ABORTED_THEY_COMPLETED_DESC
+                    days = 30
+                    target = root.owner.capital_scope
+                    variable = {
+                        type = name
+                        localization = COUNTRY
+                        scope = root.reverse_first_contact
+                    }
+                }
+            }
+            reverse_first_contact = {
+                if = {
+                    limit = { is_current_first_contact_stage = default_end_stage_hostile_no_crew }
+                    owner = {
+                        country_event = { id = first_contact.1100 days = 30 random = 5 }
+                    }
+                }
+                else_if = {
+                    limit = { is_current_first_contact_stage = default_end_stage_hostile_with_vivisection }
+                    owner = {
+                        country_event = { id = first_contact.1105 days = 30 random = 5 }
+                    }
+                }
+                else_if = {
+                    limit = {
+                        OR = {
+                            is_current_first_contact_stage = default_end_stage_hostile_with_crew
+                            is_current_first_contact_stage = default_end_stage_hostile_with_crew_easy
+                            is_current_first_contact_stage = default_end_stage_hostile_with_crew_hard
+                        }
+                    }
+                    owner = {
+                        country_event = { id = first_contact.1110 days = 30 random = 5 }
+                    }
+                }
+            }
+        }
+    }
+    if = {
+        limit = {
+            contact_country = { is_country_type = default }
+            NOT = { has_first_contact_flag = hostile_first_contact_attempted }
+        }
+        # 幻想乡碰到幻想乡
+        if = {
+            limit = {
+                contact_country = { has_authority = auth_gensokyo }
+                owner = { has_authority = auth_gensokyo }
+            }
+            owner = {
+                if = {
+                    limit = {
+                        has_policy_flag = first_contact_proactive
+                    }
+                    add_monthly_resource_mult = {
+                        resource = sr_lingli
+                        value = @tier2linglicontactxenophile
+                        min = @tier2linglicontactminxenophile
+                        max = @tier2linglicontactmaxxenophile
+                    }
+                }
+                else = {
+                    add_monthly_resource_mult = {
+                        resource = sr_lingli
+                        value = @tier2linglicontact
+                        min = @tier2linglicontactmin
+                        max = @tier2linglicontactmax
+                    }
+                }
+            }
+        }
+        owner = {
+            if = {
+                limit = {
+                    has_policy_flag = first_contact_proactive
+                }
+                add_monthly_resource_mult = {
+                    resource = influence
+                    value = @tier2influencecontactxenophile
+                    min = @tier2influencecontactminxenophile
+                    max = @tier2influencecontactmaxxenophile
+                }
+            }
+            else = {
+                add_monthly_resource_mult = {
+                    resource = influence
+                    value = @tier2influencecontact
+                    min = @tier2influencecontactmin
+                    max = @tier2influencecontactmax
+                }
+            }
+            if = {
+                limit = {
+                    has_valid_civic = civic_machine_exploration_protocol
+                }
+                add_monthly_resource_mult = {
+                    resource = unity
+                    value = @tier1unityreward
+                    min = @tier1unitymin
+                    max = @tier1unitymax
+                }
+            }
+        }
+        hidden_effect = {
+            owner = { country_event = { id = tutorial.2006 } }
+            contact_country = {
+                country_event = { id = tutorial.63 }
+            }
+            if = {
+                limit = {
+                    contact_country = {
+                        has_policy_flag = first_contact_proactive
+                    }
+                    reverse_first_contact = {
+                        NOT = { has_first_contact_flag = hostile_first_contact_attempted }
+                    }
+                }
+                owner = { set_country_flag = we_come_in_peace_achievement }
+            }
+        }
+    }
+    else = {
+        owner = {
+            if = {
+                limit = {
+                    has_policy_flag = first_contact_proactive
+                }
+                add_monthly_resource_mult = {
+                    resource = influence
+                    value = @tier1influencecontactxenophile
+                    min = @tier1influencecontactminxenophile
+                    max = @tier1influencecontactmaxxenophile
+                }
+            }
+            else = {
+                add_monthly_resource_mult = {
+                    resource = influence
+                    value = @tier1influencecontact
+                    min = @tier1influencecontactmin
+                    max = @tier1influencecontactmax
+                }
+            }
+        }
+        switch = {
+            trigger = has_first_contact_flag
+            tiyanki_first_contact = {
+                owner = {
+                    set_country_flag = tiyanki_encountered
+                    hidden_effect = { country_event = { id = tutorial.61 } }
+                    if = {
+                        limit = {
+                            any_active_first_contact = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_tiyanki_country_type = yes
+                                }
+                            }
+                        }
+                        every_active_first_contact = {
+                            limit = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_tiyanki_country_type = yes
+                                }
+                            }
+                            custom_tooltip = further_fc_tiyanki_completed
+                        }
+                    }
+                }
+                hidden_effect = {
+                    every_country = {
+                        limit = {
+                            NOT = { is_same_value = root.contact_country }
+                            NOT = { has_communications = root.owner }
+                            is_tiyanki_country_type = yes
+                        }
+                        root.owner = {
+                            establish_communications_no_message = prev
+                            establish_communication_with_subjects_and_federation = { FLAG = tiyanki_encountered }
+                        }
+                    }
+                    root.contact_country = {
+                        root.owner = {
+                            establish_communication_with_subjects_and_federation = { FLAG = tiyanki_encountered }
+                        }
+                    }
+                }
+                hidden_effect = {
+                    owner = {
+                        if = {
+                            limit = {
+                                has_country_flag = tiyanki_graveyard_survey
+                            }
+                            country_event = { id = galactic_features.387 } # Tiyanki Graveyard follow-up
+                        }
+                    }
+                }
+            }
+            amoeba_first_contact = {
+                owner = {
+                    set_country_flag = amoeba_encountered
+                    hidden_effect = { country_event = { id = tutorial.61 } }
+                    if = {
+                        limit = {
+                            any_active_first_contact = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_amoeba_country_type = yes
+                                }
+                            }
+                        }
+                        every_active_first_contact = {
+                            limit = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_amoeba_country_type = yes
+                                }
+                            }
+                            custom_tooltip = further_fc_amoebas_completed
+                        }
+                    }
+                }
+                hidden_effect = {
+                    every_country = {
+                        limit = {
+                            NOT = { is_same_value = root.contact_country }
+                            NOT = { has_communications = root.owner }
+                            is_amoeba_country_type = yes
+                        }
+                        root.owner = {
+                            establish_communications_no_message = prev
+                            establish_communication_with_subjects_and_federation = { FLAG = amoeba_encountered }
+                        }
+                    }
+                    root.contact_country = {
+                        root.owner = {
+                            establish_communication_with_subjects_and_federation = { FLAG = amoeba_encountered }
+                        }
+                    }
+                }
+            }
+            crystals_first_contact = {
+                owner = {
+                    set_country_flag = crystals_encountered
+                    hidden_effect = { country_event = { id = tutorial.61 } }
+                    if = {
+                        limit = {
+                            any_active_first_contact = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_crystal_country_type = yes
+                                }
+                            }
+                        }
+                        every_active_first_contact = {
+                            limit = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_crystal_country_type = yes
+                                }
+                            }
+                            custom_tooltip = further_fc_crystals_completed
+                        }
+                    }
+                }
+                hidden_effect = {
+                    every_country = {
+                        limit = {
+                            NOT = { is_same_value = root.contact_country }
+                            NOT = { has_communications = root.owner }
+                            is_crystal_country_type = yes
+                        }
+                        root.owner = {
+                            establish_communications_no_message = prev
+                            establish_communication_with_subjects_and_federation = { FLAG = crystals_encountered }
+                        }
+                    }
+                    root.contact_country = {
+                        root.owner = {
+                            establish_communication_with_subjects_and_federation = { FLAG = crystals_encountered }
+                        }
+                    }
+                }
+            }
+            drones_first_contact = {
+                owner = {
+                    set_country_flag = drones_encountered
+                    hidden_effect = { country_event = { id = tutorial.61 } }
+                    if = {
+                        limit = {
+                            any_active_first_contact = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_drone_country_type = yes
+                                }
+                            }
+                        }
+                        every_active_first_contact = {
+                            limit = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_drone_country_type = yes
+                                }
+                            }
+                            custom_tooltip = further_fc_drones_completed
+                        }
+                    }
+                }
+                hidden_effect = {
+                    every_country = {
+                        limit = {
+                            NOT = { is_same_value = root.contact_country }
+                            NOT = { has_communications = root.owner }
+                            is_drone_country_type = yes
+                        }
+                        root.owner = {
+                            establish_communications_no_message = prev
+                            establish_communication_with_subjects_and_federation = { FLAG = drones_encountered }
+                        }
+                    }
+                    root.contact_country = {
+                        root.owner = {
+                            establish_communication_with_subjects_and_federation = { FLAG = drones_encountered }
+                        }
+                    }
+                }
+            }
+            voidworms_first_contact = {
+                owner = {
+                    set_country_flag = voidworms_encountered
+                    hidden_effect = { country_event = { id = tutorial.61 } }
+                    if = {
+                        limit = {
+                            any_active_first_contact = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_voidworms_country_type = yes
+                                }
+                            }
+                        }
+                        every_active_first_contact = {
+                            limit = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_voidworms_country_type = yes
+                                }
+                            }
+                            custom_tooltip = further_fc_voidworms_completed
+                        }
+                    }
+                }
+                hidden_effect = {
+                    every_country = {
+                        limit = {
+                            NOT = { is_same_value = root.contact_country }
+                            NOT = { has_communications = root.owner }
+                            is_voidworms_country_type = yes
+                        }
+                        root.owner = {
+                            establish_communications_no_message = prev
+                            establish_communication_with_subjects_and_federation = { FLAG = voidworms_encountered }
+                        }
+                    }
+                    root.contact_country = {
+                        root.owner = {
+                            establish_communication_with_subjects_and_federation = { FLAG = voidworms_encountered }
+                        }
+                    }
+                }
+            }
+            cutholoids_first_contact = {
+                owner = {
+                    set_country_flag = cutholoids_encountered
+                    hidden_effect = { country_event = { id = tutorial.61 } }
+                    if = {
+                        limit = {
+                            any_active_first_contact = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_cutholoids_country_type = yes
+                                }
+                            }
+                        }
+                        every_active_first_contact = {
+                            limit = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_cutholoids_country_type = yes
+                                }
+                            }
+                            custom_tooltip = further_fc_cutholoids_completed
+                        }
+                    }
+                }
+                hidden_effect = {
+                    every_country = {
+                        limit = {
+                            NOT = { is_same_value = root.contact_country }
+                            NOT = { has_communications = root.owner }
+                            is_cutholoids_country_type = yes
+                        }
+                        root.owner = {
+                            establish_communications_no_message = prev
+                            establish_communication_with_subjects_and_federation = { FLAG = cutholoids_encountered }
+                        }
+                    }
+                    root.contact_country = {
+                        root.owner = {
+                            establish_communication_with_subjects_and_federation = { FLAG = cutholoids_encountered }
+                        }
+                    }
+                }
+            }
+            caravaneers_first_contact = {
+                contact_country = {
+                    hidden_effect = { country_event = { id = tutorial.63 } }
+                }
+                owner = {
+                    hidden_effect = { country_event = { id = tutorial.2006 } }
+                    if = {
+                        limit = {
+                            any_country = {
+                                OR = {
+                                    is_country_type = caravaneer_fleet
+                                    is_country_type = caravaneer_home
+                                }
+                                NOT = { is_same_value = root.contact_country }
+                                root.owner = {
+                                    NOT = { has_communications = prev }
+                                    has_established_contact = prev
+                                }
+                            }
+                        }
+                        every_country = {
+                            limit = {
+                                OR = {
+                                    is_country_type = caravaneer_fleet
+                                    is_country_type = caravaneer_home
+                                }
+                                NOT = { is_same_value = root.contact_country }
+                                root.owner = {
+                                    NOT = { has_communications = prev }
+                                    has_established_contact = prev
+                                }
+                            }
+                            #							custom_tooltip = further_fc_caravaneers_completed
+                            hidden_effect = {
+                                if = {
+                                    limit = {
+                                        exists = event_target:caravaneer_fleet1_country
+                                        is_same_value = event_target:caravaneer_fleet1_country
+                                    }
+                                    root.owner = { country_event = { id = cara.1020 } }
+                                }
+                                else_if = {
+                                    limit = {
+                                        exists = event_target:caravaneer_fleet2_country
+                                        is_same_value = event_target:caravaneer_fleet2_country
+                                    }
+                                    root.owner = { country_event = { id = cara.2020 } }
+                                }
+                                else_if = {
+                                    limit = {
+                                        exists = event_target:caravaneer_fleet3_country
+                                        is_same_value = event_target:caravaneer_fleet3_country
+                                    }
+                                    root.owner = { country_event = { id = cara.3020 } }
+                                }
+                            }
+                        }
+                    }
+                    hidden_effect = {
+                        if = {
+                            limit = {
+                                exists = event_target:caravaneer_fleet1_country
+                                root.contact_country = { is_same_value = event_target:caravaneer_fleet1_country }
+                            }
+                            country_event = { id = cara.1020 }
+                            if = {
+                                limit = { exists = event_target:caravaneer_fleet2_country }
+                                event_target:caravaneer_fleet2_country = {
+                                    establish_communications_no_message = root.owner
+                                }
+                            }
+                            if = {
+                                limit = { exists = event_target:caravaneer_fleet3_country }
+                                event_target:caravaneer_fleet3_country = {
+                                    establish_communications_no_message = root.owner
+                                }
+                            }
+                        }
+                        else_if = {
+                            limit = {
+                                exists = event_target:caravaneer_fleet2_country
+                                root.contact_country = { is_same_value = event_target:caravaneer_fleet2_country }
+                            }
+                            country_event = { id = cara.2020 }
+                            if = {
+                                limit = { exists = event_target:caravaneer_fleet1_country }
+                                event_target:caravaneer_fleet1_country = {
+                                    establish_communications_no_message = root.owner
+                                }
+                            }
+                            if = {
+                                limit = { exists = event_target:caravaneer_fleet3_country }
+                                event_target:caravaneer_fleet3_country = {
+                                    establish_communications_no_message = root.owner
+                                }
+                            }
+                        }
+                        else_if = {
+                            limit = {
+                                exists = event_target:caravaneer_fleet3_country
+                                root.contact_country = { is_same_value = event_target:caravaneer_fleet3_country }
+                            }
+                            country_event = { id = cara.3020 }
+                            if = {
+                                limit = { exists = event_target:caravaneer_fleet1_country }
+                                event_target:caravaneer_fleet1_country = {
+                                    establish_communications_no_message = root.owner
+                                }
+                            }
+                            if = {
+                                limit = { exists = event_target:caravaneer_fleet2_country }
+                                event_target:caravaneer_fleet2_country = {
+                                    establish_communications_no_message = root.owner
+                                }
+                            }
+                        }
+                        if = {
+                            limit = {
+                                exists = event_target:caravaneer_home_country
+                                NOT = { has_communications = event_target:caravaneer_home_country }
+                            }
+                            establish_communications_no_message = event_target:caravaneer_home_country
+                        }
+                    }
+                }
+            }
+            marauders_first_contact = {
+                contact_country = {
+                    hidden_effect = { country_event = { id = tutorial.63 } }
+                }
+                owner = {
+                    hidden_effect = {
+                        country_event = { id = tutorial.2007 }
+                        country_event = { id = marauder.15 }
+                    }
+                }
+            }
+            enclave_first_contact = {
+                contact_country = {
+                    hidden_effect = {
+                        country_event = { id = tutorial.63 } #Other party completed contact
+                        switch = {
+                            trigger = has_country_flag
+                            trader_enclave_country = { country_event = { id = leviathans.101 scopes = { from = root.owner } } }
+                            artist_enclave_country = { country_event = { id = leviathans.290 scopes = { from = root.owner } } }
+                            curator_enclave_country = { country_event = { id = leviathans.501 scopes = { from = root.owner } } }
+                            mercenary_enclave_country = { country_event = { id = enclave.204 scopes = { from = root.owner } } }
+                            salvager_enclave_country = { country_event = { id = enclave.304 scopes = { from = root.owner } } }
+                            shroudwalker_enclave_country = { country_event = { id = enclave.404 scopes = { from = root.owner } } }
+                            mindwarden_enclave_country = { country_event = { id = shroud.4199 scopes = { from = root.owner } } }
+                            default = { log_error = "Unexpected enclave type or missing script flag" }
+                        }
+                    }
+                }
+                owner = {
+                    hidden_effect = {
+                        country_event = {
+                            id = tutorial.2100 # Enclaves (not Mercenaries)
+                            scopes = { from = from.contact_country }
+                        }
+                        country_event = {
+                            id = tutorial.2105 # Mercenary enclave
+                            scopes = { from = from.contact_country }
+                        }
+                    }
+                }
+            }
+            pirates_first_contact = {
+                contact_country = {
+                    hidden_effect = { country_event = { id = tutorial.63 } }
+                }
+                owner = {
+                    hidden_effect = { country_event = { id = tutorial.2007 } }
+                    if = {
+                        limit = {
+                            any_active_first_contact = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_country_type = pirate
+                                }
+                            }
+                        }
+                        every_active_first_contact = {
+                            limit = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_country_type = pirate
+                                }
+                            }
+                            custom_tooltip = further_fc_pirates_completed
+                        }
+                    }
+                }
+                hidden_effect = {
+                    every_country = {
+                        limit = {
+                            NOT = { is_same_value = root.contact_country }
+                            NOT = { has_communications = root.owner }
+                            is_country_type = pirate
+                        }
+                        root.owner = {
+                            establish_communications_no_message = prev
+                        }
+                    }
+                }
+            }
+            void_clouds_first_contact = {
+                owner = {
+                    hidden_effect = { country_event = { id = tutorial.61 } }
+                    set_country_flag = void_clouds_encountered
+                    if = {
+                        limit = {
+                            any_active_first_contact = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_country_type = cloud
+                                }
+                            }
+                        }
+                        every_active_first_contact = {
+                            limit = {
+                                NOT = { is_same_value = root }
+                                contact_country = {
+                                    is_country_type = cloud
+                                }
+                            }
+                            custom_tooltip = further_fc_clouds_completed
+                        }
+                    }
+                }
+                hidden_effect = {
+                    every_country = {
+                        limit = {
+                            NOT = { is_same_value = root.contact_country }
+                            NOT = { has_communications = root.owner }
+                            is_country_type = cloud
+                        }
+                        root.owner = {
+                            establish_communications_no_message = prev
+                            establish_communication_with_subjects_and_federation = { FLAG = void_clouds_encountered }
+                        }
+                    }
+                    root.contact_country = {
+                        root.owner = {
+                            establish_communication_with_subjects_and_federation = { FLAG = void_clouds_encountered }
+                        }
+                    }
+                }
+            }
+            nomad_first_contact = {
+                contact_country = {
+                    hidden_effect = { country_event = { id = tutorial.63 } }
+                }
+                owner = {
+                    hidden_effect = {
+                        country_event = { id = tutorial.2007 }
+                        country_event = { id = nomad.10 }
+                    }
+                }
+            }
+        }
+    }
+
+    owner = {
+        if = {
+            limit = {
+                has_origin = origin_primal_calling
+                root.contact_country = { is_fauna_country = yes }
+                NOT = { has_country_flag = primal_calling_fc_gravity_wells_insight_given }
+                NOT = { has_technology = tech_gravity_wells }
+            }
+            tooltip = {
+                add_tech_progress = {
+                    tech = tech_gravity_wells
+                    progress = 0.25
+                }
+            }
+            hidden_effect = {
+                country_event = { id = grand_archive.9950 days = 1 } # delay by 1 day for tech fauna encounter prereq to be fulfilled
+                set_country_flag = primal_calling_fc_gravity_wells_insight_given
+            }
+        }
+    }
+
+    finish_first_contact = yes
+
+    hidden_effect = {
+        owner = {
+            add_intel = {
+                who = root.contact_country
+                amount = 10
+            }
+        }
+    }
+
+    owner = {
+        if = {
+            limit = {
+                root.contact_country = {
+                    is_country_type = default #it's harder
+                }
+            }
+            increment_first_contact_skill_2 = yes
+        }
+        else = {
+            increment_first_contact_skill_1 = yes
+        }
+    }
+}
+
+
+synth_queen_wipe_system = {
+    optimize_memory
+    # Don't kill ancient system.
+    solar_system = { if = {
+        limit = {
+            touhou_synth_queen_no_wipe_system = no
+            NOR = {
+                has_star_flag = ag_zeta_crisis_psionic_storm_system
+                has_star_flag = ag_zeta_crisis_psionic_singularity_system
+            }
+        }
+        if = { # If we're stealing a player system, warn them
+            limit = {
+                exists = owner
+                owner = {
+                    is_country_type = default
+                    NOT = { has_country_flag = speech_1	}
+                }
+            }
+            save_event_target_as = synth_queen_lost_system
+            owner = { country_event = { id = crisis.8020 days = 1 random = 5 } }
+        }
+        set_star_flag = synth_queen_system
+        # Kill everyone
+        every_system_planet = {
+            limit = {
+                pop_amount > 0
+                exists = owner
+                owner = { is_primitive = no }
+            }
+            every_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 1.0 } }
+            remove_all_buildings = yes
+            destroy_colony = yes
+        }
+        # Check fleets
+        every_fleet_in_system = {
+            # Exclude those owned by the Synth Queen, so she won't accidentally destroy her own battleships
+            limit = { owner = { is_synth_queen_country_type = no } }
+            if = {
+                limit = {
+                    NAND = {
+                        exists = owner
+                        owner = {
+                            OR = {
+                                is_touhou_crisis_faction = yes
+                                is_touhou_other_faction = yes
+                                ag_is_psionic_country = yes
+                                ag_is_ancient_country = yes
+                                is_country_type = ag_ancient_primitive_crisis
+                                has_country_flag = ag_invincible_on_system_destroyed_country
+                            }
+                        }
+                    }
+                }
+                # Destroy all stations
+                if = { limit = { is_mobile = no } delete_fleet = this }
+                # Ships
+                else_if = { #handle ships that should never be killed like that
+                    limit = { any_owned_ship = { OR = {
+                        is_ship_size = behemoth_04
+                        is_ship_size = voidspawn_boss
+                    } } }
+                    every_owned_ship = { reduce_hp_percent = 15 }
+                    closest_system = { limit = { NOT = { has_modifier = queen_scorn_storm } } save_event_target_as = destination_system }
+                    set_location = event_target:destination_system
+                }
+                else_if = {
+                    limit = { owner = { NOR = {
+                        is_country_type = default
+                        is_country_type = fallen_empire
+                    } } }
+                    # If owned by FEs/enclaves, destroy them
+                    destroy_fleet = this
+                }
+                else = {
+                    # If not, damage them and send them home
+                    every_owned_ship = { random_list = {
+                        1 = { reduce_hp_percent = 99 }
+                        1 = { reduce_hp_percent = 85 }
+                        1 = { reduce_hp_percent = 78 }
+                        1 = { reduce_hp_percent = 90 }
+                        1 = { reduce_hp_percent = 62 }
+                        1 = { destroy_ship = this }
+                    } }
+                    set_mia = mia_return_home
+                }
+            }
+        }
+        if = {
+            limit = { NOT = { has_global_flag = synth_queen_revenge_done } }
+            # Turn the planets into nanite worlds
+            every_system_planet = {
+                limit = { NOR = {
+                    is_star = yes
+                    is_planet_class = pc_gas_giant
+                    is_planet_class = pc_astral_scar
+                    is_planet_class = pc_habitat
+                    is_asteroid = yes
+                    ag_is_colonizable_planet = yes
+                    is_ringworld = yes
+                    ag_is_shell_world = yes
+                } }
+                change_pc = pc_gray_goo
+                clear_deposits = yes
+                if = { limit = { NOT = { has_deposit = d_nanites_deposit } } add_deposit = d_nanites_deposit }
+            }
+            every_system_planet = {
+                limit = { NOR = {
+                    is_star = yes
+                    is_planet_class = pc_gas_giant
+                    is_planet_class = pc_astral_scar
+                    is_planet_class = pc_habitat
+                    is_asteroid = yes
+                    ag_is_colonizable_planet = no
+                    is_ringworld = yes
+                    ag_is_shell_world = yes
+                } }
+                change_pc = pc_gray_goo
+                if = {
+                    limit = { NOT = { has_modifier = "terraforming_candidate" } }
+                    add_modifier = { modifier = "terraforming_candidate" days = -1 }
+                }
+            }
+            every_system_planet = {
+                limit = {
+                    OR = {
+                        is_planet_class = pc_habitat
+                        is_ringworld = yes
+                        ag_is_shell_world = yes
+                    }
+                    NOR = {
+                        is_planet_class = pc_ringworld_habitable_damaged
+                        is_planet_class = pc_ringworld_tech_damaged
+                        is_planet_class = pc_ringworld_seam_damaged
+                    }
+                }
+                if = {
+                    limit = { is_planet_class = pc_habitat }
+                    spawn_habitat_cracker_effect = yes
+                }
+                else_if = {
+                    limit = { is_ringworld = yes }
+                    spawn_ringworld_cracker_effect = yes
+                    change_pc = pc_ringworld_habitable_damaged
+                }
+                else_if = {
+                    limit = { is_planet_class = pc_ringworld_tech }
+                    spawn_ringworld_cracker_effect = yes
+                    change_pc = pc_ringworld_tech_damaged
+                }
+                else_if = {
+                    limit = { is_planet_class = pc_ringworld_seam }
+                    spawn_ringworld_cracker_effect = yes
+                    change_pc = pc_ringworld_seam_damaged
+                }
+                else_if = {
+                    limit = { ag_is_shell_world = yes check_variable = { which = ag_shell_world_layer value = 0 } }
+                    ag_destroy_shell_world_from_base = { ag_target_planet_class = pc_gray_goo ag_destroy_permanently = yes }
+                }
+            }
+            # Spawn Queen starbases
+            if = {
+                limit = {
+                    has_star_flag = synth_queen_system
+                    exists = event_target:synth_queen_country_global
+                    NOT = { any_ship_in_system = { is_ship_size = big_starbase_synth_queen } }
+                }
+                create_starbase = {
+                    size = starbase_synth_queen
+                    owner = event_target:synth_queen_country_global
+                    effect = { while = { count = 2 create_synth_queen_platform = yes } }
+                }
+            }
+        }
+        add_modifier = { modifier = "queen_scorn_storm" days = -1 }
+    } }
+}
+
+synth_queen_mini_wipe_system = {
+    optimize_memory
+    # Don't kill ancient system.
+    solar_system = { if = {
+        limit = {
+            touhou_synth_queen_no_wipe_system = no
+            NOR = {
+                has_star_flag = ag_zeta_crisis_psionic_storm_system
+                has_star_flag = ag_zeta_crisis_psionic_singularity_system
+            }
+        }
+        set_star_flag = synth_queen_system
+        every_system_planet = {
+            limit = {
+                pop_amount > 0
+                exists = owner
+                owner = { is_primitive = no }
+            }
+            every_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 1.0 } }
+            destroy_colony = yes
+        }
+        every_fleet_in_system = {
+            # Exclude those owned by the Synth Queen, so she won't accidentally destroy her own battleships
+            limit = { owner = { is_synth_queen_country_type = no } }
+            if = {
+                limit = {
+                    NAND = {
+                        exists = owner
+                        owner = {
+                            OR = {
+                                is_touhou_crisis_faction = yes
+                                is_touhou_other_faction = yes
+                                ag_is_psionic_country = yes
+                                ag_is_ancient_country = yes
+                                is_country_type = ag_ancient_primitive_crisis
+                                has_country_flag = ag_invincible_on_system_destroyed_country
+                            }
+                        }
+                    }
+                }
+                # Destroy all stations
+                if = { limit = { is_mobile = no } delete_fleet = this }
+                # Ships
+                else_if = { #handle ships that should never be killed like that
+                    limit = { any_owned_ship = { OR = {
+                        is_ship_size = behemoth_04
+                        is_ship_size = voidspawn_boss
+                    } } }
+                    every_owned_ship = { reduce_hp_percent = 15 }
+                    closest_system = { limit = { NOT = { has_modifier = queen_scorn_storm } } save_event_target_as = destination_system }
+                    set_location = event_target:destination_system
+                }
+                else_if = {
+                    limit = { owner = { NOR = {
+                        is_country_type = default
+                        is_country_type = fallen_empire
+                    } } }
+                    # If owned by FEs/enclaves, destroy them
+                    destroy_fleet = this
+                }
+                else = {
+                    # If not, damage them and send them home
+                    every_owned_ship = { random_list = {
+                        1 = { reduce_hp_percent = 99 }
+                        1 = { reduce_hp_percent = 85 }
+                        1 = { reduce_hp_percent = 78 }
+                        1 = { reduce_hp_percent = 90 }
+                        1 = { reduce_hp_percent = 62 }
+                        1 = { destroy_ship = this }
+                    } }
+                    set_mia = mia_return_home
+                }
+            }
+        }
+        every_system_planet = {
+            limit = {
+                NOR = {
+                    is_star = yes
+                    is_planet_class = pc_gas_giant
+                    is_planet_class = pc_astral_scar
+                    is_asteroid = yes
+                    ag_is_colonizable_planet = yes
+                    is_ringworld = yes
+                    ag_is_shell_world = yes
+                    spth_is_touhou_planet = yes
+                }
+            }
+            change_pc = pc_gray_goo
+            clear_deposits = yes
+        }
+        random_system_planet = {
+            limit = { is_planet_class = pc_gray_goo }
+            if = { limit = { NOT = { has_deposit = d_nanites_deposit } } add_deposit = d_nanites_deposit }
+        }
+        every_system_planet = {
+            limit = {
+                NOR = {
+                    is_star = yes
+                    is_planet_class = pc_gas_giant
+                    is_planet_class = pc_astral_scar
+                    is_asteroid = yes
+                    ag_is_colonizable_planet = no
+                    is_ringworld = yes
+                    ag_is_shell_world = yes
+                    spth_is_touhou_planet = yes
+                }
+            }
+            change_pc = pc_gray_goo
+            if = {
+                limit = { NOT = { has_modifier = "terraforming_candidate" } }
+                add_modifier = { modifier = "terraforming_candidate" days = -1 }
+            }
+        }
+        add_modifier = { modifier = "queen_scorn_storm" days = -1 }
+    } }
+}
+
+activate_behemoth_superweapon = {
+    root.from = { random_owned_ship = { save_event_target_as = ag_behemoth_superweapon_ship } }
+    # Blow up all mining/research stations
+    every_system_planet = {
+        if = { limit = { exists = orbital_station } orbital_station = { dismantle = yes } }
+        if = {
+            limit = { ag_is_ancient_ringworld = no }
+            # Reset all ecus into relic worlds
+            if = {
+                limit = { OR = { uses_district_set = city_world uses_district_set = ag_city_planet } }
+                relic_world_deposits = yes
+                validate_planet_buildings_and_districts = yes
+            }
+            # Destroy habitats
+            else_if = {
+                limit = { is_planet_class = pc_habitat }
+                if = {
+                    limit = { is_colony = yes }
+                    remove_all_buildings = yes
+                    destroy_colony = yes
+                }
+                spawn_habitat_cracker_effect = yes
+            }
+            # Reset all habitable planets into tomb worlds
+            else_if = {
+                limit = { ag_is_shell_world = no exists = owner owner = { ag_is_common_country = yes } }
+                change_pc = pc_nuked
+                set_planet_flag = nuked_planet_anomalies_disabled
+                reroll_deposits = yes
+                tomb_world_modifier_cleanup = yes
+                validate_planet_buildings_and_districts = yes
+            }
+            else_if = {
+                limit = { ag_is_shell_world = yes }
+                add_planet_devastation = 80
+            }
+        }
+    }
+    # Add 100 devastation to all remaining colonies
+    # and kill pops
+    every_system_planet = {
+        limit = { exists = owner owner = { ag_is_common_country = yes } NOT = { has_modifier = "ag_ancient_shield_modifier" } }
+        add_planet_devastation = 100
+        random_list = {
+            5 = { every_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.05 } } }
+            45 = { every_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.15 } } }
+            45 = { every_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.20 } } }
+            5 = { every_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.50 } } }
+        }
+    }
+    # Destroy all fleets in the system
+    every_fleet_in_system = {
+        limit = { NOR = {
+            is_same_value = root
+            # except Extradimensionals
+            AND = {
+                exists = owner
+                owner = {
+                    OR = {
+                        is_touhou_crisis_faction = yes
+                        is_touhou_other_faction = yes
+                        ag_is_psionic_country = yes
+                        ag_is_ancient_country = yes
+                        is_country_type = ag_ancient_primitive_crisis
+                        has_country_flag = ag_invincible_on_system_destroyed_country
+                    }
+                }
+            }
+            # except biggest monsters
+            any_owned_ship = { OR = {
+                is_ship_size = behemoth_04
+                is_ship_size = voidspawn_boss
+            } }
+        } }
+        # Kill every single ships and fire on actions.
+        # destroy_fleet = this
+        every_owned_ship = {
+            limit = { exists = this }
+            reroll_random = yes
+            random_list = {
+                100 = {
+                    destroy_ship = this
+                    # Ship kill itself.
+                    fire_on_action = {
+                        on_action = on_ship_disabled
+                        scopes = { from = event_target:ag_behemoth_superweapon_ship }
+                    }
+                    owner = { fire_on_action = {
+                        on_action = on_ship_destroyed_victim
+                        scopes = {
+                            from = root.from.owner
+                            fromfrom = prev
+                            fromfromfrom = event_target:ag_behemoth_superweapon_ship
+                        }
+                    } }
+                    root.from.owner = { fire_on_action = {
+                        on_action = on_ship_destroyed_perp
+                        scopes = {
+                            from = this
+                            fromfrom = event_target:ag_behemoth_superweapon_ship
+                            fromfromfrom = prev
+                        }
+                    } }
+                }
+            }
+        }
+        if = {
+            limit = { num_ships <= 0 }
+            owner = { fire_on_action = {
+                on_action = on_fleet_destroyed_victim
+                scopes = {
+                    from = root.from.owner
+                    fromfrom = prev
+                    fromfromfrom = root.from
+                }
+            } }
+            root.from.owner = { fire_on_action = {
+                on_action = on_fleet_destroyed_perp
+                scopes = {
+                    from = this
+                    fromfrom = root.from
+                    fromfromfrom = prev
+                }
+            } }
+        }
+    }
+    # Deal massive damage to the Elder Voidspawn
+    # and disable regen for 1 year
+    every_fleet_in_system = {
+        limit = { is_ship_size = voidspawn_boss }
+        every_owned_ship = { damage_ship = @behemoth_superweapon_damage }
+        add_modifier = { modifier = behemoth_superweapon_modifier days = @behemoth_superweapon_duration multiplier = 11 }
+    }
+}

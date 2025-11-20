@@ -518,9 +518,30 @@ touhou_ac_keiki_spawn_leader_commander = {
     }
 }
 
+touhou_kosuzu_spawn_country = {
+    optimize_memory
+    if = {
+        limit = { NOT = { exists = event_target:touhou_kosuzu_country_@root } }
+        create_country = {
+            name = touhou_kosuzu_country
+            type = touhou_kosuzu_country
+            flag = root
+            species = root
+            effect = {
+                save_global_event_target_as = touhou_kosuzu_country_@root
+                set_country_flag = touhou_kosuzu_country
+                set_country_flag = touhou_kosuzu_country_of_@root
+                set_country_flag = protected_from_queen_storm
+                set_country_flag = touhou_mod_country
+                add_modifier = { modifier = touhou_immune_from_terrify }
+            }
+        }
+        establish_communications_no_message = event_target:touhou_kosuzu_country_@root
+    }
+}
+
 touhou_leader_special_army_effect_init = {
     optimize_memory
-
     if = {
         limit = {
             any_ground_combat_$who$ = {
@@ -589,12 +610,15 @@ touhou_leader_special_army_effect_loop = {
                 }
                 modifier = { mult = 19 event_target:touhou_leader_kill_army_perc_$who$ = { has_total_skill > 19 } }
                 while = {
-                    count = value:touhou_leader_kill_army_perc_amount|who|$who$|
-                    random_ground_combat_$opposite_who$ = { limit = { is_in_frontline = yes } remove_army = yes }
+                    count = value:touhou_leader_kill_army_perc_amount|who|$who$|opposite_who|$opposite_who$|
+                    random_ground_combat_$opposite_who$ = { remove_army = yes }
                 }
                 log = "kill prec check passed"
             }
-            95 = { log = "kill prec check failed" }
+            95 = {
+                modifier = { subtract = value:touhou_leader_kill_army_perc_minus|who|$who$| }
+                log = "kill prec check failed"
+            }
         }
     }
     if = {
@@ -694,8 +718,8 @@ touhou_repair_ship_hull_overflow = {
         if = {
             limit = {
                 check_variable_arithmetic = {
-                    which = trigger:has_max_hp multiply = 1.1
-                    value > trigger:has_hp   # 船体小于等于110%时给临时船体
+                    which = trigger:has_max_hp multiply = 2.0
+                    value > trigger:has_hp   # 船体小于等于200%时给临时船体
                 }
             }
             reduce_hp = value:touhou_repair_ship_hull_overflow_value|factor|$perc$|
@@ -711,7 +735,7 @@ touhou_repair_ship_shield_overflow = {
         if = {
             limit = {
                 check_variable_arithmetic = {
-                    which = value:spth_max_shield_value|percent|1.1|
+                    which = value:spth_max_shield_value|percent|2.0|
                     value > trigger:has_shield_hp
                 }
             }
@@ -1256,3 +1280,172 @@ touhou_set_terrify = {
     }
 }
 
+touhou_setup_aura_clashing = {
+    optimize_memory
+    export_trigger_value_to_variable = {
+        trigger = monthly_intensity_increase
+        variable = monthly_increase
+    }
+    every_neighbor_system = {
+        limit = {
+            NOT = { has_star_flag = aura_clashing_on_monthly_check }
+            has_psionic_aura = yes
+            aura_owner = { NOT = { is_same_value = root.aura_owner } }
+            spth_has_psionic_inhibition_station = no
+        }
+
+        remove_star_flag = aura_is_clashing_against_@root
+        remove_star_flag = aura_clash_winning_against_@root
+        root = {
+            remove_star_flag = aura_is_clashing_against_@prev
+            remove_star_flag = aura_clash_winning_against_@prev
+        }
+
+        export_trigger_value_to_variable = {
+            trigger = monthly_intensity_increase
+            variable = monthly_increase
+        }
+
+        if = {
+            limit = {
+                check_variable = {
+                    which = monthly_increase
+                    value < root.monthly_increase
+                }
+            }
+            root = { save_event_target_as = winning_system }
+            save_event_target_as = losing_system
+        }
+        else_if = {
+            limit = {
+                check_variable = {
+                    which = monthly_increase
+                    value > root.monthly_increase
+                }
+            }
+            save_event_target_as = winning_system
+            root = { save_event_target_as = losing_system }
+        }
+        if = {
+            limit = { exists = event_target:losing_system }
+            if = {
+                limit = {
+                    event_target:losing_system = {
+                        touhou_aura_clash_can_attacker_spread_in_system = {
+                            ATTACKER_SYSTEM = event_target:winning_system
+                        }
+                    }
+                }
+                event_target:winning_system = {
+                    set_star_flag = aura_is_clashing_against_@event_target:losing_system
+                    set_star_flag = aura_clash_winning_against_@event_target:losing_system
+                    touhou_trigger_aura_clashing_event = { FROM = event_target:losing_system }
+                }
+                event_target:losing_system = {
+                    set_star_flag = aura_is_clashing_against_@event_target:winning_system
+                    touhou_trigger_aura_clashing_event = { FROM = event_target:winning_system }
+                }
+            }
+        }
+        else = {
+            save_event_target_as = tested_system
+            if = { # In case of tie, auras are clashing if any of them can spread
+                limit = {
+                    OR = {
+                        touhou_aura_clash_can_attacker_spread_in_system = {
+                            ATTACKER_SYSTEM = root
+                        }
+                        root = {
+                            touhou_aura_clash_can_attacker_spread_in_system = {
+                                ATTACKER_SYSTEM = event_target:tested_system
+                            }
+                        }
+                    }
+                }
+                set_star_flag = aura_is_clashing_against_@root
+                touhou_trigger_aura_clashing_event = { FROM = root }
+                root = {
+                    set_star_flag = aura_is_clashing_against_@event_target:tested_system
+                    touhou_trigger_aura_clashing_event = { FROM = event_target:tested_system }
+                }
+            }
+        }
+        clear_variable = monthly_increase
+    }
+    clear_variable = monthly_increase
+}
+touhou_trigger_aura_clashing_event = {
+    optimize_memory
+    aura_owner = {
+        set_visited = $FROM$
+        if = {
+            limit = {
+                NOT = { has_country_flag = aura_clashing_event_triggered }
+            }
+            set_country_flag = aura_clashing_event_triggered
+            country_event = { id = tutorial.2620 }
+            country_event = {
+                id = shroud.1510
+                scopes = {
+                    from = prev
+                    fromfrom = $FROM$
+                }
+            }
+        }
+    }
+}
+touhou_try_resolve_aura_clashing = {
+    every_neighbor_system = {
+        limit = {
+            has_star_flag = aura_is_clashing_against_@root
+        }
+        root = {
+            remove_star_flag = aura_is_clashing_against_@prev
+            remove_star_flag = aura_clash_winning_against_@prev
+        }
+        if = {
+            limit = { has_star_flag = aura_clash_winning_against_@root }
+            export_trigger_value_to_variable = {
+                trigger = monthly_intensity_increase
+                variable = winning_intensity_candidate
+            }
+            root = {
+                if = {
+                    limit = {
+                        OR = {
+                            NOT = { is_variable_set = highest_winning_intensity }
+                            check_variable = {
+                                which = highest_winning_intensity
+                                value < prev.winning_intensity_candidate
+                            }
+                        }
+                    }
+                    set_variable = {
+                        which = highest_winning_intensity
+                        value = prev.winning_intensity_candidate
+                    }
+                    prev = { save_event_target_as = current_winner }
+                }
+            }
+            clear_variable = winning_intensity_candidate
+            remove_star_flag = aura_clash_winning_against_@root
+        }
+        remove_star_flag = aura_is_clashing_against_@root
+    }
+    if = {
+        limit = { exists = event_target:current_winner }
+        if = {
+            limit = { can_aura_spread_in_system = { OWNER = event_target:current_winner.aura_owner } }
+            spawn_psionic_aura = { owner = event_target:current_winner.aura_owner }
+        }
+        clear_variable = highest_winning_intensity
+    }
+}
+
+touhou_set_black_hole_class = {
+    optimize_memory
+    if = { limit = { count_system_planet = { count = 1 limit = { is_planet_class = pc_black_hole } } } set_star_class = sc_black_hole }
+    else_if = { limit = { count_system_planet = { count = 2 limit = { is_planet_class = pc_black_hole } } } set_star_class = sc_black_hole_binary }
+    else_if = { limit = { count_system_planet = { count = 3 limit = { is_planet_class = pc_black_hole } } } set_star_class = sc_black_hole_trinary }
+    else_if = { limit = { always = yes } set_star_class = sc_black_hole_paired }
+}

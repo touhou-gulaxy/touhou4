@@ -276,6 +276,9 @@ spth_fleet_has_special_leader = {
             check_modifier_value = { modifier = fleet_th_has_utsuho value != 0 }
             check_modifier_value = { modifier = fleet_th_has_youmu value != 0 }
             check_modifier_value = { modifier = fleet_th_has_flandre value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_sagume value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_doremy_sweet value != 0 }
+            check_modifier_value = { modifier = fleet_th_has_touhou_moon_van value != 0 }
             check_modifier_value = { modifier = fleet_th_has_star_pirate value != 0 }
         }
     }
@@ -1289,5 +1292,43 @@ touhou_never_set_terrify_ship = {
         kuat_ship_is_standard_flagship = yes
         kuat_ship_is_sub_flagship = yes
         kuat_ship_is_movable_mega_starbase = yes
+    }
+}
+
+touhou_aura_clash_can_attacker_spread_in_system = {
+    optimize_memory
+    if = {
+        limit = { $ATTACKER_SYSTEM$ = { has_psionic_aura = touhou_great_patron_dragon_aura } }
+        always = yes # touhou aura goes where it pleases
+    }
+    else = {
+        is_close_to_psionic_aura_generator_system = { OWNER = $ATTACKER_SYSTEM$.aura_owner }
+        OR = {
+            NOT = { exists = owner }
+            owner = { is_same_value = $ATTACKER_SYSTEM$.aura_owner }
+            AND = {
+                owner = {
+                    is_hostile_towards_aura = {
+                        PSIONIC_OWNER = $ATTACKER_SYSTEM$.aura_owner
+                    }
+                }
+                NOT = { can_system_generate_psionic_aura = { OWNER = owner } }
+            }
+        }
+    }
+}
+
+is_touhou_system = {
+    optimize_memory
+    OR = {
+        has_star_flag = spth_system
+        has_star_flag = spth_enclave_system
+    }
+}
+touhou_synth_queen_no_wipe_system = {
+    optimize_memory
+    OR = {
+        is_touhou_system = yes
+        ag_is_ancient_system = yes
     }
 }

@@ -400,6 +400,7 @@ building_spth_research_base_2 = {
 	}
 
 	planet_modifier = {
+        politician_is_science_director = 1
 		job_spth_story_chief_researcher_add = 200
 		planet_housing_add = 1000
 	}
@@ -411,10 +412,10 @@ building_spth_research_base_2 = {
 				NOT = { has_origin = origin_spth_story_gensokyo }
 			}
 		}
-		planet_jobs_physics_research_produces_mult = 0.008
-		planet_jobs_society_research_produces_mult = 0.008
-		planet_jobs_engineering_research_produces_mult = 0.008
-		planet_researchers_upkeep_mult = 0.006
+		planet_jobs_physics_research_produces_mult = 0.006
+		planet_jobs_society_research_produces_mult = 0.006
+		planet_jobs_engineering_research_produces_mult = 0.006
+		planet_researchers_upkeep_mult = 0.0045
 		multiplier = planet.value:planet_genso_research_buff_modifier
 	}
 	triggered_planet_modifier = {
@@ -425,10 +426,10 @@ building_spth_research_base_2 = {
 				has_origin = origin_spth_story_gensokyo
 			}
 		}
-		planet_jobs_physics_research_produces_mult = 0.010
-		planet_jobs_society_research_produces_mult = 0.010
-		planet_jobs_engineering_research_produces_mult = 0.010
-		planet_researchers_upkeep_mult = 0.0075
+		planet_jobs_physics_research_produces_mult = 0.08
+		planet_jobs_society_research_produces_mult = 0.08
+		planet_jobs_engineering_research_produces_mult = 0.08
+		planet_researchers_upkeep_mult = 0.006
 		multiplier = planet.value:planet_genso_research_buff_modifier
 	}
 	triggered_planet_modifier = {
@@ -438,7 +439,7 @@ building_spth_research_base_2 = {
 				has_authority = auth_gensokyo
 				has_touhou_ascension_tier_3 = yes
 			}
-			pop_amount < 180000
+			pop_amount < 20000
 		}
 		modifier = {
 			job_spth_story_chief_researcher_per_pop = 0.01
@@ -452,11 +453,11 @@ building_spth_research_base_2 = {
 				has_authority = auth_gensokyo
 				has_touhou_ascension_tier_3 = yes
 			}
-			pop_amount >= 180000
+			pop_amount >= 20000
 		}
 		modifier = {
-			job_spth_story_chief_researcher_add = 1800
-			job_spth_story_researcher_add = 3600
+			job_spth_story_chief_researcher_add = 200
+			job_spth_story_researcher_add = 400
 		}
 	}
 	triggered_desc = {
@@ -525,6 +526,7 @@ building_spth_astral_siphon = {
 		country_resource_max_astral_threads_add = 500
 	}
 	planet_modifier = {
+        physicist_is_astral_researcher_trigger = 1
 		planet_miko_astral_threads_produces_add = 1
 		planet_researchers_astral_threads_produces_add = 0.25
 		planet_researchers_consumer_goods_upkeep_add = 2
@@ -589,11 +591,96 @@ building_spth_zro_research = {
 		}
 	}
 	planet_modifier = {
+        # enforcer_is_telepath_trigger = 1
 		planet_biologists_society_research_produces_add = 1.5
 		planet_biologists_sr_zro_produces_add = 0.25
 		planet_biologists_consumer_goods_upkeep_add = 2
 		job_telepath_add = 100
 	}
+    on_built = {
+        if = {
+            limit = {
+                exists = owner
+                owner = { has_patron_counter = touhou_po_build_research_building }
+            }
+            owner = {
+                add_patron_objective_counter = {
+                    counter = touhou_po_build_research_building
+                    amount = 1
+                }
+            }
+        }
+    }
+}
+building_suzunaan = {
+    base_buildtime = 720
+    planet_limit = 1
+    empire_limit = {
+        base = 1
+        add = modifier:country_building_suzunaan_add
+        mult = value:country_building_suzunaan_factor
+        floor = yes
+    }
+    category = government
+    building_sets = {
+        research
+        urban
+        government
+    }
+    potential = {
+        owner = {
+            has_authority = auth_gensokyo
+            touhou_has_psionic_advance_auth = yes
+            has_technology = tech_building_suzunaan
+        }
+    }
+    allow = {
+        has_upgraded_capital = yes
+    }
+    resources = {
+        category = planet_buildings
+        cost = {
+            minerals = 1200
+        }
+        cost = {
+            trigger = {
+                owner = { is_ai = no }
+            }
+            sr_zro = 120
+            sr_lingli = 120
+        }
+        upkeep = {
+            energy = 4
+            sr_lingli = 2
+        }
+        upkeep = {
+            energy = 4
+            sr_lingli = 2
+            multiplier = planet.planet_genso_job_buff_modifier
+        }
+        produces = {
+            minor_artifacts = 1
+            multiplier = planet.planet_genso_job_buff_modifier
+        }
+    }
+    planet_modifier = {
+        touhou_researcher_is_kosuzu_swap = 1
+        job_touhou_archivist_add = 400
+    }
+    triggered_planet_modifier = {
+        potential = { spth_has_ag_mod = yes ag_has_ancient_archive = no }
+        touhou_ag_researcher_is_kosuzu_swap = 1
+    }
+    triggered_planet_modifier = {
+        potential = { spth_has_ag_mod = yes ag_has_ancient_archive = yes }
+        custom_tooltip = mod_touhou_ag_researcher_is_kosuzu_swap
+        show_only_custom_tooltip = yes
+        job_touhou_ag_archivist_add = 200
+        job_ag_ancient_researcher_add = -200
+    }
+    triggered_desc = { trigger = { always = yes } text = "building_suzunaan_job_effect" }
+    prerequisites = { tech_building_suzunaan }
+    show_in_tech = tech_building_suzunaan
     on_built = {
         if = {
             limit = {

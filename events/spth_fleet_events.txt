@@ -339,6 +339,13 @@ ship_event = {
                 if = {
                     limit = { spth_has_ag_mod = yes }
                     add_modifier = { modifier = touhou_fe_union_titan_ag_extra_life }
+                    owner = {
+                        if = {
+                            limit = { has_modifier = touhou_fe_union_titan_country }
+                            remove_modifier = touhou_fe_union_titan_country
+                        }
+                        add_modifier = { modifier = touhou_fe_union_titan_country }
+                    }
                     touhou_difficulty_bonus_ag_ship = yes
                     ag_set_disable_at_health = { ag_disable_type = ancient_titan }
                     fire_on_action = { on_action = on_touhou_fe_union_titan_built }
@@ -2116,6 +2123,139 @@ country_event = {
                             }
                         }
                     }
+                    leader_trait_sagume_1 = {
+                        prev = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_sagume_skill_fired } }
+                                set_timed_fleet_flag = { flag = leader_trait_sagume_skill_fired days = 30 }
+                                set_variable = {
+                                    which = leader_trait_sagume_bonus_lingli
+                                    value = root.fromfromfrom.modifier:weapon_type_lingli_weapon_damage_mult
+                                }
+                                set_variable = {
+                                    which = leader_trait_sagume_bonus_energy
+                                    value = root.fromfromfrom.modifier:weapon_type_energy_weapon_damage_mult
+                                }
+                                if = {
+                                    limit = { check_variable = { which = leader_trait_sagume_bonus_lingli value > 0 } }
+                                    every_owned_ship = {
+                                        add_modifier = {
+                                            modifier = leader_trait_sagume_bonus_lingli days = 10
+                                            mult = prev.leader_trait_sagume_bonus_lingli
+                                        }
+                                    }
+                                }
+                                if = {
+                                    limit = { check_variable = { which = leader_trait_sagume_bonus_energy value > 0 } }
+                                    every_owned_ship = {
+                                        add_modifier = {
+                                            modifier = leader_trait_sagume_bonus_energy days = 10
+                                            mult = prev.leader_trait_sagume_bonus_energy
+                                        }
+                                    }
+                                }
+                            }
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_touhou_moon_van_skill_fired } }
+                                set_timed_fleet_flag = { flag = leader_trait_touhou_moon_van_skill_fired days = 30 }
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = leader_trait_touhou_moon_van days = 4
+                                        mult = trigger:has_shield_hp
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    leader_trait_touhou_moon_van = {
+                        prev = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_touhou_moon_van_skill_fired } }
+                                set_timed_fleet_flag = { flag = leader_trait_touhou_moon_van_skill_fired days = 30 }
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = leader_trait_touhou_moon_van days = 4
+                                        mult = trigger:has_shield_hp
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    leader_trait_doremy_sweet_book = {
+                        if = {
+                            limit = { NOT = { has_leader_flag = doremy_sweet_book_effect_fired } }
+                            set_timed_leader_flag = { flag = doremy_sweet_book_effect_fired days = 30 }
+                            prev = {
+                                every_owned_ship = {
+                                    spth_reduce_shield_max = { percent = -0.25 }
+                                }
+                            }
+                            if = {
+                                limit = { has_leader_flag = doremy_sweet_book_has_fight_with_@root.from }
+                                prev = {
+                                    reroll_random = yes
+                                    random_list = {
+                                        30 = {
+                                            every_owned_ship = {
+                                                add_modifier = {
+                                                    modifier = doremy_sweet_book_weapon_damage days = 30
+                                                    mult = value:doremy_sweet_book_weapon_damage_factor|type|lingli|factor|0.10|
+                                                }
+                                            }
+                                        }
+                                        30 = {
+                                            every_owned_ship = {
+                                                add_modifier = {
+                                                    modifier = doremy_sweet_book_weapon_damage days = 30
+                                                    mult = value:doremy_sweet_book_weapon_damage_factor|type|lingli|factor|0.15|
+                                                }
+                                            }
+                                        }
+                                        30 = {
+                                            every_owned_ship = {
+                                                add_modifier = {
+                                                    modifier = doremy_sweet_book_weapon_damage days = 30
+                                                    mult = value:doremy_sweet_book_weapon_damage_factor|type|lingli|factor|0.20|
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else = {
+                                set_leader_flag = doremy_sweet_book_has_fight_with_@root.from
+                            }
+                        }
+                        if = {
+                            limit = { NOT = { has_leader_flag = doremy_sweet_phantom_fired } }
+                            set_timed_leader_flag = { flag = doremy_sweet_phantom_fired days = 180 }
+                            prev = {
+                                every_owned_ship = { add_modifier = { modifier = doremy_sweet_phantom_barrier } }
+                                if = {
+                                    limit = { owner = { NOT = { is_variable_set = touhou_dream_level } } }
+                                    owner = { set_variable = { which = touhou_dream_level value = 0 } }
+                                    set_timed_fleet_flag = { flag = touhou_dream_level_locked days = 8 }
+                                    fleet_event = { id = spth_fleet.2014 }
+                                }
+                            }
+                            prev.solar_system.star = {
+                                create_fleet = {
+                                    name = doremy_sweet_book_phantom
+                                    settings = { is_ultra_boss = yes spawn_debris = no can_change_composition = no can_change_leader = no can_disband = no can_upgrade = no }
+                                    effect = {
+                                        set_fleet_flag = doremy_sweet_phantom_player_fleet
+                                        set_owner = prevprev.owner
+                                        create_ship = {
+                                            design = doremy_sweet_book_phantom
+                                            effect = { set_ship_flag = doremy_sweet_phantom set_ship_flag = spth_invincible set_disable_at_health = 0.01 }
+                                        }
+                                        set_location = { target = prevprevprev distance = 0 angle = random }
+                                        root.fromfrom = { save_global_event_target_as = doremy_sweet_phantom_@prev }
+                                        fleet_event = { id = spth_fleet.2013 days = 30 }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     default = {}
                 }
                 if = {
@@ -2224,11 +2364,9 @@ fleet_event = {
         } else = {
             remove_fleet_flag = spth_fleet_1205_fired
             every_owned_ship = {
-                limit = {
-                    is_variable_set = ship_toyohime_instant_kill_used
-                    has_ship_flag = has_toyohime_instant_kill
-                }
-                clear_variable = ship_toyohime_instant_kill_used
+                limit = { check_modifier_value = { modifier = ship_toyohime_instant_kill value > 0 } }
+                set_variable = { which = ship_toyohime_instant_kill_used value = 0 }
+                # clear_variable = ship_toyohime_instant_kill_used
                 remove_ship_flag = has_toyohime_instant_kill
                 remove_modifier = th_toyohime_instant_kill_buff
             }
@@ -2842,6 +2980,10 @@ country_event = {
                 OR = {
                     is_ship_size = th_fallen_empire_union_fallen_ship
                     is_ship_size = touhou_fe_union_titan
+                    AND = {
+                        is_ship_size = touhou_gunpower_turret_stationary
+                        check_modifier_value = { modifier = touhou_has_gravity_cannon value > 0 }
+                    }
                 }
             }
         }
@@ -2858,6 +3000,10 @@ country_event = {
                     OR = {
                         is_ship_size = th_fallen_empire_union_fallen_ship
                         is_ship_size = touhou_fe_union_titan
+                    }
+                    AND = {
+                        is_ship_size = touhou_gunpower_turret_stationary
+                        check_modifier_value = { modifier = touhou_has_gravity_cannon value > 0 }
                     }
                 }
                 if = {
@@ -3320,5 +3466,123 @@ ship_event = {
     is_triggered_only = yes
     immediate = {
         remove_terrified = yes
+    }
+}
+
+# 30天后触发，幻象被摧毁
+fleet_event = {
+    id = spth_fleet.2013
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { exists = this }
+    immediate = {
+        if = {
+            limit = { exists = event_target:doremy_sweet_phantom_@this }
+            event_target:doremy_sweet_phantom_@this = {
+                set_fleet_flag = doremy_sweet_phantom_final
+            }
+            clear_global_event_target = doremy_sweet_phantom_@this
+        }
+        delete_fleet = {
+            target = this
+            kill_leader = no
+            destroy_template = yes
+        }
+    }
+}
+# 自循环，每8天提升1级梦境等级
+# doremy_sweet_phantom_final: 激活梦境主宰者效果
+# doremy_sweet_phantom_destroyed: 持续8天恐慌
+fleet_event = {
+    id = spth_fleet.2014
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            # 幻象被摧毁，持续8天恐慌
+            if = {
+                limit = { has_fleet_flag = doremy_sweet_phantom_destroyed }
+                every_owned_ship = {
+                    save_event_target_as = touhou_terrify_root
+                    touhou_set_terrify = { days = 8 }
+                }
+                owner = { clear_variable = touhou_dream_level }
+                remove_fleet_flag = touhou_dream_level_locked
+                remove_fleet_flag = doremy_sweet_phantom_final
+                remove_fleet_flag = doremy_sweet_phantom_destroyed
+                remove_modifier = doremy_sweet_phantom_barrier
+                remove_modifier = doremy_sweet_phantom_barrier_level
+                remove_modifier = doremy_sweet_phantom_barrier_final
+            }
+            else_if = {
+                limit = { has_fleet_flag = doremy_sweet_phantom_final }
+                if = {
+                    limit = { NOT = { has_modifier = doremy_sweet_phantom_barrier_final } }
+                    remove_modifier = doremy_sweet_phantom_barrier
+                    remove_modifier = doremy_sweet_phantom_barrier_level
+                    add_modifier = { modifier = doremy_sweet_phantom_barrier_final }
+                }
+                spth_create_fleet = {
+                    NAME = leader_trait_dream_world
+                    can_disband = no is_boss = yes
+                    OWNER = root can_change_leader = no
+                    location = prev uses_naval_capacity = no
+                    flag = doremy_sweet_phantom_fleet
+                    NAME_TH_battle_cruiser_ghost = 32
+                    evt_target = doremy_sweet_phantom_fleet
+                    fleet_action_delayed = spth_fleet.1006
+                    DAYS = 60 DAYS_RANDOM = 0
+                }
+                event_target:doremy_sweet_phantom_fleet = {
+                    every_owned_ship = {
+                        set_ship_flag = spth_invincible
+                        set_disable_at_health = 0.01
+                        add_modifier = { modifier = doremy_sweet_dream_world_fleet days = 300 }
+                    }
+                }
+                fleet_event = { id = spth_fleet.2014 days = 30 }
+            }
+            else = {
+                if = {
+                    limit = { NOT = { has_fleet_flag = touhou_dream_level_locked } }
+                    owner = { change_variable = { which = touhou_dream_level value = 1 } }
+                    if = {
+                        limit = { has_modifier = doremy_sweet_phantom_barrier_level }
+                        remove_modifier = doremy_sweet_phantom_barrier_level
+                    }
+                    add_modifier = { modifier = doremy_sweet_phantom_barrier_level mult = owner.touhou_dream_level }
+                    set_timed_fleet_flag = { flag = touhou_dream_level_locked days = 8 }
+                }
+                fleet_event = { id = spth_fleet.2014 days = 1 }
+            }
+        } else = {
+            owner = { clear_variable = touhou_dream_level }
+            remove_fleet_flag = touhou_dream_level_locked
+            remove_fleet_flag = doremy_sweet_phantom_final
+            remove_fleet_flag = doremy_sweet_phantom_destroyed
+            remove_modifier = doremy_sweet_phantom_barrier
+            remove_modifier = doremy_sweet_phantom_barrier_level
+            remove_modifier = doremy_sweet_phantom_barrier_final
+        }
+    }
+}
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = spth_fleet.2015
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { fromfrom = { is_ship_size = doremy_sweet_book_phantom has_ship_flag = doremy_sweet_phantom } }
+    immediate = {
+        if = {
+            limit = { exists = event_target:doremy_sweet_phantom_@fromfrom }
+            event_target:doremy_sweet_phantom_@fromfrom = {
+                set_fleet_flag = doremy_sweet_phantom_destroyed
+            }
+            clear_global_event_target = doremy_sweet_phantom_@fromfrom
+        }
     }
 }

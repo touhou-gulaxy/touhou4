@@ -646,9 +646,9 @@ touhou_leader_kill_army_perc_factor = {
 }
 touhou_leader_kill_army_perc_amount = {
     base = 0
-    add = trigger:count_ground_combat_defender
+    add = trigger:count_ground_combat_$opposite_who$
     mult = value:touhou_leader_kill_army_perc_factor|who|$who$|
-    min = 1
+    min = 4
 }
 touhou_leader_heal_army_effect_value = {
     base = 0
@@ -783,4 +783,44 @@ touhou_magical_mallet_modifier_value = {
 touhou_magical_mallet_modifier_mult = {
     base = $base$
     add = value:touhou_magical_mallet_modifier_value_extra|factor|$factor$|
+}
+
+touhou_leader_kill_army_perc_minus = {
+    base = 5
+    modifier = {
+        mult = event_target:touhou_leader_kill_army_perc_$who$.trigger:has_total_skill
+        event_target:touhou_leader_kill_army_perc_$who$ = { has_total_skill <= 19 }
+    }
+    modifier = { mult = 19 event_target:touhou_leader_kill_army_perc_$who$ = { has_total_skill > 19 } }
+}
+
+doremy_sweet_book_weapon_damage_factor = {
+    base = 1
+    add = modifier:weapon_type_$type$_weapon_damage_mult
+    mult = $factor$
+}
+
+touhou_kosuzu_skill_value = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger_scope = event_target:touhou_kosuzu_@root
+        trigger = has_total_skill
+        mode = add
+    }
+    max = 20
+}
+
+touhou_ag_ancient_researcher_produce_factor = {
+    base = 0
+    complex_trigger_modifier = {
+        potential = { spth_has_ag_mod = yes }
+        trigger = resource_stockpile_compare
+        trigger_scope = this
+        parameters = { resource = ag_ancient_knowledge }
+        mode = add
+    }
+    square_root = yes
+    mult = 0.1
+    add = 1
+    [[factor] mult = $factor$ ]
 }

@@ -346,7 +346,7 @@ lunar_capital_psi_aura = {
             limit = { is_ambient_object_type = lunar_capital_psi_system_effect_very_thin }
             destroy_ambient_object = this
         }
-        try_resolve_aura_clashing = yes
+        touhou_try_resolve_aura_clashing = yes
     }
 
     daily_decrease = { base = 0 }
@@ -589,7 +589,7 @@ kamikakushi_aura = {
             limit = { is_ambient_object_type = kamikakushi_system_effect_thick }
             destroy_ambient_object = this
         }
-        try_resolve_aura_clashing = yes
+        touhou_try_resolve_aura_clashing = yes
     }
 
     daily_decrease = { base = 0 }
@@ -732,36 +732,7 @@ touhou_great_patron_dragon_aura = {
     }
     on_monthly = {
         set_timed_star_flag = { flag = aura_clashing_on_monthly_check days = 20 }
-        root = { save_event_target_as = winning_system }
-        every_neighbor_system = {
-            limit = {
-                NOT = { has_star_flag = aura_clashing_on_monthly_check }
-                has_psionic_aura = yes
-                aura_owner = { NOT = { is_same_value = root.aura_owner } }
-            }
-            if = {
-                limit = { spth_has_psionic_inhibition_station = no }
-                remove_star_flag = aura_is_clashing_against_@root
-                remove_star_flag = aura_clash_winning_against_@root
-                root = {
-                    remove_star_flag = aura_is_clashing_against_@prev
-                    remove_star_flag = aura_clash_winning_against_@prev
-                }
-                save_event_target_as = losing_system
-                event_target:winning_system = {
-                    set_star_flag = aura_is_clashing_against_@event_target:losing_system
-                    set_star_flag = aura_clash_winning_against_@event_target:losing_system
-                }
-                event_target:losing_system = {
-                    set_star_flag = aura_is_clashing_against_@event_target:winning_system
-                    # aura_owner = { if = {
-                    #     limit = { NOT = { has_country_flag = aura_clashing_event_triggered } }
-                    #     set_country_flag = aura_clashing_event_triggered
-                    #     country_event = { id = toho.8049  scopes = { from = prev fromfrom = event_target:winning_system } }
-                    # } }
-                }
-            }
-        }
+        touhou_setup_aura_clashing = yes
     }
     on_gain_level = {
         custom_tooltip = "touhou_great_patron_dragon_psionic_aura_spread_effect"
@@ -809,7 +780,7 @@ touhou_great_patron_dragon_aura = {
             limit = { is_ambient_object_type = touhou_great_patron_dragon_system_effect_very_thin }
             destroy_ambient_object = this
         }
-        try_resolve_aura_clashing = yes
+        touhou_try_resolve_aura_clashing = yes
     }
 
     monthly_increase = {
@@ -832,19 +803,48 @@ touhou_great_patron_dragon_aura = {
             }
             desc = "AFFECTED_BY_SHROUD_SEALS"
         }
-        modifier = {
-            factor = 0.25
-            spth_system_has_psionic_inhibition_station = yes
-            desc = "AFFECTED_BY_PSIONIC_SUPPRESSORS"
-        }
-        modifier = {
-            factor = 1.25
-            spth_system_has_psionic_burster_station = yes
-            desc = AFFECTED_BY_PSIONIC_BURSTER
-        }
+        # modifier = {
+        #     factor = 0.25
+        #     spth_system_has_psionic_inhibition_station = yes
+        #     desc = "AFFECTED_BY_PSIONIC_SUPPRESSORS"
+        # }
+        # modifier = {
+        #     factor = 1.25
+        #     spth_system_has_psionic_burster_station = yes
+        #     desc = AFFECTED_BY_PSIONIC_BURSTER
+        # }
     }
     daily_decrease = { base = 0 }
-    inline_script = "shroud/psionic_aura_monthly_decrease"
+    monthly_decrease = {
+        base = 0
+        modifier = {
+            subtract = 150
+            system_has_psionic_inhibition_station = yes
+            system_has_psionic_burster_station = no
+            desc = mod_is_psionic_inhibitor
+        }
+        modifier = {
+            subtract = 100
+            neighbor_system_has_psionic_inhibition_station = yes
+            system_has_psionic_burster_station = no
+            desc = neighbor_has_psionic_inhibitor
+        }
+        modifier = {
+            subtract = 100
+            NOR = {
+                can_system_generate_psionic_aura = { OWNER = root.aura_owner }
+                is_close_to_psionic_aura_generator_system = { OWNER = root.aura_owner }
+            }
+            desc = DISCONNECTED_FROM_AURA_COLONY
+        }
+        modifier = {
+            subtract = 1000
+            any_neighbor_system = {
+                has_star_flag = aura_clash_winning_against_@root
+            }
+            desc = BLANK_STRING
+        }
+    }
     increase_trigger = { NOT = { any_neighbor_system = { has_star_flag = aura_is_clashing_against_@root } } }
 
     aura_galaxy_texture = "gfx/map/lunar_capital/touhou_great_patron_dragon_aura.dds"

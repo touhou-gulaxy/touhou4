@@ -36,6 +36,14 @@ event = {
                 }
             }
         }
+        if = {
+            limit = { NOT = { has_global_flag = touhou_fe_union_titan_country_display } spth_has_ag_mod = yes }
+            set_global_flag = touhou_fe_union_titan_country_display
+            every_playable_country = {
+                limit = { is_ai = no any_owned_ship = { is_ship_size = touhou_fe_union_titan } }
+                add_modifier = { modifier = touhou_fe_union_titan_country days = -1 }
+            }
+        }
     }
 }
 country_event = {
@@ -201,6 +209,59 @@ country_event = {
             modifier = touhou_magical_mallet_c_modifier days = 1
             time_multiplier = touhou_magical_mallet_duration_temp_c
             mult = value:touhou_magical_mallet_modifier_value|base|-0.2|factor|-0.05|modifier|pop_bonus_workforce_mult|
+        }
+    }
+}
+country_event = {
+    id = toho.18
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = has_given_lunar_capital_carrier }
+        has_authority = auth_gensokyo is_ai = no
+        has_technology = tech_lunar_capital_ships
+    }
+    immediate = {
+        set_country_flag = has_given_lunar_capital_carrier
+        if = {
+            limit = { NOT = { has_existing_ship_design = lunar_capital_carrier } }
+            create_ship_design = { design = NAME_lunar_capital_carrier_player }
+            add_ship_design = last_created_design
+        }
+    }
+}
+country_event = {
+    id = toho.19
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { has_authority = auth_gensokyo has_country_flag = th_kosuzu_get }
+    immediate = {
+        if = {
+            limit = { NOT = { exists = event_target:touhou_kosuzu_@root } }
+            random_owned_leader = {
+                limit = { spth_is_touhou_gensokyo_leader = yes has_trait = leader_trait_kosuzu }
+                save_global_event_target_as = touhou_kosuzu_@root
+            }
+        }
+        if = {
+            limit = { exists = event_target:touhou_kosuzu_@root }
+            if = {
+                limit = {
+                    is_variable_set = touhou_kosuzu_skill
+                    check_variable_arithmetic = {
+                        which = touhou_kosuzu_skill
+                        value < value:touhou_kosuzu_skill_value
+                    }
+                }
+                set_variable = { which = touhou_kosuzu_skill value = value:touhou_kosuzu_skill_value }
+                if = {
+                    limit = { has_modifier = country_building_suzunaan_modifier }
+                    remove_modifier = country_building_suzunaan_modifier
+                }
+                add_modifier = { modifier = country_building_suzunaan_modifier mult = touhou_kosuzu_skill }
+            } else = {
+                set_variable = { which = touhou_kosuzu_skill value = value:touhou_kosuzu_skill_value }
+            }
         }
     }
 }
@@ -1301,6 +1362,9 @@ country_event = {
 				flag_komachi = { root = { spth_effect_init_komachi_effect = yes } }
                 flag_kagerou = { root = { spth_effect_init_kagerou_effect = yes } }
                 flag_shinmyoumaru = { root = { spth_effect_init_shinmyoumaru_effect = yes } }
+                flag_hina = { root = { spth_effect_init_hina_effect = yes } }
+                flag_kosuze
+                flag_sagume = { root = { spth_effect_init_sagume_effect = yes } }
                 flag_seija = { root = { spth_effect_init_seija_effect = yes } }
 				flag_remilia = {
 					root = {
@@ -2758,6 +2822,18 @@ country_event = {
                 set_country_flag = toho_8091_fired
                 country_event = { id = toho.8091 days = 15 random = 15 }
             }
+            10 = {
+                modifier = { factor = 0 has_country_flag = toho_8099_fired }
+                modifier = { factor = 0 NOT = { has_country_flag = th_aya_get } }
+                modifier = { factor = 0 NOT = { has_country_flag = th_eirin_get } }
+                modifier = { add = 5 has_country_flag = th_eirin_get }
+                modifier = { add = 5 has_country_flag = th_yukari_get }
+                country_event = { id = toho.8099 }
+            }
+            10 = {
+                modifier = { factor = 0 has_country_flag = toho_8117_fired }
+                country_event = { id = toho.8117 }
+            }
 			30 = { log = "\\[This.GetName]无事发生QAQ" }
 		}
 	}
@@ -2855,6 +2931,88 @@ country_event = {
     immediate = {
         set_country_flag = toho_8094_fired
         country_event = { id = toho.8094 days = 30 random = 30 }
+    }
+}
+
+country_event = {
+    id = toho.8096
+    title = toho.8096.name
+    desc = toho.8096.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = aya_paper_sagume_room }
+    location = capital_scope
+    option = {
+        name = TH_ACKNOWLEDGED
+        default_hide_option = yes
+        hidden_effect = { country_event = { id = toho.8097 days = 60 random = 30 } }
+    }
+}
+country_event = {
+    id = toho.8097
+    title = toho.8097.name
+    desc = toho.8097.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = aya_paper_eirin_room }
+    location = capital_scope
+    option = {
+        name = TH_SO_INTERESTRING
+        default_hide_option = yes
+        hidden_effect = { country_event = { id = toho.8098 days = 60 random = 30 } }
+    }
+}
+country_event = {
+    id = toho.8098
+    title = toho.8098.name
+    desc = toho.8098.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { room = ethic_touhou_room portrait = spth_por_sagume }
+    option = {
+        name = toho.8098.a
+        is_dialog_only = yes
+        response_text = toho.8098.a.response
+    }
+    option = {
+        name = toho.8098.b
+        is_dialog_only = yes
+        response_text = toho.8098.b.response
+    }
+    option = {
+        name = toho.8098.c
+        is_dialog_only = yes
+        response_text = toho.8098.c.response
+    }
+    option = {
+        name = toho.8098.d
+        is_dialog_only = yes
+        response_text = toho.8098.d.response
+    }
+    option = {
+        name = toho.8098.e
+        response_text = toho.8098.e.response
+    }
+    after = {
+        hidden_effect = { spth_effect_init_sagume_effect = yes }
+    }
+}
+country_event = {
+    id = toho.8099
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = toho_8099_fired } }
+    immediate = {
+        set_country_flag = toho_8099_fired
+        country_event = { id = toho.8096 days = 30 random = 30 }
     }
 }
 
@@ -3005,6 +3163,25 @@ country_event = {
 		event_target:toho_8103_target_@root = { remove_modifier = touhou_kokoro_planet_modifier_2 }
 		clear_global_event_target = toho_8103_target_@root
 	}
+}
+
+country_event = {
+    id = toho.8117
+    title = toho.8117.name
+    desc = toho.8117.desc
+    is_triggered_only = yes
+    trigger = { has_country_flag = toho_8117_fired }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    location = capital_scope
+    picture_event_data = { room = th135_human_village_night_room }
+    option = { name = toho.8107.a }
+    immediate = {
+        set_country_flag = toho_8117_fired
+        spth_effect_init_hina_effect = yes
+    }
+    after = { give_specimen = { key = touhou_hina_doll origin = leader_trait_hina } }
 }
 
 # 幻想乡小超主
