@@ -116,11 +116,89 @@ country_event = {
         }
         hidden_effect = {
             set_timed_country_flag = { flag = touhou_kosuzu_book_sample_cooldown days = 360 }
+            if = {
+                limit = { NOT = { is_variable_set = touhou_kosuzu_book_count } }
+                set_variable = { which = touhou_kosuzu_book_count value = 0 }
+            }
+            change_variable = { which = touhou_kosuzu_book_count value = 1 }
+            reroll_random = yes
+            random_list = {
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_a_brief_history_of_time }
+                    give_specimen = { key = touhou_a_brief_history_of_time origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_bayi_first_aid }
+                    give_specimen = { key = touhou_bayi_first_aid origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_magic_guide_book }
+                    give_specimen = { key = touhou_magic_guide_book origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_marisa_magic_guide_book }
+                    give_specimen = { key = touhou_marisa_magic_guide_book origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_pulp_fiction }
+                    give_specimen = { key = touhou_pulp_fiction origin = touhou_kosuzu_country }
+                }
+                1 = {
+                    modifier = { factor = 0 has_specimen = touhou_universal_repair_manual }
+                    give_specimen = { key = touhou_universal_repair_manual origin = touhou_kosuzu_country }
+                }
+            }
+        }
+    }
+    option = {
+        name = th_leader_sp.1.d
+        is_dialog_only = yes
+        response_text = th_leader_sp.1.d.response
+        trigger = { hidden_trigger = { NOT = { has_relic = r_touhou_gumon_shiki } } }
+        allow = { hidden_trigger = { NOT = { has_relic = r_touhou_gumon_shiki } } }
+        add_relic = r_touhou_gumon_shiki
+    }
+    option = {
+        name = th_leader_sp.1.f
+        is_dialog_only = yes
+        response_text = th_leader_sp.1.f.response
+        trigger = { hidden_trigger = { NOT = { has_country_flag = leader_trait_kosuzu_space_skill } } }
+        allow = {
+            custom_tooltip = {
+                fail_text = th_leader_sp.1.f.fail
+                any_owned_fleet = { is_in_combat = yes }
+            }
+            hidden_trigger = { NOT = { has_country_flag = leader_trait_kosuzu_space_skill } }
+        }
+        hidden_effect = {
+            set_timed_country_flag = { flag = leader_trait_kosuzu_space_skill days = 1800 }
+            every_owned_fleet = {
+                limit = { is_in_combat = yes }
+                every_owned_ship = { add_modifier = { modifier = touhou_kosuzu_fleet_modifier days = 90 } }
+            }
         }
     }
     option = {
         name = th_leader_sp.1.exit
         response_text = th_leader_sp.1.exit.response
+    }
+}
+country_event = {
+    id = th_leader_sp.2
+    title = th_leader_sp.2.name
+    desc = th_leader_sp.2.desc
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = th_leader_sp_2_fired } }
+    immediate = { set_country_flag = th_leader_sp_2_fired }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = touhou_event_suzunaan_1_room }
+    show_sound = event_celebration
+    option = {
+        name = th_leader_sp.2.a
+        custom_tooltip = th_leader_sp.2.a.effect
+        default_hide_option = yes
     }
 }
 
