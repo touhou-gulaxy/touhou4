@@ -1424,6 +1424,10 @@ country_event = {
                 limit = { NOT = { has_modifier = touhou_defender_of_the_galaxy_lunar_capital } }
                 add_modifier = { modifier = touhou_defender_of_the_galaxy_lunar_capital days = -1 }
             }
+            if = {
+                limit = { NOT = { has_modifier = touhou_defender_of_the_galaxy_dreamworld } }
+                add_modifier = { modifier = touhou_defender_of_the_galaxy_dreamworld days = -1 }
+            }
         }
     }
 }
@@ -3920,6 +3924,45 @@ country_event = {
                         country_event = { id = toho.8421 }
                     }
                 }
+                150 = {
+                    modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                    modifier = { factor = 0 has_country_flag = tech_touhou_psionic_singularity_given }
+                    modifier = { factor = 0 NOT = { has_country_flag = has_shroud_patron } }
+                    if = {
+                        limit = {
+                            OR = {
+                                AND = {
+                                    has_technology = tech_touhou_psionic_singularity_t
+                                    has_technology = tech_touhou_psionic_singularity_xl
+                                }
+                                AND = {
+                                    has_tech_option = tech_touhou_psionic_singularity_t
+                                    has_tech_option = tech_touhou_psionic_singularity_xl
+                                }
+                            }
+                        }
+                        set_country_flag = tech_touhou_psionic_singularity_given
+                        country_event = { id = toho.8901 }
+                    } else = {
+                        country_event = { id = toho.8426 }
+                    }
+                }
+                inline_script = {
+                    script = switch_items/touhou_shround_tech_event_item
+                    weight = 150 event = 8429 tech = tech_touhou_psionic_inhibitor_weapon
+                }
+                inline_script = {
+                    script = switch_items/touhou_shround_tech_event_item
+                    weight = 150 event = 8431 tech = tech_touhou_anti_psionic_weapon
+                }
+                inline_script = {
+                    script = switch_items/touhou_shround_tech_event_item
+                    weight = 150 event = 8433 tech = tech_touhou_psionic_launcher
+                }
+                inline_script = {
+                    script = switch_items/touhou_shround_tech_event_item
+                    weight = 150 event = 8435 tech = tech_touhou_zro_psionic_lighting
+                }
                 0 = { country_event = { id = shroud.3 } }
                 100 = {
                     modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
@@ -4889,6 +4932,45 @@ country_event = {
                         } else = {
                             country_event = { id = toho.8421 }
                         }
+                    }
+                    25 = {
+                        modifier = { factor = 0 NOT = { has_authority = auth_gensokyo } }
+                        modifier = { factor = 0 has_country_flag = tech_touhou_psionic_singularity_given }
+                        modifier = { factor = 0 NOT = { has_country_flag = has_shroud_patron } }
+                        if = {
+                            limit = {
+                                OR = {
+                                    AND = {
+                                        has_technology = tech_touhou_psionic_singularity_t
+                                        has_technology = tech_touhou_psionic_singularity_xl
+                                    }
+                                    AND = {
+                                        has_tech_option = tech_touhou_psionic_singularity_t
+                                        has_tech_option = tech_touhou_psionic_singularity_xl
+                                    }
+                                }
+                            }
+                            set_country_flag = tech_touhou_psionic_singularity_given
+                            country_event = { id = toho.8901 }
+                        } else = {
+                            country_event = { id = toho.8426 }
+                        }
+                    }
+                    inline_script = {
+                        script = switch_items/touhou_shround_tech_event_item
+                        weight = 25 event = 8429 tech = tech_touhou_psionic_inhibitor_weapon
+                    }
+                    inline_script = {
+                        script = switch_items/touhou_shround_tech_event_item
+                        weight = 25 event = 8431 tech = tech_touhou_anti_psionic_weapon
+                    }
+                    inline_script = {
+                        script = switch_items/touhou_shround_tech_event_item
+                        weight = 25 event = 8433 tech = tech_touhou_psionic_launcher
+                    }
+                    inline_script = {
+                        script = switch_items/touhou_shround_tech_event_item
+                        weight = 25 event = 8435 tech = tech_touhou_zro_psionic_lighting
                     }
                     25 = {
                         modifier = {
@@ -8012,6 +8094,7 @@ country_event = {
     }
 }
 
+# 虚境空洞
 country_event = {
     id = toho.8421
     title = toho.8421.name
@@ -8129,6 +8212,137 @@ country_event = {
         }
     }
 }
+
+# 失败
+country_event = {
+    id = toho.8427
+    title = "toho.8427.name"
+    desc = "toho.8427.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = negative_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        add_modifier = { modifier = touhou_shroud_debuff_effiency days = 1800 }
+    }
+}
+country_event = {
+    id = toho.8425
+    inline_script = {
+        script = events/touhou_shround_roll_tech_event_main
+        touhou_id = 8425 roll_tooltip = medium
+        success_chance = 50 success_event = toho.8426
+        failure_chance = 50 failures_event = toho.8427
+    }
+}
+# 成功
+country_event = {
+    id = toho.8426
+    title = "toho.8426.name"
+    desc = "toho.8426.desc"
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    picture_event_data = { portrait = shroud1 room = spth_ag_excited_shroud_room }
+    immediate = { set_country_flag = shroud_diplomacy_engaged }
+    after = {
+        hidden_effect = {
+            remove_country_flag = shroud_diplomacy_engaged
+            set_timed_country_flag = { flag = positive_shroud_outcome days = 1800 }
+        }
+    }
+    option = {
+        name = "exit.shroud"
+        default_hide_option = yes
+        hidden_effect = {
+            set_country_flag = tech_touhou_psionic_singularity_given
+            set_country_flag = tech_touhou_psionic_singularity_xl
+            set_country_flag = tech_touhou_psionic_singularity_t
+        }
+        touhou_give_tech_option = { touhou_tech = tech_touhou_psionic_singularity_xl research_point = yes }
+        touhou_give_tech_option = { touhou_tech = tech_touhou_psionic_singularity_t research_point = yes }
+    }
+}
+country_event = {
+    id = toho.8428
+    inline_script = {
+        script = events/touhou_shround_roll_tech_event_main
+        touhou_id = 8428 roll_tooltip = medium
+        success_chance = 50 success_event = toho.8429
+        failure_chance = 50 failures_event = toho.8427
+    }
+}
+country_event = {
+    id = toho.8429
+    inline_script = {
+        script = events/touhou_shround_give_tech_event
+        touhou_id = 8429 tech = tech_touhou_psionic_inhibitor_weapon
+    }
+}
+country_event = {
+    id = toho.8430
+    inline_script = {
+        script = events/touhou_shround_roll_tech_event_main
+        touhou_id = 8430 roll_tooltip = medium
+        success_chance = 50 success_event = toho.8431
+        failure_chance = 50 failures_event = toho.8427
+    }
+}
+country_event = {
+    id = toho.8431
+    inline_script = {
+        script = events/touhou_shround_give_tech_event
+        touhou_id = 8431 tech = tech_touhou_anti_psionic_weapon
+    }
+}
+country_event = {
+    id = toho.8432
+    inline_script = {
+        script = events/touhou_shround_roll_tech_event_main
+        touhou_id = 8432 roll_tooltip = medium
+        success_chance = 50 success_event = toho.8433
+        failure_chance = 50 failures_event = toho.8427
+    }
+}
+country_event = {
+    id = toho.8433
+    inline_script = {
+        script = events/touhou_shround_give_tech_event
+        touhou_id = 8433 tech = tech_touhou_psionic_launcher
+    }
+}
+country_event = {
+    id = toho.8434
+    inline_script = {
+        script = events/touhou_shround_roll_tech_event_main
+        touhou_id = 8434 roll_tooltip = medium
+        success_chance = 50 success_event = toho.8435
+        failure_chance = 50 failures_event = toho.8427
+    }
+}
+country_event = {
+    id = toho.8435
+    inline_script = {
+        script = events/touhou_shround_give_tech_event
+        touhou_id = 8435 tech = tech_touhou_zro_psionic_lighting
+    }
+}
+
 
 country_event = {
     id = toho.8901

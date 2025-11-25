@@ -1,0 +1,29 @@
+key = touhou_zro_psionic_lighting_$size_short$
+icon = GFX_ship_part_touhou_zro_psionic_lighting_$size_short$
+prerequisites = { $prerequisites$ }
+component_set = touhou_zro_psionic_lighting
+projectile_gfx = touhou_psionic_energy_lance_$size$
+tags = { weapon_type_kinetic weapon_type_lingli $size_short$_slot $extra_tags$ weapon_type_psionic }
+ai_tags = { weapon_role_anti_armor }
+ai_tag_weight = 1000
+inline_script = { script = ship_components/spth_component_basic size = $size$ }
+inline_script = { script = ship_components/spth_component_attributes name = psionic tag = zro type = $size$ }
+inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = $size$ }
+inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+target_focus = spread
+ship_modifier = {
+    component_lifesteal_add = 0.10
+}
+on_hit = {
+    custom_tooltip = touhou_psionic_advanced_weapon_hit_effect
+    hidden_effect = {
+        if = {
+            limit = { NOT = { has_ship_flag = touhou_psionic_advanced_weapon_hit_fired } }
+            set_timed_ship_flag = { flag = touhou_psionic_advanced_weapon_hit_fired days = 10 }
+            if = {
+                limit = { NOT = { has_modifier = touhou_psionic_advanced_weapon_modifier } }
+                add_modifier = { modifier = touhou_psionic_advanced_weapon_modifier days = 5 }
+            }
+        }
+    }
+}

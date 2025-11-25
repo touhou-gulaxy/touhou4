@@ -1088,7 +1088,7 @@ touhou_repair_ship_hull_overflow = {
 touhou_repair_ship_shield_overflow = {
     optimize_memory
     if = {
-        limit = { has_hp <= 100000000 }
+        limit = { has_shield_hp <= 100000000 }
         if = {
             limit = {
                 check_variable_arithmetic = {
@@ -1805,4 +1805,25 @@ touhou_set_black_hole_class = {
     else_if = { limit = { count_system_planet = { count = 2 limit = { is_planet_class = pc_black_hole } } } set_star_class = sc_black_hole_binary }
     else_if = { limit = { count_system_planet = { count = 3 limit = { is_planet_class = pc_black_hole } } } set_star_class = sc_black_hole_trinary }
     else_if = { limit = { always = yes } set_star_class = sc_black_hole_paired }
+}
+
+touhou_psionic_inhibitor_weapon_hit_effect = {
+    optimize_memory
+    hidden_effect = {
+        if = {
+            limit = {
+                NOT = { has_ship_flag = touhou_psionic_inhibitor_weapon_hit_fired }
+                exists = from touhou_is_psionic_ship = yes
+            }
+            set_timed_ship_flag = { flag = touhou_psionic_inhibitor_weapon_hit_fired days = 10 }
+            if = {
+                limit = { NOT = { has_modifier = touhou_psionic_inhibitor_weapon_modifier_1 } }
+                add_modifier = { modifier = touhou_psionic_inhibitor_weapon_modifier_1 days = 3 }
+            }
+            add_modifier = {
+                modifier = touhou_psionic_inhibitor_weapon_modifier_2 days = 3
+                mult = value:touhou_min_capped_modifier|modifier|weapon_type_lingli_weapon_damage_mult|factor|1|
+            }
+        }
+    }
 }

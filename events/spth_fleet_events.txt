@@ -2436,9 +2436,10 @@ country_event = {
                             }
                         }
                     }
+                    add_modifier = { modifier = touhou_space_shrine_inv }
                     set_ship_flag = spth_invincible
                 }
-                ship_event = { id = spth_fleet.1210 days = 4 }
+                ship_event = { id = spth_fleet.1210 days = 3 }
             }
         }
     }
@@ -2459,11 +2460,16 @@ ship_event = {
                         }
                     }
                 }
-                if = { limit = { NOT = { has_ship_flag = spth_invincible } } set_ship_flag = spth_invincible }
+                if = {
+                    limit = { NOT = { has_ship_flag = spth_invincible } }
+                    add_modifier = { modifier = touhou_space_shrine_inv }
+                    set_ship_flag = spth_invincible
+                }
             } else = {
+                remove_modifier = touhou_space_shrine_inv
                 remove_ship_flag = spth_invincible
             }
-            ship_event = { id = spth_fleet.1210 days = 4 }
+            ship_event = { id = spth_fleet.1210 days = 3 }
         } else = {
             fleet = { remove_fleet_flag = spth_fleet_1209_fired }
             remove_ship_flag = spth_invincible
@@ -3583,6 +3589,66 @@ country_event = {
                 set_fleet_flag = doremy_sweet_phantom_destroyed
             }
             clear_global_event_target = doremy_sweet_phantom_@fromfrom
+        }
+    }
+}
+
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.2016
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_common_country = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = touhou_psionic_inhibitor_weapon_effect }
+            any_owned_ship = {
+                check_modifier_value = { modifier = touhou_psionic_inhibitor_weapon value > 0 }
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_fleet_flag = touhou_psionic_inhibitor_weapon_effect
+            fleet_event = { id = spth_fleet.2017 }
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2017
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = {
+                limit = {
+                    check_modifier_value = { modifier = touhou_psionic_inhibitor_weapon value > 0 }
+                }
+                if = {
+                    limit = { has_modifier = touhou_psionic_inhibitor_weapon_self_modifier }
+                    remove_modifier = touhou_psionic_inhibitor_weapon_self_modifier
+                }
+                add_modifier = {
+                    modifier = touhou_psionic_inhibitor_weapon_self_modifier days = 3
+                    mult = value:touhou_psionic_inhibitor_weapon_damage_modifier
+                }
+            }
+            fleet_event = { id = spth_fleet.2017 days = 10 }
+        } else = {
+            remove_fleet_flag = touhou_psionic_inhibitor_weapon_effect
+            every_owned_ship = {
+                limit = {
+                    check_modifier_value = { modifier = touhou_psionic_inhibitor_weapon value > 0 }
+                }
+                if = {
+                    limit = { has_modifier = touhou_psionic_inhibitor_weapon_self_modifier }
+                    remove_modifier = touhou_psionic_inhibitor_weapon_self_modifier
+                }
+            }
         }
     }
 }
