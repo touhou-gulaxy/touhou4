@@ -292,3 +292,165 @@ spth_system_selector_confirm_spawn_dreamworld_gateway = {
         }
     }
 }
+
+spth_system_selector_confirm_touhou_system_warper_attack = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            if = {
+                limit = { is_scope_type = galactic_object }
+                save_event_target_as = spth_system_selector_target
+            } else_if = {
+                limit = { exists = solar_system }
+                solar_system = {
+                    save_event_target_as = spth_system_selector_target
+                }
+            } else = {
+                from = {
+                    country_event = { id = toho.4200 }
+                    country_event = { id = toho.4201 }
+                }
+            }
+            if = {
+                limit = { exists = event_target:spth_system_selector_target }
+                event_target:spth_system_selector_target = {
+                    log = "选中了星系[This.GetName]QAQ"
+                    if = {
+                        limit = { spth_can_not_jump_in_system = yes }
+                        from = {
+                            country_event = { id = toho.4200 }
+                            country_event = { id = toho.4201 }
+                        }
+                    } else = {
+                        star = {
+                            create_ambient_object = {
+                                type = spth_star_killer_star_windup_in_range
+                                location = this
+                                duration = -1
+                                use_3d_location = yes
+                                entity_offset = { min = 0 max = 0 }
+                                entity_offset_angle = { min = 0 max = 0 }
+                                entity_offset_height = { min = 0 max = 0 }
+                                entity_scale_to_size = yes
+                                scale = 0.25
+                            }
+                            last_created_ambient_object = {
+                                set_ambient_object_flag = touhou_system_warper_attack_windip_in_range
+                            }
+                        }
+                        from = {
+                            add_modifier = { modifier = touhou_system_warper_attack_cooldown days = 1080 }
+                            if = {
+                                limit = { exists = event_target:touhou_system_warper_attack_user }
+                                clear_global_event_target = touhou_system_warper_attack_user
+                            }
+                            save_global_event_target_as = touhou_system_warper_attack_user
+                        }
+                        system_event = { id = toho.4202 days = 15 random = 15 }
+                        clear_global_event_target = touhou_system_warper_@from
+                    }
+                }
+            }
+        }
+    }
+}
+spth_system_selector_confirm_touhou_system_warper_self_warp = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            if = {
+                limit = { is_scope_type = galactic_object }
+                save_event_target_as = spth_system_selector_target
+            } else_if = {
+                limit = { exists = solar_system }
+                solar_system = {
+                    save_event_target_as = spth_system_selector_target
+                }
+            } else = {
+                from = {
+                    country_event = { id = toho.4205 }
+                    country_event = { id = toho.4201 }
+                }
+            }
+            if = {
+                limit = { exists = event_target:spth_system_selector_target }
+                event_target:spth_system_selector_target = {
+                    log = "选中了星系[This.GetName]QAQ"
+                    if = {
+                        limit = { spth_can_not_jump_in_system = yes }
+                        from = {
+                            country_event = { id = toho.4205 }
+                            country_event = { id = toho.4201 }
+                        }
+                    } else = {
+                        from = {
+                            add_modifier = { modifier = touhou_system_warper_self_warp_cooldown days = 90 }
+                        }
+                        event_target:touhou_system_warper_@from = {
+                            th_spawn_explosion_particle = { color = purple size = large }
+                            clear_global_event_target = touhou_system_warper_@from
+                            remove_megastructure = this
+                        }
+                        spawn_megastructure = {
+                            type = touhou_system_warper
+                            coords_from = star
+                            owner = from
+                            orbit_angle = 50
+                            orbit_distance = 300
+                            init_effect = {
+                                spth_create_jump_particle_effect = yes
+                                save_global_event_target_as = touhou_system_warper_@from
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+spth_system_selector_confirm_touhou_system_warper_system_warp = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            log = "执行星系跃迁button_effect。"
+            if = {
+                limit = { is_scope_type = galactic_object }
+                save_event_target_as = spth_system_selector_target
+            } else_if = {
+                limit = { exists = solar_system }
+                solar_system = {
+                    save_event_target_as = spth_system_selector_target
+                }
+            } else = {
+                from = {
+                    country_event = { id = toho.4206 }
+                    country_event = { id = toho.4201 }
+                }
+            }
+            if = {
+                limit = { exists = event_target:spth_system_selector_target }
+                event_target:spth_system_selector_target = {
+                    log = "选中了星系[This.GetName]QAQ"
+                }
+                from = {
+                    event_target:touhou_system_warper_@this = {
+                        solar_system = { save_event_target_as = touhou_system_warper_loc }
+                    }
+                    country_event = {
+                        id = toho.4207
+                        scopes = {
+                            from = event_target:spth_system_selector_target
+                            fromfrom = event_target:touhou_system_warper_loc
+                        }
+                    }
+                }
+                clear_global_event_target = touhou_system_warper_@from
+            } else = {
+                log = "星系跃迁执行失败：未选中星系。"
+            }
+        }
+    }
+}
