@@ -199,6 +199,7 @@ spth_system_selector_confirm_fleet_project = {
                                                 set_timed_ship_flag = { flag = spth_yukari_proj_ship_root days = 45 }
                                                 prevprev = {
                                                     create_ship = {
+                                                        fleet_cache_recalc = no
                                                         name = prev
                                                         design = prev.design
                                                         effect = {
@@ -391,17 +392,27 @@ spth_system_selector_confirm_touhou_system_warper_self_warp = {
                         event_target:touhou_system_warper_@from = {
                             th_spawn_explosion_particle = { color = purple size = large }
                             clear_global_event_target = touhou_system_warper_@from
+                            solar_system = { save_event_target_as = touhou_system_warper_ori_pos }
                             remove_megastructure = this
                         }
                         spawn_megastructure = {
                             type = touhou_system_warper
-                            coords_from = star
+                            planet = star
                             owner = from
                             orbit_angle = 50
                             orbit_distance = 300
                             init_effect = {
                                 spth_create_jump_particle_effect = yes
                                 save_global_event_target_as = touhou_system_warper_@from
+                            }
+                        }
+                        from = {
+                            country_event = {
+                                id = toho.4211
+                                scopes = {
+                                    from = event_target:touhou_system_warper_ori_pos
+                                    fromfrom = event_target:spth_system_selector_target
+                                }
                             }
                         }
                     }

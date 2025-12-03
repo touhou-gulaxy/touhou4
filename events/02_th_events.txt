@@ -1363,7 +1363,7 @@ country_event = {
                 flag_kagerou = { root = { spth_effect_init_kagerou_effect = yes } }
                 flag_shinmyoumaru = { root = { spth_effect_init_shinmyoumaru_effect = yes } }
                 flag_hina = { root = { spth_effect_init_hina_effect = yes } }
-                flag_kosuze
+                flag_kosuzu = { root = { spth_effect_init_kosuzu_effect = yes } }
                 flag_sagume = { root = { spth_effect_init_sagume_effect = yes } }
                 flag_seija = { root = { spth_effect_init_seija_effect = yes } }
 				flag_remilia = {
@@ -11963,7 +11963,7 @@ country_event = {
     diplomatic = yes
     custom_gui = spth_leader_function_ui
     custom_gui_option = spth_leader_function_button
-    picture_event_data = { room = th_yukari_lake_room }
+    picture_event_data = { room = spth_cosmic_storms_preparation_room }
     immediate = {
         if = {
             limit = { NOT = { is_variable_set = touhou_system_warper_angel } }
@@ -12049,7 +12049,18 @@ country_event = {
     option = {
         name = toho.4207.d
         hidden_effect = {
-            add_modifier = { modifier = touhou_system_warper_system_warp_cooldown days = 360 }
+            root.fromfrom.star = { spth_create_jump_particle_effect = yes }
+            add_modifier = {
+                modifier = touhou_system_warper_system_warp_cooldown days = 1
+                time_multiplier = value:touhou_system_warper_system_jump_cooldown
+            }
+            country_event = {
+                id = toho.4208
+                scopes = {
+                    from = root.fromfrom
+                    fromfrom = root.from
+                }
+            }
             if = {
                 limit = { has_country_flag = touhou_system_warper_jump_random_distance }
                 if = {
@@ -12082,28 +12093,10 @@ country_event = {
                 } else = {
                     if = {
                         limit = { has_country_flag = touhou_system_warper_jump_hyperlane }
-                        root.fromfrom = {
-                            move_system = {
-                                target = root.from
-                                min_distance = 0
-                                max_distance = 50
-                                min_orientation_angle = touhou_system_warper_angel
-                                max_orientation_angle = touhou_system_warper_angel
-                                hyperlane = yes
-                            }
-                        }
+                        inline_script = { script = effect/touhou_system_warper_move_system_angle_alt link = yes }
                     }
                     else = {
-                        root.fromfrom = {
-                            move_system = {
-                                target = root.from
-                                min_distance = 0
-                                max_distance = 50
-                                min_orientation_angle = touhou_system_warper_angel
-                                max_orientation_angle = touhou_system_warper_angel
-                                hyperlane = no
-                            }
-                        }
+                        inline_script = { script = effect/touhou_system_warper_move_system_angle_alt link = yes }
                     }
                 }
             } else_if = {
@@ -12137,29 +12130,15 @@ country_event = {
         }
         if = {
             limit = { has_country_flag = touhou_system_warper_jump_hyperlane }
-            root.fromfrom = {
-                move_system = {
-                    target = root.from
-                    min_distance = touhou_system_warper_distance
-                    max_distance = touhou_system_warper_distance
-                    min_orientation_angle = touhou_system_warper_angel
-                    max_orientation_angle = touhou_system_warper_angel
-                    hyperlane = yes
-                }
-            }
+            inline_script = { script = effect/touhou_system_warper_move_system_angle link = yes }
         }
         else = {
-            root.fromfrom = {
-                move_system = {
-                    target = root.from
-                    min_distance = touhou_system_warper_distance
-                    max_distance = touhou_system_warper_distance
-                    min_orientation_angle = touhou_system_warper_angel
-                    max_orientation_angle = touhou_system_warper_angel
-                    hyperlane = no
-                }
-            }
+            inline_script = { script = effect/touhou_system_warper_move_system_angle link = no }
         }
+    }
+    option = {
+        name = "toho.4207.e"
+        country_event = { id = toho.4207 scopes = { from = root.from fromfrom = root.fromfrom } }
     }
     option = {
         name = "spth_system_selector_target_abort"
@@ -12175,6 +12154,237 @@ country_event = {
             remove_country_flag = touhou_system_warper_opened_function
         }
     }
+}
+country_event = {
+    id = toho.4208
+    is_triggered_only = yes
+    title = toho.4208.name
+    desc = {
+        trigger = { has_country_flag = touhou_has_jumped_system }
+        text = toho.4208.desc.alt
+    }
+    desc = {
+        trigger = { NOT = { has_country_flag = touhou_has_jumped_system } }
+        text = toho.4208.desc
+    }
+    immediate = { set_country_flag = touhou_has_jumped_system }
+    location = fromfrom
+    show_sound = event_sensor_ping
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = touhou_system_warper_settings_room }
+    option = {
+        name = toho.4208.a
+        default_hide_option = yes
+    }
+    option = {
+        name = toho.4208.b
+    }
+}
+# still controls the system warper when ownerless.
+# Executed when a megastructure is rendered ownerless
+# this = solar system containing megastructure
+# from = megastructure
+# fromfrom = old owner (if existing)
+country_event = {
+    id = toho.4209
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = {
+        exists = fromfrom
+        from = {
+            OR = {
+                is_megastructure_type = touhou_system_warper
+                is_megastructure_type = touhou_system_warper_self_jump
+                is_megastructure_type = touhou_system_warper_system_jump
+                is_megastructure_type = touhou_system_warper_attack
+            }
+        }
+    }
+    immediate = {
+        from = { set_owner = root.fromfrom }
+    }
+}
+# still controls the system warper when system changes owner.
+# Executed when a megastructure has a new owner
+# this = new owner
+# from = megastructure
+# fromfrom = old owner (if existing)
+country_event = {
+    id = toho.4210
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = fromfrom
+        from = {
+            OR = {
+                is_megastructure_type = touhou_system_warper
+                is_megastructure_type = touhou_system_warper_self_jump
+                is_megastructure_type = touhou_system_warper_system_jump
+                is_megastructure_type = touhou_system_warper_attack
+            }
+        }
+    }
+    immediate = {
+        from = { set_owner = root.fromfrom }
+    }
+}
+# notif when self jump complete.
+country_event = {
+    id = toho.4211
+    title = toho.4211.name
+    desc = toho.4211.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = touhou_system_warper_jump_room }
+    location = fromfrom
+    show_sound = event_sensor_ping
+    show_sound = event_black_clouds
+    option = {
+        name = toho.4211.a
+        default_hide_option = yes
+    }
+    option = {
+        name = toho.4211.b
+    }
+}
+# build system warper
+# stage 1/6, builder
+country_event = {
+    id = toho.4212
+    title = toho.4212.name
+    desc = toho.4212.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_ringworld_build_start
+    location = from
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+}
+# stage 1/6, others
+country_event = {
+    id = toho.4213
+    title = toho.4213.name
+    desc = toho.4213.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_mega_structure_other_empire_build_complete
+    location = fromfrom
+    option = { name = spth_mega_option_suprise_2 default_hide_option = yes }
+    option = { name = spth_mega_option_suprise_3 }
+}
+# stage 2/6, builder
+country_event = {
+    id = toho.4214
+    title = toho.4214.name
+    desc = toho.4214.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_ringworld_build_start
+    location = from
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+}
+# stage 3/6, builder
+country_event = {
+    id = toho.4215
+    title = toho.4215.name
+    desc = toho.4215.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_ringworld_build_start
+    location = from
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+}
+# stage 4/6, builder
+country_event = {
+    id = toho.4216
+    title = toho.4216.name
+    desc = toho.4216.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_ringworld_build_start
+    location = from
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+}
+# stage 5/6, builder
+country_event = {
+    id = toho.4217
+    title = toho.4217.name
+    desc = toho.4217.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_ringworld_build_start
+    location = from
+    option = {
+        name = TH_OK
+        default_hide_option = yes
+    }
+}
+# stage 6/6, builder
+country_event = {
+    id = toho.4218
+    title = toho.4218.name
+    desc = toho.4218.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_mega_structure_other_empire_build_complete
+    location = from
+    option = {
+        name = TH_EXCELLENT
+        default_hide_option = yes
+    }
+    option = {
+        name = toho.4212.a
+    }
+}
+country_event = {
+    id = toho.4219
+    title = toho.4219.name
+    desc = toho.4219.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_megastructure_construction_room }
+    show_sound = event_mega_structure_other_empire_build_complete
+    location = fromfrom
+    option = { name = spth_mega_option_suprise_2 default_hide_option = yes }
+    option = { name = spth_mega_option_suprise_3 }
 }
 
 country_event = {
