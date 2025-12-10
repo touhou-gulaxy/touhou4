@@ -1054,6 +1054,40 @@ spth_refresh_ship_extra_life = {
     }
 }
 
+# 如果下限>上限，以下限为准，但不能超过100%。
+ship_spth_damage_reduction_mult_min_refresh = {
+    optimize_memory
+    if = {
+        limit = {
+            check_modifier_value = { modifier = ship_spth_damage_reduction_mult_min value < 0 }
+            NOR = {
+                has_ship_flag = spth_invincible
+                check_modifier_value = { modifier = ship_spth_inv_status value > 0 }
+            }
+            check_variable_arithmetic = {
+                which = modifier:ship_damage_reduction_mult
+                value < modifier:ship_spth_damage_reduction_mult_min
+            }
+        }
+        if = {
+            limit = { has_modifier = ship_spth_damage_reduction_mult_min_buf }
+            remove_modifier = ship_spth_damage_reduction_mult_min_buf
+        }
+        set_variable = {
+            which = ship_spth_damage_reduction_mult_min_value
+            value = modifier:ship_spth_damage_reduction_mult_min
+        }
+        set_variable = {
+            which = ship_spth_damage_reduction_mult_min_buf_value
+            value = value:ship_spth_damage_reduction_mult_max_buf_value
+        }
+        add_modifier = {
+            modifier = ship_spth_damage_reduction_mult_min_buf
+            mult = ship_spth_damage_reduction_mult_min_buf_value
+            days = $duration$
+        }
+    }
+}
 ship_spth_damage_reduction_mult_max_refresh = {
     optimize_memory
     if = {
@@ -1062,6 +1096,10 @@ ship_spth_damage_reduction_mult_max_refresh = {
             NOR = {
                 has_ship_flag = spth_invincible
                 check_modifier_value = { modifier = ship_spth_inv_status value > 0 }
+                check_variable_arithmetic = {
+                    which = modifier:ship_spth_damage_reduction_mult_min
+                    value > value:ship_spth_damage_reduction_mult_max_value
+                }
             }
             check_variable_arithmetic = {
                 which = modifier:ship_damage_reduction_mult

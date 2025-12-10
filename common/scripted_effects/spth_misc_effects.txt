@@ -1445,6 +1445,42 @@ touhou_weapon_fire_aoe_damage_lunar_turret_weapon = {
     }
 }
 
+touhou_weapon_emp_charge_module_effect = {
+    optimize_memory
+    if = {
+        limit = {
+            NOT = { has_ship_flag = touhou_weapon_emp_effect_cooldown }
+            exists = from from = { check_modifier_value = { modifier = touhou_weapon_emp_charge_module_$size$ value != 0 } }
+        }
+        set_timed_ship_flag = { flag = touhou_weapon_emp_effect_cooldown days = 2 }
+        if = {
+            limit = { NOT = { is_variable_set = touhou_weapon_emp_effect_stack } }
+            set_variable = { which = touhou_weapon_emp_effect_stack value = 0 }
+        }
+        change_variable = { which = touhou_weapon_emp_effect_stack value = 1 }
+        if = {
+            limit = { NOT = { has_modifier = touhou_weapon_emp_effect } }
+            add_modifier = { modifier = touhou_weapon_emp_effect days = 8 }
+        }
+        if = {
+            limit = { check_variable = { which = touhou_weapon_emp_effect_stack value = 8 } }
+            spth_reduce_shield = { percent = 0.25 factor = 0.25 }
+        }
+        if = {
+            limit = { check_variable = { which = touhou_weapon_emp_effect_stack value >= 16 } }
+            set_variable = { which = touhou_weapon_emp_effect_stack value = 0 }
+            set_timed_ship_flag = { flag = touhou_weapon_emp_effect_cooldown days = 18 }
+            save_event_target_as = touhou_terrify_root
+            reroll_random = yes
+            random_list = {
+                25 = { touhou_set_terrify = { days = 1 } }
+                50 = { touhou_set_terrify = { days = 2 } }
+                25 = { touhou_set_terrify = { days = 3 } }
+            }
+        }
+    }
+}
+
 touhou_remove_planet = {
     optimize_memory
     if = { limit = { is_star = yes } change_pc = pc_spth_void }
@@ -1825,5 +1861,20 @@ touhou_psionic_inhibitor_weapon_hit_effect = {
                 mult = value:touhou_min_capped_modifier|modifier|weapon_type_lingli_weapon_damage_mult|factor|1|
             }
         }
+    }
+}
+
+touhou_create_temp_jump_particle_effect = {
+    optimize_memory
+    create_ambient_object = {
+        type = horror_spawn_object
+        location = this
+        use_3d_location = yes
+        duration = 30
+        entity_offset = { min = 0 max = 0 }
+        entity_offset_angle = { min = 0 max = 0 }
+        entity_offset_height = { min = 0 max = 0 }
+        entity_scale_to_size = yes
+        scale = 0.05
     }
 }

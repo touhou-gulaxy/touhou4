@@ -110,7 +110,7 @@ country_event = {
 				add_tradition = tr_prosperity_pursuit_of_profit
 				add_tradition = tr_prosperity_interstellar_franchising
 				add_tradition = tr_prosperity_public_works
-				add_tradition = tr_prosperity_finish
+				# add_tradition = tr_prosperity_finish
 
 				add_resource = {
 					sr_lingli = 3000
@@ -201,7 +201,7 @@ country_event = {
                     add_tradition = tr_ag_archaeology_3
                     add_tradition = tr_ag_archaeology_4
                     add_tradition = tr_ag_archaeology_5
-                    add_tradition = tr_ag_archaeology_finish
+                    # add_tradition = tr_ag_archaeology_finish
                 }
                 capital_scope = {
                     clear_deposits = yes
@@ -2073,6 +2073,31 @@ country_event = {
 			}
 		}
 	}
+    option = {
+        name = gensokyo_start.1251.plus10
+        custom_tooltip = gensokyo_start.1251.plus10.tt
+        hidden_effect = {
+            event_target:global_event_country = {
+                change_variable = { which = spth_lunar_capital_crisis_difficulty value = 10 }
+            }
+            touhou_changed_difficulty = yes
+        }
+    }
+    option = {
+        name = gensokyo_start.1251.minus10
+        custom_tooltip = gensokyo_start.1251.minus10.tt
+        allow = { event_target:global_event_country = { check_variable = { which = spth_lunar_capital_crisis_difficulty value > 10 } } }
+        hidden_effect = {
+            event_target:global_event_country = {
+                change_variable = { which = spth_lunar_capital_crisis_difficulty value = -10 }
+                if = {
+                    limit = { check_variable = { which = spth_lunar_capital_crisis_difficulty value < 1 } }
+                    set_variable = { which = spth_lunar_capital_crisis_difficulty value = 1 }
+                }
+                touhou_changed_difficulty = yes
+            }
+        }
+    }
 	option = {
 		name = gensokyo_start.1251.a
 		country_event = { id = gensokyo_start.1254 }
@@ -2188,6 +2213,7 @@ country_event = {
 	}
 	option = {
 		name = gensokyo_start.1251.k
+        allow = { NOT = { has_global_flag = spth_lunar_capital_psi_crisis_begin } }
 		hidden_effect = {
 			if = {
 				limit = { NOT = { exists = event_target:spth_story_lunar_capital_area_toyohime } }

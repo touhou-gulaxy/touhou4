@@ -3944,24 +3944,24 @@ country_event = {
                         set_country_flag = tech_touhou_psionic_singularity_given
                         country_event = { id = toho.8901 }
                     } else = {
-                        country_event = { id = toho.8426 }
+                        country_event = { id = toho.8425 }
                     }
                 }
                 inline_script = {
                     script = switch_items/touhou_shround_tech_event_item
-                    weight = 150 event = 8429 tech = tech_touhou_psionic_inhibitor_weapon
+                    weight = 150 event = 8428 tech = tech_touhou_psionic_inhibitor_weapon
                 }
                 inline_script = {
                     script = switch_items/touhou_shround_tech_event_item
-                    weight = 150 event = 8431 tech = tech_touhou_anti_psionic_weapon
+                    weight = 150 event = 8430 tech = tech_touhou_anti_psionic_weapon
                 }
                 inline_script = {
                     script = switch_items/touhou_shround_tech_event_item
-                    weight = 150 event = 8433 tech = tech_touhou_psionic_launcher
+                    weight = 150 event = 8432 tech = tech_touhou_psionic_launcher
                 }
                 inline_script = {
                     script = switch_items/touhou_shround_tech_event_item
-                    weight = 150 event = 8435 tech = tech_touhou_zro_psionic_lighting
+                    weight = 150 event = 8434 tech = tech_touhou_zro_psionic_lighting
                 }
                 0 = { country_event = { id = shroud.3 } }
                 100 = {
@@ -6655,6 +6655,7 @@ country_event = {
         }
         response_text = toho.8304.crisis.synth_queen.b.response
         hidden_effect = {
+            set_country_flag = synth_queen_cannot_yeet_the_fleets
             set_country_flag = protected_from_queen_storm
             set_country_flag = toho_8304_crisis_synth_queen_b_fired
         }
@@ -12049,7 +12050,7 @@ country_event = {
     option = {
         name = toho.4207.d
         hidden_effect = {
-            root.fromfrom.star = { spth_create_jump_particle_effect = yes }
+            root.fromfrom.star = { touhou_create_temp_jump_particle_effect = yes }
             add_modifier = {
                 modifier = touhou_system_warper_system_warp_cooldown days = 1
                 time_multiplier = value:touhou_system_warper_system_jump_cooldown
@@ -12187,7 +12188,7 @@ country_event = {
 # this = solar system containing megastructure
 # from = megastructure
 # fromfrom = old owner (if existing)
-country_event = {
+system_event = {
     id = toho.4209
     is_triggered_only = yes
     hide_window = yes
@@ -12909,5 +12910,53 @@ country_event = {
     picture_event_data = { room = spth_crisis_defeated_room }
     option = {
         name = EXCELLENT
+    }
+}
+
+# Cetana Has Been Defeated - Delete Outpost Countries and Other Settings.
+event = {
+    id = toho.23031
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_global_flag = toho_23031_fired }
+        has_global_flag = synth_queen_defeated
+    }
+    immediate = {
+        set_global_flag = toho_23031_fired
+        set_update_modifiers_batch = begin
+        # Outposts: dismantled
+        every_country = {
+            limit = { is_country_type = synth_queen_outposts }
+            every_owned_fleet = {
+                delete_fleet = {
+                    target = this
+                    kill_leader = yes
+                    destroy_template = yes
+                }
+            }
+            destroy_country = yes
+        }
+        # Convoys: go home
+        every_country = {
+            limit = { is_country_type = synth_queen_convoys }
+            every_owned_fleet = {
+                delete_fleet = {
+                    target = this
+                    kill_leader = yes
+                    destroy_template = yes
+                }
+            }
+            destroy_country = yes
+        }
+        # Destroy every situation
+        every_country = {
+            limit = { any_situation = { is_situation_type = situation_synth_queen_player_facing } }
+            every_situation = {
+                limit = { is_situation_type = situation_synth_queen_player_facing }
+                destroy_situation = this
+            }
+        }
+        set_update_modifiers_batch = end
     }
 }

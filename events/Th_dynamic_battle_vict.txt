@@ -1058,7 +1058,10 @@ country_event = {
         is_touhou_country = yes
         from = { spth_should_close_combat_system = no }
         fromfrom = {
-            check_modifier_value = { modifier = ship_provide_spth_damage_reduction_mult_max value > 0 }
+            OR = {
+                check_modifier_value = { modifier = ship_provide_spth_damage_reduction_mult_max value > 0 }
+                check_modifier_value = { modifier = ship_provide_spth_damage_reduction_mult_min value > 0 }
+            }
         }
     }
     immediate = {
@@ -1066,7 +1069,10 @@ country_event = {
             if = {
                 limit = { NOT = { has_fleet_flag = ship_spth_damage_reduction_mult_max_fired } }
                 set_fleet_flag = ship_spth_damage_reduction_mult_max_fired
-                every_owned_ship = { ship_spth_damage_reduction_mult_max_refresh = { duration = -1 } }
+                every_owned_ship = {
+                    ship_spth_damage_reduction_mult_min_refresh = { duration = -1 }
+                    ship_spth_damage_reduction_mult_max_refresh = { duration = -1 }
+                }
                 fleet_event = { id = Th_dynamic_battle_vict.1008 days = 3 }
             }
         }
@@ -1080,6 +1086,10 @@ fleet_event = {
         if = {
             limit = { is_in_combat = yes }
             every_owned_ship = { ship_spth_damage_reduction_mult_max_refresh = { duration = -1 } }
+            every_owned_ship = {
+                ship_spth_damage_reduction_mult_min_refresh = { duration = -1 }
+                ship_spth_damage_reduction_mult_max_refresh = { duration = -1 }
+            }
             fleet_event = { id = Th_dynamic_battle_vict.1008 days = 3 }
         } else = {
             remove_fleet_flag = ship_spth_damage_reduction_mult_max_fired
