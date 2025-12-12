@@ -1878,3 +1878,30 @@ touhou_create_temp_jump_particle_effect = {
         scale = 0.05
     }
 }
+
+touhou_spawn_event_drones = {
+    optimize_memory
+    while = {
+        count = $count$
+        create_fleet = {
+            settings = { can_change_leader = no can_change_composition = no uses_naval_capacity = no can_disband = no spawn_debris = no }
+            effect = {
+                set_owner = root
+                set_location = { target = prev distance = 10 angle = random }
+                while = {
+                    count = $drone_count$
+                    create_ship = {
+                        fleet_cache_recalc = no
+                        random_existing_design = touhou_event_drone
+                        effect = {
+                            set_ship_flag = touhou_event_drone_temp
+                            set_ship_flag = touhou_event_drone_temp_$days$_days
+                            ship_event = { id = spth_fleet.1214 days = $days$ }
+                        }
+                    }
+                }
+                fleet_event = { id = spth_fleet.2000 days = $days$ }
+            }
+        }
+    }
+}
