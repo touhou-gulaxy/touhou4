@@ -49,6 +49,7 @@ country_event = {
         response_text = th_leader_sp.1.a.response
         allow = { NOT = { has_modifier = touhou_kosuzu_country_modifier_upkeep } }
         add_modifier = { modifier = touhou_kosuzu_country_modifier_upkeep days = 1800 }
+        hidden_effect = { reroll_random = yes }
         locked_random_list = {
             1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_1 days = 1800 } }
             1 = { add_modifier = { modifier = touhou_kosuzu_country_modifier_2 days = 1800 } }
@@ -199,6 +200,64 @@ country_event = {
         name = th_leader_sp.2.a
         custom_tooltip = th_leader_sp.2.a.effect
         default_hide_option = yes
+        hidden_effect = { spth_effect_init_kosuzu_effect = yes }
+    }
+}
+country_event = {
+    id = th_leader_sp.3
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = touhou_kosuzu_poped_last_increased_tech }
+        NOT = { has_country_flag = disable_leader_trait_kosuzu_book_skill }
+        is_ai = no has_authority = auth_gensokyo
+        has_country_flag = has_touhou_kosuzu
+        is_last_increased_tech_repeatable = yes
+        OR = {
+            last_increased_tech = tech_repeatable_improved_tile_energy_output
+            last_increased_tech = tech_repeatable_improved_shield_output
+            last_increased_tech = tech_repeatable_weapon_type_energy_damage
+            last_increased_tech = tech_repeatable_weapon_type_energy_fire_rate
+            last_increased_tech = tech_repeatable_reduced_building_cost
+            last_increased_tech = tech_cosmogenesis_thesis
+
+            last_increased_tech = tech_repeatable_improved_tile_food_output
+            last_increased_tech = tech_repeatable_improved_core_system_cap
+            last_increased_tech = tech_repeatable_improved_army_damage
+            last_increased_tech = tech_repeatable_improved_army_health
+            last_increased_tech = tech_repeatable_improved_leader_life_span
+            last_increased_tech = tech_repeatable_naval_cap
+            last_increased_tech = tech_repeatable_command_limit
+            last_increased_tech = tech_repeatable_improved_starbase_capacity
+            last_increased_tech = tech_repeatable_weapon_type_strike_craft_fire_damage
+            last_increased_tech = tech_repeatable_weapon_type_strike_craft_fire_rate
+            last_increased_tech = tech_ag_revision_psionic_theory
+
+            last_increased_tech = tech_repeatable_improved_tile_mineral_output
+            last_increased_tech = tech_repeatable_improved_military_station_damage
+            last_increased_tech = tech_repeatable_improved_military_station_health
+            last_increased_tech = tech_repeatable_improved_armor_output
+            last_increased_tech = tech_repeatable_weapon_type_explosive_damage
+            last_increased_tech = tech_repeatable_weapon_type_explosive_fire_rate
+            last_increased_tech = tech_repeatable_weapon_type_kinetic_damage
+            last_increased_tech = tech_repeatable_weapon_type_kinetic_fire_rate
+            last_increased_tech = tech_repeatable_reduced_building_time
+            last_increased_tech = tech_ag_revision_gravity_theory
+
+            last_increased_tech = tech_repeatable_improved_lingli
+        }
+    }
+    immediate = {
+        touhou_kosuzu_try_push_last_increased_tech = yes
+        country_event = { id = th_leader_sp.4 days = 1 }
+    }
+}
+country_event = {
+    id = th_leader_sp.4
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        touhou_kosuzu_try_pop_last_increased_tech = yes
     }
 }
 
@@ -335,13 +394,24 @@ ship_event = {
     }
     immediate = {
         from = {
-            spth_reduce_shield = { percent = 0.5 factor = 0.5 }
-            spth_reduce_armor_max = { percent = 0.5 }
+            spth_reduce_shield_max = { percent = 0.2 }
+            spth_reduce_armor_max = { percent = 0.2 }
         }
         if = {
-            limit = { has_hp < 400000000 }
-            reduce_hp = value:touhou_mokou_reduce_value
+            limit = {
+                has_shield_hp < 200000000
+                check_variable_arithmetic = {
+                    which = value:spth_max_shield_value|percent|2.0|
+                    value > trigger:has_shield_hp
+                }
+            }
+            reduce_shield = value:touhou_repair_ship_shield_overflow_value|factor|0.25|
         }
+        if = {
+            limit = { has_modifier = leader_trait_mokou_effect }
+            remove_modifier = leader_trait_mokou_effect
+        }
+        add_modifier = { modifier = leader_trait_mokou_effect days = 4 mult = trigger:has_max_hp }
     }
 }
 
@@ -635,6 +705,20 @@ fleet_event = {
     }
 }
 
+country_event = {
+    id = th_leader_sp.215
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = th_leader_sp_215_fired }
+        check_modifier_value = { modifier = country_has_th_skill_historian value > 0 }
+    }
+    immediate = {
+        set_timed_country_flag = { flag = th_leader_sp_215_fired days = 30 }
+        progress_all_researches = 0.5
+    }
+}
+
 leader_event = {
     id = th_leader_sp.300
     hide_window = yes
@@ -649,7 +733,7 @@ leader_event = {
 }
 
 leader_event = {
-    id = th_leader_sp.300
+    id = th_leader_sp.305
     hide_window = yes
     is_triggered_only = yes
     trigger = {
@@ -1140,7 +1224,7 @@ planet_event = {
                 DAYS = 30 DAYS_RANDOM = 0
             }
             event_target:planet_touhou_hina_skill_4_fleet = {
-                every_owned_ship = { spth_create_jump_particle_effect = yes }
+                every_owned_ship = { touhou_create_temp_jump_particle_effect = yes }
             }
         }
         every_fleet_in_orbit = {

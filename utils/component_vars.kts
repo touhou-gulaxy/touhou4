@@ -1,5 +1,8 @@
 import kotlin.io.path.Path
+import kotlin.io.path.appendLines
+import kotlin.io.path.appendText
 import kotlin.io.path.readLines
+import kotlin.io.path.writeText
 import kotlin.math.roundToInt
 
 data class ComponentResource(
@@ -90,6 +93,8 @@ fun readComponentResourceCSV(content: List<String>): List<ComponentResource> {
     return res
 }
 
+val types_cached = HashSet<String>();
+
 fun readComponentAttributeCSV(content: List<String>): List<ComponentAttribute> {
     val res = ArrayDeque<ComponentAttribute>()
     content.forEach { line ->
@@ -123,11 +128,21 @@ fun readComponentAttributeCSV(content: List<String>): List<ComponentAttribute> {
     return res
 }
 
+val OUTPUT_ATTR_FILE = Path("./components_attributes.log")
+OUTPUT_ATTR_FILE.writeText("")
+
 //readComponentResourceCSV(Path("./components_resources.csv").readLines().drop(1)).forEach {
 //    println(it)
 //}
 readComponentAttributeCSV(Path("./components_attributes.csv").readLines().drop(1)).forEach {
-    println(it)
+    // println(it)
+    OUTPUT_ATTR_FILE.appendText(it.toString() + '\n')
+    types_cached.add(it.type)
+}
+types_cached.forEach {
+    println("@touhou_generic_scale_damage_${it}_factor = 1.0")
+    println("@touhou_generic_scale_windup_${it}_factor = 1.0")
+    println("@touhou_generic_scale_fire_time_${it}_factor = 1.0")
 }
 //readComponentAttributeCSV(Path("./components_attributes.csv").readLines().drop(1)).map {
 //    it.name += "_mutation"

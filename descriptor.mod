@@ -1,4 +1,4 @@
-version="2.3.0"
+version="2.4.0"
 tags={
 	"Gameplay"
 	"Galaxy Generation"
@@ -8,5 +8,5 @@ tags={
 	"AnimationGirls"
 }
 name="东方繁星录 special touhou species"
-supported_version="v4.1.*"
+supported_version="v4.2.*"
 remote_file_id="1834433554"

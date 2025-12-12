@@ -158,6 +158,13 @@ touhou_mask_of_hope_factor = {
     add = modifier:touhou_mask_of_hope_effect
 }
 
+# 下限：ship_spth_damage_reduction_mult_min
+# 上限：1 - ship_spth_damage_reduction_mult_max
+# 下限 > 上限：取下限
+ship_spth_damage_reduction_mult_min_value = {
+    base = 1
+    add = modifier:ship_spth_damage_reduction_mult_min
+}
 ship_spth_damage_reduction_mult_max_value = {
     base = 1
     add = modifier:ship_spth_damage_reduction_mult_max
@@ -167,6 +174,12 @@ ship_spth_damage_reduction_mult_max_buf_value = {
     base = 0
     add = modifier:ship_damage_reduction_mult
     subtract = value:ship_spth_damage_reduction_mult_max_value
+}
+# modifier, min->modifier+val=min->val=min-modifier
+ship_spth_damage_reduction_mult_min_buf_value = {
+    base = 0
+    add = modifier:ship_spth_damage_reduction_mult_min
+    subtract = modifier:ship_damage_reduction_mult
 }
 
 yukari_kamikakushi_dot_damage_size_factor = {
@@ -331,10 +344,23 @@ touhou_aoe_hit_damage_lunar_capital_factor = {
     add = modifier:ship_weapon_damage
     min = 1
 }
+touhou_aoe_hit_damage_gravity_cannon_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_type_energy_weapon_damage_mult
+    add = modifier:weapon_type_gravity_weapon_damage_mult
+    add = modifier:weapon_type_$tag1$_weapon_damage_mult
+    add = modifier:$size_tag$_slot_weapon_damage_mult
+    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = modifier:weapon_archaeotech_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 1
+}
 touhou_aoe_hit_damage_turret_weapon_factor = {
     base = 1
     add = modifier:weapon_type_lingli_weapon_damage_mult
     add = modifier:weapon_type_kinetic_weapon_damage_mult
+    add = modifier:weapon_type_$tag1$_weapon_damage_mult
     add = modifier:$size_tag$_slot_weapon_damage_mult
     add = modifier:weapon_role_artillery_weapon_damage_mult
     add = modifier:weapon_archaeotech_weapon_damage_mult
@@ -353,17 +379,17 @@ touhou_aoe_hit_damage = {
 }
 touhou_aoe_hit_damage_lunar_capital = {
     base = @touhou_aoe_damage_lunar_$type$_$size$
-    mult = value:touhou_aoe_hit_damage_lunar_capital_factor|tag1|lunar_capital|size_tag|$size_tag$|
+    mult = value:touhou_aoe_hit_damage_lunar_capital_factor|tag1|$tag1$|size_tag|$size_tag$|
     mult = value:touhou_aoe_hit_damage_factor_2|layer|$layer$|
 }
 touhou_aoe_hit_damage_gravity_cannon = {
     base = @touhou_aoe_damage_lunar_$type$_$size$
-    mult = value:touhou_aoe_hit_damage_lunar_capital_factor|tag1|weapon_type_gravity|size_tag|$size_tag$|
+    mult = value:touhou_aoe_hit_damage_gravity_cannon_factor|tag1|$tag1$|size_tag|$size_tag$|
     mult = value:touhou_aoe_hit_damage_factor_2|layer|$layer$|
 }
 touhou_aoe_hit_damage_turret_weapon = {
     base = @touhou_aoe_damage_lunar_$type$_$size$
-    mult = value:touhou_aoe_hit_damage_turret_weapon_factor|size_tag|$size_tag$|
+    mult = value:touhou_aoe_hit_damage_turret_weapon_factor|size_tag|$size_tag$|tag1|$tag1$|
     mult = value:touhou_aoe_hit_damage_factor_2|layer|$layer$|
 }
 
@@ -442,4 +468,21 @@ dream_master_skill_value = {
     base = 0
     add = trigger:has_total_skill
     mult = value:touhou_dream_level_factor
+}
+
+touhou_psionic_inhibitor_weapon_damage_modifier = {
+    base = 0
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_type_energy_weapon_damage_mult
+    add = modifier:weapon_type_anti_psionic_weapon_damage_mult
+    add = modifier:weapon_archaeotech_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 0
+}
+
+touhou_min_capped_modifier = {
+    base = $base|1$
+    add = modifier:$modifier$
+    mult = $factor$
+    min = $min|0.1$
 }

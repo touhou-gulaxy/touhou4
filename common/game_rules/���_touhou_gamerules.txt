@@ -1,3 +1,6 @@
+# 提供通用兼容modifier：
+# should_not_count_leader_cap
+# should_not_have_leader_upkeep
 # this = leader
 should_count_towards_leader_cap = {
     NOR = {
@@ -5,7 +8,7 @@ should_count_towards_leader_cap = {
         is_hidden = yes
         has_leader_flag = hired_admiral_merc_leader
         has_leader_flag = should_not_take_leader_cap
-        has_leader_flag = touhou_leader
+        check_modifier_value = { modifier = should_not_count_leader_cap value > 0 }
         is_leader_tier = leader_tier_touhou
         is_leader_tier = leader_tier_legendary
         has_trait = leader_trait_rift_warped
@@ -21,4 +24,48 @@ should_count_towards_leader_cap = {
             }
         }
     }
+}
+should_pay_for_leader_upkeep = {
+    NOR = {
+        AND = {
+            exists = owner
+            owner = {
+                is_gestalt = yes
+            }
+            is_councilor = yes
+        }
+        has_trait = leader_trait_spacebender
+        has_leader_flag = should_not_have_upkeep
+        check_modifier_value = { modifier = should_not_have_leader_upkeep value > 0 }
+    }
+    NOR = {
+        has_leader_flag = marauder_merc_leader
+        has_leader_flag = hired_admiral_merc_leader
+    }
+}
+
+# This, root = country
+can_add_negative_traits_organic = {
+    OR = {
+        has_tradition = tr_genetics_resequencing
+        has_active_tradition = tr_cybernetics_integrated_anatomy
+        has_active_tradition = tr_cybernetics_assimilator_integrated_anatomy
+        has_active_tradition = tr_purity_genotype_regeneration
+        has_active_tradition = tr_purity_genotype_regeneration_wilderness
+        has_active_tradition = tr_mutation_unnatural_selection
+        ##	mod
+        has_country_flag = UGRC_flg_cntr_RULE_all_genemodding	# UGRC
+        has_country_flag = FW_flg_cntr_CHT_genemodding	# FW
+        has_wsg_genemodding_tech = yes	# wsg
+        has_wg_special_authority = yes
+        azurlane_default_govement_trigger = yes	# azl
+        has_afkspace_special_authority = yes
+        has_afkspace_specialmg_authority = yes
+        has_str_genemodding_tech = yes	# 阿夸
+        has_tradition = tr_objects_wv_integrated_physiology	# wv
+        has_authority = auth_gensokyo
+        check_modifier_value = { modifier = can_add_negative_traits_organic value != 0 }
+    }
+    #	PF
+    NOT = { has_country_flag = PF_flg_cntr_STOP_ai_species_mod }
 }

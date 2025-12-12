@@ -398,6 +398,145 @@ leader_event = {
     }
 }
 
+# On destroying enemy ship.
+country_event = {
+    id = paragon_2.1005
+    hide_window = yes
+    is_triggered_only = yes
+
+    immediate = {
+        FROMFROM = { # Winning ship.
+            if = {
+                limit = { exists = fleet.leader }
+                fleet.leader = {
+
+                    # Corsair / Corsair II
+                    if = {
+                        limit = {
+                            OR = {
+                                has_trait = leader_trait_corsair
+                                has_trait = leader_trait_corsair_2
+                            }
+                            ROOT.FROM = { # Owner of losing ship.
+                                is_default_or_fallen = yes
+                            }
+                        }
+                        if = {
+                            limit = { has_trait = leader_trait_corsair }
+                            ROOT = { # Owner of winning ship.
+                                add_resource = {
+                                    energy = @trait_corsair_amt
+                                    mult = value:hells_heart_effect
+                                }
+                            }
+                        }
+                        else = {
+                            ROOT = { # Owner of winning ship.
+                                add_resource = {
+                                    energy = @trait_corsair_2_amt
+                                    mult = value:hells_heart_effect
+                                }
+                            }
+                        }
+                    }
+
+                    # Crusader / Crusader II
+                    if = {
+                        limit = {
+                            has_trait_tier1or2 = {
+                                TRAIT = leader_trait_crusader
+                            }
+                            ROOT.FROM = { # Owner of losing ship.
+                                is_default_or_fallen = yes
+                            }
+                        }
+
+                        ROOT = {
+                            if = {
+                                limit = { PREV = { has_trait = leader_trait_crusader } }
+                                add_resource = {
+                                    unity = @trait_crusader_fleet_amt
+                                }
+                            }
+                            else = {
+                                add_resource = {
+                                    unity = @trait_crusader_2_fleet_amt
+                                }
+                            }
+                        }
+                    }
+
+                    # Shipbreaker / Shipbreaker II
+                    if = {
+                        limit = {
+                            OR = {
+                                has_trait = leader_trait_shipbreaker
+                                has_trait = leader_trait_shipbreaker_2
+                            }
+                            ROOT.FROM = { # Owner of losing fleet.
+                                is_default_or_fallen = yes
+                            }
+                        }
+                        if = {
+                            limit = { has_trait = leader_trait_wandering_in_the_void }
+                            ROOT = {
+                                if = {
+                                    limit = { root.from = { is_touhou_country = yes } }
+                                    add_resource = {
+                                        sr_fuka = 3
+                                        sr_lingli = 3
+                                        mult = root.fromfromfrom.trigger:ship_size_multiplier
+                                    }
+                                }
+                                add_resource = {
+                                    energy = 3
+                                    alloys = 3
+                                    mult = root.fromfromfrom.trigger:ship_size_multiplier
+                                }
+                            }
+                        }
+                        if = {
+                            limit = { has_trait = leader_trait_shipbreaker }
+                            ROOT = {
+                                add_resource = {
+                                    alloys = @trait_shipbreaker_amt
+                                    mult = value:hells_heart_effect
+                                }
+                            }
+                        }
+                        else = {
+                            ROOT = {
+                                add_resource = {
+                                    alloys = @trait_shipbreaker_2_amt
+                                    mult = value:hells_heart_effect
+                                }
+                            }
+                        }
+                    }
+
+                    # Juryrigger / Juryrigger II
+                    if = {
+                        limit = {
+                            OR = {
+                                has_trait = leader_trait_juryrigger
+                                has_trait = leader_trait_juryrigger_2
+                            }
+                        }
+                        ROOT.FROMFROM = {
+                            if = {
+                                limit = { PREV = { has_trait = leader_trait_juryrigger } }
+                                repair_percentage = @trait_juryrigger_amt
+                            }
+                            else = {
+                                repair_percentage = @trait_juryrigger_2_amt
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 # namespace = biocrisis
 #

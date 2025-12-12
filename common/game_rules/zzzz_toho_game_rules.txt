@@ -388,6 +388,57 @@ system_blocks_sensors = {
     }
 }
 
+#舰队是否能迁跃
+# Root：准备迁跃的舰队
+###_[可跃迁]	FW/古代帝国/seooc/莉莉	####################################
+#_|通用禁行|	多彩
+# THIS = Fleet
+can_jump_drive = {
+    #	always = yes	# Moved cooldown to code
+    exists = solar_system
+
+    # FW
+    if = {
+        limit = {
+            OR = {
+                has_fleet_flag = FW_flg_flt_JUMP	# FW特殊跃迁flt
+                controller = {
+                    OR = {
+                        has_country_flag = FW_flg_cntr_CHT_orrery_ON		# 璀璨星图
+                        has_country_flag = FW_flg_cntr_CHT_beacon_ON		# 永恒星炬
+                    }
+                }
+            }
+        }
+        always = yes
+    }
+    #_|通用禁行|	多彩
+    else_if = { limit = { solar_system = { has_star_flag = ELF_Singularity_System } }
+        always = no
+    }
+    # 古代帝国
+    else_if = { limit = { solar_system = { has_star_flag = ag_no_jump_out_system } }
+        custom_tooltip = { fail_text = ag_jump_drive_unable_system_tooltip
+            always = no
+        }
+    }
+    else_if = {
+        limit = {
+            solar_system = {
+                OR = {
+                    has_star_flag = touhou_no_jump_out_system check_modifier_value = { modifier = system_can_not_jump_drive value != 0 }
+                }
+            }
+        }
+        custom_tooltip = {
+            fail_text = mod_system_can_not_jump_drive
+            always = no
+        }
+    }
+    else = {
+        always = yes
+    }
+}
 
 can_leader_explore_astral_rift = {
     custom_tooltip = {

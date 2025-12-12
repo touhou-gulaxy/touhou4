@@ -1,0 +1,590 @@
+namespace = touhou_dreamworld
+
+# 01 -> spawn crisis fleet
+# 10 -> crisis bomb planet
+# 12 -> common fleet action
+# 16 -> arsenal bird action
+# 17 -> kill crisis ship
+# 18 -> killed by crisis ship
+# 19 -> crisis gate 1 killed, TODO
+# 20 -> crisis gate 2 killed, TODO
+# 21 -> all crisis sub gate killed, notif, TODO
+# 22 -> unlock main gate, TODO
+# 23 -> crisis main gate killed, TODO
+# 24 -> all crisis ships destroyed, end of crisis TODO
+# 30 -> build mirror empire starbase
+# 100 -> crisis begin
+# 101 -> notif for crisis invasion
+
+country_event = {
+    id = touhou_dreamworld.1
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this
+        has_touhou_mirror_empire_event_active = yes
+    }
+    immediate = {
+        if = {
+            limit = {
+                NOT = { has_global_flag = touhou_mirror_empire_sub_gate_1_killed }
+                exists = event_target:touhou_mirror_empire_sub_gate_1
+            }
+            event_target:touhou_mirror_empire_sub_gate_1 = {
+                random_system_planet = {
+                    limit = { is_star = yes }
+                    save_event_target_as = touhou_mirror_empire_spawnpoint
+                }
+            }
+            if = {
+                limit = { NOT = { any_owned_fleet = { has_fleet_flag = touhou_mirror_empire_create_ancient_titan_fleet } } }
+                touhou_mirror_empire_create_ancient_titan_fleet = yes
+            }
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                touhou_mirror_empire_create_main_fleet = yes
+            }
+            touhou_mirror_empire_create_attack_fleet = yes
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                touhou_mirror_empire_create_vanguard_fleet = yes
+            }
+            touhou_mirror_empire_create_vanguard_fleet = yes
+        }
+        if = {
+            limit = {
+                NOT = { has_global_flag = touhou_mirror_empire_sub_gate_2_killed }
+                exists = event_target:touhou_mirror_empire_sub_gate_2
+            }
+            event_target:touhou_mirror_empire_sub_gate_2 = {
+                random_system_planet = {
+                    limit = { is_star = yes }
+                    save_event_target_as = touhou_mirror_empire_spawnpoint
+                }
+            }
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                touhou_mirror_empire_create_main_fleet = yes
+            }
+            touhou_mirror_empire_create_attack_fleet = yes
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                touhou_mirror_empire_create_vanguard_fleet = yes
+            }
+            touhou_mirror_empire_create_vanguard_fleet = yes
+        }
+        if = {
+            limit = {
+                NOT = { has_global_flag = touhou_mirror_empire_main_gate_killed }
+                exists = event_target:touhou_mirror_empire_system_home
+            }
+            event_target:touhou_mirror_empire_system_home = {
+                random_system_planet = {
+                    limit = { has_planet_flag = touhou_mirror_empire_system_spawnpoint }
+                    save_event_target_as = touhou_mirror_empire_spawnpoint
+                }
+            }
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                touhou_mirror_empire_create_main_fleet = yes
+            }
+            touhou_mirror_empire_create_attack_fleet = yes
+            if = {
+                limit = { touhou_check_diffiulty_gteq = { value = 3 } }
+                touhou_mirror_empire_create_vanguard_fleet = yes
+            }
+            touhou_mirror_empire_create_vanguard_fleet = yes
+            touhou_mirror_empire_create_vanguard_fleet = yes
+        }
+        every_owned_fleet = {
+            limit = {
+                exists = this
+                is_fleet_idle = yes
+                has_fleet_flag = touhou_mirror_empire_can_move
+                NAND = {
+                    exists = orbit
+                    orbit = {
+                        NOT = { is_star = yes }
+                        exists = owner
+                        owner = { is_hostile = event_target:touhou_mirror_empire }
+                        exists = controller
+                        controller = { is_hostile = event_target:touhou_mirror_empire }
+                    }
+                }
+            }
+            clear_orders = yes
+            clear_fleet_actions = this
+            if = {
+                limit = { has_fleet_flag = touhou_mirror_empire_common_move }
+                fleet_event = { id = touhou_dreamworld.12 days = 3 random = 2 }
+            }
+            else = {
+                fleet_event = { id = touhou_dreamworld.16 days = 4 random = 3 }
+            }
+        }
+        country_event = { id = touhou_dreamworld.1 days = 720 random = 360 }
+    }
+}
+
+# 天灾炸球
+planet_event = {
+    id = touhou_dreamworld.10
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_touhou_mirror_empire_event_active = yes
+        has_orbital_bombardment = yes
+        planet_devastation >= 90
+        from = { is_country_type = touhou_mirror_empire }
+    }
+    immediate = {
+        owner = {
+            country_event = {
+                id = touhou_dreamworld.11
+                scopes = { from = root fromfrom = event_target:touhou_mirror_empire }
+            }
+        }
+        every_country = {
+            limit = { has_event_chain = touhou_mirror_empire_invasion }
+            add_event_chain_counter = {
+                event_chain = touhou_mirror_empire_invasion
+                counter = touhou_mirror_empire_invasion_planet
+                amount = 1
+            }
+        }
+        set_variable = { which = touhou_crisis_13_districts_count value = trigger:num_districts }
+        reroll_random = yes
+        random_list = {
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.1 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.2 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.3 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.4 } }
+            20 = { multiply_variable = { which = touhou_crisis_13_districts_count value = 0.5 } }
+        }
+        reroll_random = yes
+        floor_variable = touhou_crisis_13_districts_count
+        while = { count = touhou_crisis_13_districts_count add_deposit = d_ruined_district }
+        clear_variable = touhou_crisis_13_districts_count
+        add_deposit = d_ruined_building_blocker
+        add_deposit = d_ruined_building_blocker
+        spth_planet_kill_all_pop = yes
+        destroy_colony = yes
+        if = {
+            limit = { is_ringworld = yes }
+            spawn_ringworld_cracker_effect = yes
+            change_pc = pc_ringworld_habitable_damaged
+            set_planet_entity = { entity = ringworld_habitable_damaged_entity }
+        } else_if = {
+            limit = { spth_is_habitat = yes }
+            spth_spawn_habitat_cracker_effect = yes
+        } else_if = {
+            limit = { has_modifier = "holy_planet" }
+            change_pc = pc_shattered
+            remove_modifier = "holy_planet"
+        }
+        solar_system = {
+            every_fleet_in_system = {
+                limit = {
+                    exists = owner
+                    owner = { is_touhou_crisis_faction = yes }
+                    has_fleet_flag = touhou_mirror_empire_can_move
+                    OR = {
+                        AND = { exists = orbit orbit = { is_same_value = root } }
+                        AND = {
+                            is_fleet_idle = yes
+                            NAND = {
+                                exists = orbit
+                                orbit = {
+                                    NOT = { is_star = yes }
+                                    exists = owner
+                                    owner = { is_hostile = event_target:touhou_mirror_empire }
+                                }
+                            }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                if = {
+                    limit = { has_fleet_flag = touhou_mirror_empire_common_move }
+                    fleet_event = { id = touhou_dreamworld.12 days = 3 random = 2 }
+                }
+                else = {
+                    fleet_event = { id = touhou_dreamworld.16 days = 4 random = 3 }
+                }
+            }
+            if = {
+                limit = { count_system_colony = { count = 0 } }
+                system_event = { id = touhou_dreamworld.31 days = 2 }
+            }
+        }
+    }
+}
+country_event = {
+    id = touhou_dreamworld.11
+    title =lunar_capital_psi.28.name
+    desc = lunar_capital_psi.28.desc
+    is_triggered_only = yes
+    location = from
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_nuclear_explosion_room }
+    show_sound = event_super_explosion
+    option = { name = lunar_capital_psi.28.a ai_chance = { weight = 100 } }
+    option = { name = lunar_capital_psi.28.b }
+}
+fleet_event = {
+    id = touhou_dreamworld.12
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this has_fleet_flag = touhou_mirror_empire_common_move
+        has_touhou_mirror_empire_event_active = yes
+    }
+    immediate = {
+        spth_invasion_fleet_action = {
+            ID = touhou_dreamworld
+            TYPE = touhou_mirror_empire
+            OWNER = touhou_mirror_empire
+        }
+    }
+}
+# Invasion fleet action on orbit planet.
+country_event = {
+    id = touhou_dreamworld.13
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_touhou_mirror_empire_event_active = yes
+        is_touhou_crisis_faction = yes
+        from = { has_fleet_flag = touhou_mirror_empire_can_move }
+        fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
+    }
+    immediate = {
+        from = {
+            clear_orders = yes
+            clear_fleet_actions = this
+            if = {
+                limit = { has_fleet_flag = touhou_mirror_empire_common_move }
+                fleet_event = { id = touhou_dreamworld.12 days = 3 random = 2 }
+            }
+            else = {
+                fleet_event = { id = touhou_dreamworld.16 days = 4 random = 3 }
+            }
+        }
+    }
+}
+# Invasion fleet action on win a space battle.
+country_event = {
+    id = touhou_dreamworld.14
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        is_touhou_crisis_faction = yes
+        fromfrom = { fleet = { has_fleet_flag = touhou_mirror_empire_common_move } }
+        fromfromfrom = {
+            OR = {
+                is_ship_class = shipclass_starbase
+                is_ship_class = shipclass_military
+            }
+        }
+    }
+    after = {
+        fromfrom = {
+            solar_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        owner = { is_touhou_crisis_faction = yes }
+                        has_fleet_flag = touhou_mirror_empire_can_move
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    if = {
+                        limit = { has_fleet_flag = touhou_mirror_empire_common_move }
+                        fleet_event = { id = touhou_dreamworld.12 days = 3 random = 2 }
+                    }
+                    else = {
+                        fleet_event = { id = touhou_dreamworld.16 days = 4 random = 3 }
+                    }
+                }
+            }
+        }
+    }
+}
+# Check every month to prevent bugs.
+event = {
+    id = touhou_dreamworld.15
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_global_flag = spth_lunar_capital_psi_crisis_begin
+        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        exists = event_target:touhou_mirror_empire
+        event_target:touhou_mirror_empire = {
+            any_owned_fleet = {
+                exists = this
+                is_fleet_idle = yes
+                has_fleet_flag = touhou_mirror_empire_common_move
+                NAND = {
+                    exists = orbit
+                    orbit = {
+                        NOT = { is_star = yes }
+                        exists = owner
+                        owner = { is_hostile = event_target:touhou_mirror_empire }
+                        exists = controller
+                        controller = { is_hostile = event_target:touhou_mirror_empire }
+                    }
+                }
+            }
+        }
+    }
+    immediate = {
+        event_target:touhou_mirror_empire = {
+            every_owned_fleet = {
+                limit = {
+                    exists = this
+                    is_fleet_idle = yes
+                    has_fleet_flag = touhou_mirror_empire_can_move
+                    NAND = {
+                        exists = orbit
+                        orbit = {
+                            NOT = { is_star = yes }
+                            exists = owner
+                            owner = { is_hostile = event_target:touhou_mirror_empire }
+                            exists = controller
+                            controller = { is_hostile = event_target:touhou_mirror_empire }
+                        }
+                    }
+                }
+                clear_orders = yes
+                clear_fleet_actions = this
+                if = {
+                    limit = { has_fleet_flag = touhou_mirror_empire_common_move }
+                    fleet_event = { id = touhou_dreamworld.12 days = 3 random = 2 }
+                }
+                else = {
+                    fleet_event = { id = touhou_dreamworld.16 days = 4 random = 3 }
+                }
+            }
+        }
+    }
+}
+fleet_event = {
+    id = touhou_dreamworld.16
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = this has_fleet_flag = touhou_mirror_empire_arsenal_action
+        has_touhou_mirror_empire_event_active = yes
+    }
+    immediate = {
+        touhou_crisis_fleet_action = {
+            ID = touhou_dreamworld.16
+            TYPE = touhou_mirror_empire
+            OWNER = touhou_mirror_empire
+        }
+    }
+}
+# 击杀舰船
+country_event = {
+    id = touhou_dreamworld.17
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { is_country_type = touhou_mirror_empire fromfrom = { NOT = { has_ship_flag = touhou_mirror_empire_tmp_ship } } }
+    immediate = {
+        every_country = {
+            limit = { has_event_chain = touhou_mirror_empire_invasion NOT = { is_same_value = root.from } }
+            add_event_chain_counter = {
+                event_chain = touhou_mirror_empire_invasion
+                counter = touhou_mirror_empire_invasion_ships
+                amount = -1
+            }
+            add_event_chain_counter = {
+                event_chain = touhou_mirror_empire_invasion
+                counter = touhou_mirror_empire_invasion_killed_others
+                amount = 1
+            }
+        }
+        from = {
+            if = {
+                limit = { has_event_chain = touhou_mirror_empire_invasion }
+                add_event_chain_counter = {
+                    event_chain = touhou_mirror_empire_invasion
+                    counter = touhou_mirror_empire_invasion_ships
+                    amount = -1
+                }
+                add_event_chain_counter = {
+                    event_chain = touhou_mirror_empire_invasion
+                    counter = touhou_mirror_empire_invasion_killed_us
+                    amount = 1
+                }
+            }
+        }
+    }
+}
+# 舰船被击杀
+country_event = {
+    id = touhou_dreamworld.18
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_country_type = touhou_mirror_empire
+        from = { NOT = { is_country_type = touhou_mirror_empire } }
+    }
+    immediate = {
+        every_country = {
+            limit = { has_event_chain = touhou_mirror_empire_invasion }
+            add_event_chain_counter = {
+                event_chain = touhou_mirror_empire_invasion
+                counter = touhou_mirror_empire_invasion_killed_enm
+                amount = 1
+            }
+        }
+    }
+}
+
+# 刷星基，拉史！
+starbase_event = {
+    id = touhou_dreamworld.30
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        from.owner = { is_country_type = touhou_mirror_empire }
+        NOT = { solar_system = { any_system_planet = { is_colony = yes } } }
+    }
+    immediate = { solar_system = { system_event = { id = touhou_dreamworld.31 days = 2 } } }
+}
+system_event = {
+    id = touhou_dreamworld.31
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { NOT = { exists = starbase } }
+    immediate = { touhou_mirror_empire_create_starbase = yes }
+}
+fleet_event = {
+    id = touhou_dreamworld.32
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_fleet_flag = touhou_mirror_empire_fleet
+        from = {
+            NOT = { exists = starbase }
+            count_system_colony = { count = 0 }
+        }
+    }
+    immediate = { solar_system = { system_event = { id = touhou_dreamworld.31 days = 2 } } }
+}
+
+country_event = {
+    id = touhou_dreamworld.100
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        set_global_flag = touhou_mirror_empire_crisis_begin
+        every_country = {
+            begin_event_chain = {
+                event_chain = touhou_mirror_empire_invasion
+                target = this
+            }
+        }
+        reroll_random = yes
+        set_spawn_system_batch = begin
+        random_rim_system = {
+            limit = { spth_is_no_spawn_crisis_system = no }
+            set_star_flag = spth_no_jump_in_system
+            set_star_flag = ag_no_jump_in_system
+            spawn_system = {
+                initializer = touhou_mirror_empire_system_home
+                hyperlane = no
+                effect = {
+                    add_hyperlane = {
+                        from = this
+                        to = prev
+                    }
+                    save_global_event_target_as = touhou_mirror_empire_system_home
+                }
+            }
+        }
+        set_spawn_system_batch = end
+        touhou_mirror_empire_debug_set_root_country = yes
+        set_update_modifiers_batch = begin
+        touhou_mirror_empire_create_country = yes
+        event_target:touhou_mirror_empire_system_home = {
+            random_system_planet = {
+                limit = { has_planet_flag = touhou_mirror_empire_system_spawnpoint }
+                save_event_target_as = touhou_mirror_empire_spawnpoint
+            }
+        }
+        touhou_mirror_empire_spawn_main_gate = yes
+        touhou_mirror_empire_create_defence_fleet = yes
+        reroll_random = yes
+        random_rim_system = {
+            limit = { spth_is_no_spawn_crisis_system = no }
+            random_system_planet = {
+                save_event_target_as = touhou_mirror_empire_spawnpoint
+            }
+            # set_name = { key = spth_sgreen_this_name variable_string = "\[This.GetName\]" }
+            set_star_flag = spth_no_jump_in_system
+            set_star_flag = ag_no_jump_in_system
+            save_global_event_target_as = touhou_mirror_empire_sub_gate_1
+            set_global_flag = touhou_mirror_empire_sub_gate_1_spawned
+            touhou_mirror_empire_create_gate_1_fleet = yes
+            touhou_mirror_empire_create_defence_fleet = yes
+        }
+        every_country = {
+            limit = { has_event_chain = touhou_mirror_empire_invasion }
+            create_point_of_interest = {
+                id = touhou_mirror_empire_sub_gate_1
+                name = touhou_mirror_empire_sub_gate_1
+                desc = touhou_mirror_empire_sub_gate_1_desc
+                event_chain = touhou_mirror_empire_invasion
+                location = event_target:touhou_mirror_empire_sub_gate_1.star
+            }
+        }
+        reroll_random = yes
+        random_rim_system = {
+            limit = { spth_is_no_spawn_crisis_system = no }
+            random_system_planet = {
+                save_event_target_as = touhou_mirror_empire_spawnpoint
+            }
+            # set_name = { key = spth_sgreen_this_name variable_string = "\[This.GetName\]" }
+            set_star_flag = spth_no_jump_in_system
+            set_star_flag = ag_no_jump_in_system
+            save_global_event_target_as = touhou_mirror_empire_sub_gate_2
+            set_global_flag = touhou_mirror_empire_sub_gate_2_spawned
+            touhou_mirror_empire_create_gate_2_fleet = yes
+            touhou_mirror_empire_create_defence_fleet = yes
+        }
+        every_country = {
+            limit = { has_event_chain = touhou_mirror_empire_invasion }
+            create_point_of_interest = {
+                id = touhou_mirror_empire_sub_gate_2
+                name = touhou_mirror_empire_sub_gate_2
+                desc = touhou_mirror_empire_sub_gate_2_desc
+                event_chain = touhou_mirror_empire_invasion
+                location = event_target:touhou_mirror_empire_sub_gate_2.star
+            }
+        }
+        set_update_modifiers_batch = end
+    }
+}
+
+# 杀了土著
+country_event = {
+    id = touhou_dreamworld.1000
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = {
+        has_touhou_mirror_empire_event_active = yes
+        is_touhou_crisis_faction = yes
+        from = { has_fleet_flag = touhou_mirror_empire_fleet }
+        fromfrom = { is_star = no exists = owner owner = { is_primitive = yes } }
+    }
+    immediate = {
+        fromfrom = { spth_planet_kill_all_pop = yes destroy_colony = yes }
+    }
+}

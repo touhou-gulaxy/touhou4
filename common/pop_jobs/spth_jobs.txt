@@ -7,6 +7,14 @@ genso_foundry = {
 			condition_string = SPECIALIST_JOB_TRIGGER
 			icon = genso_foundry
 		}
+        swap_type = {
+            trigger = { exists = owner check_modifier_value = { modifier = genso_foundry_is_rare_resource_swap value > 0 } }
+            name = genso_living_metal_fabricator
+            desc = genso_living_metal_fabricator
+            icon = genso_living_metal_fabricator
+            building_icon = building_spth_foundry
+            weight = 2
+        }
 	}
 
 	possible_pre_triggers = {
@@ -20,15 +28,43 @@ genso_foundry = {
 	can_be_automated = no
 	resources = {
 		category = planet_metallurgists
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = alloys count = 6 }
+        inline_script = {
+            script = jobs/spth_job_t2_produce_without_pm
+            resources = "alloys = 6"
+            pm = "genso_foundry_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_t2_produce_with_pm
+            resources = "sr_living_metal = 1"
+            pm = "genso_foundry_is_rare_resource_swap"
+        }
 		inline_script = { script = jobs/spth_job_t2_upkeep resource = "minerals = 6 sr_lingli = 1" }
+        upkeep = {
+            trigger = { planet = { check_modifier_value = { modifier = genso_foundry_is_rare_resource_swap value > 0 } } }
+            volatile_motes = 0.5
+        }
+        upkeep = {
+            trigger = {
+                planet = {
+                    check_modifier_value = { modifier = genso_foundry_is_rare_resource_swap value > 0 }
+                    is_variable_set = planet_strong_genso_job_produce_faith_modifier
+                }
+            }
+            volatile_motes = 0.5
+            mult = planet.planet_strong_genso_job_produce_faith_modifier
+        }
 	}
 
-	inline_script = {
-		script = jobs/spth_job_planet_modifier_2
-		mod1 = planet_metallurgists_alloys_produces_add val1 = 0.25
-		mod2 = planet_metallurgists_alloys_produces_mult val2 = 0.025
-	}
+    inline_script = {
+        script = jobs/spth_job_planet_modifiers_without_pm
+        modifiers = "planet_metallurgists_alloys_produces_add = 0.25 planet_metallurgists_alloys_produces_mult = 0.025"
+        pm = "genso_foundry_is_rare_resource_swap"
+    }
+    inline_script = {
+        script = jobs/spth_job_planet_modifiers_with_pm
+        modifiers = "planet_metallurgists_sr_living_metal_produces_mult = 0.005"
+        pm = "genso_foundry_is_rare_resource_swap"
+    }
 
 
 	tags = { touhou_job touhou_bouns touhou_alloys alloys industry }
@@ -56,6 +92,14 @@ genso_artisan = {
 			condition_string = SPECIALIST_JOB_TRIGGER
 			icon = genso_artisan
 		}
+        swap_type = {
+            trigger = { exists = owner check_modifier_value = { modifier = genso_artisan_is_rare_resource_swap value > 0 } }
+            name = genso_nanites_assembler
+            desc = genso_nanites_assembler
+            icon = genso_nanites_assembler
+            building_icon = building_spth_factory
+            weight = 2
+        }
 	}
 
 	possible_pre_triggers = {
@@ -70,15 +114,43 @@ genso_artisan = {
 	can_be_automated = no
 	resources = {
 		category = planet_artisans
-		inline_script = { script = jobs/spth_job_t2_single_produce resource = consumer_goods count = 6 }
+        inline_script = {
+            script = jobs/spth_job_t2_produce_without_pm
+            resources = "consumer_goods = 6"
+            pm = "genso_artisan_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_t2_produce_with_pm
+            resources = "nanites = 1"
+            pm = "genso_artisan_is_rare_resource_swap"
+        }
 		inline_script = { script = jobs/spth_job_t2_upkeep resource = "minerals = 6 sr_lingli = 1" }
+        upkeep = {
+            trigger = { planet = { check_modifier_value = { modifier = genso_artisan_is_rare_resource_swap value > 0 } } }
+            rare_crystals = 0.5
+        }
+        upkeep = {
+            trigger = {
+                planet = {
+                    check_modifier_value = { modifier = genso_artisan_is_rare_resource_swap value > 0 }
+                    is_variable_set = planet_strong_genso_job_produce_faith_modifier
+                }
+            }
+            rare_crystals = 0.5
+            mult = planet.planet_strong_genso_job_produce_faith_modifier
+        }
 	}
 
 	inline_script = {
-		script = jobs/spth_job_planet_modifier_2
-		mod1 = planet_artisans_consumer_goods_produces_add val1 = 0.25
-		mod2 = planet_artisans_consumer_goods_produces_mult val2 = 0.025
+		script = jobs/spth_job_planet_modifiers_without_pm
+        modifiers = "planet_artisans_consumer_goods_produces_add = 0.25 planet_artisans_consumer_goods_produces_mult = 0.025"
+        pm = "genso_artisan_is_rare_resource_swap"
 	}
+    inline_script = {
+        script = jobs/spth_job_planet_modifiers_with_pm
+        modifiers = "planet_artisans_nanites_produces_mult = 0.005"
+        pm = "genso_artisan_is_rare_resource_swap"
+    }
 
 	tags = { touhou_job touhou_bouns touhou_consumer_goods consumer_goods industry }
 	weight = {
@@ -627,12 +699,12 @@ genso_healthcare = {
 	inline_script = {
 		script = jobs/spth_job_planet_modifier_2
 		mod1 = bonus_pop_growth_mult val1 = 0.1
-		mod2 = bonus_pop_growth val2 = 0.25
+		mod2 = bonus_pop_growth val2 = 0.20
 	}
 
 	inline_script = {
 		script = jobs/spth_job_planet_modifier_1
-		mod1 = pop_environment_tolerance val1 = 0.20
+		mod1 = pop_environment_tolerance val1 = 0.10
 	}
 
 	tags = { touhou_job touhou_bouns touhou_pop_growth pop_growth unity }
@@ -1209,6 +1281,14 @@ spth_story_factory_worker = {
 			condition_string = SPECIALIST_JOB_TRIGGER
 			icon = spth_story_factory_worker
 		}
+        swap_type = {
+            trigger = { exists = owner check_modifier_value = { modifier = touhou_factory_worker_is_rare_resource_swap value > 0 } }
+            name = touhou_living_metal_fabricator
+            desc = touhou_living_metal_fabricator
+            icon = touhou_living_metal_fabricator
+            building_icon = building_spth_common_foundry
+            weight = 2
+        }
 	}
 	possible_pre_triggers = {
 		has_owner = yes
@@ -1223,47 +1303,118 @@ spth_story_factory_worker = {
 
 	resources = {
 		category = planet_metallurgists
+        inline_script = {
+            script = jobs/spth_job_produce_without_pm
+            resources = "alloys = 5 consumer_goods = 0.625"
+            pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_city_produce_without_pm
+            resources = "alloys = 1 consumer_goods = 0.125"
+            pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
 		inline_script = {
-			script = jobs/spth_job_twin_produce
-			resource_1 = alloys count_1 = 5 resource_2 = consumer_goods count_2 = 0.625
-		}
-		inline_script = {
-			script = jobs/spth_job_twin_city_produce
-			resource_1 = alloys count_1 = 1 resource_2 = consumer_goods count_2 = 0.125
-		}
-		inline_script = {
-			script = jobs/spth_job_ap_resource_produce type = "produces"
+			script = jobs/spth_job_ap_resource_produce_without_pm type = "produces"
 			resource = "alloys = 2 consumer_goods = 0.25"
-			ap = 2 job_type = "weak"
+			ap = 2 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_resource_produce type = "produces"
+			script = jobs/spth_job_ap_resource_produce_without_pm type = "produces"
 			resource = "alloys = 1 consumer_goods = 0.125"
-			ap = 2 job_type = "weak"
+			ap = 2 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_resource_produce type = "produces"
+			script = jobs/spth_job_ap_resource_produce_without_pm type = "produces"
 			resource = "alloys = 2.5 consumer_goods = 0.3"
-			ap = 3 job_type = "weak"
+			ap = 3 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_city_resource type = "produces"
+			script = jobs/spth_job_ap_city_resource_without_pm type = "produces"
 			resource = "alloys = 1 consumer_goods = 0.125 sr_living_metal = 0.125"
-			ap = 3 job_type = "weak"
+			ap = 3 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_resource_produce type = "produces"
+			script = jobs/spth_job_ap_resource_produce_without_pm type = "produces"
 			resource = "alloys = 2.5 consumer_goods = 0.3 sr_living_metal = 0.3"
-			ap = 4 job_type = "weak"
+			ap = 4 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
 		}
 		inline_script = {
-			script = jobs/spth_job_ap_city_resource type = "produces"
+			script = jobs/spth_job_ap_city_resource_without_pm type = "produces"
 			resource = "alloys = 1 consumer_goods = 0.125 sr_living_metal = 0.125"
-			ap = 4 job_type = "weak"
+			ap = 4 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
 		}
+        # swap
+        inline_script = {
+            script = jobs/spth_job_produce_with_pm
+            resources = "sr_living_metal = 0.5"
+            pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_city_produce_with_pm
+            resources = "sr_living_metal = 0.1"
+            pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_with_pm type = "produces"
+            resource = "sr_living_metal = 0.2"
+            ap = 2 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_with_pm type = "produces"
+            resource = "sr_living_metal = 0.1"
+            ap = 2 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_with_pm type = "produces"
+            resource = "sr_living_metal = 0.25"
+            ap = 3 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_city_resource_with_pm type = "produces"
+            resource = "sr_living_metal = 0.15"
+            ap = 3 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_with_pm type = "produces"
+            resource = "sr_living_metal = 0.4"
+            ap = 4 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_city_resource_with_pm type = "produces"
+            resource = "sr_living_metal = 0.15"
+            ap = 4 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
 		inline_script = { script = jobs/spth_job_single_upkeep resource = minerals count = 3 }
 		inline_script = { script = jobs/spth_job_ap_resource type = "upkeep" resource = "minerals = 4 sr_lingli = 0.06" ap = 3 job_type = "weak" }
 		inline_script = { script = jobs/spth_job_ap_resource type = "upkeep" resource = "minerals = 5 sr_lingli = 0.08" ap = 4 job_type = "weak" }
+        upkeep = {
+            trigger = { planet = { check_modifier_value = { modifier = touhou_factory_worker_is_rare_resource_swap value > 0 } } }
+            volatile_motes = 0.25
+            alloys = 3
+            minerals = -2
+        }
+        upkeep = {
+            trigger = {
+                planet = {
+                    check_modifier_value = { modifier = touhou_factory_worker_is_rare_resource_swap value > 0 }
+                    is_variable_set = planet_strong_genso_job_produce_faith_modifier
+                }
+            }
+            volatile_motes = 0.25
+            alloys = 3
+            minerals = -2
+            mult = planet.planet_strong_genso_job_produce_faith_modifier
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_without_pm type = "upkeep"
+            resource = "alloys = 2 sr_lingli = 0.06 minerals = -2"
+            ap = 3 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_without_pm type = "upkeep"
+            resource = "alloys = 3 sr_lingli = 0.08 minerals = -2"
+            ap = 4 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
 	}
 
 	tags = { touhou_job touhou_base touhou_alloys alloys industry }
@@ -1294,6 +1445,14 @@ spth_story_industry_worker = {
 			condition_string = SPECIALIST_JOB_TRIGGER
 			icon = spth_story_industry_worker
 		}
+        swap_type = {
+            trigger = { exists = owner check_modifier_value = { modifier = touhou_industry_worker_is_rare_resource_swap value > 0 } }
+            name = touhou_nanites_assembler
+            desc = touhou_nanites_assembler
+            icon = touhou_nanites_assembler
+            building_icon = building_spth_common_factory
+            weight = 2
+        }
 	}
 	possible_pre_triggers = {
 		has_owner = yes
@@ -1308,33 +1467,118 @@ spth_story_industry_worker = {
 
 	resources = {
 		category = planet_artisans
-		inline_script = { script = jobs/spth_job_single_produce resource = consumer_goods count = 6 }
-		inline_script = { script = jobs/spth_job_single_city_produce resource = consumer_goods count = 1 }
-		inline_script = { script = jobs/spth_job_single_ap_produce ap = 2 resource = consumer_goods count = 2 }
-		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = 2 resource = consumer_goods count = 1 }
-		inline_script = { script = jobs/spth_job_single_ap_produce ap = 3 resource = consumer_goods count = 2.5 }
-		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = 3 resource = consumer_goods count = 1 }
-		produces = {
-			trigger = {
-				owner = { has_touhou_ascension_tier_4 = yes }
-			}
-			consumer_goods = 3.5
-			unity = 1
-			sr_fuka = 0.25
-		}
-		produces = {
-			trigger = {
-				owner = { has_touhou_ascension_tier_4 = yes }
-			}
-			consumer_goods = 3.5
-			unity = 1
-			sr_fuka = 0.25
-			mult = planet.planet_weak_genso_job_produce_faith_modifier
-		}
-		inline_script = { script = jobs/spth_job_single_ap_city_produce ap = 4 resource = consumer_goods count = 1 }
+        inline_script = {
+            script = jobs/spth_job_produce_without_pm
+            resources = "consumer_goods = 6"
+            pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_city_produce_without_pm
+            resources = "consumer_goods = 1"
+            pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_without_pm type = "produces"
+            resource = "consumer_goods = 2"
+            ap = 2 job_type = "weak" pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_city_resource_without_pm type = "produces"
+            resource = "consumer_goods = 1"
+            ap = 2 job_type = "weak" pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_without_pm type = "produces"
+            resource = "consumer_goods = 2.5"
+            ap = 3 job_type = "weak" pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_city_resource_without_pm type = "produces"
+            resource = "consumer_goods = 1"
+            ap = 3 job_type = "weak" pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_without_pm type = "produces"
+            resource = "consumer_goods = 3.5 unity = 1 sr_fuka = 0.25"
+            ap = 4 job_type = "weak" pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_city_resource_without_pm type = "produces"
+            resource = "consumer_goods = 1"
+            ap = 4 job_type = "weak" pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
+        # swap
+        inline_script = {
+            script = jobs/spth_job_produce_with_pm
+            resources = "nanites = 0.5"
+            pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_city_produce_with_pm
+            resources = "nanites = 0.1"
+            pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_with_pm type = "produces"
+            resource = "nanites = 0.2"
+            ap = 2 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_with_pm type = "produces"
+            resource = "nanites = 0.1"
+            ap = 2 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_with_pm type = "produces"
+            resource = "nanites = 0.25"
+            ap = 3 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_city_resource_with_pm type = "produces"
+            resource = "nanites = 0.15"
+            ap = 3 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_with_pm type = "produces"
+            resource = "nanites = 0.4"
+            ap = 4 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_city_resource_with_pm type = "produces"
+            resource = "nanites = 0.15"
+            ap = 4 job_type = "weak" pm = "touhou_factory_worker_is_rare_resource_swap"
+        }
 		inline_script = { script = jobs/spth_job_single_upkeep resource = minerals count = 3 }
 		inline_script = { script = jobs/spth_job_ap_resource type = "upkeep" resource = "minerals = 4 sr_lingli = 0.06" ap = 3 job_type = "weak" }
 		inline_script = { script = jobs/spth_job_ap_resource type = "upkeep" resource = "minerals = 5 sr_lingli = 0.08" ap = 4 job_type = "weak" }
+        upkeep = {
+            trigger = { planet = { check_modifier_value = { modifier = touhou_industry_worker_is_rare_resource_swap value > 0 } } }
+            rare_crystals = 0.25
+            alloys = 3
+            minerals = -2
+        }
+        upkeep = {
+            trigger = {
+                planet = {
+                    check_modifier_value = { modifier = touhou_industry_worker_is_rare_resource_swap value > 0 }
+                    is_variable_set = planet_strong_genso_job_produce_faith_modifier
+                }
+            }
+            rare_crystals = 0.25
+            alloys = 3
+            minerals = -2
+            mult = planet.planet_strong_genso_job_produce_faith_modifier
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_without_pm type = "upkeep"
+            resource = "alloys = 2 sr_lingli = 0.06 minerals = -2"
+            ap = 3 job_type = "weak" pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
+        inline_script = {
+            script = jobs/spth_job_ap_resource_produce_without_pm type = "upkeep"
+            resource = "alloys = 3 sr_lingli = 0.08 minerals = -2"
+            ap = 4 job_type = "weak" pm = "touhou_industry_worker_is_rare_resource_swap"
+        }
 	}
 
 	tags = { touhou_job touhou_base touhou_consumer_goods consumer_goods industry }

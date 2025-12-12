@@ -158,6 +158,7 @@ ship_event = {
                                 effect = {
                                     set_owner = event_target:touhou_station_owner
                                     create_ship = {
+                                        fleet_cache_recalc = no
                                         name = "NAME_touhou_psionic_inhibitor"
                                         design = "NAME_touhou_psionic_inhibitor"
                                         prefix = no
@@ -202,6 +203,7 @@ ship_event = {
                                 effect = {
                                     set_owner = event_target:touhou_station_owner
                                     create_ship = {
+                                        fleet_cache_recalc = no
                                         name = "NAME_touhou_psionic_burster"
                                         design = "NAME_touhou_psionic_burster"
                                         prefix = no
@@ -890,6 +892,10 @@ ship_event = {
         solar_system = {
             every_cosmic_storm = {
                 limit = { has_storm_flag = spth_space_shrine_station_generated_storm_@prevprev }
+                every_system_within_storm = {
+                    unset_cosmic_storm = yes
+                    scarlet_weather_event_storm_remove = { type = event_common }
+                }
                 destroy_cosmic_storm = yes
             }
             # remove and set sc
@@ -988,7 +994,7 @@ ship_event = {
                         10 = { set_location = { target = root.from.star distance = 100 angle = random } }
                     }
                     reroll_random = yes
-                    every_owned_ship = { spth_create_jump_particle_effect = yes }
+                    every_owned_ship = { touhou_create_temp_jump_particle_effect = yes }
                 }
             }
             clear_global_event_target = touhou_source_system_@root
@@ -1134,6 +1140,8 @@ ship_event = {
     is_triggered_only = yes
     trigger = { has_touhou_disable = yes }
     immediate = {
+        set_confused = no
+        remove_terrified = yes
         spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 sh_perc = 1.0 }
         if = {
             limit = { has_touhou_invincible = yes }
@@ -1143,7 +1151,8 @@ ship_event = {
                 on_action = on_disable_touhou_invincible
                 scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
             }
-        } else_if = {
+        }
+        else_if = {
             limit = { is_ship_size = TH_super_carrier }
             change_variable = { which = spth_super_carrier_inv_counter value = 1 }
             owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
@@ -1163,13 +1172,15 @@ ship_event = {
                     scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
                 }
             }
-        } else_if = {
+        }
+        else_if = {
             limit = { NOT = { has_ship_flag = has_triggered_spth_extra_life } }
             fire_on_action = {
                 on_action = on_disable_non_spth_extra_life
                 scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
             }
-        } else = {
+        }
+        else = {
             if = {
                 limit = { check_modifier_value = { modifier = ship_spth_extra_life value > 1 } }
                 set_disable_at_health = 0.01
@@ -1273,6 +1284,24 @@ ship_event = {
         } else = {
             if = {
                 limit = {
+                    NOT = { has_ship_flag = ship_th_has_void_snack_used }
+                    check_modifier_value = { modifier = ship_th_has_void_snack value != 0 }
+                }
+                set_timed_ship_flag = { flag = ship_th_has_void_snack_used days = 180 }if = {
+                    limit = { has_shield_hp <= 100000000 }
+                    if = {
+                        limit = {
+                            check_variable_arithmetic = {
+                                which = value:spth_max_shield_value|percent|3.0|
+                                value > trigger:has_shield_hp
+                            }
+                        }
+                        reduce_shield = value:touhou_repair_ship_shield_overflow_value|factor|1.0|
+                    }
+                }
+            }
+            else_if = {
+                limit = {
                     OR = {
                         check_modifier_value = { modifier = ship_th_mokou_skill value != 0 }
                         check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 }
@@ -1306,7 +1335,8 @@ ship_event = {
                         clear_variable = ship_spth_extra_life_reduce
                     }
                 }
-            } else = {
+            }
+            else = {
                 if = {
                     limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
                     change_variable = { which = spth_extra_life_used value = 1 }
@@ -1441,6 +1471,7 @@ system_event = {
                 set_event_locked = yes
                 set_owner = root.from
                 create_ship = {
+                    fleet_cache_recalc = no
                     design = spth_super_carrier_destroyed_storm
                     effect = {
                         set_name = spth_super_carrier_destroyed_storm
@@ -1450,6 +1481,7 @@ system_event = {
                     }
                 }
                 create_ship = {
+                    fleet_cache_recalc = no
                     design = spth_super_carrier_destroyed_storm_last
                     effect = {
                         set_ship_flag = spth_super_carrier_destroyed_storm
@@ -1761,6 +1793,18 @@ country_event = {
     }
     immediate = {
         fromfrom = {
+            if = {
+                limit = {
+                    NOT = { has_fleet_flag = touhou_extra_repair_percent_fired }
+                    OR = {
+                        check_modifier_value = { modifier = touhou_hull_repair_percent value != 0 }
+                        check_modifier_value = { modifier = touhou_armor_repair_percent value != 0 }
+                        check_modifier_value = { modifier = touhou_shield_repair_percent value != 0 }
+                    }
+                }
+                set_fleet_flag = touhou_extra_repair_percent_fired
+                fleet_event = { id = spth_fleet.2018 }
+            }
             reroll_random = yes
             leader = {
                 switch = {
@@ -1994,10 +2038,10 @@ country_event = {
                                 set_timed_fleet_flag = { flag = leader_trait_komachi_cooldown days = 180 }
                                 save_event_target_as = leader_trait_komachi_location
                                 set_variable = { which = leader_trait_komachi_ghost_count value = 2 }
-                                multiply_variable = { which = leader_trait_komachi value = prev.trigger:has_total_skill }
+                                multiply_variable = { which = leader_trait_komachi_ghost_count value = prev.trigger:has_total_skill }
                                 if = {
-                                    limit = { check_variable = { which = leader_trait_komachi value > 30 } }
-                                    set_variable = { which = leader_trait_komachi value = 30 }
+                                    limit = { check_variable = { which = leader_trait_komachi_ghost_count value > 30 } }
+                                    set_variable = { which = leader_trait_komachi_ghost_count value = 30 }
                                 }
                                 spth_create_fleet = {
                                     NAME = NAME_TH_battle_cruiser_ghost
@@ -2006,13 +2050,13 @@ country_event = {
                                     location = event_target:leader_trait_komachi_location
                                     uses_naval_capacity = no
                                     flag = leader_trait_komachi_ghost_fleet
-                                    NAME_TH_battle_cruiser_ghost = leader_trait_komachi
+                                    NAME_TH_battle_cruiser_ghost = prev.leader_trait_komachi_ghost_count
                                     evt_target = spth_leader_skill_komachi_fleet
                                     fleet_action_delayed = spth_fleet.1006
                                     DAYS = 20 DAYS_RANDOM = 0
                                 }
                                 event_target:spth_leader_skill_komachi_fleet = {
-                                    every_owned_ship = { spth_create_jump_particle_effect = yes }
+                                    every_owned_ship = { touhou_create_temp_jump_particle_effect = yes }
                                 }
                             }
                         }
@@ -2023,14 +2067,115 @@ country_event = {
                                 limit = { NOT = { has_fleet_flag = leader_trait_utsuho_skill_fired } }
                                 set_timed_fleet_flag = { flag = leader_trait_utsuho_skill_fired days = 180 }
                                 every_owned_ship = {
-                                    spth_reduce_shield_max = { percent = 1 }
-                                    add_modifier = { modifier = th_leader_trait_utsuho days = 4 }
-                                    th_spawn_explosion_particle = { color = blue size = medium }
-                                }
-                                root.fromfromfrom = {
-                                    spth_reduce_shield_max = { percent = 1 }
-                                    add_modifier = { modifier = th_leader_trait_utsuho days = 12 }
-                                    th_spawn_explosion_particle = { color = pink size = large }
+                                    # spth_reduce_shield_max = { percent = 0.50 }
+                                    add_modifier = { modifier = th_leader_trait_utsuho days = 16 }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = ship_shield_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_shield days = 16 mult = modifier:ship_shield_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_energy_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_energy days = 16 mult = modifier:weapon_type_energy_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_kinetic_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_kinetic days = 16 mult = modifier:weapon_type_kinetic_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_gungnir_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_gungnir days = 16 mult = modifier:weapon_type_gungnir_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_spark_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_spark days = 16 mult = modifier:weapon_type_spark_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_xianzhe_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_xianzhe days = 16 mult = modifier:weapon_type_xianzhe_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_knife_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_knife days = 16 mult = modifier:weapon_type_knife_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_lingli_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_lingli days = 16 mult = modifier:weapon_type_lingli_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_kappa_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_kappa days = 16 mult = modifier:weapon_type_kappa_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_yuzhu_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_yuzhu days = 16 mult = modifier:weapon_type_yuzhu_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_needle_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_needle days = 16 mult = modifier:weapon_type_needle_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_xieshi_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_xieshi days = 16 mult = modifier:weapon_type_xieshi_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_reimu_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_reimu days = 16 mult = modifier:weapon_type_reimu_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_sanae_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_sanae days = 16 mult = modifier:weapon_type_sanae_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_laevatain_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_laevatain days = 16 mult = modifier:weapon_type_laevatain_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_lunar_capital_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_lunar_capital days = 16 mult = modifier:weapon_type_lunar_capital_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_lunar_capital_2_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_lunar_capital_2 days = 16 mult = modifier:weapon_type_lunar_capital_2_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_loukanken_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_loukanken days = 16 mult = modifier:weapon_type_loukanken_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_spth_yuzhu_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_spth_yuzhu days = 16 mult = modifier:weapon_type_spth_yuzhu_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_resurrection_butterfly_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_resurrection_butterfly days = 16 mult = modifier:weapon_type_resurrection_butterfly_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_th_toyohime_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_th_toyohime days = 16 mult = modifier:weapon_type_th_toyohime_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_psionic_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_psionic days = 16 mult = modifier:weapon_type_psionic_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_anti_psionic_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_anti_psionic days = 16 mult = modifier:weapon_type_anti_psionic_weapon_damage_mult }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = weapon_type_gravity_weapon_damage_mult value > 0 } }
+                                        add_modifier = { modifier = th_leader_trait_utsuho_gravity days = 16 mult = modifier:weapon_type_gravity_weapon_damage_mult }
+                                    }
+                                    create_ambient_object = {
+                                        type = touhou_utsuho_skill_upgrade
+                                        location = this
+                                        duration = 10
+                                        use_3d_location = yes
+                                        entity_offset = { min = 0 max = 0 }
+                                        entity_offset_angle = { min = 0 max = 0 }
+                                        entity_offset_height = { min = 0 max = 0 }
+                                        entity_scale_to_size = no
+                                        scale = 0.1
+                                    }
                                 }
                             }
                         }
@@ -2092,6 +2237,7 @@ country_event = {
                                                         set_timed_ship_flag = { flag = flandre_skill_root_ship days = 20 }
                                                         prevprev = {
                                                             create_ship = {
+                                                                fleet_cache_recalc = no
                                                                 name = prev
                                                                 design = prev.design
                                                                 effect = {
@@ -2160,7 +2306,7 @@ country_event = {
                                 set_timed_fleet_flag = { flag = leader_trait_touhou_moon_van_skill_fired days = 30 }
                                 every_owned_ship = {
                                     add_modifier = {
-                                        modifier = leader_trait_touhou_moon_van days = 4
+                                        modifier = leader_trait_touhou_moon_van days = 9
                                         mult = trigger:has_shield_hp
                                     }
                                 }
@@ -2174,7 +2320,7 @@ country_event = {
                                 set_timed_fleet_flag = { flag = leader_trait_touhou_moon_van_skill_fired days = 30 }
                                 every_owned_ship = {
                                     add_modifier = {
-                                        modifier = leader_trait_touhou_moon_van days = 4
+                                        modifier = leader_trait_touhou_moon_van days = 9
                                         mult = trigger:has_shield_hp
                                     }
                                 }
@@ -2245,6 +2391,7 @@ country_event = {
                                         set_fleet_flag = doremy_sweet_phantom_player_fleet
                                         set_owner = prevprev.owner
                                         create_ship = {
+                                            fleet_cache_recalc = no
                                             design = doremy_sweet_book_phantom
                                             effect = { set_ship_flag = doremy_sweet_phantom set_ship_flag = spth_invincible set_disable_at_health = 0.01 }
                                         }
@@ -2256,13 +2403,31 @@ country_event = {
                             }
                         }
                     }
+                    leader_trait_linshi = {
+                        if = {
+                            limit = { NOT = { has_leader_flag = leader_trait_linshi_skill } }
+                            set_timed_leader_flag = { flag = leader_trait_linshi_skill days = 180 }
+                            prev = {
+                                every_owned_ship = {
+                                    add_modifier = {
+                                        modifier = leader_trait_linshi_skill
+                                        mult = value:spth_max_shield_value|percent|1.00| days = 31
+                                    }
+                                }
+                            }
+                        }
+                    }
                     default = {}
                 }
+                # 星空大盗
                 if = {
                     limit = {
-                        prev = { NOT = { has_fleet_flag = fleet_th_star_pirate_fired } }
-                        check_modifier_value = { modifier = fleet_th_has_star_pirate value != 0 }
+                        prev = {
+                            NOT = { has_fleet_flag = fleet_th_star_pirate_fired }
+                            check_modifier_value = { modifier = fleet_th_has_star_pirate value != 0 }
+                        }
                     }
+                    log = "triggered touhou_star_pirate."
                     if = {
                         limit = { check_modifier_value = { modifier = fleet_th_star_pirate_lvl value = 1 } }
                         prev = {
@@ -2317,6 +2482,199 @@ country_event = {
                     } else = {
                         prev = {
                             set_timed_fleet_flag = { flag = fleet_th_star_pirate_fired days = 180 }
+                        }
+                    }
+                }
+                # 战狂
+                if = {
+                    limit = {
+                        prev = {
+                            NOT = { has_fleet_flag = fleet_th_has_fanatic_fired }
+                            check_modifier_value = { modifier = fleet_th_has_fanatic value != 0 }
+                        }
+                    }
+                    log = "triggered touhou_fanatic self."
+                    prev = {
+                        set_timed_fleet_flag = { flag = fleet_th_has_fanatic_fired days = 60 }
+                        every_owned_ship = {
+                            add_modifier = { modifier = leader_trait_touhou_fanatic_self days = 31 }
+                            if = {
+                                limit = { check_modifier_value = { modifier = ship_shield_mult value > 0 } }
+                                add_modifier = { modifier = leader_trait_touhou_fanatic_shield mult = 0.8 days = 31 }
+                            }
+                            if = {
+                                limit = { check_modifier_value = { modifier = ship_armor_mult value > 0 } }
+                                add_modifier = { modifier = leader_trait_touhou_fanatic_armor mult = 0.8 days = 31 }
+                            }
+                        }
+                    }
+                }
+                if = {
+                    limit = {
+                        root.fromfromfrom = { NOT = { has_fleet_flag = fleet_th_has_fanatic_fired_enm } }
+                        prev = { check_modifier_value = { modifier = fleet_th_has_fanatic value != 0 } }
+                    }
+                    log = "triggered touhou_fanatic enm."
+                    root.fromfromfrom = {
+                        set_timed_fleet_flag = { flag = fleet_th_has_fanatic_fired_enm days = 60 }
+                        every_owned_ship = {
+                            add_modifier = { modifier = leader_trait_touhou_fanatic days = 31 }
+                            if = {
+                                limit = { check_modifier_value = { modifier = ship_shield_mult value > 0 } }
+                                add_modifier = { modifier = leader_trait_touhou_fanatic_shield mult = 1.4 days = 31 }
+                            }
+                            if = {
+                                limit = { check_modifier_value = { modifier = ship_armor_mult value > 0 } }
+                                add_modifier = { modifier = leader_trait_touhou_fanatic_armor mult = 1.4 days = 31 }
+                            }
+                        }
+                    }
+                }
+                # 防御结界
+                if = {
+                    limit = {
+                        prev = {
+                            NOT = { has_fleet_flag = fleet_has_touhou_defence_cooldown }
+                            check_modifier_value = { modifier = fleet_has_touhou_defence value != 0 }
+                        }
+                    }
+                    log = "triggered touhou_defence."
+                    prev = {
+                        if = {
+                            limit = { check_modifier_value = { modifier = fleet_has_touhou_defence value = 3 } }
+                            set_timed_fleet_flag = { flag = fleet_has_touhou_defence_cooldown days = 9 }
+                            every_owned_ship = {
+                                add_modifier = {
+                                    modifier = leader_trait_touhou_defence days = 9
+                                    mult = trigger:has_max_hp
+                                }
+                            }
+                        }
+                        else_if = {
+                            limit = { check_modifier_value = { modifier = fleet_has_touhou_defence value = 2 } }
+                            set_timed_fleet_flag = { flag = fleet_has_touhou_defence_cooldown days = 7 }
+                            every_owned_ship = {
+                                add_modifier = {
+                                    modifier = leader_trait_touhou_defence days = 7
+                                    mult = trigger:has_max_hp
+                                }
+                            }
+                        } else = {
+                            set_timed_fleet_flag = { flag = fleet_has_touhou_defence_cooldown days = 5 }
+                            every_owned_ship = {
+                                add_modifier = {
+                                    modifier = leader_trait_touhou_defence days = 5
+                                    mult = trigger:has_max_hp
+                                }
+                            }
+                        }
+                    }
+                }
+                # 航空管制
+                if = {
+                    limit = {
+                        root.fromfromfrom = { NOT = { has_fleet_flag = fleet_has_touhou_space_creature_cooldown } }
+                        prev = { check_modifier_value = { modifier = fleet_has_touhou_space_creature value != 0 } }
+                    }
+                    log = "triggered touhou_aircraft."
+                    root.fromfromfrom = {
+                        set_timed_fleet_flag = { flag = fleet_has_touhou_space_creature_cooldown days = 17 }
+                        every_owned_ship = {
+                            add_modifier = {
+                                modifier = leader_trait_touhou_space_creature days = 17
+                                mult = modifier:strike_craft_regeneration_mult
+                            }
+                            add_modifier = { modifier = leader_trait_touhou_space_creature_skill days = 17 }
+                        }
+                    }
+                }
+                # 无人机
+                if = {
+                    limit = {
+                        prev = {
+                            NOT = { has_fleet_flag = fleet_has_touhou_spawn_drone_cooldown }
+                            check_modifier_value = { modifier = fleet_has_touhou_spawn_drone value != 0 }
+                        }
+                    }
+                    log = "triggered touhou_spawn_drone."
+                    prev = {
+                        set_timed_fleet_flag = { flag = fleet_has_touhou_spawn_drone_cooldown days = 30 }
+                        reroll_random = yes
+                        if = {
+                            limit = { check_modifier_value = { modifier = fleet_has_touhou_spawn_drone_amount value = 2 } }
+                            random_list = {
+                                25 = { touhou_spawn_event_drones = { count = 1 drone_count = 24 days = 15 } }
+                                50 = { touhou_spawn_event_drones = { count = 2 drone_count = 24 days = 15 } }
+                                25 = { touhou_spawn_event_drones = { count = 3 drone_count = 24 days = 15 } }
+                            }
+                        }
+                        else = {
+                            random_list = {
+                                66 = { touhou_spawn_event_drones = { count = 1 drone_count = 20 days = 10 } }
+                                33 = { touhou_spawn_event_drones = { count = 2 drone_count = 20 days = 10 } }
+                            }
+                        }
+                    }
+                }
+                # 生者必灭
+                if = {
+                    limit = {
+                        root.fromfromfrom = { NOT = { has_fleet_flag = fleet_has_touhou_yuyuko_death_cooldown } }
+                        prev = { check_modifier_value = { modifier = fleet_has_touhou_yuyuko_death value != 0 } }
+                    }
+                    log = "triggered touhou_yuyuko_death."
+                    root.fromfromfrom = {
+                        set_timed_fleet_flag = { flag = fleet_has_touhou_yuyuko_death_cooldown days = 30 }
+                        every_owned_ship = {
+                            if = {
+                                limit = { check_modifier_value = { modifier = ship_hull_regen_add_static value > 0 } }
+                                add_modifier = { modifier = leader_trait_touhou_yuyuko_death_static days = 11 }
+                            }
+                            if = {
+                                limit = { check_modifier_value = { modifier = ship_hull_regen_add_perc value > 0 } }
+                                add_modifier = { modifier = leader_trait_touhou_yuyuko_death_perc days = 11 }
+                            }
+                        }
+                    }
+                }
+                # 爆炸反应装甲
+                if = {
+                    limit = {
+                        prev = {
+                            NOT = { has_fleet_flag = fleet_touhou_era_armor_cooldown }
+                            check_modifier_value = { modifier = fleet_touhou_era_armor_duration value != 0 }
+                        }
+                    }
+                    log = "triggered touhou ERA armor."
+                    prev = {
+                        set_timed_fleet_flag = { flag = fleet_touhou_era_armor_cooldown days = 60 }
+                        every_owned_ship = {
+                            limit = { check_modifier_value = { modifier = ship_spth_inv_status value <= 0 } }
+                            add_modifier = {
+                                modifier = leader_trait_touhou_era_armor days = 1
+                                time_multiplier = modifier:fleet_touhou_era_armor_duration
+                            }
+                        }
+                    }
+                }
+                # 火力提升
+                if = {
+                    limit = {
+                        prev = {
+                            NOT = { has_fleet_flag = fleet_touhou_touhou_firepower_cooldown }
+                            check_modifier_value = { modifier = fleet_touhou_touhou_firepower_lvl value != 0 }
+                        }
+                    }
+                    log = "triggered touhou firepower bonus."
+                    prev = {
+                        set_fleet_flag = fleet_touhou_touhou_firepower_cooldown
+                        set_variable = { which = touhou_touhou_firepower_bonus_mode value = 0 }
+                        if = {
+                            limit = { check_variable = { which = fleet_touhou_touhou_firepower_lvl value = 2 } }
+                            fleet_event = { id = spth_fleet.2024 }
+                        }
+                        else = {
+                            fleet_event = { id = spth_fleet.2023 }
                         }
                     }
                 }
@@ -2416,7 +2774,7 @@ country_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        is_touhou_country = yes
+        is_touhou_country = yes exists = from
         fromfrom = {
             NOT = { has_fleet_flag = spth_fleet_1209_fired }
             any_owned_ship = { has_ship_flag = is_spth_space_shrine_station }
@@ -2436,9 +2794,10 @@ country_event = {
                             }
                         }
                     }
+                    add_modifier = { modifier = touhou_space_shrine_inv }
                     set_ship_flag = spth_invincible
                 }
-                ship_event = { id = spth_fleet.1210 days = 4 }
+                ship_event = { id = spth_fleet.1210 days = 3 }
             }
         }
     }
@@ -2459,11 +2818,16 @@ ship_event = {
                         }
                     }
                 }
-                if = { limit = { NOT = { has_ship_flag = spth_invincible } } set_ship_flag = spth_invincible }
+                if = {
+                    limit = { NOT = { has_ship_flag = spth_invincible } }
+                    add_modifier = { modifier = touhou_space_shrine_inv }
+                    set_ship_flag = spth_invincible
+                }
             } else = {
+                remove_modifier = touhou_space_shrine_inv
                 remove_ship_flag = spth_invincible
             }
-            ship_event = { id = spth_fleet.1210 days = 4 }
+            ship_event = { id = spth_fleet.1210 days = 3 }
         } else = {
             fleet = { remove_fleet_flag = spth_fleet_1209_fired }
             remove_ship_flag = spth_invincible
@@ -2514,7 +2878,7 @@ ship_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        NOT = { has_ship_flag = spth_fleet_1212_recent }
+        NOT = { has_ship_flag = spth_fleet_1212_recent } exists = from
         from = {
             NOT = { has_ship_flag = ship_th_has_keine_modifier }
             check_modifier_value = { modifier = ship_th_has_ship_part_keine value > 0 }
@@ -3583,6 +3947,327 @@ country_event = {
                 set_fleet_flag = doremy_sweet_phantom_destroyed
             }
             clear_global_event_target = doremy_sweet_phantom_@fromfrom
+        }
+    }
+}
+
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.2016
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_common_country = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = touhou_psionic_inhibitor_weapon_effect }
+            any_owned_ship = {
+                check_modifier_value = { modifier = touhou_psionic_inhibitor_weapon value > 0 }
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_fleet_flag = touhou_psionic_inhibitor_weapon_effect
+            fleet_event = { id = spth_fleet.2017 }
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2017
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = {
+                limit = {
+                    check_modifier_value = { modifier = touhou_psionic_inhibitor_weapon value > 0 }
+                }
+                if = {
+                    limit = { has_modifier = touhou_psionic_inhibitor_weapon_self_modifier }
+                    remove_modifier = touhou_psionic_inhibitor_weapon_self_modifier
+                }
+                add_modifier = {
+                    modifier = touhou_psionic_inhibitor_weapon_self_modifier days = 3
+                    mult = value:touhou_psionic_inhibitor_weapon_damage_modifier
+                }
+            }
+            fleet_event = { id = spth_fleet.2017 days = 10 }
+        } else = {
+            remove_fleet_flag = touhou_psionic_inhibitor_weapon_effect
+            every_owned_ship = {
+                limit = {
+                    check_modifier_value = { modifier = touhou_psionic_inhibitor_weapon value > 0 }
+                }
+                if = {
+                    limit = { has_modifier = touhou_psionic_inhibitor_weapon_self_modifier }
+                    remove_modifier = touhou_psionic_inhibitor_weapon_self_modifier
+                }
+            }
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2018
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = {
+                if = {
+                    limit = {
+                        check_modifier_value = { modifier = touhou_hull_repair_percent value > 0 }
+                        check_variable_arithmetic = { which = trigger:has_hp_percentage value < 2.00 } has_hp <= 200000000
+                    }
+                    reduce_hp = value:touhou_hull_repair_percent_value
+                    set_variable = { which = touhou_hull_reduce_count_debug value = value:touhou_hull_repair_percent_value }
+                }
+                if = {
+                    limit = {
+                        check_modifier_value = { modifier = touhou_armor_repair_percent value > 0 }
+                        check_variable_arithmetic = { which = trigger:has_armor_percentage value < 2.00 } has_max_armor_hp <= 100000000
+                    }
+                    repair_armor_amount = value:touhou_armor_repair_percent_value
+                    set_variable = { which = touhou_armor_repair_count_debug value = value:touhou_armor_repair_percent_value }
+                }
+                if = {
+                    limit = {
+                        check_modifier_value = { modifier = touhou_shield_repair_percent value > 0 }
+                        check_variable_arithmetic = { which = trigger:has_shield_percentage value < 2.00 } has_shield_hp <= 200000000
+                    }
+                    reduce_shield = value:touhou_shield_repair_percent_value
+                    set_variable = { which = touhou_shield_reduce_count_debug value = value:touhou_shield_repair_percent_value }
+                }
+            }
+            fleet_event = { id = spth_fleet.2018 days = 1 }
+        } else = {
+            remove_fleet_flag = touhou_extra_repair_percent_fired
+        }
+    }
+}
+
+# this = fleet
+# root = fleet
+# from = system
+fleet_event = {
+    id = spth_fleet.2019
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        from = { check_modifier_value = { modifier = touhou_detection_deactive_cloaking_system value != 0 } }
+        is_cloaked = yes NOT = { has_fleet_flag = touhou_detection_deactive_cloaking_system_lock }
+    }
+    immediate = {
+        set_timed_fleet_flag = { flag = touhou_detection_deactive_cloaking_system_lock days = 30 }
+        set_cloaking_active = no
+        every_owned_ship = {
+            if = {
+                limit = { has_modifier = touhou_detection_deactive_cloaking_normalization }
+                remove_modifier = touhou_detection_deactive_cloaking_normalization
+            }
+            if = {
+                limit = { has_modifier = touhou_detection_deactive_cloaking_effect }
+                remove_modifier = touhou_detection_deactive_cloaking_effect
+            }
+            add_modifier = {
+                modifier = touhou_detection_deactive_cloaking_normalization days = 60
+                mult = modifier:ship_cloaking_strength_add
+            }
+            add_modifier = { modifier = touhou_detection_deactive_cloaking_effect days = 60 }
+            spth_reduce_armor_max = { percent = 1.00 }
+        }
+        if = {
+            limit = {
+                exists = owner
+                owner = {
+                    is_touhou_common_country = yes
+                    NOT = { has_country_flag = not_display_spth_fleet_2021 }
+                }
+            }
+            owner = {
+                country_event = {
+                    id = spth_fleet.2021
+                    scopes = {
+                        from = root.from
+                        fromfrom = prev
+                    }
+                }
+            }
+        }
+    }
+}
+# this = fleet
+# root = fleet
+fleet_event = {
+    id = spth_fleet.2020
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_cloaked = yes exists = solar_system
+        solar_system = { check_modifier_value = { modifier = touhou_detection_deactive_cloaking_alt_system value != 0 } }
+        NOT = { has_fleet_flag = touhou_detection_deactive_cloaking_system_alt_lock }
+    }
+    immediate = {
+        set_timed_fleet_flag = { flag = touhou_detection_deactive_cloaking_system_alt_lock days = 30 }
+        set_cloaking_active = no
+        every_owned_ship = {
+            if = {
+                limit = { has_modifier = touhou_detection_deactive_cloaking_normalization }
+                remove_modifier = touhou_detection_deactive_cloaking_normalization
+            }
+            if = {
+                limit = { has_modifier = touhou_detection_deactive_cloaking_effect }
+                remove_modifier = touhou_detection_deactive_cloaking_effect
+            }
+            add_modifier = {
+                modifier = touhou_detection_deactive_cloaking_normalization days = 60
+                mult = modifier:ship_cloaking_strength_add
+            }
+            add_modifier = { modifier = touhou_detection_deactive_cloaking_effect days = 60 }
+            spth_reduce_armor_max = { percent = 1.00 }
+        }
+        if = {
+            limit = {
+                exists = owner
+                owner = {
+                    is_touhou_common_country = yes
+                    NOT = { has_country_flag = not_display_spth_fleet_2021 }
+                }
+            }
+            owner = {
+                country_event = {
+                    id = spth_fleet.2021
+                    scopes = {
+                        from = prev.solar_system
+                        fromfrom = prev
+                    }
+                }
+            }
+        }
+    }
+}
+country_event = {
+    id = spth_fleet.2021
+    title = spth_fleet.2021.name
+    desc = spth_fleet.2021.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_cosmic_storms_fleets_of_the_thrice_damned_room }
+    option = {
+        name = spth_fleet.2021.a
+        custom_tooltip = spth_fleet.2021.a.effect
+    }
+    option = {
+        name = spth_fleet.2021.b
+        hidden_effect = { set_country_flag = not_display_spth_fleet_2021 }
+    }
+}
+country_event = {
+    id = spth_fleet.2022
+    title = spth_fleet.2022.name
+    desc = spth_fleet.2022.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_cosmic_storms_fleets_of_the_thrice_damned_room }
+    option = {
+        name = spth_fleet.2021.a
+        custom_tooltip = spth_fleet.2021.a.effect
+    }
+    option = {
+        name = spth_fleet.2021.b
+        hidden_effect = { set_country_flag = not_display_spth_fleet_2022 }
+    }
+}
+
+fleet_event = {
+    id = spth_fleet.2023
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes check_modifier_value = { modifier = fleet_touhou_touhou_firepower_lvl value > 0 } }
+            if = {
+                limit = { NOT = { has_fleet_flag = touhou_touhou_firepower_bonus_mode_lock } }
+                set_timed_fleet_flag = { flag = touhou_touhou_firepower_bonus_mode_lock days = 5 }
+                change_variable = { which = touhou_touhou_firepower_bonus_mode value = 1 }
+            }
+            if = {
+                limit = { check_variable = { which = touhou_touhou_firepower_bonus_mode value = 1 } }
+                add_modifier = {
+                    modifier = leader_trait_touhou_firepower_skill_1_2 days = 6
+                    mult = value:touhou_modifier_min_capped|cap|0|modifier|weapon_type_energy_weapon_damage_mult|
+                }
+            }
+            else_if = {
+                limit = { check_variable = { which = touhou_touhou_firepower_bonus_mode value = 2 } }
+                add_modifier = {
+                    modifier = leader_trait_touhou_firepower_skill_1_3 days = 6
+                    mult = value:touhou_modifier_min_capped|cap|0|modifier|weapon_type_kinetic_weapon_damage_mult|
+                }
+            }
+            else_if = {
+                limit = { check_variable = { which = touhou_touhou_firepower_bonus_mode value = 3 } }
+                add_modifier = {
+                    modifier = leader_trait_touhou_firepower_skill_1_4 days = 6
+                    mult = value:touhou_modifier_min_capped|cap|0|modifier|weapon_type_lingli_weapon_damage_mult|
+                }
+                set_variable = { which = touhou_touhou_firepower_bonus_mode value = 0 }
+            }
+            fleet_event = { id = spth_fleet.2023 days = 6 }
+        }
+        else = {
+            remove_fleet_flag = fleet_touhou_touhou_firepower_cooldown
+            clear_variable = touhou_touhou_firepower_bonus_mode
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2024
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes check_modifier_value = { modifier = fleet_touhou_touhou_firepower_lvl value > 0 } }
+            if = {
+                limit = { NOT = { has_fleet_flag = touhou_touhou_firepower_bonus_mode_lock } }
+                set_timed_fleet_flag = { flag = touhou_touhou_firepower_bonus_mode_lock days = 5 }
+                change_variable = { which = touhou_touhou_firepower_bonus_mode value = 1 }
+            }
+            if = {
+                limit = { check_variable = { which = touhou_touhou_firepower_bonus_mode value = 1 } }
+                add_modifier = {
+                    modifier = leader_trait_touhou_firepower_skill_2_2 days = 6
+                    mult = value:touhou_modifier_min_capped|cap|0|modifier|weapon_type_energy_weapon_damage_mult|
+                }
+            }
+            else_if = {
+                limit = { check_variable = { which = touhou_touhou_firepower_bonus_mode value = 2 } }
+                add_modifier = {
+                    modifier = leader_trait_touhou_firepower_skill_2_3 days = 6
+                    mult = value:touhou_modifier_min_capped|cap|0|modifier|weapon_type_kinetic_weapon_damage_mult|
+                }
+            }
+            else_if = {
+                limit = { check_variable = { which = touhou_touhou_firepower_bonus_mode value = 3 } }
+                add_modifier = {
+                    modifier = leader_trait_touhou_firepower_skill_2_4 days = 6
+                    mult = value:touhou_modifier_min_capped|cap|0|modifier|weapon_type_lingli_weapon_damage_mult|
+                }
+                set_variable = { which = touhou_touhou_firepower_bonus_mode value = 0 }
+            }
+            fleet_event = { id = spth_fleet.2024 days = 6 }
+        }
+        else = {
+            remove_fleet_flag = fleet_touhou_touhou_firepower_cooldown
+            clear_variable = touhou_touhou_firepower_bonus_mode
         }
     }
 }
