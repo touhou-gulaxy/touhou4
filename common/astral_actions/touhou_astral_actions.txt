@@ -1,0 +1,58 @@
+@touhou_astral_action_makai_exploration_max_count = 1
+
+touhou_astral_action_makai_exploration = {
+    # unlock_threshold = 1
+    picture = GFX_touhou_astral_action_makai_exploration
+    sound = event_psionic_robot
+    cooldown = 1800
+    potential = {
+        has_authority = auth_gensokyo
+    }
+    # allow_unlock = {
+    #     has_authority = auth_gensokyo
+    #     check_modifier_value = { modifier = country_has_touhou_makai_wedge value > 0 }
+    # }
+    allow = {
+        check_modifier_value = { modifier = country_has_touhou_makai_wedge value > 0 }
+    }
+    activation_cost = {
+        cost = {
+            sr_lingli = 10
+            sr_dark_matter = 10
+            astral_threads = 2
+            multiplier = value:scaled_astral_action_cost|BASE|500|INCREASE|50|INCREASE_VARIABLE|TT_var_pue_usage_count|MAX|10000|
+        }
+    }
+    effect = {
+        add_monthly_resource_mult = {
+            resource = energy
+            value = 3
+            min = 5000
+        }
+        add_monthly_resource_mult = {
+            resource = physics_research
+            value = 3
+            min = 5000
+        }
+        hidden_effect = {
+            set_country_flag = touhou_astral_action_makai_exploration_fired
+            if = {
+                limit = { NOT = { is_variable_set = touhou_astral_action_makai_exploration_count } }
+                set_variable = { which = touhou_astral_action_makai_exploration_count value = 0 }
+            }
+            if = {
+                limit = {
+                    check_variable = {
+                        which = touhou_astral_action_makai_exploration_count
+                        value < @touhou_astral_action_makai_exploration_max_count
+                    }
+                }
+                change_variable = { which = touhou_astral_action_makai_exploration_count value = 1 }
+                country_event = { id = toho.4220 }
+            }
+        }
+    }
+    ai_weight = {
+        weight = 114514
+    }
+}

@@ -2403,6 +2403,29 @@ country_event = {
                             }
                         }
                     }
+                    leader_trait_shinki = {
+                        root.fromfromfrom = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_shinki_skill } }
+                                set_timed_fleet_flag = { flag = leader_trait_shinki_skill days = 90 }
+                                if = {
+                                    limit = { check_modifier_value = { modifier = ship_damage_reduction_mult value > 0 } }
+                                    add_modifier = {
+                                        modifier = leader_trait_shinki days = 15
+                                        mult = modifier:ship_damage_reduction_mult
+                                    }
+                                    add_modifier = { modifier = leader_trait_shinki_skill days = 15 }
+                                }
+                            }
+                        }
+                        prev = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_shinki_shield_fired } }
+                                set_fleet_flag = leader_trait_shinki_shield_fired
+                                fleet_event = { id = spth_fleet.2025 }
+                            }
+                        }
+                    }
                     leader_trait_linshi = {
                         if = {
                             limit = { NOT = { has_leader_flag = leader_trait_linshi_skill } }
@@ -2544,6 +2567,7 @@ country_event = {
                             limit = { check_modifier_value = { modifier = fleet_has_touhou_defence value = 3 } }
                             set_timed_fleet_flag = { flag = fleet_has_touhou_defence_cooldown days = 9 }
                             every_owned_ship = {
+                                limit = { OR = { is_touhou_ship = yes ag_is_ancient_ship = yes } }
                                 add_modifier = {
                                     modifier = leader_trait_touhou_defence days = 9
                                     mult = trigger:has_max_hp
@@ -2554,6 +2578,7 @@ country_event = {
                             limit = { check_modifier_value = { modifier = fleet_has_touhou_defence value = 2 } }
                             set_timed_fleet_flag = { flag = fleet_has_touhou_defence_cooldown days = 7 }
                             every_owned_ship = {
+                                limit = { OR = { is_touhou_ship = yes ag_is_ancient_ship = yes } }
                                 add_modifier = {
                                     modifier = leader_trait_touhou_defence days = 7
                                     mult = trigger:has_max_hp
@@ -4268,6 +4293,37 @@ fleet_event = {
         else = {
             remove_fleet_flag = fleet_touhou_touhou_firepower_cooldown
             clear_variable = touhou_touhou_firepower_bonus_mode
+        }
+    }
+}
+# 星界护盾
+fleet_event = {
+    id = spth_fleet.2025
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = {
+                limit = { has_shield_percentage <= 0.50 NOT = { has_ship_flag = leader_trait_touhou_rift_warped_skill } }
+                repair_shield_percentage = 0.50
+                set_timed_ship_flag = { flag = leader_trait_touhou_rift_warped_skill days = 90 }
+                add_modifier = { modifier = leader_trait_touhou_rift_warped_skill days = 15 }
+            }
+            fleet_event = { id = spth_fleet.2025 days = 1 }
+        }
+        else = {
+            remove_fleet_flag = leader_trait_shinki_shield_fired
+            every_owned_ship = {
+                if = {
+                    limit = { has_ship_flag = leader_trait_touhou_rift_warped_skill }
+                    remove_ship_flag = leader_trait_touhou_rift_warped_skill
+                }
+                if = {
+                    limit = { has_modifier = leader_trait_touhou_rift_warped_skill }
+                    remove_modifier = leader_trait_touhou_rift_warped_skill
+                }
+            }
         }
     }
 }
