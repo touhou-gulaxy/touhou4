@@ -175,6 +175,18 @@ touhou_difficulty_bonus_ship = {
     multiply_variable = { which = touhou_difficulty_shield_lunar_capital value = touhou_shield_armor_diff_value }
     multiply_variable = { which = touhou_difficulty_armor_lunar_capital value = touhou_shield_armor_diff_value }
 
+    set_variable = { which = touhou_difficulty_extra_life_count value = touhou_scaled_difficulty }
+    multiply_variable = { which = touhou_difficulty_extra_life_count value = modifier:ship_spth_extra_life_diff }
+    add_modifier = {
+        modifier = touhou_difficulty_extra_life
+        mult = touhou_difficulty_extra_life_count
+    }
+
+    if = {
+        limit = { has_global_flag = spth_lunar_capital_crisis_phantasm check_modifier_value = { modifier = ship_spth_extra_life_diff value > 0 } }
+        add_modifier = { modifier = touhou_difficulty_extra_life_ph }
+    }
+
     add_modifier = { modifier = touhou_difficulty_kamikakushi_shield mult = touhou_difficulty_shield_kamikakushi }
     add_modifier = { modifier = touhou_difficulty_kamikakushi_armor mult = touhou_difficulty_armor_kamikakushi }
     if = {
@@ -273,6 +285,10 @@ touhou_difficulty_bonus_ship = {
             }
         }
     ]
+    clear_variable = touhou_difficulty_shield_kamikakushi
+    clear_variable = touhou_difficulty_armor_kamikakushi
+    clear_variable = touhou_difficulty_shield_lunar_capital
+    clear_variable = touhou_difficulty_armor_lunar_capital
 }
 touhou_difficulty_bonus_ag_ship = {
     optimize_memory
@@ -311,6 +327,11 @@ touhou_remove_all_difficulty_modifier = {
             remove_modifier = touhou_difficulty_mod_nyto
         }
         # always remove
+        if = {
+            limit = { has_modifier = touhou_difficulty_extra_life_ph }
+            remove_modifier = touhou_difficulty_extra_life_ph
+        }
+        remove_modifier = touhou_difficulty_extra_life
         remove_modifier = touhou_difficulty_kamikakushi_shield
         remove_modifier = touhou_difficulty_kamikakushi_armor
         remove_modifier = touhou_difficulty_kamikakushi_shield_phantasm
