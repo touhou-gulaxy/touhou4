@@ -1225,223 +1225,179 @@ touhou_gateway_master_node_flags_cleans_up_effect = {
 touhou_weapon_fire_aoe_damage = {
     optimize_memory
     if = {
-        limit = {
-            check_modifier_value = { modifier = has_ship_part_aura_touhou_minefield_target value != 0 }
-            exists = fleet fleet = { NOT = { has_fleet_flag = touhou_aoe_damage_$size$_$type$ } }
+        limit = { exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_$size$_$type$ } } }
+        from = { set_timed_ship_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown } }
+        set_variable = {
+            which = touhou_aoe_damage_$size$_$type$_hull
+            value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|hull|
         }
-        fleet = { set_timed_fleet_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown } }
-        if = {
-            limit = { exists = from }
-            set_variable = {
-                which = touhou_aoe_damage_$size$_$type$_hull
-                value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|hull|
-            }
-            set_variable = {
-                which = touhou_aoe_damage_$size$_$type$_armor
-                value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|armor|
-            }
-            set_variable = { which = touhou_aoe_damage_$size$_$type$_armor_neg value = touhou_aoe_damage_$size$_$type$_armor }
-            multiply_variable = { which = touhou_aoe_damage_$size$_$type$_armor_neg value = -1 }
-            set_variable = {
-                which = touhou_aoe_damage_$size$_$type$_shield
-                value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|shield|
-            }
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown }
-                    if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_$size$_$type$_armor value <= prev.trigger:has_shield_hp } } }
-                        reduce_shield = prevprev.touhou_aoe_damage_$size$_$type$_shield
-                    } else_if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_$size$_$type$_armor value <= prev.value:spth_armor_value } } }
-                        repair_armor_amount = prevprev.touhou_aoe_damage_$size$_$type$_armor_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_$size$_$type$_hull }
-                    }
+        set_variable = {
+            which = touhou_aoe_damage_$size$_$type$_armor
+            value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|armor|
+        }
+        set_variable = { which = touhou_aoe_damage_$size$_$type$_armor_neg value = touhou_aoe_damage_$size$_$type$_armor }
+        multiply_variable = { which = touhou_aoe_damage_$size$_$type$_armor_neg value = -1 }
+        set_variable = {
+            which = touhou_aoe_damage_$size$_$type$_shield
+            value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|shield|
+        }
+        solar_system = {
+            every_ship_in_system = {
+                limit = {
+                    controller = { is_hostile_to = root.from.owner }
+                    distance = { same_solar_system = yes source = prevprev max_distance <= $range$ }
                 }
-            }
-            clear_variable = touhou_aoe_damage_$size$_$type$_armor_neg
-        } else = {
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown }
-                    if = {
-                        limit = { has_shield_hp >= @touhou_aoe_damage_$size$ }
-                        reduce_shield = @touhou_aoe_damage_$size$
-                    } else_if = {
-                        limit = { check_variable_arithmetic = { which = value:spth_armor_value value >= @touhou_aoe_damage_$size$ } }
-                        repair_armor_amount = @touhou_aoe_damage_$size$_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_$type$_$size$_hull_damage days = 2 mult = @touhou_aoe_damage_$size$ }
-                    }
+                th_spawn_explosion_particle = { color = $effect_color$ size = $effect_size$ }
+                set_timed_ship_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown }
+                if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_$size$_$type$_armor value <= prev.trigger:has_shield_hp } } }
+                    reduce_shield = prevprev.touhou_aoe_damage_$size$_$type$_shield
+                } else_if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_$size$_$type$_armor value <= prev.value:spth_armor_value } } }
+                    repair_armor_amount = prevprev.touhou_aoe_damage_$size$_$type$_armor_neg
+                } else = {
+                    add_modifier = { modifier = weapon_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_$size$_$type$_hull }
                 }
             }
         }
+        clear_variable = touhou_aoe_damage_$size$_$type$_hull
+        clear_variable = touhou_aoe_damage_$size$_$type$_armor
+        clear_variable = touhou_aoe_damage_$size$_$type$_shield
+        clear_variable = touhou_aoe_damage_$size$_$type$_armor_neg
     }
 }
 touhou_weapon_fire_aoe_damage_lunar_capital = {
     optimize_memory
     if = {
         limit = {
-            check_modifier_value = { modifier = has_ship_part_aura_touhou_minefield_target value != 0 }
-            exists = fleet fleet = { NOT = { has_fleet_flag = touhou_aoe_damage_lunar_$type$_$size$ } }
+            exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_lunar_$type$_$size$ } }
         }
-        fleet = { set_timed_fleet_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown } }
-        if = {
-            limit = { exists = from }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_hull
-                value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
-            }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_armor
-                value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
-            }
-            set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
-            multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_shield
-                value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
-            }
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown }
-                    if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
-                        reduce_shield = prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield
-                    } else_if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
-                        repair_armor_amount = prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull }
-                    }
+        from = { set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown } }
+        set_variable = {
+            which = touhou_aoe_damage_lunar_$type$_$size$_hull
+            value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
+        }
+        set_variable = {
+            which = touhou_aoe_damage_lunar_$type$_$size$_armor
+            value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
+        }
+        set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
+        multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
+        set_variable = {
+            which = touhou_aoe_damage_lunar_$type$_$size$_shield
+            value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
+        }
+        solar_system = {
+            every_ship_in_system = {
+                limit = {
+                    controller = { is_hostile_to = root.from.owner }
+                    distance = { same_solar_system = yes source = prevprev max_distance <= $range$ }
                 }
-            }
-            clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-        } else = {
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown }
-                    if = {
-                        limit = { has_shield_hp >= @touhou_aoe_damage_lunar_$type$_$size$ }
-                        reduce_shield = @touhou_aoe_damage_lunar_$type$_$size$
-                    } else_if = {
-                        limit = { check_variable_arithmetic = { which = value:spth_armor_value value >= @touhou_aoe_damage_lunar_$type$_$size$ } }
-                        repair_armor_amount = @touhou_aoe_damage_lunar_$type$_$size$_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = @touhou_aoe_damage_lunar_$type$_$size$ }
-                    }
+                th_spawn_explosion_particle = { color = blue size = small }
+                set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown }
+                if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
+                    reduce_shield = prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield
+                } else_if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
+                    repair_armor_amount = prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg
+                } else = {
+                    add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull }
                 }
             }
         }
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_hull
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_shield
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
     }
 }
 touhou_weapon_fire_aoe_damage_lunar_gravity_cannon = {
     optimize_memory
     if = {
-        limit = { exists = fleet fleet = { NOT = { has_fleet_flag = touhou_aoe_damage_lunar_$type$_$size$ } } }
-        fleet = { set_timed_fleet_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown } }
-        if = {
-            limit = { exists = from }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_hull
-                value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
-            }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_armor
-                value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
-            }
-            set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
-            multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_shield
-                value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
-            }
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
-                    if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
-                        reduce_shield = prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield
-                    } else_if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
-                        repair_armor_amount = prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull }
-                    }
+        limit = { exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_lunar_$type$_$size$ } } }
+        from = { set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown } }
+        set_variable = {
+            which = touhou_aoe_damage_lunar_$type$_$size$_hull
+            value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
+        }
+        set_variable = {
+            which = touhou_aoe_damage_lunar_$type$_$size$_armor
+            value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
+        }
+        set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
+        multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
+        set_variable = {
+            which = touhou_aoe_damage_lunar_$type$_$size$_shield
+            value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
+        }
+        solar_system = {
+            every_ship_in_system = {
+                limit = {
+                    controller = { is_hostile_to = root.from.owner }
+                    distance = { same_solar_system = yes source = prevprev max_distance <= $range|120$ }
                 }
-            }
-            clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-        } else = {
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
-                    if = {
-                        limit = { has_shield_hp >= @touhou_aoe_damage_lunar_$type$_$size$ }
-                        reduce_shield = @touhou_aoe_damage_lunar_$type$_$size$
-                    } else_if = {
-                        limit = { check_variable_arithmetic = { which = value:spth_armor_value value >= @touhou_aoe_damage_lunar_$type$_$size$ } }
-                        repair_armor_amount = @touhou_aoe_damage_lunar_$type$_$size$_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = @touhou_aoe_damage_lunar_$type$_$size$ }
-                    }
+                th_spawn_explosion_particle = { color = pink size = small }
+                set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
+                if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
+                    reduce_shield = prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield
+                } else_if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
+                    repair_armor_amount = prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg
+                } else = {
+                    add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull }
                 }
             }
         }
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_hull
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_shield
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
     }
 }
 touhou_weapon_fire_aoe_damage_lunar_turret_weapon = {
     optimize_memory
     if = {
-        limit = { exists = fleet fleet = { NOT = { has_fleet_flag = touhou_aoe_damage_lunar_$type$_$size$ } } }
-        fleet = { set_timed_fleet_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown } }
-        if = {
-            limit = { exists = from }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_hull
-                value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
-            }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_armor
-                value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
-            }
-            set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
-            multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_shield
-                value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
-            }
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
-                    if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
-                        reduce_shield = prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield
-                    } else_if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
-                        repair_armor_amount = prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull }
-                    }
+        limit = { exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_lunar_$type$_$size$ } } }
+        from = { set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown } }
+        set_variable = {
+            which = touhou_aoe_damage_lunar_$type$_$size$_hull
+            value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
+        }
+        set_variable = {
+            which = touhou_aoe_damage_lunar_$type$_$size$_armor
+            value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
+        }
+        set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
+        multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
+        set_variable = {
+            which = touhou_aoe_damage_lunar_$type$_$size$_shield
+            value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
+        }
+        solar_system = {
+            every_ship_in_system = {
+                limit = {
+                    controller = { is_hostile_to = root.from.owner }
+                    distance = { same_solar_system = yes source = prevprev max_distance <= $range|120$ }
                 }
-            }
-            clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-        } else = {
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
-                    if = {
-                        limit = { has_shield_hp >= @touhou_aoe_damage_lunar_$type$_$size$ }
-                        reduce_shield = @touhou_aoe_damage_lunar_$type$_$size$
-                    } else_if = {
-                        limit = { check_variable_arithmetic = { which = value:spth_armor_value value >= @touhou_aoe_damage_lunar_$type$_$size$ } }
-                        repair_armor_amount = @touhou_aoe_damage_lunar_$type$_$size$_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = @touhou_aoe_damage_lunar_$type$_$size$ }
-                    }
+                th_spawn_explosion_particle = { color = pink size = small }
+                set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
+                if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
+                    reduce_shield = prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield
+                } else_if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
+                    repair_armor_amount = prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg
+                } else = {
+                    add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull }
                 }
             }
         }
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_hull
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_shield
+        clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
     }
 }
 
@@ -1477,6 +1433,89 @@ touhou_weapon_emp_charge_module_effect = {
                 50 = { touhou_set_terrify = { days = 2 } }
                 25 = { touhou_set_terrify = { days = 3 } }
             }
+        }
+    }
+}
+
+touhou_weapon_yuzhu_hit_effect = {
+    optimize_memory
+    hidden_effect = {
+        if = {
+            limit = {
+                exists = from from = {
+                    NOT = { has_ship_flag = touhou_weapon_yuzhu_hit_$size$_cooldown }
+                }
+            }
+            from = {
+                set_timed_ship_flag = { flag = touhou_weapon_yuzhu_hit_$size$_cooldown days = $TH_COOLDOWN$ }
+            }
+            reroll_random = yes
+            random_list = {
+                $TH_EXTRA_DMG_CHANCE$ = {
+                    spth_reduce_armor_max = { percent = @[$TH_EXTRA_DMG_PERC$ / 100] }
+                }
+                $TH_VULNERABLE_CHANCE$ = {
+                    add_modifier = {
+                        modifier = touhou_weapon_yuzhu_hit_effect_$size$
+                        days = $TH_VULNERABLE_DURATION$ mult = $TH_VULNERABLE_VALUE$
+                    }
+                }
+            }
+            th_spawn_explosion_particle = { color = white size = small }
+        }
+    }
+    custom_tooltip_with_params = {
+        description = touhou_weapon_yuzhu_hit_effect
+        description_parameters = {
+            TH_EXTRA_DMG_CHANCE = $TH_EXTRA_DMG_CHANCE$
+            TH_EXTRA_DMG_PERC = $TH_EXTRA_DMG_PERC$
+            TH_VULNERABLE_CHANCE = $TH_VULNERABLE_CHANCE$
+            TH_VULNERABLE_VALUE = $TH_VULNERABLE_VALUE$
+            TH_VULNERABLE_DURATION = $TH_VULNERABLE_DURATION$
+            TH_COOLDOWN = $TH_COOLDOWN$
+        }
+    }
+}
+
+touhou_psionic_lighting_hit_effect = {
+    optimize_memory
+    hidden_effect = {
+        if = {
+            limit = { exists = from from = { NOT = { has_ship_flag = touhou_psionic_lighting_$size$_chain_cooldown } } }
+            from = { set_timed_ship_flag = { flag = touhou_psionic_lighting_$size$_chain_cooldown days = $TH_COOLDOWN$ } }
+            reroll_random = yes
+            random_list = {
+                $TH_CHAIN_CHANCE$ = {
+                    fleet = {
+                        random_owned_ship = {
+                            limit = { NOT = { is_same_value = prev } }
+                            repair_armor_amount = value:touhou_psionic_lighting_hit_damage|ag_tag|$ag_tag$|ag_weapon|$ag_weapon$|size|$size$|size_short|$size_short$|
+                        }
+                    }
+                }
+                $TH_NOT_CHAIN_CHANCE$ = {
+                    # do nothing here.
+                }
+            }
+        }
+    }
+    custom_tooltip_with_params = {
+        description = touhou_psionic_lighting_hit_effect
+        description_parameters = {
+            TH_CHAIN_CHANCE = $TH_CHAIN_CHANCE$
+            TH_COOLDOWN = $TH_COOLDOWN$
+        }
+    }
+}
+
+touhou_psionic_singularity_hit_effect = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = touhou_psionic_singularity_hit_effect
+        description_parameters = {
+            TH_VULNERABLE_VALUE = $TH_VULNERABLE_VALUE$
+            TH_COOLDOWN = $TH_COOLDOWN$
+            TH_DURATION = $TH_DURATION$
         }
     }
 }

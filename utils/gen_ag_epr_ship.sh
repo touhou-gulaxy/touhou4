@@ -1,0 +1,61 @@
+#!/bin/bash
+
+generate()
+{
+  #     \# ([a-z_.0-9]+)spth_kamikakushi_cruiser([a-z_.0-9]+):0\s*\"(.?.?§?[A-Z]?)\$ag_.+\$§?!?：?
+  local touhou_ship_key="$1"
+  local ag_ship_key="$2"
+  echo ""
+  echo " ag_exploration.1.fleet.${ag_ship_key}: \"\$$1\$\""
+  echo " ag_${ag_ship_key}: \"\$${touhou_ship_key}\$\""
+  echo " ag_exploration.1.fleet.${ag_ship_key}.desc:0 \"§L文本很长七个字§!\\n\""
+  echo " ag_exploration.1.fleet.${ag_ship_key}.tooltip:0 \"-§Y\$ag_${ag_ship_key}$§!：[Root.ag_exploration_ship_num_${ag_ship_key}s]\""
+  echo " ag_exploration.1.fleet.${ag_ship_key}.num:0 \"\n§Y\$ag_${ag_ship_key}$§!：[Root.ag_exploration_ship_num_${ag_ship_key}s]\""
+  echo " ag_exploration.1.fleet.${ag_ship_key}.max:0 \"§R\$ag_${ag_ship_key}$\$ag_exploration_cannot_more_than$\$@ag_exploration_${ag_ship_key}_max$§!\""
+  echo " ag_exploration_ship_lost_no_resource.${ag_ship_key}.tooltip:0 \"§H\$ag_${ag_ship_key}$§!：[Root.ag_exploration_fleet_lost_${ag_ship_key}_no_resource]\""
+  echo " ag_exploration_ship_lost_combat.${ag_ship_key}.tooltip:0 \"§H\$ag_${ag_ship_key}$§!：[Root.ag_exploration_fleet_lost_${ag_ship_key}_combat]\""
+  echo " ag_exploration_ship_lost_common.${ag_ship_key}.tooltip:0 \"§H\$ag_${ag_ship_key}$§!：[Root.ag_exploration_fleet_lost_${ag_ship_key}_common]\""
+  echo " ag_exploration.1.effect.${ag_ship_key}.max_tooltip:0 \"\n\$ag_exploration_max_amount$§Y\$@ag_exploration_${ag_ship_key}_max$§!\""
+  echo " ag_exploration.1.effect.${ag_ship_key}.integrity:0 \"\$ag_exploration_integrity$ §G+\$@ag_exploration_${ag_ship_key}_integrity_add$§!\""
+  echo " ag_exploration.1.effect.${ag_ship_key}.armament:0 \"\$ag_exploration_armament$ §G+\$@ag_exploration_${ag_ship_key}_armament_add$§!\""
+  echo " ag_exploration.1.effect.${ag_ship_key}.investigator:0 \"\$ag_exploration_investigator$ §G+\$@ag_exploration_${ag_ship_key}_investigator_add$§!\""
+  echo " ag_exploration.1.effect.${ag_ship_key}.fleet_cap:0 \"\$ag_exploration_fleet_cap$ §R\$@ag_exploration_${ag_ship_key}_fleet_cap_add$§!\""
+  echo " ag_exploration.1.effect.${ag_ship_key}.equipment_cap:0 \"\$ag_exploration_equipment_cap$ §R\$@ag_exploration_${ag_ship_key}_equipment_cap_add$§!\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.energy:0 \"£energy£§H\$energy$§! \$@ag_exploration_${ag_ship_key}_cost_energy$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.minerals:0 \"£minerals£§H\$minerals$§! \$@ag_exploration_${ag_ship_key}_cost_minerals$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.food:0 \"£food£§H\$food$§! \$@ag_exploration_${ag_ship_key}_cost_food$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.alloys:0 \"£alloys£§H\$alloys$§! \$@ag_exploration_${ag_ship_key}_cost_alloys$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.consumer_goods:0 \"£consumer_goods£§H\$consumer_goods$§! \$@ag_exploration_${ag_ship_key}_cost_consumer_goods$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.volatile_motes:0 \"£volatile_motes£§H\$volatile_motes$§! \$@ag_exploration_${ag_ship_key}_cost_volatile_motes$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.exotic_gases:0 \"£exotic_gases£§H\$exotic_gases$§! \$@ag_exploration_${ag_ship_key}_cost_exotic_gases$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.rare_crystals:0 \"£rare_crystals£§H\$rare_crystals$§! \$@ag_exploration_${ag_ship_key}_cost_rare_crystals$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.sr_living_metal:0 \"£sr_living_metal£§H\$sr_living_metal$§! \$@ag_exploration_${ag_ship_key}_cost_sr_living_metal$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.nanites:0 \"£nanites£§H\$nanites$§! \$@ag_exploration_${ag_ship_key}_cost_nanites$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.sr_dark_matter:0 \"£sr_dark_matter£§H\$sr_dark_matter$§! \$@ag_exploration_${ag_ship_key}_cost_sr_dark_matter$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.sr_zro:0 \"£sr_zro£§H\$sr_zro$§! \$@ag_exploration_${ag_ship_key}_cost_sr_zro$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.minor_artifacts:0 \"£minor_artifacts£§H\$minor_artifacts$§! \$@ag_exploration_${ag_ship_key}_cost_minor_artifacts$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.astral_threads:0 \"£astral_threads£§H\$astral_threads$§! \$@ag_exploration_${ag_ship_key}_cost_astral_threads$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.sr_lingli:0 \"£sr_lingli£§H\$sr_lingli$§! \$@ag_exploration_${ag_ship_key}_cost_sr_lingli$\""
+  echo " ag_exploration.1.cost.${ag_ship_key}.sr_fuka:0 \"£sr_fuka£§H\$sr_fuka$§! \$@ag_exploration_${ag_ship_key}_cost_sr_fuka$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.energy:0 \"£energy£§H\$energy$§! \$@ag_exploration_${ag_ship_key}_upkeep_energy$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.minerals:0 \"£minerals£§H\$minerals$§! \$@ag_exploration_${ag_ship_key}_upkeep_minerals$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.food:0 \"£food£§H\$food$§! \$@ag_exploration_${ag_ship_key}_upkeep_food$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.alloys:0 \"£alloys£§H\$alloys$§! \$@ag_exploration_${ag_ship_key}_upkeep_alloys$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.consumer_goods:0 \"£consumer_goods£§H\$consumer_goods$§! \$@ag_exploration_${ag_ship_key}_upkeep_consumer_goods$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.volatile_motes:0 \"£volatile_motes£§H\$volatile_motes$§! \$@ag_exploration_${ag_ship_key}_upkeep_volatile_motes$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.exotic_gases:0 \"£exotic_gases£§H\$exotic_gases$§! \$@ag_exploration_${ag_ship_key}_upkeep_exotic_gases$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.rare_crystals:0 \"£rare_crystals£§H\$rare_crystals$§! \$@ag_exploration_${ag_ship_key}_upkeep_rare_crystals$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.sr_living_metal:0 \"£sr_living_metal£§H\$sr_living_metal$§! \$@ag_exploration_${ag_ship_key}_upkeep_sr_living_metal$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.nanites:0 \"£nanites£§H\$nanites$§! \$@ag_exploration_${ag_ship_key}_upkeep_nanites$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.sr_dark_matter:0 \"£sr_dark_matter£§H\$sr_dark_matter$§! \$@ag_exploration_${ag_ship_key}_upkeep_sr_dark_matter$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.sr_zro:0 \"£sr_zro£§H\$sr_zro$§! \$@ag_exploration_${ag_ship_key}_upkeep_sr_zro$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.minor_artifacts:0 \"£minor_artifacts£§H\$minor_artifacts$§! \$@ag_exploration_${ag_ship_key}_upkeep_minor_artifacts$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.astral_threads:0 \"£astral_threads£§H\$astral_threads$§! \$@ag_exploration_${ag_ship_key}_upkeep_astral_threads$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.sr_lingli:0 \"£sr_lingli£§H\$sr_lingli$§! \$@ag_exploration_${ag_ship_key}_upkeep_sr_lingli$\""
+  echo " ag_exploration.1.upkeep.${ag_ship_key}.sr_fuka:0 \"£sr_fuka£§H\$sr_fuka$§! \$@ag_exploration_${ag_ship_key}_upkeep_sr_fuka$\""
+}
+
+generate touhou_command_dreadnought touhou_command_dreadnought
+generate lunar_capital_battlship lunar_capital_battleship
+generate lunar_capital_escort lunar_capital_escort
+generate lunar_capital_frigate lunar_capital_frigate

@@ -206,35 +206,63 @@ spth_super_carrier_on_hit_effect = {
     reduce_shield = 922337203
     repair_armor_amount = -922337202
     set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_instant_kill_target days = 2 }
-    create_ambient_object = {
-        type = th_invisible_object
-        location = this
-        duration = 20
-        entity_offset = 0
-        entity_offset_angle = 0
-        entity_offset_height = 0
-        use_3d_location = yes
-        effect = { save_event_target_as = target }
-    }
-    create_ambient_object = {
-        type = th_invisible_object
-        location = this
-        duration = 20
-        entity_offset = 80
-        entity_offset_angle = 0
-        entity_offset_height = 0
-        use_3d_location = yes
-        effect = { save_event_target_as = target_d_inner }
-    }
-    create_ambient_object = {
-        type = th_invisible_object
-        location = this
-        duration = 20
-        entity_offset = 200
-        entity_offset_angle = 0
-        entity_offset_height = 0
-        use_3d_location = yes
-        effect = { save_event_target_as = target_d_outer }
+    # create_ambient_object = {
+    #     type = th_invisible_object
+    #     location = this
+    #     duration = 20
+    #     entity_offset = 0
+    #     entity_offset_angle = 0
+    #     entity_offset_height = 0
+    #     use_3d_location = yes
+    #     effect = { save_event_target_as = target }
+    # }
+    # create_ambient_object = {
+    #     type = th_invisible_object
+    #     location = this
+    #     duration = 20
+    #     entity_offset = 80
+    #     entity_offset_angle = 0
+    #     entity_offset_height = 0
+    #     use_3d_location = yes
+    #     effect = { save_event_target_as = target_d_inner }
+    # }
+    # create_ambient_object = {
+    #     type = th_invisible_object
+    #     location = this
+    #     duration = 20
+    #     entity_offset = 200
+    #     entity_offset_angle = 0
+    #     entity_offset_height = 0
+    #     use_3d_location = yes
+    #     effect = { save_event_target_as = target_d_outer }
+    # }
+    solar_system = {
+        every_ship_in_system = {
+            limit = { controller = { is_hostile_to = from.controller } }
+            if = {
+                limit = {
+                    distance = {
+                        source = root
+                        max_distance <= 80
+                        same_solar_system = yes
+                    }
+                }
+                th_spawn_explosion_particle = { color = pink size = medium }
+                set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_damage_target days = 3 }
+            }
+            if = {
+                limit = {
+                    distance = {
+                        source = root
+                        max_distance <= 200
+                        same_solar_system = yes
+                    }
+                }
+                th_spawn_explosion_particle = { color = green size = medium }
+                spth_reduce_shield = { factor = 0.2 percent = 0.2 }
+                add_modifier = { modifier = spth_super_carrier_damage_modifier days = 8 }
+            }
+        }
     }
     from = {
         if = {
@@ -253,38 +281,36 @@ spth_super_carrier_on_hit_effect = {
                 }
             }
         }
-        save_event_target_as = shooter
-        fleet = {
-            every_combatant_fleet = {
-                every_owned_ship = {
-                    if = {
-                        limit = {
-                            event_target:target = {
-                                compare_distance = {
-                                    closer_object = prev
-                                    further_object = event_target:target_d_inner
-                                }
-                            }
-                        }
-                        th_spawn_explosion_particle = { color = pink size = medium }
-                        set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_damage_target days = 3 }
-                    }
-                    if = {
-                        limit = {
-                            event_target:target = {
-                                compare_distance = {
-                                    closer_object = prev
-                                    further_object = event_target:target_d_outer
-                                }
-                            }
-                        }
-                        th_spawn_explosion_particle = { color = green size = medium }
-                        spth_reduce_shield = { factor = 0.2 percent = 0.2 }
-                        add_modifier = { modifier = spth_super_carrier_damage_modifier days = 8 }
-                    }
-                }
-            }
-        }
+        # save_event_target_as = shooter
+        # fleet = {
+        #     every_combatant_fleet = {
+        #         every_owned_ship = {
+        #             if = {
+        #                 limit = {
+        #                     event_target:target = {
+        #                         compare_distance = {
+        #                             closer_object = prev
+        #                             further_object = event_target:target_d_inner
+        #                         }
+        #                     }
+        #                 }
+        #             }
+        #             if = {
+        #                 limit = {
+        #                     event_target:target = {
+        #                         compare_distance = {
+        #                             closer_object = prev
+        #                             further_object = event_target:target_d_outer
+        #                         }
+        #                     }
+        #                 }
+        #                 th_spawn_explosion_particle = { color = green size = medium }
+        #                 spth_reduce_shield = { factor = 0.2 percent = 0.2 }
+        #                 add_modifier = { modifier = spth_super_carrier_damage_modifier days = 8 }
+        #             }
+        #         }
+        #     }
+        # }
     }
     # solar_system = {
     #     create_fleet = {

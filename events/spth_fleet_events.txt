@@ -1287,7 +1287,8 @@ ship_event = {
                     NOT = { has_ship_flag = ship_th_has_void_snack_used }
                     check_modifier_value = { modifier = ship_th_has_void_snack value != 0 }
                 }
-                set_timed_ship_flag = { flag = ship_th_has_void_snack_used days = 180 }if = {
+                set_timed_ship_flag = { flag = ship_th_has_void_snack_used days = 180 }
+                if = {
                     limit = { has_shield_hp <= 100000000 }
                     if = {
                         limit = {
@@ -1691,7 +1692,7 @@ country_event = {
                     change_variable = { which = resurrection_butterfly_kill_count value = 1 }
                 }
                 remove_modifier = weapon_type_resurrection_butterfly_bouns
-                add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = resurrection_butterfly_kill_count }
+                add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = value:resurrection_butterfly_bouns_value }
                 random_list = {
                     0 = {
                         modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_count }
@@ -1702,7 +1703,7 @@ country_event = {
                         }
                         change_variable = { which = resurrection_butterfly_extra_count value = 1 }
                         remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
-                        add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = resurrection_butterfly_extra_count }
+                        add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = value:resurrection_butterfly_bouns_extra_value }
                     }
                     0 = {
                         modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_max }
@@ -1740,7 +1741,7 @@ country_event = {
                         }
                         change_variable = { which = resurrection_butterfly_kill_count value = 1 }
                         remove_modifier = weapon_type_resurrection_butterfly_bouns
-                        add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = resurrection_butterfly_kill_count }
+                        add_modifier = { modifier = weapon_type_resurrection_butterfly_bouns mult = value:resurrection_butterfly_bouns_value }
                         random_list = {
                             0 = {
                                 modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_count }
@@ -1750,7 +1751,7 @@ country_event = {
                                 }
                                 change_variable = { which = resurrection_butterfly_extra_count value = 1 }
                                 remove_modifier = weapon_type_resurrection_butterfly_extra_bouns
-                                add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = resurrection_butterfly_extra_count }
+                                add_modifier = { modifier = weapon_type_resurrection_butterfly_extra_bouns mult = value:resurrection_butterfly_bouns_extra_value }
                             }
                             0 = { modifier = { add = modifier:ship_spth_yuyuko_fan_weapon_max } modifier = { subtract = modifier:ship_spth_yuyuko_fan_weapon_count } }
                         }
@@ -2810,19 +2811,9 @@ country_event = {
             set_fleet_flag = spth_fleet_1209_fired
             random_owned_ship = {
                 limit = { has_ship_flag = is_spth_space_shrine_station }
-                if = {
-                    limit = {
-                        fleet.solar_system = {
-                            any_fleet_in_system = {
-                                exists = owner
-                                OR = { owner = { is_same_value = root.owner } is_alliance_fleet = yes }
-                            }
-                        }
-                    }
-                    add_modifier = { modifier = touhou_space_shrine_inv }
-                    set_ship_flag = spth_invincible
-                }
-                ship_event = { id = spth_fleet.1210 days = 3 }
+                add_modifier = { modifier = touhou_space_shrine_inv }
+                set_ship_flag = spth_invincible
+                ship_event = { id = spth_fleet.1210 days = 6 }
             }
         }
     }
@@ -2838,7 +2829,7 @@ ship_event = {
                 limit = {
                     fleet.solar_system = {
                         any_fleet_in_system = {
-                            exists = owner
+                            NOT = { is_same_value = prevprev.fleet } exists = owner
                             OR = { owner = { is_same_value = root.owner } is_alliance_fleet = yes }
                         }
                     }
@@ -2855,6 +2846,7 @@ ship_event = {
             ship_event = { id = spth_fleet.1210 days = 3 }
         } else = {
             fleet = { remove_fleet_flag = spth_fleet_1209_fired }
+            remove_modifier = touhou_space_shrine_inv
             remove_ship_flag = spth_invincible
         }
     }
@@ -4324,6 +4316,48 @@ fleet_event = {
                     remove_modifier = leader_trait_touhou_rift_warped_skill
                 }
             }
+        }
+    }
+}
+
+# 只有东方人可以战胜东方天灾（也许）
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.2026
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        cannot_trigger_touhou_crisis_generic_damage_reduction = no
+        from = { is_touhou_crisis_faction = yes }
+        fromfromfrom = { NOT = { has_fleet_flag = touhou_crisis_generic_damage_reduction_fired } }
+    }
+    immediate = {
+        fromfromfrom = {
+            set_fleet_flag = touhou_crisis_generic_damage_reduction_fired
+            every_owned_ship = {
+                add_modifier = {
+                    modifier = touhou_crisis_generic_damage_reduction_buff
+                    mult = value:touhou_crisis_generic_damage_reduction_factor
+                }
+            }
+            fleet_event = { id = spth_fleet.2027 days = 3 }
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2027
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            fleet_event = { id = spth_fleet.2027 days = 3 }
+        }
+        else = {
+            remove_fleet_flag = touhou_crisis_generic_damage_reduction_fired
         }
     }
 }
