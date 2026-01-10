@@ -1125,3 +1125,37 @@ ship_spth_damage_reduction_mult_max_refresh = {
         }
     }
 }
+
+touhou_try_push_stack_fleet_avg_modifier = {
+    optimize_memory
+    event_target:touhou_stack_fleet = {
+        set_variable = { which = touhou_stack_$stack$_avg_modifier_$modifier$_value value = 0 }
+    }
+    every_owned_ship = {
+        limit = { check_modifier_value = { modifier = $modifier$ value > 0 } }
+        event_target:touhou_stack_fleet = {
+            change_variable = {
+                which = touhou_stack_$stack$_avg_modifier_$modifier$_value
+                value = modifier:$modifier$
+            }
+        }
+    }
+    event_target:touhou_stack_fleet = {
+        divide_variable = {
+            which = touhou_stack_$stack$_avg_modifier_$modifier$_value
+            value = prev.value:touhou_num_ships|modifier|$modifier$|
+        }
+        multiply_variable = {
+            which = touhou_stack_$stack$_avg_modifier_$modifier$_value
+            value = $factor$
+        }
+    }
+}
+touhou_try_pop_stack_fleet_avg_modifier = {
+    optimize_memory
+    if = {
+        limit = { is_variable_set = touhou_stack_$stack$_avg_modifier_$modifier$_value }
+        add_modifier = { modifier = $prefix$_$modifier$ days = $duration$ mult = touhou_stack_$stack$_avg_modifier_$modifier$_value }
+        clear_variable = touhou_stack_$stack$_avg_modifier_$modifier$_value
+    }
+}

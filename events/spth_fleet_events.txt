@@ -871,6 +871,581 @@ planet_event = {
     }
 }
 
+# touhou_ground_land
+# This = Planet
+# From = Bombarder country
+planet_event = {
+    id = spth_fleet.104
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_orbital_bombardment = yes
+        has_orbital_bombardment_stance = touhou_ground_land
+        NOT = { has_planet_flag = touhou_ground_land_event_cooldown }
+        from = { is_touhou_player_faction = yes }
+    }
+    immediate = {
+        set_timed_planet_flag = { flag = touhou_ground_land_event_cooldown days = 30 }
+        set_variable = { which = touhou_ground_land_ship_count value = value:touhou_ground_land_ship_cap }
+        if = {
+            limit = {
+                NOT = { is_variable_set = touhou_ground_land_army_count }
+            }
+            set_variable = { which = touhou_ground_land_army_count value = 0 }
+        }
+        if = {
+            limit = {
+                check_variable_arithmetic = {
+                    which = touhou_ground_land_ship_count
+                    value > touhou_ground_land_army_count
+                }
+            }
+            set_variable = {
+                which = touhou_ground_land_army_newly_added
+                value = touhou_ground_land_ship_count
+            }
+            subtract_variable = {
+                which = touhou_ground_land_army_newly_added
+                value = touhou_ground_land_army_count
+            }
+            set_variable = {
+                which = touhou_ground_land_army_count
+                value = touhou_ground_land_ship_count
+            }
+            while = {
+                count = touhou_ground_land_army_newly_added
+                create_army = {
+                    owner = root.from
+                    type = hellfairy_army
+                }
+            }
+            divide_variable = { which = touhou_ground_land_army_newly_added value = 2 }
+            while = {
+                count = touhou_ground_land_army_newly_added
+                create_army = {
+                    owner = root.from
+                    type = hellfairy2_army
+                }
+            }
+            clear_variable = touhou_ground_land_army_newly_added
+            if = {
+                limit = { NOT = { has_planet_flag = touhou_ground_land_army } }
+                set_planet_flag = has_touhou_ground_land_army
+            }
+        }
+    }
+}
+# Triggers country_event for the attacker upon victory (before controller is switched)
+# This = country, lead attacker
+# From = country, planet owner
+# FromFrom = planet
+country_event = {
+    id = spth_fleet.105
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { fromfrom = { has_planet_flag = touhou_ground_land_army } }
+    immediate = {
+        fromfrom = {
+            remove_planet_flag = touhou_ground_land_army
+            planet_event = { id = spth_fleet.107 days = 2 }
+        }
+    }
+}
+# Checked when defender wins a ground battle on a planet
+# Country Scope, defender
+# From(Country Scope), attacker
+# FromFrom(Planet Scope), the polanet where the ground battle happend
+country_event = {
+    id = spth_fleet.106
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { fromfrom = { has_planet_flag = touhou_ground_land_army } }
+    immediate = {
+        fromfrom = {
+            remove_planet_flag = touhou_ground_land_army
+            planet_event = { id = spth_fleet.107 days = 3 }
+        }
+    }
+}
+planet_event = {
+    id = spth_fleet.107
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        every_planet_army = {
+            limit = {
+                OR = {
+                    army_type = hellfairy_army
+                    army_type = hellfairy2_army
+                }
+            }
+            remove_army = yes
+        }
+        clear_variable = touhou_ground_land_ship_count
+        clear_variable = touhou_ground_land_army_count
+    }
+}
+
+# touhou_destroy_planet
+# This = Planet
+# From = Bombarder country
+planet_event = {
+    id = spth_fleet.108
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        pop_amount > 0
+        # planet_devastation >= 99
+        has_orbital_bombardment = yes
+        has_orbital_bombardment_stance = touhou_destroy_planet
+        from = { is_touhou_player_faction = yes }
+        exists = owner
+        owner = { NOR = {
+            is_country_type = swarm
+            is_country_type = ai_empire
+            is_country_type = cybrex_empire
+            is_country_type = ag_ancient_primitive_crisis
+            is_country_type = ag_zeta_crisis_country
+            is_country_type = ag_ancient_psi_guardian
+        } }
+    }
+    immediate = {
+        from = {
+            reroll_random = yes
+            random_list = {
+                20 = { change_variable = { which = touhou_destroy_planet_bombardment_charge value = 1 } }
+                80 = { }
+            }
+            if = {
+                limit = { check_variable = { which = touhou_destroy_planet_bombardment_charge value > 10 } }
+                # set_update_modifiers_batch = begin
+                random_list = {
+                    80 = { set_variable = { which = touhou_destroy_planet_bombardment_charge value = 10 } }
+                    20 = {
+                        set_variable = { which = touhou_destroy_planet_bombardment_charge value = 0 }
+                        prev = {
+                            reroll_random = yes
+                            random_list = {
+                                10 = { add_planet_devastation = 15 }
+                                10 = { add_planet_devastation = 14 }
+                                10 = { add_planet_devastation = 13 }
+                                10 = { add_planet_devastation = 12 }
+                                10 = { add_planet_devastation = 11 }
+                                10 = { add_planet_devastation = 10 }
+                                10 = { add_planet_devastation = 9 }
+                                10 = { add_planet_devastation = 8 }
+                                10 = { add_planet_devastation = 7 }
+                                10 = { add_planet_devastation = 6 }
+                                10 = { add_planet_devastation = 5 }
+                                10 = { }
+                            }
+                            if = {
+                                limit = { pop_amount > 10 }
+                                reroll_random = yes
+                                random_list = {
+                                    10 = { }
+                                    10 = { add_planet_devastation = 1 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } }
+                                    10 = { add_planet_devastation = 2 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } }
+                                    10 = { add_planet_devastation = 3 while = { count = 2 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } } }
+                                    10 = { add_planet_devastation = 4 while = { count = 2 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } } }
+                                    10 = { add_planet_devastation = 5 while = { count = 3 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } } }
+                                    10 = { add_planet_devastation = 6 while = { count = 3 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } } }
+                                    10 = { add_planet_devastation = 7 while = { count = 4 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } } }
+                                    10 = { add_planet_devastation = 8 while = { count = 4 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } } }
+                                    10 = { add_planet_devastation = 9 while = { count = 5 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } } }
+                                }
+                            }
+                            if = {
+                                limit = {
+                                    OR = {
+                                        habitable_planet = yes
+                                        AND = { is_ringworld = yes touhou_is_unhabitable_ringworld = no }
+                                        touhou_is_habitat = yes
+                                    }
+                                }
+                                set_variable = { which = touhou_bomb_crater_counter value = 0 }
+                                if = {
+                                    limit = { touhou_is_habitat = yes }
+                                    every_deposit = {
+                                        limit = { is_deposit_type = touhou_bomb_crater_habitat }
+                                        prev = { change_variable = { which = touhou_bomb_crater_counter value = 1 } }
+                                    }
+                                    if = {
+                                        limit = { check_variable = { which = touhou_bomb_crater_counter value < trigger:planet_size } }
+                                        reroll_random = yes
+                                        random_list = { 50 = { } 50 = { add_deposit = touhou_bomb_crater_habitat } }
+                                    }
+                                }
+                                else_if = {
+                                    limit = { is_ringworld = yes touhou_is_unhabitable_ringworld = no }
+                                    every_deposit = {
+                                        limit = { is_deposit_type = touhou_bomb_crater_ringworld }
+                                        prev = { change_variable = { which = touhou_bomb_crater_counter value = 1 } }
+                                    }
+                                    if = {
+                                        limit = { check_variable = { which = touhou_bomb_crater_counter value < trigger:planet_size } }
+                                        reroll_random = yes
+                                        random_list = { 50 = { } 50 = { add_deposit = touhou_bomb_crater_ringworld } }
+                                    }
+                                }
+                                else_if = {
+                                    limit = { always = yes }
+                                    every_deposit = {
+                                        limit = { is_deposit_type = d_bomb_crater }
+                                        prev = { change_variable = { which = touhou_bomb_crater_counter value = 1 } }
+                                    }
+                                    if = {
+                                        limit = { check_variable = { which = touhou_bomb_crater_counter value < trigger:planet_size } }
+                                        reroll_random = yes
+                                        random_list = {
+                                            50 = { }
+                                            50 = { add_deposit = touhou_bomb_crater_default }
+                                        }
+                                    }
+                                }
+                            }
+                            if = {
+                                limit = {
+                                    OR = {
+                                        habitable_planet = yes
+                                        AND = { is_ringworld = yes touhou_is_unhabitable_ringworld = no }
+                                        touhou_is_habitat = yes
+                                    }
+                                    has_army = yes
+                                    pop_amount > 1
+                                }
+                                reroll_random = yes
+                                random_list = {
+                                    75 = { }
+                                    25 = { random_planet_army = { remove_army = yes } }
+                                }
+                            }
+                        }
+                    }
+                }
+                # set_update_modifiers_batch = end
+            }
+        }
+        if = {
+            limit = {
+                planet_devastation >= 99
+                # touhou_has_planetary_shield = no
+                NOR = {
+                    has_planet_flag = touhou_destroy_planet_bombardment_choice_@from
+                    has_planet_flag = touhou_destroy_planet_bombardment_cooldown_@from
+                }
+                from = { is_touhou_crisis_faction = no }
+            }
+            set_planet_flag = touhou_destroy_planet_bombardment_choice_@from
+            from = { country_event = { id = spth_fleet.109 } }
+        }
+    }
+}
+country_event = {
+    id = spth_fleet.109
+    title = spth_fleet.108.name
+    desc = spth_fleet.108.desc
+    is_triggered_only = yes
+    immediate = {
+        save_event_target_as = touhou_source_country
+    }
+    after = {
+        hidden_effect = {
+            from = {
+                remove_planet_flag = touhou_destroy_planet_bombardment_choice_@root
+            }
+        }
+    }
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_city_room }
+    show_sound = event_yellow_alert
+    location = from
+    option = {
+        name = spth_fleet.108.a
+        custom_tooltip = spth_fleet.108.a.tooltip
+        hidden_effect = {
+            add_threat = { who = root amount = 3 }
+            from = {
+                owner = {
+                    add_opinion_modifier = { modifier = touhou_opinion_fleet_destroyed_my_planet who = root }
+                    add_static_war_exhaustion = { attacker = root location = root.from value_for_planet_destruction = 1.0 }
+                    create_message = {
+                        type = "PLANET_DESTROYED"
+                        localization = "touhou_planet_destroyed_by_ships_desc"
+                        days = 30
+                        target = root.from
+                        variable = { type = name localization = "th_attacker" scope = event_target:touhou_source_country }
+                        variable = { type = name localization = "th_victim_planet" scope = root.from }
+                    }
+                }
+                every_country = {
+                    limit = {
+                        NOR = {
+                            is_same_value = root.from.owner
+                            is_same_value = root
+                            is_country_type = fallen_empire
+                            AND = { has_federation = yes is_in_federation_with = root }
+                        }
+                        OR = { has_communications = root.from.owner has_communications = root }
+                    }
+                    add_opinion_modifier = { modifier = touhou_opinion_fleet_destroyed_planet who = root }
+                }
+                add_planet_devastation = -100
+                clear_planet_modifiers = yes
+                remove_all_buildings = yes
+                # remove_all_districts = yes
+                clear_deposits = yes
+                if = { limit = { has_branch_office = yes } close_branch_office = yes }
+                if = { limit = { has_observation_outpost = yes } observation_outpost = { dismantle = yes } }
+                destroy_colony = yes
+                touhou_remove_all_modifier_common = yes
+                touhou_destroy_orbital_ring = { spawn_debris = yes }
+                if = {
+                    limit = { NOR = {
+                        AND = { is_ringworld = yes touhou_is_unhabitable_ringworld = no }
+                        touhou_is_habitat = yes
+                        is_planet_class = pc_cosmogenesis_world
+                        is_planet_class = pc_spiritual_power_habitat
+                        has_planet_flag = is_spth_megastructure_planet
+                        ag_is_shell_world = yes
+                    } }
+                    th_spawn_explosion_particle = { size = large color = white }
+                    change_pc = pc_broken
+                }
+                else_if = {
+                    limit = { is_ringworld = yes touhou_is_unhabitable_ringworld = no }
+                    th_spawn_explosion_particle = { size = large color = white }
+                    touhou_destroy_habitable_ringworld = yes
+                }
+                else_if = {
+                    limit = { touhou_is_habitat = yes }
+                    th_spawn_explosion_particle = { size = large color = white }
+                    solar_system.star = { remove_planet_flag = has_habitat }
+                    touhou_remove_planet = yes
+                }
+                else_if = {
+                    limit = { is_planet_class = pc_cosmogenesis_world }
+                    touhou_spawn_lathe_cracker_effect = yes
+                }
+                else_if = {
+                    limit = { OR = {
+                        is_planet_class = pc_spiritual_power_habitat
+                        has_planet_flag = is_spth_megastructure_planet
+                    } }
+                    spth_spawn_habitat_cracker_effect = yes
+                }
+                else_if = {
+                    limit = { ag_is_shell_world = yes check_variable = { which = ag_shell_world_layer value = 0 } }
+                    ag_destroy_shell_world_from_base = { ag_target_planet_class = pc_broken }
+                }
+            }
+            if = {
+                limit = { has_ascension_perk = ap_become_the_crisis }
+                complete_crisis_objective = crisobj_destroy_worlds
+            }
+        }
+    }
+    option = {
+        name = spth_fleet.108.b
+        trigger = {
+            from = {
+                NOR = {
+                    AND = { is_ringworld = yes touhou_is_unhabitable_ringworld = no }
+                    touhou_is_habitat = yes
+                    is_planet_class = pc_cosmogenesis_world
+                    is_planet_class = pc_spiritual_power_habitat
+                    has_planet_flag = is_spth_megastructure_planet
+                    ag_is_shell_world = yes
+                }
+            }
+        }
+        custom_tooltip = spth_fleet.108.b.tooltip
+        hidden_effect = {
+            add_threat = { who = root amount = 3 }
+            from = {
+                owner = {
+                    add_opinion_modifier = { modifier = touhou_opinion_fleet_destroyed_my_planet who = root }
+                    add_static_war_exhaustion = { attacker = root location = root.from value_for_planet_destruction = 1.0 }
+                    create_message = {
+                        type = "PLANET_DESTROYED"
+                        localization = "touhou_planet_destroyed_by_ships_1_desc"
+                        days = 30
+                        target = root.from
+                        variable = { type = name localization = "th_attacker" scope = event_target:touhou_source_country }
+                        variable = { type = name localization = "th_victim_planet" scope = root.from }
+                    }
+                }
+                every_country = {
+                    limit = {
+                        NOR = {
+                            is_same_value = root.from.owner
+                            is_same_value = root
+                            is_country_type = fallen_empire
+                            AND = { has_federation = yes is_in_federation_with = root }
+                        }
+                        OR = { has_communications = root.from.owner has_communications = root }
+                    }
+                    add_opinion_modifier = { modifier = touhou_opinion_fleet_destroyed_planet who = root }
+                }
+                add_planet_devastation = -100
+                clear_planet_modifiers = yes
+                remove_all_buildings = yes
+                # remove_all_districts = yes
+                clear_deposits = yes
+                if = { limit = { has_branch_office = yes } close_branch_office = yes }
+                if = { limit = { has_observation_outpost = yes } observation_outpost = { dismantle = yes } }
+                destroy_colony = yes
+                touhou_remove_all_modifier_common = yes
+                touhou_destroy_orbital_ring = { spawn_debris = yes }
+                if = {
+                    limit = { NOR = {
+                        AND = { is_ringworld = yes touhou_is_unhabitable_ringworld = no }
+                        touhou_is_habitat = yes
+                        is_planet_class = pc_cosmogenesis_world
+                        is_planet_class = pc_spiritual_power_habitat
+                        has_planet_flag = is_spth_megastructure_planet
+                        ag_is_shell_world = yes
+                    } }
+                    th_spawn_explosion_particle = { size = large color = white }
+                    if = {
+                        limit = {
+                            OR = {
+                                is_planet_class = pc_gaia
+                                is_planet_class = pc_gensokyo_planet
+                                has_climate = "wet"
+                            }
+                        }
+                        change_pc = pc_desert
+                    }
+                    else = {
+                        change_pc = pc_molten
+                    }
+                }
+                else_if = {
+                    limit = { is_ringworld = yes touhou_is_unhabitable_ringworld = no }
+                    th_spawn_explosion_particle = { size = large color = white }
+                    touhou_destroy_habitable_ringworld = yes
+                }
+                else_if = {
+                    limit = { touhou_is_habitat = yes }
+                    th_spawn_explosion_particle = { size = large color = white }
+                    solar_system.star = { remove_planet_flag = has_habitat }
+                    touhou_remove_planet = yes
+                }
+                else_if = {
+                    limit = { is_planet_class = pc_cosmogenesis_world }
+                    touhou_spawn_lathe_cracker_effect = yes
+                }
+                else_if = {
+                    limit = { OR = {
+                        is_planet_class = pc_spiritual_power_habitat
+                        has_planet_flag = is_spth_megastructure_planet
+                    } }
+                    spth_spawn_habitat_cracker_effect = yes
+                }
+                else_if = {
+                    limit = { ag_is_shell_world = yes check_variable = { which = ag_shell_world_layer value = 0 } }
+                    ag_destroy_shell_world_from_base = { ag_target_planet_class = pc_broken }
+                }
+            }
+            if = {
+                limit = { has_ascension_perk = ap_become_the_crisis }
+                complete_crisis_objective = crisobj_destroy_worlds
+            }
+        }
+    }
+    option = {
+        name = spth_fleet.108.c
+        custom_tooltip = spth_fleet.108.c.tooltip
+        hidden_effect = {
+            add_threat = { who = root amount = 3 }
+            from = {
+                owner = {
+                    add_opinion_modifier = { modifier = touhou_opinion_fleet_destroyed_my_planet who = root }
+                    add_static_war_exhaustion = { attacker = root location = root.from value_for_planet_destruction = 1.0 }
+                    create_message = {
+                        type = "PLANET_DESTROYED"
+                        localization = "touhou_planet_destroyed_by_ships_desc"
+                        days = 30
+                        target = root.from
+                        variable = { type = name localization = "th_attacker" scope = event_target:touhou_source_country }
+                        variable = { type = name localization = "th_victim_planet" scope = root.from }
+                    }
+                }
+                every_country = {
+                    limit = {
+                        NOR = {
+                            is_same_value = root.from.owner
+                            is_same_value = root
+                            is_country_type = fallen_empire
+                            AND = { has_federation = yes is_in_federation_with = root }
+                        }
+                        OR = { has_communications = root.from.owner has_communications = root }
+                    }
+                    add_opinion_modifier = { modifier = touhou_opinion_fleet_destroyed_planet who = root }
+                }
+                add_planet_devastation = -100
+                # remove_all_districts = yes
+                if = { limit = { has_branch_office = yes } close_branch_office = yes }
+                if = { limit = { has_observation_outpost = yes } observation_outpost = { dismantle = yes } }
+                destroy_colony = yes
+                touhou_destroy_orbital_ring = { spawn_debris = yes }
+            }
+            if = {
+                limit = { has_ascension_perk = ap_become_the_crisis }
+                complete_crisis_objective = crisobj_destroy_worlds
+            }
+        }
+    }
+    option = {
+        name = spth_fleet.108.d
+        hidden_effect = {
+            from = {
+                set_timed_planet_flag = { flag = touhou_destroy_planet_bombardment_cooldown_@root days = 180 }
+            }
+        }
+    }
+}
+
+# touhou_destroy_planet
+# This = Planet
+# From = Bombarder country
+planet_event = {
+    id = spth_fleet.110
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        pop_amount > 0
+        # planet_devastation >= 99
+        has_orbital_bombardment = yes
+        has_orbital_bombardment_stance = touhou_firesupport
+        from = { is_touhou_player_faction = yes }
+    }
+    immediate = {
+        if = {
+            limit = { pop_amount > 10 }
+            reroll_random = yes
+            random_list = {
+                10 = { }
+                10 = { random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.2 } } }
+                10 = { random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.4 } } }
+                10 = { random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } }
+                10 = { while = { count = 2 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.2 } } } }
+                10 = { while = { count = 2 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.4 } } } }
+                10 = { while = { count = 2 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.6 } } } }
+                10 = { while = { count = 2 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.8 } } } }
+                10 = { while = { count = 3 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.2 } } } }
+                10 = { while = { count = 3 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.4 } } } }
+                10 = { while = { count = 3 random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.6 } } } }
+            }
+        } else = {
+            spth_planet_kill_all_pop = yes
+        }
+    }
+}
+
 ship_event = {
     id = spth_fleet.200
     hide_window = yes
@@ -1626,7 +2201,7 @@ country_event = {
                 }
             }
             last_created_ambient_object = { set_location = { target = prev distance = 0 angle = random } }
-            fleet_event = { id = spth_fleet.1201 days = 1 }
+            fleet_event = { id = spth_fleet.1201 days = 3 }
         }
     }
 }
@@ -1637,7 +2212,7 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-            fleet_event = { id = spth_fleet.1201 days = 1 }
+            fleet_event = { id = spth_fleet.1201 days = 3 }
         } else = {
             remove_fleet_flag = ship_spth_yuyuko_fan_display_fired
             every_ambient_object = {
@@ -1812,44 +2387,62 @@ country_event = {
                     trigger = has_trait
                     leader_trait_tenshi = {
                         prev = {
-                            random_list = {
-                                1 = { tenshi_init_aura_effect = { days = 2 } }
-                                3 = { tenshi_init_aura_effect = { days = 3 } }
-                                3 = { tenshi_init_aura_effect = { days = 4 } }
-                                3 = { tenshi_init_aura_effect = { days = 5 } }
-                                2 = { tenshi_init_aura_effect = { days = 6 } }
-                                2 = { tenshi_init_aura_effect = { days = 7 } }
-                                2 = { tenshi_init_aura_effect = { days = 8 } }
-                                1 = { tenshi_init_aura_effect = { days = 9 } }
-                                1 = { tenshi_init_aura_effect = { days = 10 } }
+                            if = {
+                                limit = { NOT = { has_fleet_flag = has_tenshi_aura_effect } }
+                                random_list = {
+                                    1 = { tenshi_init_aura_effect = { days = 2 } }
+                                    3 = { tenshi_init_aura_effect = { days = 3 } }
+                                    3 = { tenshi_init_aura_effect = { days = 4 } }
+                                    3 = { tenshi_init_aura_effect = { days = 5 } }
+                                    2 = { tenshi_init_aura_effect = { days = 6 } }
+                                    2 = { tenshi_init_aura_effect = { days = 7 } }
+                                    2 = { tenshi_init_aura_effect = { days = 8 } }
+                                    1 = { tenshi_init_aura_effect = { days = 9 } }
+                                    1 = { tenshi_init_aura_effect = { days = 10 } }
+                                }
                             }
                         }
                     }
                     leader_trait_alice = {
-                        prevprev = {
-                            set_timed_country_flag = { flag = has_alice_effect_cooldown days = 180 }
-                            save_event_target_as = alice_owner
-                        }
-                        prev = {
-                            save_event_target_as = alice_pos
-                            random_list = {
-                                1 = { alice_init_combat_effect = { days = 8 } }
-                                1 = { alice_init_combat_effect = { days = 10 } }
-                                1 = { alice_init_combat_effect = { days = 12 } }
-                                1 = { alice_init_combat_effect = { days = 14 } }
-                                1 = { alice_init_combat_effect = { days = 15 } }
+                        if = {
+                            limit = {
+                                prevprev = {
+                                    NOT = { has_country_flag = has_alice_effect_cooldown }
+                                }
+                            }
+                            prevprev = {
+                                set_timed_country_flag = { flag = has_alice_effect_cooldown days = 180 }
+                                save_event_target_as = alice_owner
+                            }
+                            prev = {
+                                save_event_target_as = alice_pos
+                                random_list = {
+                                    1 = { alice_init_combat_effect = { days = 8 } }
+                                    1 = { alice_init_combat_effect = { days = 10 } }
+                                    1 = { alice_init_combat_effect = { days = 12 } }
+                                    1 = { alice_init_combat_effect = { days = 14 } }
+                                    1 = { alice_init_combat_effect = { days = 15 } }
+                                }
                             }
                         }
                     }
                     leader_trait_reisen = {
                         root.fromfromfrom = {
-                            random_list = {
-                                50 = {  }
-                                50 = {
-                                    set_timed_fleet_flag = { flag = has_reisen_effect_fired days = 180 }
+                            if = {
+                                limit = { NOT = { has_fleet_flag = has_reisen_effect_fired } }
+                                set_timed_fleet_flag = { flag = has_reisen_effect_fired days = 180 }
+                                every_owned_ship = {
                                     add_modifier = {
                                         modifier = th_reisen_modifier_range days = 180
                                         mult = value:touhou_extra_export_value|modifier|modifier:ship_weapon_range_mult|
+                                    }
+                                    add_modifier = {
+                                        modifier = th_reisen_modifier_evasion_mult days = 180
+                                        mult = value:touhou_extra_export_value|modifier|modifier:ship_evasion_mult|
+                                    }
+                                    add_modifier = {
+                                        modifier = th_reisen_modifier_evasion_add days = 180
+                                        mult = value:touhou_extra_export_value|modifier|modifier:ship_evasion_add|
                                     }
                                     add_modifier = { modifier = th_reisen_modifier_other days = 180 }
                                 }
@@ -2441,6 +3034,209 @@ country_event = {
                             }
                         }
                     }
+                    leader_trait_momiji = {
+                        if = {
+                            limit = { NOT = { has_leader_flag = leader_trait_momiji_skill } }
+                            set_timed_leader_flag = { flag = leader_trait_momiji_skill days = 120 }
+                            prev = {
+                                if = {
+                                    limit = {
+                                        solar_system = {
+                                            any_ship_in_system = {
+                                                controller = { is_hostile = prevprevprev.controller }
+                                                distance = {
+                                                    source = prevprev
+                                                    max_distance <= 32
+                                                    same_solar_system = yes
+                                                }
+                                            }
+                                        }
+                                    }
+                                    solar_system = {
+                                        every_ship_in_system = {
+                                            limit = {
+                                                controller = { is_hostile = prevprevprev.controller }
+                                                distance = {
+                                                    source = prevprev
+                                                    max_distance <= 32
+                                                    same_solar_system = yes
+                                                }
+                                            }
+                                            spth_reduce_armor_max = { percent = 1.0 }
+                                            spth_reduce_shield_max = { percent = 1.0 }
+                                            add_modifier = { modifier = leader_trait_momiji_skill_dmg days = 5 }
+                                            save_event_target_as = touhou_terrify_root
+                                            touhou_set_terrify = { days = 5 }
+                                        }
+                                    }
+                                }
+                                else = {
+                                    every_owned_ship = {
+                                        # create_ambient_object = {
+                                        #     type = touhou_shield_effect_red_entity
+                                        #     location = this
+                                        #     use_3d_location = yes
+                                        #     entity_offset = { min = 0 max = 0 }
+                                        #     entity_offset_angle = { min = 0 max = 0 }
+                                        #     entity_offset_height = { min = 0 max = 0 }
+                                        #     entity_scale_to_size = yes
+                                        #     scale = 0.01
+                                        #     effect = {
+                                        #         set_ambient_object_flag = touhou_momiji_shield_of_@prevprev
+                                        #     }
+                                        # }
+                                        add_modifier = { modifier = leader_trait_momiji_skill days = 11 }
+                                        if = {
+                                            limit = { check_modifier_value = { modifier = ship_speed_mult value > 0 } }
+                                            add_modifier = {
+                                                modifier = leader_trait_momiji_skill_debuff days = 11
+                                                mult = modifier:ship_speed_mult
+                                            }
+                                        }
+                                        if = {
+                                            limit = { check_modifier_value = { modifier = ship_speed_mult value > 0 } }
+                                            add_modifier = {
+                                                modifier = leader_trait_momiji_skill_debuff_2 days = 11
+                                                mult = modifier:ship_base_speed_mult
+                                            }
+                                        }
+                                    }
+                                    fleet_event = { id = spth_fleet.2029 days = 11 }
+                                }
+                            }
+                        }
+                    }
+                    leader_trait_matara = {
+                        if = {
+                            limit = { root.fromfromfrom = { NOT = { has_fleet_flag = leader_trait_matara_damage_reduction } } }
+                            root.fromfromfrom = {
+                                set_timed_fleet_flag = { flag = leader_trait_matara_damage_reduction days = 30 }
+                                every_owned_ship = {
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = ship_damage_reduction_add value > 0 } }
+                                        add_modifier = { modifier = leader_trait_matara_2_skill_1 days = 9 mult = modifier:ship_damage_reduction_add }
+                                    }
+                                    if = {
+                                        limit = { check_modifier_value = { modifier = ship_damage_reduction_mult value > 0 } }
+                                        add_modifier = { modifier = leader_trait_matara_2_skill_2 days = 9 mult = modifier:ship_damage_reduction_mult }
+                                    }
+                                }
+                            }
+                        }
+                        if = {
+                            limit = { NOT = { has_leader_flag = leader_trait_matara_season_skill } }
+                            set_timed_leader_flag = { flag = leader_trait_matara_season_skill days = 30 }
+                            if = {
+                                limit = { spth_is_spring = yes }
+                                prev = {
+                                    every_owned_ship = {
+                                        add_modifier = { modifier = leader_trait_matara_1_skill_4_1_1 days = 12 mult = value:spth_max_shield_value|percent|1.0| }
+                                        add_modifier = { modifier = leader_trait_matara_1_skill_4_1_2 days = 12 mult = trigger:has_max_armor_hp }
+                                        add_modifier = { modifier = leader_trait_matara_1_skill_4_1_3 days = 12 mult = trigger:has_max_hp }
+                                    }
+                                }
+                            }
+                            else_if = {
+                                limit = { spth_is_summer = yes }
+                                prev = {
+                                    every_owned_ship = {
+                                        if = {
+                                            limit = { check_modifier_value = { modifier = weapon_type_lingli_weapon_damage_mult value > 0 } }
+                                            add_modifier = { modifier = leader_trait_matara_1_skill_4_2_1 days = 6 mult = modifier:weapon_type_lingli_weapon_damage_mult }
+                                        }
+                                        if = {
+                                            limit = { check_modifier_value = { modifier = weapon_type_lingli_weapon_fire_rate_mult value > 0 } }
+                                            add_modifier = { modifier = leader_trait_matara_1_skill_4_2_2 days = 6 mult = modifier:weapon_type_lingli_weapon_fire_rate_mult }
+                                        }
+                                    }
+                                }
+                            }
+                            else_if = {
+                                limit = { spth_is_autumn = yes }
+                                prev = {
+                                    every_owned_ship = {
+                                        add_modifier = { modifier = leader_trait_matara_1_skill_4_3 days = 15 }
+                                        if = {
+                                            limit = { check_modifier_value = { modifier = ship_weapon_range_mult value > 0 } }
+                                            add_modifier = { modifier = leader_trait_matara_1_skill_4_3_1 days = 15 mult = modifier:ship_weapon_range_mult }
+                                        }
+                                    }
+                                }
+                            }
+                            else = {
+                                prev = {
+                                    save_event_target_as = leader_trait_matara_fleet
+                                    set_variable_to_random_value = { which = touhou_leader_spark_damage_random_matara min = 1.0 max = 2.0 }
+                                    set_variable = {
+                                        which = touhou_leader_spark_damage_matara_armor
+                                        value = value:touhou_matara_leader_spark_damage|base|3840|type|matara|layer|armor|factor|1.0|neg|yes|
+                                    }
+                                    set_variable = {
+                                        which = touhou_leader_spark_damage_matara_shield
+                                        value = value:touhou_matara_leader_spark_damage|base|3840|type|matara|layer|shield|factor|1.0|
+                                    }
+                                    every_combatant_fleet = {
+                                        limit = { is_in_combat = yes is_cloaked = no }
+                                        touhou_spawn_leader_master_spark_object = yes
+                                        every_owned_ship = {
+                                            reduce_shield = event_target:leader_trait_matara_fleet.touhou_leader_spark_damage_matara_shield
+                                            repair_armor_amount = event_target:leader_trait_matara_fleet.touhou_leader_spark_damage_matara_armor
+                                        }
+                                    }
+                                    clear_variable = touhou_leader_spark_damage_randommatara
+                                    clear_variable = touhou_leader_spark_damage_matara_armor
+                                    clear_variable = touhou_leader_spark_damage_matara_shield
+                                }
+                            }
+                        }
+                    }
+                    leader_trait_yuuma = {
+                        if = {
+                            limit = { NOT = { has_leader_flag = leader_trait_yuuma_1_skill } }
+                            set_timed_leader_flag = { flag = leader_trait_yuuma_1_skill days = 120 }
+                            prev = {
+                                save_event_target_as = touhou_stack_fleet
+                                random_combatant_fleet = {
+                                    limit = { can_go_mia = yes }
+                                    every_owned_ship = {
+                                        spth_reduce_armor_max = { percent = 0.5 }
+                                        spth_reduce_shield_max = { percent = 0.5 }
+                                    }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_hull_regen_add_static factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_armor_regen_add_static factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_shield_regen_add_static factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_weapon_damage factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = weapon_type_energy_weapon_damage_mult factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = weapon_type_kinetic_weapon_damage_mult factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = weapon_type_explosive_weapon_damage_mult factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_armor_hardening_add factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_shield_hardening_add factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_tracking_add factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_accuracy_add factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_evasion_mult factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_evasion_add factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_tracking_mult factor = 0.1 }
+                                    touhou_try_push_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_accuracy_mult factor = 0.1 }
+                                    touhou_eat_fleet = { ret_day = 30 }
+                                }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_hull_regen_add_static duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_armor_regen_add_static duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_shield_regen_add_static duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_weapon_damage duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = weapon_type_energy_weapon_damage_mult duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = weapon_type_kinetic_weapon_damage_mult duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = weapon_type_explosive_weapon_damage_mult duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_armor_hardening_add duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_shield_hardening_add duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_tracking_add duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_accuracy_add duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_evasion_mult duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_evasion_add duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_tracking_mult duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                                touhou_try_pop_stack_fleet_avg_modifier = { stack = yuuma modifier = ship_accuracy_mult duration = 60 prefix = "touhou_yuuma_skill_steal" }
+                            }
+                        }
+                    }
                     default = {}
                 }
                 # 星空大盗
@@ -2702,6 +3498,34 @@ country_event = {
                         else = {
                             fleet_event = { id = spth_fleet.2023 }
                         }
+                    }
+                }
+                # 转化闪避为减伤
+                if = {
+                    limit = {
+                        prev = {
+                            NOT = { has_fleet_flag = fleet_convert_evasion_to_damage_reduction }
+                            check_modifier_value = { modifier = fleet_convert_evasion_to_damage_reduction value > 0 }
+                        }
+                    }
+                    prev = {
+                        set_fleet_flag = fleet_convert_evasion_to_damage_reduction
+                        every_owned_ship = {
+                            add_modifier = {
+                                modifier = fleet_convert_evasion_to_damage_reduction_buff
+                                mult = value:touhou_convert_evasion_to_dmg_rdu_val
+                            }
+                            add_modifier = {
+                                modifier = fleet_convert_evasion_to_damage_reduction_debuff_1
+                                mult = value:touhou_modifier_uncapped|modifier|ship_evasion_mult|
+                            }
+                            add_modifier = {
+                                modifier = fleet_convert_evasion_to_damage_reduction_debuff_2
+                                mult = value:touhou_modifier_uncapped|modifier|ship_evasion_add|
+                            }
+                            add_modifier = { modifier = fleet_convert_evasion_to_damage_reduction_debuff }
+                        }
+                        fleet_event = { id = spth_fleet.2028 }
                     }
                 }
             }
@@ -3190,7 +4014,7 @@ planet_event = {
                     touhou_planet_under_protect = no # 兼容：阿夸星球护盾、古代堡垒
                     any_fleet_in_orbit = {
                         exists = owner
-                        owner = { is_hostile_to = root.controller }
+                        owner = { is_hostile = root.controller }
                         any_owned_ship = { check_modifier_value = { modifier = touhou_leader_bombardment_special_effect value > 0 } }
                     }
                 }
@@ -3204,7 +4028,7 @@ planet_event = {
                 every_fleet_in_orbit = {
                     limit = {
                         exists = owner
-                        owner = { is_hostile_to = root.controller }
+                        owner = { is_hostile = root.controller }
                         any_owned_ship = { check_modifier_value = { modifier = touhou_leader_bombardment_special_effect value > 0 } }
                     }
                     every_owned_ship = {
@@ -3361,6 +4185,10 @@ country_event = {
                 OR = {
                     is_ship_size = th_fallen_empire_union_fallen_ship
                     is_ship_size = touhou_fe_union_titan
+                    is_ship_size = touhou_fe_union_escort_player
+                    is_ship_size = touhou_fe_union_escort_hostile
+                    is_ship_size = touhou_fe_union_battle_cruiser_player
+                    is_ship_size = touhou_fe_union_battle_cruiser_hostile
                     AND = {
                         is_ship_size = touhou_gunpower_turret_stationary
                         check_modifier_value = { modifier = touhou_has_gravity_cannon value > 0 }
@@ -4075,8 +4903,9 @@ fleet_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        from = { check_modifier_value = { modifier = touhou_detection_deactive_cloaking_system value != 0 } }
+        exists = from from = { check_modifier_value = { modifier = touhou_detection_deactive_cloaking_system value != 0 } }
         is_cloaked = yes NOT = { has_fleet_flag = touhou_detection_deactive_cloaking_system_lock }
+        exists = controller controller = { is_hostile = root.from.owner_or_space_owner }
     }
     immediate = {
         set_timed_fleet_flag = { flag = touhou_detection_deactive_cloaking_system_lock days = 30 }
@@ -4127,6 +4956,7 @@ fleet_event = {
         is_cloaked = yes exists = solar_system
         solar_system = { check_modifier_value = { modifier = touhou_detection_deactive_cloaking_alt_system value != 0 } }
         NOT = { has_fleet_flag = touhou_detection_deactive_cloaking_system_alt_lock }
+        exists = controller controller = { is_hostile = prev.solar_system.owner_or_space_owner }
     }
     immediate = {
         set_timed_fleet_flag = { flag = touhou_detection_deactive_cloaking_system_alt_lock days = 30 }
@@ -4343,7 +5173,7 @@ country_event = {
                     mult = value:touhou_crisis_generic_damage_reduction_factor
                 }
             }
-            fleet_event = { id = spth_fleet.2027 days = 3 }
+            fleet_event = { id = spth_fleet.2027 days = 1 }
         }
     }
 }
@@ -4354,10 +5184,48 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-            fleet_event = { id = spth_fleet.2027 days = 3 }
+            fleet_event = { id = spth_fleet.2027 days = 1 }
         }
         else = {
             remove_fleet_flag = touhou_crisis_generic_damage_reduction_fired
+            every_owned_ship = {
+                remove_modifier = touhou_crisis_generic_damage_reduction_buff
+            }
         }
     }
 }
+
+fleet_event = {
+    id = spth_fleet.2028
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            fleet_event = { id = spth_fleet.2028 days = 3 }
+        }
+        else = {
+            remove_fleet_flag = fleet_convert_evasion_to_damage_reduction
+            every_owned_ship = {
+                remove_modifier = fleet_convert_evasion_to_damage_reduction_buff
+                remove_modifier = fleet_convert_evasion_to_damage_reduction_debuff
+                remove_modifier = fleet_convert_evasion_to_damage_reduction_debuff_1
+                remove_modifier = fleet_convert_evasion_to_damage_reduction_debuff_2
+            }
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2029
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        solar_system = {
+            every_system_ambient_object = {
+                limit = { has_ambient_object_flag = touhou_momiji_shield_of_@root }
+                destroy_ambient_object = this
+            }
+        }
+    }
+}
+

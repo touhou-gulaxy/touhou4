@@ -497,7 +497,7 @@ spth_super_carrier_computer_damage_reduce_value = {
 	add = trigger:has_hp
 	add = value:spth_super_carrier_computer_damage_reduce_value_1
 	mult = 0.01
-	max = 5120
+	max = 8192
 }
 touhou_spellcard_21_damage_reduce_value = {
     base = 0
@@ -696,11 +696,11 @@ touhou_num_owned_touhou_system_warper = {
 
 country_admin_cap_factor = {
     base = 1
-    mult = modifier:country_admin_cap_mult
+    add = modifier:country_admin_cap_mult
     min = 0
 }
 country_admin_cap_value = {
-    base = 0
+    base = 50
     add = modifier:country_admin_cap_add
     mult = value:country_admin_cap_factor
 }
@@ -890,4 +890,51 @@ touhou_modifier_min_capped = {
 touhou_modifier_uncapped = {
     base = 0
     add = modifier:$modifier$
+}
+
+touhou_ground_land_ship_cap = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger = count_fleet_in_orbit
+        parameters = {
+            limit = {
+                exists = controller
+                controller = { is_touhou_player_faction = yes }
+                any_owned_ship = {
+                    OR = {
+                        is_touhou_ship = yes
+                        ag_is_ancient_ship = yes
+                    }
+                }
+            }
+        }
+        mode = add
+    }
+    mult = 8
+}
+
+touhou_convert_evasion_to_dmg_rdu_factor = {
+    base = 1
+    add = modifier:ship_evasion_mult
+    min = 1
+}
+touhou_convert_evasion_to_dmg_rdu_val = {
+    base = 1
+    add = modifier:ship_evasion_add
+    mult = value:touhou_convert_evasion_to_dmg_rdu_factor
+    min = 2
+}
+
+touhou_num_ships = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger = count_owned_ship
+        parameters = {
+            limit = {
+                [[modifier] check_modifier_value = { modifier = $modifier$ value > 0 } ]
+            }
+        }
+        mode = add
+    }
+    min = 1
 }

@@ -427,6 +427,30 @@ touhou_leader_spark_damage = {
     [[neg] mult = -1 ]
 }
 
+touhou_matara_leader_spark_damage_factor = {
+    base = 1
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_type_spark_weapon_damage_mult
+    min = 1
+}
+touhou_matara_leader_spark_damage_factor_2 = {
+    base = 1
+    add = modifier:ship_$layer$_damage_mult
+    min = 1
+}
+touhou_matara_leader_spark_damage = {
+    base = $base$
+    modifier = {
+        is_variable_set = touhou_leader_spark_damage_random_$type$
+        mult = touhou_leader_spark_damage_random_$type$
+    }
+    floor = yes
+    mult = owner.value:touhou_matara_leader_spark_damage_factor
+    mult = owner.value:touhou_matara_leader_spark_damage_factor_2|layer|$layer$|
+    mult = $factor$
+    [[neg] mult = -1 ]
+}
+
 touhou_gunpower_turret_t_weapon_cooldown_factor = {
     base = 1
     add = modifier:weapon_type_lingli_weapon_fire_rate_mult
@@ -499,10 +523,10 @@ touhou_psionic_lighting_hit_damage_factor = {
     min = 0.1
 }
 touhou_psionic_lighting_hit_damage = {
-    base = @spth_psionic_$ag_tag$lightning_$size$_damage_min
+    base = 0
     add = @spth_psionic_$ag_tag$lightning_$size$_damage_max
     mult = @touhou_generic_scale_damage_$size$_factor
-    mult = 0.5
+    # mult = 0.5
     mult = value:touhou_psionic_lighting_hit_damage_factor|size_short|$size_short$|ag_weapon|$ag_weapon$|
     mult = value:touhou_min_capped_modifier|modifier|ship_armor_damage_mult|factor|1|
     mult = -1
@@ -524,4 +548,50 @@ resurrection_butterfly_bouns_extra_value = {
     base = 0
     add = resurrection_butterfly_extra_count
     mult = value:resurrection_butterfly_bouns_factor
+}
+
+touhou_test_value_1 = {
+    base = 0
+    complex_trigger_modifier = {
+        trigger = count_controlled_ship
+        parameters = {
+            limit = {
+                check_modifier_value = {
+                    modifier = ship_is_touhou_mod_ship
+                    value = 1
+                }
+            }
+        }
+        mode = add
+        mult = 1
+    }
+}
+
+touhou_cruise_missile_dmg_factor = {
+    base = 1
+    add = modifier:weapon_type_explosive_weapon_damage_mult
+    add = modifier:weapon_type_energy_weapon_damage_mult
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:g_slot_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 0.1
+}
+touhou_cruise_missile_hit_damage = {
+    base = @spth_special_$type$_cruise_torpedo_damage_min
+    add = @spth_special_$type$_cruise_torpedo_damage_max
+    mult = 0.5
+    mult = value:touhou_cruise_missile_dmg_factor
+}
+touhou_swarm_rocket_dmg_factor = {
+    base = 1
+    add = modifier:weapon_type_explosive_weapon_damage_mult
+    add = modifier:weapon_type_kinetic_weapon_damage_mult
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:g_slot_weapon_damage_mult
+    add = modifier:ship_weapon_damage
+    min = 0.1
+}
+touhou_swarm_rocket_hit_damage = {
+    base = 247.50
+    mult = value:touhou_swarm_rocket_dmg_factor
 }

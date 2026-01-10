@@ -73,7 +73,81 @@ utility_component_template = {
         modifier = { factor = 0.0 no_resource_for_component = { RESOURCE = sr_fuka } }
     }
 }
-
+utility_component_template = {
+    key = "touhou_fe_union_common_shield_l"
+    size = large
+    icon = "GFX_ship_part_spth_adv_spiritual_shield"
+    icon_frame = 1
+    power = @power_L7
+    resources = {
+        category = ship_components
+        cost = {
+            sr_living_metal = 20.0
+            nanites = 1.30
+            sr_lingli = 2.60
+        }
+        upkeep = { energy = 2.0 }
+    }
+    modifier = {
+        custom_tooltip = "touhou_difficulty_player_shield_effect"
+        show_only_custom_tooltip = no
+        ship_shield_add = @touhou_fe_union_common_shield_ship_shield_add
+        ship_shield_regen_add_static = @touhou_fe_union_common_shield_ship_shield_regen_add_static
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = @touhou_fe_union_common_defense_damage_reduction_basic
+        ship_shield_hardening_add = @touhou_fe_union_common_shield_ship_shield_hardening_add
+        ship_spth_shield_efficiency = @touhou_fe_union_common_shield_ship_spth_shield_efficiency
+        touhou_fe_union_common_armor_count = 1
+    }
+    hidden = yes
+    component_set = th_ag_shield_set
+    ai_weight = {
+        weight = 2
+        modifier = { factor = 0.0 no_resource_for_component = { RESOURCE = sr_living_metal } }
+        modifier = { factor = 0.0 no_resource_for_component = { RESOURCE = nanites } }
+        modifier = { factor = 0.0 no_resource_for_component = { RESOURCE = sr_lingli } }
+    }
+}
+utility_component_template = {
+    key = "touhou_fe_union_common_armor_l"
+    size = large
+    icon = "GFX_ship_part_spth_adv_spiritual_armor"
+    icon_frame = 1
+    resources = {
+        category = ship_components
+        cost = {
+            sr_living_metal = 20.0
+            nanites = 1.30
+            sr_lingli = 2.60
+            sr_fuka = 1.30
+        }
+        upkeep = { energy = 2.0 }
+    }
+    modifier = {
+        custom_tooltip = "touhou_difficulty_player_armor_effect"
+        show_only_custom_tooltip = no
+        ship_hull_add = @touhou_fe_union_common_shield_ship_hull_add
+        ship_hull_regen_add_static = @touhou_fe_union_common_shield_ship_hull_regen_add_static
+        ship_armor_add = @touhou_fe_union_common_shield_ship_armor_add
+        ship_armor_regen_add_static = @touhou_fe_union_common_shield_ship_armor_regen_add_static
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = @touhou_fe_union_common_defense_damage_reduction_basic
+        ship_armor_hardening_add = @touhou_fe_union_common_shield_ship_armor_hardening_add
+        ship_spth_armor_efficiency = @touhou_fe_union_common_shield_ship_spth_armor_efficiency
+        touhou_fe_union_common_shield_count = 1
+    }
+    hidden = yes
+    component_set = th_ag_armor_set
+    ai_weight = {
+        weight = 2
+        modifier = { factor = 0.0 no_resource_for_component = { RESOURCE = sr_living_metal } }
+        modifier = { factor = 0.0 no_resource_for_component = { RESOURCE = nanites } }
+        modifier = { factor = 0.0 no_resource_for_component = { RESOURCE = sr_lingli } }
+        modifier = { factor = 0.0 no_resource_for_component = { RESOURCE = sr_fuka } }
+    }
+}
 utility_component_template = {
     key = "touhou_gunpower_turret_shield_l"
     size = large
@@ -422,7 +496,7 @@ utility_component_template = {
     size = small
     icon = "GFX_ship_part_touhou_singularity_4_power_core_teal"
     icon_frame = 1
-    power = 18000
+    power = 153600
     hidden = yes
     component_set = "power_core"
     inline_script = { script = ship_components/touhou_ship_action_button }
@@ -467,12 +541,176 @@ utility_component_template = {
     size = small
     icon = "GFX_ship_part_th_fallen_empire_union_power_core"
     icon_frame = 1
-    power = 16400
+    power = 115200
     hidden = yes
     component_set = "power_core"
     inline_script = { script = ship_components/touhou_ship_action_button }
     ship_modifier = {
         ship_has_touhou_action = 1
+    }
+}
+utility_component_template = {
+    key = "th_fallen_empire_union_power_core_class_4_singularity_medium"
+    size = small
+    icon = "GFX_ship_part_touhou_singularity_4_power_core_teal"
+    icon_frame = 1
+    power = 76800
+    hidden = yes
+    component_set = "power_core"
+    inline_script = { script = ship_components/touhou_ship_action_button }
+    ship_modifier = {
+        ship_has_touhou_action = 1
+    }
+    scripted_action = {
+        slot = 1
+        scope = self
+        button_visible = {
+            hidden_trigger = {
+                spth_has_ag_mod = yes
+                any_owned_ship = {
+                    OR = {
+                        check_modifier_value = { modifier = "ag_allow_ship_action" value != 0 }
+                        check_modifier_value = { modifier = "ag_triggered_allow_ship_action" value != 0 }
+                    }
+                }
+            }
+        }
+        button_clickable = {
+            custom_tooltip = { fail_text = "ag_action_empty" NOT = { has_fleet_flag = ag_no_ship_action_cooldown } }
+            hidden_trigger = { owner = { NOT = { has_country_flag = ag_ship_action_menu_opened } } }
+        }
+        name = on_ag_fleet_action_actived
+        icon = GFX_ag_fleet_view_ship_action_button
+        icon_selected = GFX_ag_fleet_view_ship_action_button
+        activity_key = ag_action_button_title
+        tooltip = ag_fleetview_action_button_title
+        context_menu_name = ag_action_button_title
+        progress_activity_key = ag_action_button_title
+        on_click_sound = "interface"
+        wait = no
+    }
+}
+utility_component_template = {
+    key = "th_fallen_empire_union_power_core_class_4_singularity_small"
+    size = small
+    icon = "GFX_ship_part_touhou_singularity_4_power_core_teal"
+    icon_frame = 1
+    power = 38400
+    hidden = yes
+    component_set = "power_core"
+    inline_script = { script = ship_components/touhou_ship_action_button }
+    ship_modifier = {
+        ship_has_touhou_action = 1
+    }
+    scripted_action = {
+        slot = 1
+        scope = self
+        button_visible = {
+            hidden_trigger = {
+                spth_has_ag_mod = yes
+                any_owned_ship = {
+                    OR = {
+                        check_modifier_value = { modifier = "ag_allow_ship_action" value != 0 }
+                        check_modifier_value = { modifier = "ag_triggered_allow_ship_action" value != 0 }
+                    }
+                }
+            }
+        }
+        button_clickable = {
+            custom_tooltip = { fail_text = "ag_action_empty" NOT = { has_fleet_flag = ag_no_ship_action_cooldown } }
+            hidden_trigger = { owner = { NOT = { has_country_flag = ag_ship_action_menu_opened } } }
+        }
+        name = on_ag_fleet_action_actived
+        icon = GFX_ag_fleet_view_ship_action_button
+        icon_selected = GFX_ag_fleet_view_ship_action_button
+        activity_key = ag_action_button_title
+        tooltip = ag_fleetview_action_button_title
+        context_menu_name = ag_action_button_title
+        progress_activity_key = ag_action_button_title
+        on_click_sound = "interface"
+        wait = no
+    }
+}
+utility_component_template = {
+    key = "th_fallen_empire_union_power_core_dark_matter_medium"
+    size = small
+    icon = "GFX_ship_part_th_fallen_empire_union_power_core"
+    icon_frame = 1
+    power = 51200
+    hidden = yes
+    component_set = "power_core"
+    inline_script = { script = ship_components/touhou_ship_action_button }
+    ship_modifier = {
+        ship_has_touhou_action = 1
+    }
+    scripted_action = {
+        slot = 1
+        scope = self
+        button_visible = {
+            hidden_trigger = {
+                spth_has_ag_mod = yes
+                any_owned_ship = {
+                    OR = {
+                        check_modifier_value = { modifier = "ag_allow_ship_action" value != 0 }
+                        check_modifier_value = { modifier = "ag_triggered_allow_ship_action" value != 0 }
+                    }
+                }
+            }
+        }
+        button_clickable = {
+            custom_tooltip = { fail_text = "ag_action_empty" NOT = { has_fleet_flag = ag_no_ship_action_cooldown } }
+            hidden_trigger = { owner = { NOT = { has_country_flag = ag_ship_action_menu_opened } } }
+        }
+        name = on_ag_fleet_action_actived
+        icon = GFX_ag_fleet_view_ship_action_button
+        icon_selected = GFX_ag_fleet_view_ship_action_button
+        activity_key = ag_action_button_title
+        tooltip = ag_fleetview_action_button_title
+        context_menu_name = ag_action_button_title
+        progress_activity_key = ag_action_button_title
+        on_click_sound = "interface"
+        wait = no
+    }
+}
+utility_component_template = {
+    key = "th_fallen_empire_union_power_core_dark_matter_small"
+    size = small
+    icon = "GFX_ship_part_th_fallen_empire_union_power_core"
+    icon_frame = 1
+    power = 25600
+    hidden = yes
+    component_set = "power_core"
+    inline_script = { script = ship_components/touhou_ship_action_button }
+    ship_modifier = {
+        ship_has_touhou_action = 1
+    }
+    scripted_action = {
+        slot = 1
+        scope = self
+        button_visible = {
+            hidden_trigger = {
+                spth_has_ag_mod = yes
+                any_owned_ship = {
+                    OR = {
+                        check_modifier_value = { modifier = "ag_allow_ship_action" value != 0 }
+                        check_modifier_value = { modifier = "ag_triggered_allow_ship_action" value != 0 }
+                    }
+                }
+            }
+        }
+        button_clickable = {
+            custom_tooltip = { fail_text = "ag_action_empty" NOT = { has_fleet_flag = ag_no_ship_action_cooldown } }
+            hidden_trigger = { owner = { NOT = { has_country_flag = ag_ship_action_menu_opened } } }
+        }
+        name = on_ag_fleet_action_actived
+        icon = GFX_ag_fleet_view_ship_action_button
+        icon_selected = GFX_ag_fleet_view_ship_action_button
+        activity_key = ag_action_button_title
+        tooltip = ag_fleetview_action_button_title
+        context_menu_name = ag_action_button_title
+        progress_activity_key = ag_action_button_title
+        on_click_sound = "interface"
+        wait = no
     }
 }
 utility_component_template = {
@@ -541,6 +779,40 @@ utility_component_template = {
     ai_weight = { weight = 0 }
 }
 utility_component_template = {
+    key = "th_fallen_empire_union_computer_battleship"
+    size = small
+    icon = "GFX_ship_part_th_fallen_empire_union_computer_largeship"
+    icon_frame = 1
+    power = -200
+    component_set = "combat_computers"
+    ship_behavior = "spth_artillery_attack"
+    hidden = yes
+    ship_modifier = {
+        ship_weapon_range_mult = 0.25
+        ship_fire_rate_mult = 0.25
+        ship_accuracy_add = 10
+        ship_tracking_add = 10
+    }
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
+    key = "th_fallen_empire_union_computer_escort"
+    size = small
+    icon = "GFX_ship_part_th_fallen_empire_union_computer_smallship"
+    icon_frame = 1
+    power = -200
+    component_set = "combat_computers"
+    ship_behavior = "spth_line"
+    hidden = yes
+    ship_modifier = {
+        ship_weapon_range_mult = 0.25
+        ship_fire_rate_mult = 0.25
+        ship_accuracy_add = 10
+        ship_tracking_add = 10
+    }
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
     key = "th_fallen_empire_union_aura_1"
     size = small
     icon = "GFX_ship_part_th_ancient_aura_unique_teal"
@@ -595,6 +867,78 @@ utility_component_template = {
             }
             ship_effect = {
                 entity = "ship_aura_positive_lunar_capital_entity"
+                dynamic_scale = no
+            }
+        }
+    }
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
+    key = "th_fallen_empire_union_aura_2"
+    size = small
+    icon = "GFX_ship_part_th_ancient_aura_unique_teal"
+    icon_frame = 1
+    power = -200
+    component_set = "ship_aura_components"
+    inline_script = { script = components/ag_lambda_ships_aura_effect ag_diff = 3 ag_status = 1 }
+    hidden = yes
+    hostile_aura = {
+        name = "th_fallen_empire_union_aura_2_name"
+        radius = 400
+        apply_on = ships
+        stack_info = {			#A ship can only be affected by one aura of a certain id. If multiple auras have the same ID the one with the highest priority will be applied.
+            id = th_fallen_empire_union_aura_2
+            priority = 200
+        }
+        modifier = {
+            ship_accuracy_mult = -0.20
+            ship_tracking_mult = -0.15
+            ship_armor_penetration_add = -0.15
+            ship_shield_hardening_add = -0.15
+        }
+        graphics = {
+            area_effect = {
+                entity = "circle_area_entity"
+                dynamic_scale = yes
+            }
+            ship_effect = {
+                entity = "ship_aura_negative_lunar_capital_entity"
+                dynamic_scale = no
+            }
+        }
+    }
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
+    key = "th_fallen_empire_union_aura_3"
+    size = small
+    icon = "GFX_ship_part_th_ancient_aura_unique_teal"
+    icon_frame = 1
+    power = -200
+    component_set = "ship_aura_components"
+    inline_script = { script = components/ag_lambda_ships_aura_effect ag_diff = 2 ag_status = 1 }
+    hidden = yes
+    hostile_aura = {
+        name = "th_fallen_empire_union_aura_2_name"
+        radius = 400
+        apply_on = ships
+        stack_info = {			#A ship can only be affected by one aura of a certain id. If multiple auras have the same ID the one with the highest priority will be applied.
+            id = th_fallen_empire_union_aura_2
+            priority = 100
+        }
+        modifier = {
+            ship_accuracy_mult = -0.10
+            ship_tracking_mult = -0.075
+            ship_armor_penetration_add = -0.075
+            ship_shield_hardening_add = -0.075
+        }
+        graphics = {
+            area_effect = {
+                entity = "circle_area_entity"
+                dynamic_scale = yes
+            }
+            ship_effect = {
+                entity = "ship_aura_negative_lunar_capital_entity"
                 dynamic_scale = no
             }
         }

@@ -819,7 +819,7 @@ weapon_component_template = {
         }
         limit = { has_ship_flag = th_weapon_yuzhu_ultra_damage_target }
         damage_per_day = {
-            damage = { min = 1600 max = 1600 }
+            damage = { min = 12800 max = 12800 }
             accuracy = 1
             armor_penetration = 1
             size_damage_factor = 1
@@ -1418,6 +1418,80 @@ weapon_component_template = {
     potential = { ship_from_touhou_country = { not_origin = origin_spth_story_gensokyo } }
     ai_tags = { weapon_role_anti_hull }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    target_focus = spread
+}
+weapon_component_template = {
+    key = "touhou_cruise_missile"
+    icon = "GFX_ship_part_touhou_cruise_missile"
+    missile_speed = 10
+    missile_evasion = 0.1
+    missile_shield = 3036
+    missile_armor = 3036
+    missile_health = 16384
+    missile_retarget_range = 50
+    inline_script = { script = ship_components/spth_component_all size = torpedo type = missile }
+    inline_script = { script = ship_components/spth_component_attributes_no_scale name = special tag = utsuho_cruise type = torpedo }
+    inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = torpedo }
+    prerequisites = { tech_touhou_cruise_missile }
+    component_set = "touhou_cruise_missile"
+    # class_restriction = { shipclass_military shipclass_starbase shipclass_military_special shipclass_military shipclass_military_station shipclass_science_ship }
+    projectile_gfx = "touhou_cruise_missile"
+    tags = { weapon_type_explosive weapon_type_energy weapon_type_lingli g_slot }
+    ai_tags = { weapon_role_artillery }
+    on_hit = {
+        custom_tooltip_with_params = {
+            description = touhou_cruise_missile_on_hit
+            description_parameters = {
+                TH_AOE_RADIUS = 50.00
+            }
+        }
+        hidden_effect = {
+            touhou_cruise_missile_fire_aoe_damage = { range = 50 type = utsuho }
+        }
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight_lunar base = @touhou_components_basic_weight }
+    target_focus = spread
+}
+
+weapon_component_template = {
+    key = "touhou_swarm_rocket"
+    icon = "GFX_ship_part_touhou_swarm_rocket"
+    missile_speed = 50
+    missile_evasion = 0.1
+    missile_shield = 3036
+    missile_armor = 2214
+    missile_health = 9961
+    missile_retarget_range = 100
+    inline_script = { script = ship_components/spth_component_all size = torpedo type = missile }
+    inline_script = { script = ship_components/spth_component_attributes_no_scale name = special tag = wriggle_swarm type = torpedo }
+    inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = torpedo }
+    prerequisites = { tech_touhou_swarm_rocket }
+    component_set = "touhou_swarm_rocket"
+    size_damage_factor = @touhou_wriggle_swarm_size_damage_factor
+    # class_restriction = { shipclass_military shipclass_starbase shipclass_military_special shipclass_military shipclass_military_station shipclass_science_ship }
+    projectile_gfx = "touhou_swarmer_missile"
+    tags = { weapon_type_explosive weapon_type_kinetic weapon_type_lingli g_slot }
+    ai_tags = { weapon_role_anti_hull }
+    on_hit = {
+        custom_tooltip_with_params = {
+            description = touhou_swarm_rocket_on_hit
+            description_parameters = {
+                TH_DAMAGE = 247.50
+                TH_DURATION = 3.00
+            }
+        }
+        hidden_effect = {
+            if = {
+                limit = { exists = from NOT = { has_ship_flag = touhou_swarm_rocket_dmg_modifier } }
+                set_timed_ship_flag = { flag = touhou_swarm_rocket_dmg_modifier days = 3 }
+                add_modifier = {
+                    modifier = touhou_swarm_rocket_dmg_modifier days = 3
+                    mult = root.from.value:touhou_swarm_rocket_hit_damage
+                }
+            }
+        }
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight_lunar base = @touhou_components_basic_weight }
     target_focus = spread
 }
 
@@ -2125,6 +2199,38 @@ weapon_component_template = {
                 limit = { has_armor_percentage > 0 }
                 spth_reduce_armor_max = { percent = 0.02 }
             }
+        }
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight_lunar base = @touhou_components_basic_weight }
+    target_focus = spread
+}
+weapon_component_template = {
+    key = "lunar_cruise_missile"
+    icon = "GFX_ship_part_lunar_cruise_missile"
+    missile_speed = 10
+    missile_evasion = 0.15
+    missile_shield = 32767
+    missile_armor = 9961
+    missile_health = 32767
+    missile_retarget_range = 50
+    inline_script = { script = ship_components/spth_component_all size = torpedo type = missile }
+    inline_script = { script = ship_components/spth_component_attributes_no_scale name = special tag = lunar_cruise type = torpedo }
+    inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = torpedo }
+    prerequisites = { tech_lunar_capital_parts }
+    component_set = "lunar_cruise_missile"
+    # class_restriction = { shipclass_military shipclass_starbase shipclass_military_special shipclass_military shipclass_military_station shipclass_science_ship }
+    projectile_gfx = "touhou_cruise_missile"
+    tags = { weapon_type_kinetic weapon_type_energy weapon_type_lingli g_slot weapon_type_lunar_capital_2 weapon_archaeotech }
+    ai_tags = { weapon_role_anti_hull }
+    on_hit = {
+        custom_tooltip_with_params = {
+            description = touhou_cruise_missile_on_hit
+            description_parameters = {
+                TH_AOE_RADIUS = 60.00
+            }
+        }
+        hidden_effect = {
+            touhou_cruise_missile_fire_aoe_damage = { range = 60 type = lunar }
         }
     }
     inline_script = { script = ship_components/spth_basic_ai_weight_lunar base = @touhou_components_basic_weight }

@@ -161,3 +161,104 @@ ap_touhou_rare_resourse = {
         }
     }
 }
+
+ap_crisis_boundary_barrier = {
+    modifier = {
+        block_any_other_crisis_path = 1
+        block_ap_mind_over_matter = 1
+        block_ap_engineered_evolution = 1
+        block_ap_the_flesh_is_weak = 1
+        has_select_any_mod_crisis_path = 1
+        has_select_crisis_path_boundary_barrier = 1
+    }
+    potential = {
+        has_country_flag = touhou_crisis_test
+        has_authority = auth_gensokyo is_ai = no
+        NOR = {
+            has_ascension_perk = ap_crisis_boundary_barrier
+            is_player_crisis = yes
+            has_origin = origin_slavers
+            has_origin = origin_endbringers # No additional crisis for Endbringers
+        }
+        is_wilderness_empire = no
+        NOT = { check_modifier_value = { modifier = block_ap_crisis_boundary_barrier value != 0 } }
+        NOT = { check_modifier_value = { modifier = block_ap_become_the_crisis value != 0 } }
+        NOT = { check_modifier_value = { modifier = block_any_other_crisis_path value != 0 } }
+    }
+
+    possible = {
+        has_touhou_ascension_tier_4 = yes
+        custom_tooltip = {
+            fail_text = "requires_not_ap_the_flesh_is_weak"
+            NOT = { has_ascension_perk = ap_the_flesh_is_weak }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_engineered_evolution"
+            NOT = { has_ascension_perk = ap_engineered_evolution }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_synthetic_evolution"
+            NOT = { has_ascension_perk = ap_synthetic_evolution }
+        }
+        custom_tooltip = {
+            fail_text = "requires_not_ap_mind_over_matter"
+            NOT = { has_ascension_perk = ap_mind_over_matter }
+        }
+        custom_tooltip = {
+            fail_text = "requires_independence"
+            is_subject = no
+        }
+        custom_tooltip = {
+            fail_text = "must_finish_shroud_forged_situation"
+            OR = {
+                NOT = { has_origin = origin_shroud_forged }
+                NOT = {
+                    any_situation = {
+                        is_situation_type = situation_shroud_forged
+                    }
+                }
+            }
+        }
+        custom_tooltip = {
+            fail_text = "locked_by_shroud_forged_situation"
+            OR = {
+                NOT = { has_origin = origin_shroud_forged }
+                NOT = { has_country_flag = finish_shroud_forged_liberation_flag }
+            }
+        }
+        if = {
+            limit = {
+                OR = {
+                    NOT = { has_origin = origin_shroud_forged }
+                    NOT = { has_country_flag = shroud_forged_can_become_the_crisis }
+                }
+            }
+            custom_tooltip = {
+                fail_text = "requires_ascension_perks_3"
+                num_ascension_perks > 2
+            }
+            NOR = {
+                has_ethic = ethic_xenophile
+                has_ethic = ethic_fanatic_xenophile
+                has_ethic = ethic_pacifist
+                has_ethic = ethic_fanatic_pacifist
+                has_civic = civic_machine_servitor
+                has_valid_civic = civic_hive_familiar_face
+            }
+        }
+    }
+
+    on_enabled = {
+        hidden_effect = {
+            set_country_flag = is_player_crisis
+            # set_ai_personality = became_the_crisis
+            # country_event = { id = timeline.69 } # Timeline Become the crisis
+            country_event = { id = toho.6000 }
+        }
+        activate_crisis_progression = boundary_barrier_path
+    }
+
+    ai_weight = {
+        factor = 5.0
+    }
+}

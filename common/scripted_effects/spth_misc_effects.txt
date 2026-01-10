@@ -1222,6 +1222,38 @@ touhou_gateway_master_node_flags_cleans_up_effect = {
 #         }
 #     }
 # }
+touhou_cruise_missile_fire_aoe_damage = {
+    optimize_memory
+    if = {
+        limit = { exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_touhou_cruise_missile_$type$ } } }
+        from = { set_timed_ship_flag = { flag = touhou_aoe_damage_touhou_cruise_missile_$type$ days = 3 } }
+        set_variable = {
+            which = touhou_aoe_damage_touhou_cruise_missile_$type$_damage
+            value = from.value:touhou_cruise_missile_hit_damage|type|$type$|
+        }
+        set_variable = {
+            which = touhou_aoe_damage_touhou_cruise_missile_$type$_damage_neg
+            value = touhou_aoe_damage_touhou_cruise_missile_$type$_damage
+        }
+        multiply_variable = { which = touhou_aoe_damage_touhou_cruise_missile_$type$_damage_neg value = -1 }
+        solar_system = {
+            every_ship_in_system = {
+                limit = { distance = { same_solar_system = yes source = prevprev max_distance <= $range$ } }
+                if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_touhou_cruise_missile_$type$_armor value <= prev.trigger:has_shield_hp } } }
+                    reduce_shield = prevprev.touhou_aoe_damage_touhou_cruise_missile_$type$_damage
+                } else_if = {
+                    limit = { prevprev = { check_variable = { which = touhou_aoe_damage_touhou_cruise_missile_$type$_armor value <= prev.value:spth_armor_value } } }
+                    repair_armor_amount = prevprev.touhou_aoe_damage_touhou_cruise_missile_$type$_damage_neg
+                } else = {
+                    add_modifier = { modifier = touhou_cruise_missile_hit_damage_modifier_$type$ days = 2 mult = prevprev.touhou_aoe_damage_touhou_cruise_missile_$type$_damage }
+                }
+            }
+        }
+        clear_variable = touhou_aoe_damage_touhou_cruise_missile_$type$_damage
+        clear_variable = touhou_aoe_damage_touhou_cruise_missile_$type$_damage_neg
+    }
+}
 touhou_weapon_fire_aoe_damage = {
     optimize_memory
     if = {
@@ -1244,7 +1276,7 @@ touhou_weapon_fire_aoe_damage = {
         solar_system = {
             every_ship_in_system = {
                 limit = {
-                    controller = { is_hostile_to = root.from.owner }
+                    controller = { is_hostile = root.from.owner }
                     distance = { same_solar_system = yes source = prevprev max_distance <= $range$ }
                 }
                 th_spawn_explosion_particle = { color = $effect_color$ size = $effect_size$ }
@@ -1290,7 +1322,7 @@ touhou_weapon_fire_aoe_damage_lunar_capital = {
         solar_system = {
             every_ship_in_system = {
                 limit = {
-                    controller = { is_hostile_to = root.from.owner }
+                    controller = { is_hostile = root.from.owner }
                     distance = { same_solar_system = yes source = prevprev max_distance <= $range$ }
                 }
                 th_spawn_explosion_particle = { color = blue size = small }
@@ -1334,7 +1366,7 @@ touhou_weapon_fire_aoe_damage_lunar_gravity_cannon = {
         solar_system = {
             every_ship_in_system = {
                 limit = {
-                    controller = { is_hostile_to = root.from.owner }
+                    controller = { is_hostile = root.from.owner }
                     distance = { same_solar_system = yes source = prevprev max_distance <= $range|120$ }
                 }
                 th_spawn_explosion_particle = { color = pink size = small }
@@ -1378,7 +1410,7 @@ touhou_weapon_fire_aoe_damage_lunar_turret_weapon = {
         solar_system = {
             every_ship_in_system = {
                 limit = {
-                    controller = { is_hostile_to = root.from.owner }
+                    controller = { is_hostile = root.from.owner }
                     distance = { same_solar_system = yes source = prevprev max_distance <= $range|120$ }
                 }
                 th_spawn_explosion_particle = { color = pink size = small }
@@ -1429,9 +1461,9 @@ touhou_weapon_emp_charge_module_effect = {
             save_event_target_as = touhou_terrify_root
             reroll_random = yes
             random_list = {
-                25 = { touhou_set_terrify = { days = 1 } }
-                50 = { touhou_set_terrify = { days = 2 } }
-                25 = { touhou_set_terrify = { days = 3 } }
+                25 = { touhou_set_terrify = { days = 2 } }
+                50 = { touhou_set_terrify = { days = 3 } }
+                25 = { touhou_set_terrify = { days = 4 } }
             }
         }
     }
@@ -1486,15 +1518,21 @@ touhou_psionic_lighting_hit_effect = {
             reroll_random = yes
             random_list = {
                 $TH_CHAIN_CHANCE$ = {
-                    fleet = {
-                        random_owned_ship = {
-                            limit = { NOT = { is_same_value = prev } }
-                            repair_armor_amount = value:touhou_psionic_lighting_hit_damage|ag_tag|$ag_tag$|ag_weapon|$ag_weapon$|size|$size$|size_short|$size_short$|
-                        }
-                    }
+                    # fleet = {
+                    #     random_owned_ship = {
+                    #         limit = { NOT = { is_same_value = prev } }
+                    #         repair_armor_amount = value:touhou_psionic_lighting_hit_damage|ag_tag|$ag_tag$|ag_weapon|$ag_weapon$|size|$size$|size_short|$size_short$|
+                    #     }
+                    # }
                 }
                 $TH_NOT_CHAIN_CHANCE$ = {
                     # do nothing here.
+                }
+            }
+            fleet = {
+                random_owned_ship = {
+                    limit = { NOT = { is_same_value = prev } }
+                    repair_armor_amount = value:touhou_psionic_lighting_hit_damage|ag_tag|$ag_tag$|ag_weapon|$ag_weapon$|size|$size$|size_short|$size_short$|
                 }
             }
         }
@@ -1709,6 +1747,14 @@ touhou_set_terrify = {
         limit = { touhou_never_set_terrify_ship = no }
         set_terrified_by = event_target:touhou_terrify_root
         ship_event = { id = spth_fleet.2012 days = $days$ }
+    }
+}
+touhou_eat_fleet = {
+    optimize_memory
+    if = {
+        limit = { can_go_mia = yes }
+        set_mia = mia_fleet_eaten
+        [[ret_day] set_mia_return_delay = $ret_day$ ]
     }
 }
 
@@ -1942,5 +1988,46 @@ touhou_spawn_event_drones = {
                 fleet_event = { id = spth_fleet.2000 days = $days$ }
             }
         }
+    }
+}
+
+touhou_country_resource_max_effect = {
+    optimize_memory
+    if = {
+        limit = { NOT = { is_variable_set = touhou_country_resource_max_$touhou_resource$_add } }
+        export_modifier_to_variable = { modifier = country_resource_max_$touhou_resource$_add variable = touhou_country_resource_max_$touhou_resource$_add }
+        change_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = @touhou_country_resource_max_$touhou_resource$ }
+        if = { limit = { NOT = { always = $special_max_amount$ } } change_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = modifier:country_resource_max_add } }
+        set_variable = { which = touhou_country_resource_max_$touhou_resource$_add_factor value = modifier:country_resource_max_$touhou_resource$_mult }
+        if = { limit = { NOT = { always = $special_max_amount$ } } change_variable = { which = touhou_country_resource_max_$touhou_resource$_add_factor value = modifier:country_resource_max_mult } }
+        multiply_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = touhou_country_resource_max_$touhou_resource$_add_factor }
+        if = {
+            limit = { NOT = { check_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = 0 } } }
+            add_modifier = { modifier = touhou_country_resource_max_$touhou_resource$_mult_modifier days = -1 multiplier = touhou_country_resource_max_$touhou_resource$_add }
+        }
+        clear_variable = touhou_country_resource_max_$touhou_resource$_add_factor
+    }
+    else = {
+        set_variable = { which = touhou_country_resource_max_$touhou_resource$_add_bak value = touhou_country_resource_max_$touhou_resource$_add }
+        export_modifier_to_variable = { modifier = country_resource_max_$touhou_resource$_add variable = touhou_country_resource_max_$touhou_resource$_add }
+        change_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = @touhou_country_resource_max_$touhou_resource$ }
+        if = { limit = { NOT = { always = $special_max_amount$ } } change_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = modifier:country_resource_max_add } }
+        subtract_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = touhou_country_resource_max_$touhou_resource$_add_bak }
+        set_variable = { which = touhou_country_resource_max_$touhou_resource$_add_factor value = modifier:country_resource_max_$touhou_resource$_mult }
+        if = { limit = { NOT = { always = $special_max_amount$ } } change_variable = { which = touhou_country_resource_max_$touhou_resource$_add_factor value = modifier:country_resource_max_mult } }
+        multiply_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = touhou_country_resource_max_$touhou_resource$_add_factor }
+        if = {
+            limit = { NOT = { check_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = touhou_country_resource_max_$touhou_resource$_add_bak } } }
+            if = {
+                limit = { has_modifier = touhou_country_resource_max_$touhou_resource$_mult_modifier }
+                remove_modifier = touhou_country_resource_max_$touhou_resource$_mult_modifier
+            }
+            if = {
+                limit = { NOT = { check_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = 0 } } }
+                add_modifier = { modifier = touhou_country_resource_max_$touhou_resource$_mult_modifier days = -1 multiplier = touhou_country_resource_max_$touhou_resource$_add }
+            }
+        }
+        clear_variable = touhou_country_resource_max_$touhou_resource$_add_bak
+        clear_variable = touhou_country_resource_max_$touhou_resource$_add_factor
     }
 }
