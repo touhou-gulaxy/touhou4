@@ -339,6 +339,7 @@ spth_create_fleet = {
 			[[spth_kamikakushi_invader_bc_yyk_g] while = { count = $spth_kamikakushi_invader_bc_yyk_g$ create_ship = { fleet_cache_recalc = no name = random design = spth_kamikakushi_invader_bc_yyk_g effect = { } } } ]
 			[[spth_makai_ship_core_0] while = { count = $spth_makai_ship_core_0$ create_ship = { fleet_cache_recalc = no name = NAME_spth_makai_ship_core_0 design = NAME_spth_makai_ship_core_0 effect = { } } } ]
 			[[spth_makai_ship_core_1] while = { count = $spth_makai_ship_core_1$ create_ship = { fleet_cache_recalc = no name = NAME_spth_makai_ship_core_1 design = NAME_spth_makai_ship_core_1 effect = { } } } ]
+            [[spth_makai_ship_core_2] while = { count = $spth_makai_ship_core_2$ create_ship = { fleet_cache_recalc = no name = NAME_touhou_makai_wedge_titan design = NAME_touhou_makai_wedge_titan effect = { } } } ]
 			[[spth_kamikakushi_gate] while = { count = $spth_kamikakushi_gate$ create_ship = { fleet_cache_recalc = no name = NAME_spth_kamikakushi_gate design = NAME_spth_kamikakushi_gate effect = { } } } ]
 			[[spth_kamikakushi_cruiser_1] while = { count = $spth_kamikakushi_cruiser_1$ create_ship = { fleet_cache_recalc = no name = random design = NAME_spth_kamikakushi_cruiser_1 effect = { } } } ]
 			[[spth_kamikakushi_cruiser_2] while = { count = $spth_kamikakushi_cruiser_2$ create_ship = { fleet_cache_recalc = no name = random design = NAME_spth_kamikakushi_cruiser_2 effect = { } } } ]
@@ -779,7 +780,7 @@ spth_precursor_107_finish_effect = {
 	hidden_effect = {
 		spth_create_fleet = {
 			NAME = NAME_spth_makai_ship_core_0
-			can_disband = no is_boss = no
+			can_disband = no is_boss = no can_change_composition = yes
 			OWNER = prev location = prev.capital_scope
 			spth_makai_ship_core_0 = 1
 		}
@@ -816,6 +817,29 @@ spth_precursor_unlock_makai_ship_core = {
 		}
 		delete_ship = this
 	}
+}
+spth_precursor_upgrade_makai_ship_core = {
+    optimize_memory
+    set_country_flag = spth_makai_ship_core_upgraded
+    every_owned_ship = {
+        limit = { is_ship_size = spth_makai_ship_core_1 }
+        fleet = {
+            if = {
+                limit = { exists = leader }
+                leader = { unassign_leader = this }
+            }
+            create_ship = {
+                fleet_cache_recalc = no
+                name = NAME_touhou_makai_wedge_titan
+                design = NAME_touhou_makai_wedge_titan
+                effect = {
+                    set_ship_flag = spth_makai_ship_core_unlocked
+                    save_global_event_target_as = spth_makai_ship_core_unlocked_player
+                }
+            }
+        }
+        delete_ship = this
+    }
 }
 spth_precursor_refresh_makai_ship_core = {
 	optimize_memory
