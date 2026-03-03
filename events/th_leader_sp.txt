@@ -719,6 +719,69 @@ country_event = {
         progress_all_researches = 0.5
     }
 }
+# scopes:
+# this = ship
+# from = ship, disabler
+ship_event = {
+    id = th_leader_sp.216
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        OR = {
+            check_modifier_value = { modifier = ship_th_has_lku value > 0 }
+            check_modifier_value = { modifier = ship_th_has_satsuki_rin value > 0 }
+        }
+        exists = from
+        from = {
+            exists = controller
+            controller = { NOT = { is_same_value = root.controller } }
+        }
+    }
+    immediate = {
+        if = {
+            limit = {
+                NOT = { has_ship_flag = th_leader_sp_216_lku_lock }
+                check_modifier_value = { modifier = ship_th_has_lku value > 0 }
+            }
+            set_timed_ship_flag = { flag = th_leader_sp_216_lku_lock days = 8 }
+            from = {
+                spth_reduce_armor_max = { percent = 0.01 }
+                reroll_random = yes
+                random = {
+                    chance = 19
+                    spth_reduce_shield_max = { percent = 0.01 }
+                }
+            }
+        }
+        if = {
+            limit = {
+                NOT = { has_ship_flag = th_leader_sp_216_satsuki_rin_lock }
+                check_modifier_value = { modifier = ship_th_has_satsuki_rin value > 0 }
+                exists = fleet
+            }
+            set_timed_ship_flag = { flag = th_leader_sp_216_satsuki_rin_lock days = 2 }
+            set_variable = { which = th_leader_sp_216_satsuki_rin_repair_val value = trigger:has_max_hp }
+            multiply_variable = { which = th_leader_sp_216_satsuki_rin_repair_val value = -0.005 }
+            if = {
+                limit = { check_variable = { which = th_leader_sp_216_satsuki_rin_repair_val value > 0 } }
+                multiply_variable = { which = th_leader_sp_216_satsuki_rin_repair_val value = -1 }
+            }
+            fleet = {
+                every_controlled_ship = {
+                    if = {
+                        limit = { has_shield_hp <= 100000000 }
+                        reduce_shield = prevprev.th_leader_sp_216_satsuki_rin_repair_val
+                    }
+                    if = {
+                        limit = { has_hp <= 100000000 }
+                        reduce_hp = prevprev.th_leader_sp_216_satsuki_rin_repair_val
+                    }
+                }
+            }
+            clear_variable = th_leader_sp_216_satsuki_rin_repair_val
+        }
+    }
+}
 
 leader_event = {
     id = th_leader_sp.300
