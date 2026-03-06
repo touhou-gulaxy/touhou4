@@ -5257,3 +5257,65 @@ fleet_event = {
     }
 }
 
+# Planet has taken damage from orbital bombardment - Damage is applied daily
+# This = Planet
+# From = Bombarder
+planet_event = {
+    id = spth_fleet.3000
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = from
+        from = {
+            is_touhou_country = yes
+            NOT = { has_country_flag = touhou_sound_effect_orbital_barrage_incoming_fired }
+        }
+        NOT = { has_planet_flag = touhou_sound_effect_orbital_barrage_incoming_fired }
+    }
+    immediate = {
+        from = {
+            set_timed_country_flag = { flag = touhou_sound_effect_orbital_barrage_incoming_fired days = 30 }
+            play_sound = {
+                sound = touhou_hd2_orbital_barrage_incoming_effect
+                location = root
+            }
+        }
+        set_planet_flag = touhou_sound_effect_orbital_barrage_incoming_fired
+        planet_event = {
+            id = spth_fleet.3001
+            scopes = {
+                from = root.from
+            }
+            days = 30
+        }
+    }
+}
+planet_event = {
+    id = spth_fleet.3001
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = {
+                OR = {
+                    NOT = { exists = from }
+                    NOT = {
+                        any_fleet_in_orbit = {
+                            exists = controller
+                            controller = { is_touhou_country = yes }
+                        }
+                    }
+                }
+            }
+            remove_planet_flag = touhou_sound_effect_orbital_barrage_incoming_fired
+        } else = {
+            planet_event = {
+                id = spth_fleet.3001
+                scopes = {
+                    from = root.from
+                }
+                days = 30
+            }
+        }
+    }
+}
