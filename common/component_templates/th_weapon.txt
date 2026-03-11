@@ -909,6 +909,177 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
     target_focus = spread
 }
+weapon_component_template = {
+    key = "touhou_yuyuko_storm"
+    icon = "GFX_ship_part_touhou_yuyuko_storm"
+    firing_arc = 10.0
+    should_ai_use = no
+    ship_limit = 1
+    prerequisites = { "tech_touhou_super_flagship" }
+    component_set = "touhou_yuyuko_storm"
+    projectile_gfx = "spth_extra_butterfly_ballistic"
+    ship_modifier = {
+        custom_tooltip = th_yuyuko_butterfly_tt
+        show_only_custom_tooltip = no
+        ship_spth_yuyuko_fan_weapon_count = 12
+        ship_spth_yuyuko_fan_display = 1
+        ship_spth_yuyuko_fan_weapon_max = 12
+        component_lifesteal_add = 1.00
+    }
+    tags = { weapon_type_energy weapon_type_lingli peta_slot artillery weapon_type_resurrection_butterfly }
+    ai_tags = { weapon_role_anti_armor weapon_role_anti_shield }
+    potential = {
+        OR = {
+            is_ship_size = touhou_super_flagship
+            is_ship_size = touhou_super_flagship_science
+        }
+    }
+    ai_tag_weight = 0
+    inline_script = { script = ship_components/spth_component_all size = point_defence type = instant }
+    inline_script = { script = ship_components/spth_component_attributes name = petascale_yuyuko tag = flagship type = titanic }
+    inline_script = { script = ship_components/spth_component_resources class = instant_kill size = weapon type = titanic }
+    on_hit = {
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    target_focus = spread
+}
+weapon_component_template = {
+    key = "touhou_sakuya_watch"
+    icon = "GFX_ship_part_touhou_sakuya_watch"
+    firing_arc = 30.0
+    should_ai_use = no
+    ship_limit = 1
+    hostile_aura = {
+        name = touhou_sakuya_watch_arua_name
+        system_wide = yes
+        stack_info = {
+            id = touhou_sakuya_watch_arua_name
+            priority = 1000
+        }
+        limit = { has_ship_flag = concept_touhou_time_broken }
+        modifier = {
+            touhou_aura_only_hit_ship = 1
+            ship_disengage_chance_reduction = 1
+            ships_upkeep_mult = 1
+            ship_spth_armor_efficiency = -0.1
+            ship_armor_hardening_add = -0.2
+        }
+        graphics = {
+            area_effect = {
+                entity = "circle_area_entity"
+                dynamic_scale = yes
+            }
+            ship_effect = {
+                entity = "ship_aura_negative_scarlet_devil_entity"
+                dynamic_scale = no
+            }
+        }
+    }
+    ship_modifier = {
+        custom_tooltip = touhou_sakuya_watch_lore
+        show_only_custom_tooltip = yes
+        ship_has_touhou_sakuya_watch = 1
+        ship_has_touhou_time_effect_weapon = 1
+    }
+    prerequisites = { "tech_touhou_super_flagship" }
+    component_set = "touhou_sakuya_watch"
+    projectile_gfx = "xianzhe_laser"
+    tags = { giga_slot weapon_type_sakuya_watch }
+    ai_tags = { weapon_role_anti_hull }
+    potential = {
+        OR = {
+            is_ship_size = touhou_super_flagship
+            is_ship_size = touhou_super_flagship_science
+        }
+    }
+    ai_tag_weight = 0
+    inline_script = { script = ship_components/spth_component_all size = torpedo type = instant }
+    inline_script = { script = ship_components/spth_component_attributes name = gigantic_sakuya tag = flagship type = titanic }
+    inline_script = { script = ship_components/spth_component_resources class = instant_kill size = weapon type = titanic }
+    on_hit = {
+        custom_tooltip = touhou_sakuya_watch_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = concept_touhou_time_broken } }
+                add_modifier = { modifier = concept_touhou_time_broken days = 6 }
+                set_timed_ship_flag = { flag = concept_touhou_time_broken days = 6 }
+                save_event_target_as = touhou_terrify_root
+                touhou_set_terrify = { days = 4 }
+            }
+            if = {
+                limit = { exists = from }
+                from = {
+                    if = {
+                        limit = {
+                            check_modifier_value = { modifier = ship_has_touhou_sakuya_cards value > 0 }
+                        }
+                        if = {
+                            limit = { NOT = { is_variable_set = touhou_time_attack_stacks } }
+                            set_variable = { which = touhou_time_attack_stacks value = 0 }
+                        }
+                        change_variable = { which = touhou_time_attack_stacks value = 3 }
+                    }
+                }
+            }
+        }
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    target_focus = spread
+}
+weapon_component_template = {
+    key = "touhou_sakuya_cards"
+    icon = "GFX_ship_part_touhou_sakuya_cards"
+    firing_arc = 30.0
+    should_ai_use = no
+    ship_limit = 1
+    ship_modifier = {
+        custom_tooltip = touhou_sakuya_cards_lore
+        show_only_custom_tooltip = yes
+        ship_has_touhou_sakuya_cards = 1
+        ship_has_touhou_time_effect_weapon = 1
+    }
+    hide_damage_values_from_tooltip = yes
+    prerequisites = { "tech_touhou_super_flagship" }
+    component_set = "touhou_sakuya_cards"
+    projectile_gfx = "spth_kometubu_bullet_ballistic"
+    tags = { weapon_type_kinetic weapon_type_lingli x_slot artillery weapon_type_knife }
+    ai_tags = { artillery }
+    potential = {
+        OR = {
+            is_ship_size = touhou_super_flagship
+            is_ship_size = touhou_super_flagship_science
+        }
+    }
+    ai_tag_weight = 0
+    inline_script = { script = ship_components/spth_component_all size = extra_large type = instant }
+    inline_script = { script = ship_components/spth_component_attributes name = special tag = sakuya_cards type = extra_large }
+    inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = titanic }
+    on_hit = {
+        custom_tooltip = touhou_sakuya_cards_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { exists = from }
+                from = {
+                    if = {
+                        limit = {
+                            check_modifier_value = { modifier = ship_has_touhou_sakuya_watch value > 0 }
+                        }
+                        random = {
+                            chance = 5
+                            if = {
+                                limit = { NOT = { is_variable_set = touhou_time_attack_stacks } }
+                                set_variable = { which = touhou_time_attack_stacks value = 0 }
+                            }
+                            change_variable = { which = touhou_time_attack_stacks value = 1 }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    target_focus = spread
+}
 
 #####贤者之石
 # 能量专精

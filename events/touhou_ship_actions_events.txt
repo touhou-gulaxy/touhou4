@@ -2407,3 +2407,49 @@ fleet_event = {
         }
     }
 }
+
+fleet_event = {
+    id = touhou_ship_actions.206
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        unassign_leader = this
+        every_controlled_ship = {
+            limit = {
+                OR = {
+                    is_ship_size = touhou_super_flagship
+                    is_ship_size = touhou_super_flagship_science
+                }
+            }
+            if = {
+                limit = { is_ship_size = touhou_super_flagship_science }
+                fleet = {
+                    if = {
+                        limit = { exists = leader }
+                        leader = { unassign_leader = this }
+                    }
+                    create_ship = {
+                        fleet_cache_recalc = no
+                        name = prev
+                        random_existing_design = touhou_super_flagship
+                    }
+                }
+                delete_ship = this
+            } else = {
+                create_fleet = {
+                    name = NAME_touhou_super_flagship_science_fleet
+                    settings = { spawn_debris = no uses_naval_capacity = no }
+                    effect = {
+                        set_owner = root.controller
+                        create_ship = {
+                            random_existing_design = touhou_super_flagship_science
+                            name = prev
+                            fleet_cache_recalc = no
+                        }
+                        set_location = { target = root angle = random distance = 0 }
+                    }
+                }
+            }
+        }
+    }
+}

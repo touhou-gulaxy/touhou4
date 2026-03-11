@@ -5257,6 +5257,84 @@ fleet_event = {
     }
 }
 
+# 时间武器
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.2030
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        fromfrom = {
+            any_owned_ship = {
+                check_modifier_value = { modifier = ship_has_touhou_time_effect_weapon value > 0 }
+            }
+            NOT = { has_fleet_flag = touhou_time_weapon_effect_fired }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_fleet_flag = touhou_time_weapon_effect_fired
+            fleet_event = { id = spth_fleet.2031 }
+        }
+    }
+}
+fleet_event = {
+    id = spth_fleet.2031
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            every_owned_ship = {
+                limit = {
+                    check_modifier_value = { modifier = ship_has_touhou_time_effect_weapon value > 0 }
+                }
+                if = {
+                    limit = {
+                        check_modifier_value = { modifier = ship_has_touhou_sakuya_watch value > 0 }
+                    }
+                    remove_modifier = touhou_sakuya_watch_fire_rate_modifier
+                    add_modifier = {
+                        modifier = touhou_sakuya_watch_fire_rate_modifier
+                        mult = value:touhou_sakuya_cards_extra_fire_rate
+                    }
+                    remove_modifier = touhou_sakuya_watch_damage_modifier
+                    add_modifier = {
+                        modifier = touhou_sakuya_watch_damage_modifier
+                        mult = modifier:weapon_type_knife_weapon_damage_mult
+                    }
+                }
+                if = {
+                    limit = {
+                        is_variable_set = touhou_time_attack_stacks
+                        check_variable = { which = touhou_time_attack_stacks value > 0 }
+                    }
+                    subtract_variable = { which = touhou_time_attack_stacks value = 1 }
+                    save_event_target_as = touhou_time_attack_stacks_root
+                    root = {
+                        every_combatant_fleet = {
+                            every_owned_ship = {
+                                reduce_shield = value:touhou_time_attack_damage
+                                repair_armor_percentage = value:touhou_time_attack_damage|neg|yes|
+                            }
+                        }
+                    }
+                }
+            }
+            fleet_event = { id = spth_fleet.2031 days = 6 }
+        } else = {
+            remove_fleet_flag = touhou_time_weapon_effect_fired
+            every_owned_ship = {
+                clear_variable = touhou_time_attack_stacks
+            }
+        }
+    }
+}
+
 # Planet has taken damage from orbital bombardment - Damage is applied daily
 # This = Planet
 # From = Bombarder

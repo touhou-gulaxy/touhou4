@@ -2535,13 +2535,16 @@ country_event = {
 country_event = {
     id = gensokyo_start.3036
     is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = touhou_helldiver_stratagem_code_event_lock } }
     title = r_touhou_key_relic_event_title
     desc = r_touhou_key_relic_event_desc
     diplomatic = yes
     custom_gui = touhou_helldiver_stratagem_code_ui
     custom_gui_option = touhou_helldiver_stratagem_code_ui_button
-    picture_event_data = { room = th_yukari_lake_room }
+    picture_event_data = { room = touhou_ext_lunar_capital_background_room }
     immediate = {
+        set_variable = { which = touhou_helldiver_stratagem_code_ui_bg value = @touhou_helldiver_stratagem_code_ui_bg_lunar_capital }
+        set_country_flag = touhou_helldiver_stratagem_code_event_lock
         # set stratagem code seq
         set_variable = { which = touhou_helldiver_stratagem_code_cur_pos value = 0 }
         set_variable = { which = touhou_helldiver_stratagem_code_res_seq_1 value = @touhou_helldiver_stratagem_code_up }
@@ -2557,7 +2560,71 @@ country_event = {
         has_country_flag = touhou_helldiver_stratagem_code_input_success
     }
     abort_effect = {
-        play_sound = touhou_hd2_orbital_barrage_incoming_effect
+        # play_sound = touhou_hd2_orbital_barrage_incoming_effect
         remove_country_flag = touhou_helldiver_stratagem_code_input_success
+        remove_country_flag = touhou_helldiver_stratagem_code_event_lock
+    }
+}
+country_event = {
+    id = gensokyo_start.3037
+    title = gensokyo_start.3037.name
+    desc = gensokyo_start.3037.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_cosmic_storms_preparation_room }
+    trigger = {
+        has_country_flag = touhou_helldiver_stratagem_code_repair_jammer_tower
+        NOT = { has_country_flag = gensokyo_start_3037_lock }
+    }
+    immediate = {
+        set_country_flag = gensokyo_start_3037_lock
+        play_sound = touhou_terminal_input_wrong_1_effect
+    }
+    option = {
+        name = gensokyo_start.3037.a
+    }
+    option = {
+        name = gensokyo_start.3037.b
+    }
+    after = {
+        hidden_effect = { remove_country_flag = gensokyo_start_3037_lock }
+    }
+}
+country_event = {
+    id = gensokyo_start.3038
+    title = gensokyo_start.3038.name
+    desc = gensokyo_start.3038.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_cosmic_storms_preparation_room }
+    trigger = {
+        has_country_flag = touhou_helldiver_stratagem_code_repair_jammer_tower
+    }
+    immediate = {
+        play_sound = {
+            sound = hd2_vox_engine_detect_effect
+            location = event_target:touhou_repair_jammer_tower_@root.solar_system.star
+        }
+        remove_country_flag = touhou_helldiver_stratagem_code_repair_jammer_tower
+        event_target:touhou_repair_jammer_tower_@root = {
+            solar_system = {
+                spawn_megastructure = {
+                    type = touhou_signal_jammer_tower
+                    coords_from = prev
+                    owner = root
+                }
+                remove_megastructure = prev
+            }
+        }
+    }
+    option = {
+        name = gensokyo_start.3038.a
+    }
+    option = {
+        name = gensokyo_start.3038.b
     }
 }
