@@ -18,19 +18,29 @@ TH_add_modifier = {
 
 TH_dynamic_modifier_conditional = {
     optimize_memory
-    set_variable = { which = spth_$modifier$_calc_value value = modifier:$modifier$ }
+    # old
+    # set_variable = { which = spth_$modifier$_calc_value value = modifier:$modifier$ }
+    # if = {
+    #     limit = {
+    #         NOT = { has_ship_flag = spth_$modifier$_checked }
+    #     }
+    #     if = {
+    #         limit = { check_variable = { which = spth_$modifier$_calc_value value $relation$ $limit_value$ } }
+    #         set_timed_ship_flag = { flag = spth_$modifier$_checked days = 1 }
+    #         add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = spth_$modifier$_calc_value }
+    #         add_modifier = { modifier = TH_dynamic_reset_$modifier$ multiplier = $value$ }
+    #     }
+    # }
+    # clear_variable = spth_$modifier$_calc_value
+    # new
     if = {
-        limit = {
-            NOT = { has_ship_flag = spth_$modifier$_checked }
-        }
-        if = {
-            limit = { check_variable = { which = spth_$modifier$_calc_value value $relation$ $limit_value$ } }
-            set_timed_ship_flag = { flag = spth_$modifier$_checked days = 1 }
-            add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = spth_$modifier$_calc_value }
-            add_modifier = { modifier = TH_dynamic_reset_$modifier$ multiplier = $value$ }
-        }
+        limit = { check_modifier_value = { modifier = $modifier$ value $relation$ $limit_value$ } }
+        set_variable = { which = touhou_$modifier$_value value = modifier:$modifier$ }
+        subtract_variable = { which = touhou_$modifier$_value value = $value$ }
+        change_variable = { which = basic_touhou_$modifier$_value value = touhou_$modifier$_value }
+        add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = basic_touhou_$modifier$_value days = @touhou_dynamic_modifier_system_modifier_last_time  }
+        clear_variable = touhou_$modifier$_value
     }
-    clear_variable = spth_$modifier$_calc_value
 }
 TH_timed_check_modifier = {
     optimize_memory
@@ -54,8 +64,8 @@ sakuya_the_world_dynamic = {
     if = {
         limit = { is_in_combat = yes }
         every_owned_ship = {
-            TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = ">" limit_value = -1 value = -1 }
-            TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = ">" limit_value = -1 value = -1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = "!=" limit_value = -1 value = -1 }
+            TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = "!=" limit_value = -1 value = -1 }
             TH_dynamic_modifier_conditional = { modifier = ship_weapon_range_mult relation = ">" limit_value = -1 value = -1 }
             TH_dynamic_modifier_conditional = { modifier = ship_speed_mult relation = ">" limit_value = -1 value = -1 }
             TH_dynamic_modifier_conditional = { modifier = ship_base_speed_mult relation = ">" limit_value = -1 value = -1 }
@@ -305,26 +315,40 @@ spth_armor_shield_efficiency_system_check_enemy = {
 # 加成系统
 spth_armor_shield_efficiency_system_buff = {
     optimize_memory
+    # 旧版本：
     # set_update_modifiers_batch = begin
+    # add_modifier = { modifier = spth_shield_efficiency_regen multiplier = value:ship_spth_shield_efficiency_count }
+    # add_modifier = { modifier = spth_armor_efficiency_regen multiplier = value:ship_spth_armor_efficiency_count }
+    # set_variable = { which = spth_shield_efficiency_var_debug value = modifier:ship_spth_shield_efficiency }
+    # multiply_variable = { which = spth_shield_efficiency_var_debug value = @spth_armor_shield_efficiency_factor }
+    # export_modifier_to_variable = { modifier = ship_shield_hardening_add variable = spth_shield_efficiency_var_hardening }
+    # if = {
+    #     limit = { check_variable = { which = spth_shield_efficiency_var_hardening value < spth_shield_efficiency_var_debug } }
+    #     add_modifier = { modifier = spth_shield_efficiency_hardening multiplier = spth_shield_efficiency_var_hardening }
+    #     add_modifier = { modifier = spth_shield_efficiency_hardening_rst multiplier = spth_shield_efficiency_var_debug }
+    # }
+    # set_variable = { which = spth_armor_efficiency_var_debug value = modifier:ship_spth_armor_efficiency }
+    # multiply_variable = { which = spth_armor_efficiency_var_debug value = @spth_armor_shield_efficiency_factor }
+    # export_modifier_to_variable = { modifier = ship_armor_hardening_add variable = spth_armor_efficiency_var_hardening }
+    # if = {
+    #     limit = { check_variable = { which = spth_armor_efficiency_var_hardening value < spth_armor_efficiency_var_debug } }
+    #     add_modifier = { modifier = spth_armor_efficiency_hardening multiplier = spth_armor_efficiency_var_hardening }
+    #     add_modifier = { modifier = spth_armor_efficiency_hardening_rst multiplier = spth_armor_efficiency_var_debug }
+    # }
+    # set_update_modifiers_batch = end
     add_modifier = { modifier = spth_shield_efficiency_regen multiplier = value:ship_spth_shield_efficiency_count }
     add_modifier = { modifier = spth_armor_efficiency_regen multiplier = value:ship_spth_armor_efficiency_count }
-    set_variable = { which = spth_shield_efficiency_var_debug value = modifier:ship_spth_shield_efficiency }
-    multiply_variable = { which = spth_shield_efficiency_var_debug value = @spth_armor_shield_efficiency_factor }
-    export_modifier_to_variable = { modifier = ship_shield_hardening_add variable = spth_shield_efficiency_var_hardening }
-    if = {
-        limit = { check_variable = { which = spth_shield_efficiency_var_hardening value < spth_shield_efficiency_var_debug } }
-        add_modifier = { modifier = spth_shield_efficiency_hardening multiplier = spth_shield_efficiency_var_hardening }
-        add_modifier = { modifier = spth_shield_efficiency_hardening_rst multiplier = spth_shield_efficiency_var_debug }
-    }
-    set_variable = { which = spth_armor_efficiency_var_debug value = modifier:ship_spth_armor_efficiency }
-    multiply_variable = { which = spth_armor_efficiency_var_debug value = @spth_armor_shield_efficiency_factor }
-    export_modifier_to_variable = { modifier = ship_armor_hardening_add variable = spth_armor_efficiency_var_hardening }
-    if = {
-        limit = { check_variable = { which = spth_armor_efficiency_var_hardening value < spth_armor_efficiency_var_debug } }
-        add_modifier = { modifier = spth_armor_efficiency_hardening multiplier = spth_armor_efficiency_var_hardening }
-        add_modifier = { modifier = spth_armor_efficiency_hardening_rst multiplier = spth_armor_efficiency_var_debug }
-    }
-    # set_update_modifiers_batch = end
+    set_variable = { which = spth_shield_efficiency_hardening_value value = modifier:ship_shield_hardening_add }
+    subtract_variable = { which = spth_shield_efficiency_hardening_value value = value:ship_spth_shield_efficiency_value }
+    change_variable = { which = basic_spth_shield_efficiency_hardening_value value = spth_shield_efficiency_hardening_value }
+    add_modifier = { modifier = spth_shield_efficiency_hardening multiplier = basic_spth_shield_efficiency_hardening_value days = @touhou_dynamic_modifier_system_modifier_last_time  }
+    clear_variable = spth_shield_efficiency_hardening_value
+
+    set_variable = { which = spth_armor_efficiency_hardening_value value = modifier:ship_armor_hardening_add }
+    subtract_variable = { which = spth_armor_efficiency_hardening_value value = value:ship_spth_armor_efficiency_value }
+    change_variable = { which = basic_spth_armor_efficiency_hardening_value value = spth_armor_efficiency_hardening_value }
+    add_modifier = { modifier = spth_armor_efficiency_hardening multiplier = basic_spth_armor_efficiency_hardening_value days = @touhou_dynamic_modifier_system_modifier_last_time  }
+    clear_variable = spth_armor_efficiency_hardening_value
 }
 # 减益系统
 spth_armor_shield_efficiency_system_debuff = {
@@ -365,10 +389,12 @@ spth_armor_shield_efficiency_system_debuff = {
 # 系统结束运行
 spth_armor_shield_efficiency_system_end = {
     optimize_memory
-    clear_variable = spth_shield_efficiency_var_debug
-    clear_variable = spth_armor_efficiency_var_debug
-    clear_variable = spth_shield_efficiency_var_hardening
-    clear_variable = spth_armor_efficiency_var_hardening
+    # clear_variable = spth_shield_efficiency_var_debug
+    # clear_variable = spth_armor_efficiency_var_debug
+    # clear_variable = spth_shield_efficiency_var_hardening
+    # clear_variable = spth_armor_efficiency_var_hardening
+    if = { limit = { is_variable_set = basic_spth_shield_efficiency_hardening_value } clear_variable = basic_spth_shield_efficiency_hardening_value }
+    if = { limit = { is_variable_set = basic_spth_armor_efficiency_hardening_value } clear_variable = basic_spth_armor_efficiency_hardening_value }
     remove_ship_flag = has_spth_shield_efficiency_debuff
     remove_ship_flag = has_spth_armor_efficiency_debuff
     remove_modifier = spth_shield_efficiency_hardening
@@ -649,10 +675,10 @@ spth_story_crisis_weapon_system_self = {
             modifier = weapon_type_lingli_weapon_damage_mult
             variable = spth_story_crisis_titan_generic_temp
         }
-        export_modifier_to_variable = {
-            modifier = weapon_type_white_fog_random_weapon_damage_mult
-            variable = spth_story_crisis_titan_generic_max
-        }
+        # export_modifier_to_variable = {
+        #     modifier = weapon_type_white_fog_random_weapon_damage_mult
+        #     variable = spth_story_crisis_titan_generic_max
+        # }
         change_variable = {
             which = spth_story_crisis_titan_generic_max
             value = spth_story_crisis_titan_generic_temp
@@ -944,6 +970,40 @@ TH_clear_all_dynamic_modifier = {
     if = { limit = { has_modifier = koishi_improve_kinetic_damage } remove_modifier = koishi_improve_kinetic_damage }
     if = { limit = { has_modifier = koishi_improve_explosive_damage } remove_modifier = koishi_improve_explosive_damage }
     if = { limit = { has_modifier = koishi_improve_special_damage } remove_modifier = koishi_improve_special_damage }
+
+    # 清理变量
+    if = { limit = { is_variable_set = basic_touhou_ship_fire_rate_mult_value } clear_variable = basic_touhou_ship_fire_rate_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_speed_mult_value } clear_variable = basic_touhou_ship_speed_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_shield_penetration_mult_value } clear_variable = basic_touhou_ship_shield_penetration_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_armor_penetration_mult_value } clear_variable = basic_touhou_ship_armor_penetration_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_shield_penetration_add_value } clear_variable = basic_touhou_ship_shield_penetration_add_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_armor_penetration_add_value } clear_variable = basic_touhou_ship_armor_penetration_add_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_armor_damage_mult_value } clear_variable = basic_touhou_ship_armor_damage_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_shield_damage_mult_value } clear_variable = basic_touhou_ship_shield_damage_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_hull_damage_mult_value } clear_variable = basic_touhou_ship_hull_damage_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_tracking_mult_value } clear_variable = basic_touhou_ship_tracking_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_accuracy_mult_value } clear_variable = basic_touhou_ship_accuracy_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_weapon_damage_value } clear_variable = basic_touhou_ship_weapon_damage_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_hull_regen_add_perc_value } clear_variable = basic_touhou_ship_hull_regen_add_perc_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_armor_regen_add_perc_value } clear_variable = basic_touhou_ship_armor_regen_add_perc_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_shield_regen_add_perc_value } clear_variable = basic_touhou_ship_shield_regen_add_perc_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_hull_mult_value } clear_variable = basic_touhou_ship_hull_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_armor_mult_value } clear_variable = basic_touhou_ship_armor_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_shield_mult_value } clear_variable = basic_touhou_ship_shield_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_shield_reduction_value } clear_variable = basic_touhou_ship_shield_reduction_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_armor_reduction_value } clear_variable = basic_touhou_ship_armor_reduction_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_weapon_range_mult_value } clear_variable = basic_touhou_ship_weapon_range_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_tracking_add_value } clear_variable = basic_touhou_ship_tracking_add_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_accuracy_add_value } clear_variable = basic_touhou_ship_accuracy_add_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_armor_add_value } clear_variable = basic_touhou_ship_armor_add_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_shield_add_value } clear_variable = basic_touhou_ship_shield_add_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_armor_hardening_add_value } clear_variable = basic_touhou_ship_armor_hardening_add_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_shield_hardening_add_value } clear_variable = basic_touhou_ship_shield_hardening_add_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_evasion_mult_value } clear_variable = basic_touhou_ship_evasion_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_evasion_add_value } clear_variable = basic_touhou_ship_evasion_add_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_damage_reduction_mult_value } clear_variable = basic_touhou_ship_damage_reduction_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_monthly_hull_damage_value } clear_variable = basic_touhou_ship_monthly_hull_damage_value }
+    if = { limit = { is_variable_set = basic_touhou_strike_craft_regeneration_mult_value } clear_variable = basic_touhou_strike_craft_regeneration_mult_value }
 }
 
 clear_shield = {

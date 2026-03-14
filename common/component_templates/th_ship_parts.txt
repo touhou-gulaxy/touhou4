@@ -161,11 +161,14 @@ utility_component_template = {
 	size = medium
 	icon = "GFX_th_ship_part_lumiya"
 	icon_frame = 1
-	power = 0
-	
-	hidden = yes
+	power = -10000
 
-	potential = { ship_uses_spth_boss_aura = yes }
+	potential = {
+        OR = {
+            is_ship_size = touhou_super_flagship
+            is_ship_size = touhou_super_flagship_science
+        }
+    }
 	component_set = "ship_aura_components"
 	
 	hostile_aura = {
@@ -181,7 +184,16 @@ utility_component_template = {
 		modifier = {
 			ship_tracking_mult = -0.9
 			ship_accuracy_mult = -0.9
+            touhou_minefield_size_factor = 0.04
 		}
+        damage_per_day = {
+            damage = { min = 7200 max = 9600 }
+            accuracy = 1
+            size_damage_factor = 0.25
+            armor_damage = 0.01
+            shield_damage = 0.01
+            hull_damage = 0.01
+        }
 		
 		graphics = {
 			area_effect = {
@@ -1345,22 +1357,19 @@ utility_component_template = {
 		show_only_custom_tooltip = no
 	}
 	ship_modifier = {
+        custom_tooltip = spth_curator_ship_part_extra_life_tt
+        show_only_custom_tooltip = no
 		ship_spth_extra_life = 1
         ship_spth_extra_life_diff = 1
 		ship_damage_reduction_add = @spth_curator_ship_part_extra_life_damage_recution_per_lvl
 		ship_spth_extra_life_power_down = 1
+        touhou_ship_aoe_damage_reduction_add = 320
+        touhou_ship_aoe_damage_reduction_mult = 0.50
 	}
-	# triggered_ship_modifier = {
-	# 	potential = { always = yes }
-	# 	ship_spth_extra_life = 1
-	# 	ship_damage_reduction_add = @spth_curator_ship_part_extra_life_damage_recution_per_lvl
-	# 	mult = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
-	# }
-	# triggered_ship_modifier = {
-	# 	potential = { has_global_flag = spth_lunar_capital_crisis_phantasm }
-	# 	ship_spth_armor_efficiency = 10
-	# 	ship_spth_shield_efficiency = 10
-	# }
+	triggered_ship_modifier = {
+		potential = { spth_has_ag_mod = yes }
+        ag_ship_aoe_damage_reduction = 1
+	}
 
 	prerequisites = { tech_crisis_kamikakushi }
 	component_set = "spth_curator_ship_part_extra_life"
@@ -1398,6 +1407,62 @@ utility_component_template = {
 			has_monthly_income = { resource = sr_lingli value <= 0 }
 		}
 	}
+}
+utility_component_template = {
+    key = "touhou_tenshi_keystone"
+    icon = "GFX_ship_part_touhou_tenshi_keystone"
+    size = aux
+    icon_frame = 1
+    power = -170
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    prerequisites = { tech_touhou_tenshi_keystone }
+    ship_modifier = {
+        custom_tooltip = touhou_tenshi_keystone_tt
+        show_only_custom_tooltip = no
+        touhou_ship_aoe_damage_reduction_add = @touhou_tenshi_keystone_damage_reduction_basic
+        touhou_ship_aoe_damage_reduction_mult = 0.10
+    }
+    triggered_ship_modifier = {
+        ship_damage_reduction_add = @touhou_tenshi_keystone_damage_reduction_per_lvl
+        mult = value:touhou_tenshi_keystone_final_value
+    }
+    component_set = "touhou_tenshi_keystone"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
+}
+utility_component_template = {
+    key = "touhou_nimble_fabric"
+    icon = "GFX_ship_part_touhou_nimble_fabric"
+    size = aux
+    icon_frame = 1
+    ship_limit = 1
+    power = -390
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = moon_repairer }
+    prerequisites = { tech_touhou_nimble_fabric }
+    ship_modifier = {
+        custom_tooltip = touhou_nimble_fabric_tt
+        show_only_custom_tooltip = no
+        touhou_ship_aoe_damage_reduction_add = @touhou_tenshi_keystone_damage_reduction_basic
+        touhou_ship_aoe_damage_reduction_mult = 0.10
+    }
+    triggered_ship_modifier = {
+        potential = { check_modifier_value = { modifier = ship_has_touhou_nimble_fabric_fired value < 1 } }
+        ship_damage_reduction_mult = @touhou_nimble_fabric_damage_reduction_mult
+        ship_has_touhou_nimble_fabric_fired = 1
+    }
+    component_set = "touhou_nimble_fabric"
+    ai_weight = {
+        weight = 990
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = sr_lingli value <= 0 }
+        }
+    }
 }
 utility_component_template = {
     key = "ship_part_aura_touhou_minefield"
@@ -2043,11 +2108,12 @@ utility_component_template = {
     size = aux
     icon_frame = 1
     ship_limit = 1
+    upgrades_to = touhou_yuyuko_barrier
     ship_modifier = {
         ship_has_touhou_kamikakushi_supressor = 1
     }
     power = -120
-    hostile_aura = {
+    friendly_aura = {
         name = touhou_kamikakushi_supressor_aura
         system_wide = yes
         stack_info = {
@@ -2055,8 +2121,9 @@ utility_component_template = {
             priority = 1200
         }
         modifier = {
-            ship_armor_damage_mult = -0.25
-            touhou_kamikakushi_supressor_effect = 1
+            touhou_ship_aoe_damage_reduction_add = 160
+            touhou_ship_aoe_damage_reduction_mult = 0.25
+            ag_ship_aoe_damage_reduction = 1.0
         }
         graphics = {
             area_effect = {
@@ -2064,7 +2131,7 @@ utility_component_template = {
                 dynamic_scale = yes
             }
             ship_effect = {
-                entity = "ship_aura_negative_gensokyo_entity"
+                entity = "ship_aura_positive_gensokyo_entity"
                 dynamic_scale = no
             }
         }
@@ -2093,17 +2160,17 @@ utility_component_template = {
     ship_modifier = {
         ship_has_touhou_yuyuko_barrier = 1
     }
-    power = -120
-    hostile_aura = {
-        name = touhou_yuyuko_barrier_aura
+    power = -160
+    friendly_aura = {
+        name = touhou_kamikakushi_supressor_aura
         system_wide = yes
         stack_info = {
-            id = touhou_yuyuko_barrier
+            id = touhou_kamikakushi_supressor_aura
             priority = 1200
         }
         modifier = {
-            ship_shield_damage_mult = -0.25
-            touhou_yuyuko_barrier_effect = 1
+            touhou_ship_aoe_damage_reduction_add = 128
+            touhou_ship_aoe_damage_reduction_mult = 0.20
         }
         graphics = {
             area_effect = {
@@ -2111,7 +2178,7 @@ utility_component_template = {
                 dynamic_scale = yes
             }
             ship_effect = {
-                entity = "ship_aura_negative_gensokyo_entity"
+                entity = "ship_aura_positive_gensokyo_entity"
                 dynamic_scale = no
             }
         }
