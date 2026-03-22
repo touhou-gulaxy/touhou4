@@ -290,6 +290,67 @@ fleet_event = {
         }
         fleet_event = { id = touhou_ship_actions.2 }
     }
+    option = {
+        name = concept_touhou_sky_control_ship_attack_system
+        custom_tooltip = concept_touhou_sky_control_ship_attack_system_desc
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = {
+                check_modifier_value = { modifier = ship_has_touhou_action value != 0 }
+                check_modifier_value = { modifier = touhou_sky_control_ship_attack_system value != 0 }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { owner = { has_country_flag = touhou_sky_control_ship_attack_system_cooldown } }
+            }
+            custom_tooltip = {
+                fail_text = touhou_requires_enable
+                NOT = { owner = { has_country_flag = touhou_sky_control_ship_attack_system_disabled } }
+            }
+        }
+        fleet_event = { id = touhou_ship_actions.17 }
+    }
+    option = {
+        name = {
+            trigger = { owner = { NOT = { has_country_flag = touhou_sky_control_ship_attack_system_disabled } } }
+            text = touhou_sky_control_ship_close_starkiller
+        }
+        name = {
+            trigger = { owner = { has_country_flag = touhou_sky_control_ship_attack_system_disabled } }
+            text = touhou_sky_control_ship_open_starkiller
+        }
+        trigger = {
+            has_fleet_flag = touhou_ship_action_menu_ship_expend
+            any_owned_ship = {
+                check_modifier_value = { modifier = ship_has_touhou_action value != 0 }
+                check_modifier_value = { modifier = touhou_sky_control_ship_attack_system value != 0 }
+            }
+        }
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_requires_no_coldown
+                NOT = { owner = { has_country_flag = touhou_sky_control_ship_attack_system_switch_cooldown } }
+            }
+            custom_tooltip = {
+                fail_text = touhou_requires_no_special_block
+                NOT = { owner = { has_country_flag = touhou_sky_control_ship_attack_system_sel_open } }
+            }
+        }
+        hidden_effect = {
+            owner = {
+                set_timed_country_flag = { flag = touhou_sky_control_ship_attack_system_switch_cooldown days = 15 }
+                if = {
+                    limit = { has_country_flag = touhou_sky_control_ship_attack_system_disabled }
+                    remove_country_flag = touhou_sky_control_ship_attack_system_disabled
+                } else = {
+                    set_country_flag = touhou_sky_control_ship_attack_system_disabled
+                }
+            }
+        }
+        fleet_event = { id = touhou_ship_actions.2 }
+    }
     # 符卡系统
     option = {
         name = touhou_spellcard_11_action
@@ -1482,6 +1543,166 @@ country_event = {
                 }
             }
         }
+    }
+}
+
+fleet_event = {
+    id = touhou_ship_actions.16
+    title = touhou_ship_actions.3.name
+    desc = touhou_ship_actions.16.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_system_selector_window
+    custom_gui_option = spth_system_selector_option
+    immediate = {
+        owner = { set_country_flag = has_spth_system_selector_opened }
+        save_global_event_target_as = touhou_sky_control_ship_select_system_@owner
+    }
+    option = {
+        name = "spth_system_selector_target_confirm"
+        default_hide_option = yes
+        custom_gui = spth_system_selector_confirm_sky_control_select_system
+    }
+    option = {
+        name = "spth_system_selector_target_abort"
+        fire_on_action = {
+            on_action = on_touhou_sky_controll_select_system_cancel
+            scopes = { from = root.owner }
+        }
+    }
+    after = {
+        hidden_effect = {
+            owner = { remove_country_flag = has_spth_system_selector_opened }
+        }
+    }
+}
+fleet_event = {
+    id = touhou_ship_actions.17
+    title = touhou_ship_actions.17.name
+    desc = touhou_ship_actions.17.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_leader_function_ui
+    custom_gui_option = spth_leader_function_button
+    picture_event_data = { room = touhou_system_attack_room }
+    immediate = {
+        owner = { set_country_flag = touhou_sky_control_ship_attack_system_sel_open }
+    }
+    after = {
+        hidden_effect = {
+            owner = { remove_country_flag = touhou_sky_control_ship_attack_system_sel_open }
+        }
+    }
+    option = {
+        name = touhou_ship_actions.17.refresh
+        fleet_event = { id = touhou_ship_actions.17 }
+    }
+    option = {
+        name = touhou_sky_control_ship_target_1_display
+        allow = {
+            custom_tooltip = {
+                fail_text = spth_system_selector_opened
+                NOT = { owner = { has_country_flag = has_spth_system_selector_opened } }
+            }
+        }
+        hidden_effect = {
+            touhou_sky_control_ship_target_setup_flags = { slot = 1 }
+        }
+        fleet_event = { id = touhou_ship_actions.16 }
+    }
+    option = {
+        name = touhou_sky_control_ship_target_2_display
+        allow = {
+            custom_tooltip = {
+                fail_text = spth_system_selector_opened
+                NOT = { owner = { has_country_flag = has_spth_system_selector_opened } }
+            }
+        }
+        hidden_effect = {
+            touhou_sky_control_ship_target_setup_flags = { slot = 2 }
+        }
+        fleet_event = { id = touhou_ship_actions.16 }
+    }
+    option = {
+        name = touhou_sky_control_ship_target_3_display
+        allow = {
+            custom_tooltip = {
+                fail_text = spth_system_selector_opened
+                NOT = { owner = { has_country_flag = has_spth_system_selector_opened } }
+            }
+        }
+        hidden_effect = {
+            touhou_sky_control_ship_target_setup_flags = { slot = 3 }
+        }
+        fleet_event = { id = touhou_ship_actions.16 }
+    }
+    option = {
+        name = touhou_ship_actions.17.confirm
+        allow = {
+            custom_tooltip = {
+                fail_text = touhou_ship_actions.17.confirm.fail
+                OR = {
+                    exists = event_target:touhou_sky_control_ship_target_1
+                    exists = event_target:touhou_sky_control_ship_target_2
+                    exists = event_target:touhou_sky_control_ship_target_3
+                }
+            }
+        }
+        hidden_effect = {
+            fire_on_action = {
+                on_action = on_touhou_sky_controll_select_system_attack
+                scopes = { from = root.owner }
+            }
+        }
+    }
+    option = {
+        name = touhou_ship_actions.17.clear
+        hidden_effect = {
+            touhou_sky_control_ship_target_clear = yes
+        }
+        fleet_event = { id = touhou_ship_actions.17 }
+    }
+    option = {
+        name = touhou_ship_actions.17.exit
+        fleet_event = { id = touhou_ship_actions.2 }
+    }
+}
+fleet_event = {
+    id = touhou_ship_actions.18
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        clear_global_event_target = touhou_sky_control_ship_select_system_@from
+        fleet_event = { id = touhou_ship_actions.17 }
+    }
+}
+fleet_event = {
+    id = touhou_ship_actions.19
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        touhou_sky_control_ship_target_set = yes
+        touhou_sky_control_ship_target_cleanup_flags = yes
+        fleet_event = { id = touhou_ship_actions.17 }
+    }
+}
+fleet_event = {
+    id = touhou_ship_actions.20
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        random_controlled_ship = {
+            limit = { is_ship_size = touhou_sky_control_ship }
+            save_event_target_as = touhou_sky_control_ship_temp
+        }
+        if = {
+            limit = { NOT = { exists = event_target:touhou_sky_control_ship_temp } }
+            save_event_target_as = touhou_sky_control_ship_temp
+        }
+        touhou_sky_control_ship_destroy_system = { slot = 1 }
+        touhou_sky_control_ship_destroy_system = { slot = 2 }
+        touhou_sky_control_ship_destroy_system = { slot = 3 }
+        touhou_sky_control_ship_target_clear = yes
     }
 }
 

@@ -3575,15 +3575,30 @@ country_event = {
         is_touhou_country = yes
         fromfrom = {
             NOT = { has_fleet_flag = spth_fleet_1205_fired }
-            any_owned_ship = { check_modifier_value = { modifier = ship_toyohime_instant_kill value > 0 } }
+            any_owned_ship = {
+                OR = {
+                    check_modifier_value = { modifier = ship_toyohime_instant_kill value > 0 }
+                    check_modifier_value = { modifier = ship_reapers_instant_kill value > 0 }
+                }
+            }
         }
     }
     immediate = {
         fromfrom = {
             set_fleet_flag = spth_fleet_1205_fired
             every_owned_ship = {
-                limit = { check_modifier_value = { modifier = ship_toyohime_instant_kill value > 0 } }
-                set_ship_flag = has_toyohime_instant_kill
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_toyohime_instant_kill value > 0 } }
+                    set_ship_flag = has_toyohime_instant_kill
+                }
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_reapers_instant_kill value > 0 } }
+                    set_ship_flag = has_ship_reapers_instant_kill
+                    if = {
+                        limit = { root = { has_country_flag = touhou_sky_control_ship_attack_system_disabled } }
+                        set_timed_ship_flag = { flag = has_ship_reapers_instant_kill_unlimited days = 15 }
+                    }
+                }
             }
             fleet_event = { id = spth_fleet.1206 }
         }
@@ -3600,11 +3615,19 @@ fleet_event = {
         } else = {
             remove_fleet_flag = spth_fleet_1205_fired
             every_owned_ship = {
-                limit = { check_modifier_value = { modifier = ship_toyohime_instant_kill value > 0 } }
-                set_variable = { which = ship_toyohime_instant_kill_used value = 0 }
-                # clear_variable = ship_toyohime_instant_kill_used
-                remove_ship_flag = has_toyohime_instant_kill
-                remove_modifier = th_toyohime_instant_kill_buff
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_toyohime_instant_kill value > 0 } }
+                    set_variable = { which = ship_toyohime_instant_kill_used value = 0 }
+                    # clear_variable = ship_toyohime_instant_kill_used
+                    remove_ship_flag = has_toyohime_instant_kill
+                    remove_modifier = th_toyohime_instant_kill_buff
+                }
+                if = {
+                    limit = { check_modifier_value = { modifier = ship_reapers_instant_kill value > 0 } }
+                    set_variable = { which = ship_reapers_instant_kill_used value = 0 }
+                    remove_ship_flag = has_ship_reapers_instant_kill
+                    remove_modifier = weapon_type_makai_instant_kill_damage_modifier
+                }
             }
         }
     }
@@ -3617,12 +3640,36 @@ country_event = {
     id = spth_fleet.1207
     hide_window = yes
     is_triggered_only = yes
-    trigger = { fromfrom = { has_ship_flag = has_toyohime_instant_kill } }
+    trigger = {
+        fromfrom = {
+            OR = {
+                has_ship_flag = has_toyohime_instant_kill
+                has_ship_flag = has_ship_reapers_instant_kill
+            }
+        }
+    }
     immediate = {
         fromfrom = {
             if = {
-                limit = { is_variable_set = ship_toyohime_instant_kill_used }
-                change_variable = { which = ship_toyohime_instant_kill_used value = 1 }
+                limit = { has_ship_flag = has_toyohime_instant_kill }
+                if = {
+                    limit = { is_variable_set = ship_toyohime_instant_kill_used }
+                    change_variable = { which = ship_toyohime_instant_kill_used value = 1 }
+                } else = {
+                    set_variable = { which = ship_toyohime_instant_kill_used value = 1 }
+                }
+            }
+            if = {
+                limit = {
+                    has_ship_flag = has_ship_reapers_instant_kill
+                    NOT = { has_ship_flag = has_ship_reapers_instant_kill_unlimited }
+                }
+                if = {
+                    limit = { is_variable_set = ship_reapers_instant_kill_used }
+                    change_variable = { which = ship_reapers_instant_kill_used value = 1 }
+                } else = {
+                    set_variable = { which = ship_reapers_instant_kill_used value = 1 }
+                }
             }
         }
     }
@@ -5332,6 +5379,125 @@ fleet_event = {
                 clear_variable = touhou_time_attack_stacks
             }
         }
+    }
+}
+# this = ship
+# from = ship, disabler
+# fromfrom = fleet, victim fleet
+# fromfromfrom = fleet, disabler fleet
+# fromfromfromfrom = solar system, where disable triggered
+ship_event = {
+    id = spth_fleet.2032
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_ship_size = touhou_sky_control_ship
+        exists = controller controller = { is_touhou_country = yes }
+    }
+    immediate = {
+        touhou_sky_control_ship_aux_reapers_damage_bonus = { modifier = ship_weapon_damage }
+        touhou_sky_control_ship_aux_reapers_damage_bonus = { modifier = weapon_type_lingli_weapon_damage_mult }
+        touhou_sky_control_ship_aux_reapers_damage_bonus = { modifier = weapon_type_energy_weapon_damage_mult }
+        touhou_sky_control_ship_aux_reapers_damage_bonus = { modifier = weapon_type_kinetic_weapon_damage_mult }
+        touhou_sky_control_ship_aux_reapers_damage_bonus = { modifier = weapon_type_explosive_weapon_damage_mult }
+    }
+}
+
+country_event = {
+    id = spth_fleet.2033
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_player_faction = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = spth_fleet_2033_fired }
+            any_controlled_ship = { is_ship_size = touhou_sky_control_ship is_disabled = no }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_timed_fleet_flag = { flag = spth_fleet_2033_fired days = 90 }
+            save_global_event_target_as = location_touhou_sky_controll_ship_of_@root
+        }
+    }
+}
+country_event = {
+    id = spth_fleet.2034
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = touhou_sky_controll_stratagem_event_lock } }
+    title = BUTTON_TEXT_NULL
+    desc = BUTTON_TEXT_NULL
+    diplomatic = yes
+    custom_gui = touhou_sky_controll_stratagem_ui
+    custom_gui_option = touhou_sky_controll_stratagem_ui_button
+    picture_event_data = { room = touhou_ext_lunar_capital_background_room }
+    immediate = {
+        set_variable = { which = touhou_sky_controll_stratagem_ui_bg value = @touhou_sky_controll_stratagem_ui_bg_lunar_capital }
+        set_country_flag = touhou_sky_controll_stratagem_event_lock
+        # set stratagem code seq
+        set_variable = { which = touhou_sky_controll_stratagem_cur_pos value = 0 }
+        set_variable = { which = touhou_sky_controll_stratagem_res_seq_1 value = @touhou_sky_controll_stratagem_up }
+        set_variable = { which = touhou_sky_controll_stratagem_res_seq_2 value = @touhou_sky_controll_stratagem_down }
+        set_variable = { which = touhou_sky_controll_stratagem_res_seq_3 value = @touhou_sky_controll_stratagem_down }
+        set_variable = { which = touhou_sky_controll_stratagem_res_seq_4 value = @touhou_sky_controll_stratagem_left }
+        set_variable = { which = touhou_sky_controll_stratagem_res_seq_5 value = @touhou_sky_controll_stratagem_right }
+        set_variable = { which = touhou_sky_controll_stratagem_res_seq_6 value = @touhou_sky_controll_stratagem_right }
+        set_variable = { which = touhou_sky_controll_stratagem_res_seq_7 value = @touhou_sky_controll_stratagem_left }
+        set_variable = { which = touhou_sky_controll_stratagem_res_seq_8 value = @touhou_sky_controll_stratagem_up }
+    }
+    abort_trigger = {
+        OR = {
+            has_country_flag = touhou_sky_controll_stratagem_input_close
+            has_country_flag = touhou_sky_controll_stratagem_input_success
+        }
+    }
+    abort_effect = {
+        # play_sound = touhou_hd2_orbital_barrage_incoming_effect
+        remove_country_flag = touhou_sky_controll_stratagem_input_success
+        remove_country_flag = touhou_sky_controll_stratagem_input_close
+        remove_country_flag = touhou_sky_controll_stratagem_event_lock
+    }
+}
+country_event = {
+    id = spth_fleet.2035
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = touhou_sky_controll_stratagem_call_fleet
+    }
+    immediate = {
+        set_country_flag = touhou_sky_controll_stratagem_input_close
+        if = {
+            limit = { exists = event_target:location_touhou_sky_controll_ship_of_@root }
+            play_sound = {
+                sound = hd2_vox_engine_detect_effect
+                location = event_target:location_touhou_sky_controll_ship_of_@root
+            }
+            create_random_fleet = {
+                name = NAME_touhou_sky_control_guard_fleet
+                size = 1600
+                can_overflow = yes
+                effect = {
+                    set_location = event_target:location_touhou_sky_controll_ship_of_@root
+                    fleet_event = { id = spth_fleet.2000 days = 90 }
+                }
+            }
+        }
+        remove_country_flag = touhou_sky_controll_stratagem_call_fleet
+        clear_global_event_target = location_touhou_sky_controll_ship_of_@root
+    }
+}
+country_event = {
+    id = spth_fleet.2036
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = touhou_sky_controll_stratagem_call_fleet
+    }
+    immediate = {
+        set_country_flag = touhou_sky_controll_stratagem_input_close
+        remove_country_flag = touhou_sky_controll_stratagem_call_fleet
+        clear_global_event_target = location_touhou_sky_controll_ship_of_@root
     }
 }
 

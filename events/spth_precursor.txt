@@ -1177,3 +1177,81 @@ country_event = {
     }
 }
 
+
+# 月之都河外星系, 暗星幻梦数据库解析，仅能触发一次
+country_event = {
+    id = spth_precursor.301
+    title = spth_precursor.301.name
+    desc = spth_precursor.301.desc
+    fire_only_once = yes
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = ag_ship_portrait_touhou_fe_union_titan_room }
+    option = {
+        name = TH_EXCELLENT
+        enable_special_project = { name = touhou_fe_union_titan_database owner = root }
+    }
+    option = {
+        name = spth_precursor.301.a
+        add_resource = { influence = 150 }
+    }
+}
+country_event = {
+    id = spth_precursor.302
+    title = spth_precursor.302.name
+    desc = spth_precursor.302.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_empty_system_room }
+    immediate = {
+        no_scope = {
+            set_spawn_system_batch = begin
+            spawn_system = {
+                initializer = touhou_lunar_capital_black_hole_system
+                min_distance = 800
+                max_distance = 1000
+                max_orientation_angle = 145
+                min_orientation_angle = 100
+                hyperlane = no
+            }
+            set_spawn_system_batch = end
+        }
+        if = {
+            limit = { spth_has_ag_mod = yes NOT = { has_event_chain = ag_hidden_system_chain } }
+            begin_event_chain = { event_chain = ag_hidden_system_chain }
+        } else_if = {
+            limit = { NOT = { has_event_chain = touhou_ag_hidden_system_chain } }
+            begin_event_chain = { event_chain = touhou_ag_hidden_system_chain }
+        }
+        event_target:touhou_lunar_capital_black_hole_system = {
+            save_event_target_as = spth_target_system
+        }
+        save_event_target_as = touhou_system_discover_country
+        touhou_spawned_system_effect = yes
+        if = {
+            limit = { has_event_chain = ag_hidden_system_chain }
+            create_point_of_interest = {
+                id = touhou_ag_fe_union_lunar_blackhole_area
+                name = "touhou_ag_fe_union_lunar_blackhole_area"
+                desc = "touhou_ag_fe_union_lunar_blackhole_area_desc"
+                event_chain = ag_hidden_system_chain
+                location = event_target:spth_target_system.star
+            }
+        } else = {
+            create_point_of_interest = {
+                id = touhou_ag_fe_union_lunar_blackhole_area
+                name = "touhou_ag_fe_union_lunar_blackhole_area"
+                desc = "touhou_ag_fe_union_lunar_blackhole_area_desc"
+                event_chain = touhou_ag_hidden_system_chain
+                location = event_target:spth_target_system.star
+            }
+        }
+    }
+    option = {
+        name = TH_INTERESTRING
+    }
+}

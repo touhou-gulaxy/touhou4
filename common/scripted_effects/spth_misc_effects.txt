@@ -2342,3 +2342,169 @@ touhou_signal_jammer_tower_remove_flag = {
         remove_star_flag = cannot_be_hit_by_aow_starfall_spear
     }
 }
+
+touhou_spawned_system_effect = {
+    optimize_memory
+    [[ag_spawn]
+        if = {
+            limit = { spth_has_ag_mod = yes }
+            add_event_chain_counter = {
+                event_chain = "ag_hidden_system_chain"
+                counter = "ag_ancient_system"
+                amount = 1
+            }
+        } else = {
+            add_event_chain_counter = {
+                event_chain = "touhou_ag_hidden_system_chain"
+                counter = "touhou_ag_ancient_system"
+                amount = 1
+            }
+        }
+    ]
+    country_event = { id = toho.1012 }
+    every_country = {
+        limit = { NOT = { is_same_value = event_target:touhou_system_discover_country } }
+        country_event = { id = toho.1013 }
+    }
+}
+
+
+ship_reapers_instant_kill_on_hit = {
+    optimize_memory
+    from = {
+        if = {
+            limit = { NOT = { is_variable_set = ship_reapers_instant_kill_used } }
+            set_variable = { which = ship_reapers_instant_kill_used value = 0 }
+        }
+    }
+    if = {
+        limit = {
+            from = {
+                check_variable_arithmetic = {
+                    which = modifier:ship_reapers_instant_kill
+                    subtract = ship_reapers_instant_kill_used
+                    value > 0
+                }
+            }
+        }
+        from = {
+            set_variable = { which = ship_reapers_instant_kill_debug value = modifier:ship_reapers_instant_kill }
+            set_ship_flag = has_ship_reapers_instant_kill
+            add_modifier = {
+                modifier = weapon_type_makai_instant_kill_damage_modifier
+                mult = value:th_instant_kill_value|base_dmg|$base_dmg$|final_dmg|768000000|size_damage_factor|0|
+            }
+            create_ambient_object = {
+                type = touhou_lunar_superlaser_instant_kill_upgrade
+                location = this
+                duration = 10
+                use_3d_location = yes
+                entity_offset = { min = 0 max = 0 }
+                entity_offset_angle = { min = 0 max = 0 }
+                entity_offset_height = { min = $min_height|0$ max = $max_height|0$ }
+                entity_scale_to_size = no
+                scale = 0.1
+            }
+        }
+        reduce_shield = 922337203
+        repair_armor_amount = -922337202
+        create_ambient_object = {
+            type = lunar_capital_superlaser_instant_kill_hit_explosion
+            location = this
+            duration = 10
+            use_3d_location = yes
+            entity_offset = { min = 0 max = 0 }
+            entity_offset_angle = { min = 0 max = 0 }
+            entity_offset_height = { min = $min_height|0$ max = $max_height|0$ }
+            entity_scale_to_size = no
+            scale = 0.5
+        }
+    } else = {
+        from = {
+            if = {
+                limit = { has_modifier = weapon_type_makai_instant_kill_damage_modifier }
+                remove_modifier = weapon_type_makai_instant_kill_damage_modifier
+            }
+        }
+    }
+}
+touhou_sky_control_ship_aux_reapers_damage_bonus = {
+    optimize_memory
+    if = {
+        limit = { check_modifier_value = { modifier = $modifier$ value > 0 } }
+        add_modifier = {
+            modifier = touhou_sky_control_ship_aux_reapers_$modifier$
+            mult = value:touhou_sky_control_ship_aux_reapers_value|factor|3|
+            days = 90
+        }
+    }
+}
+
+touhou_sky_control_ship_target_cleanup_flags = {
+    optimize_memory
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_1_sel } remove_fleet_flag = touhou_sky_control_ship_target_1_sel }
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_2_sel } remove_fleet_flag = touhou_sky_control_ship_target_2_sel }
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_3_sel } remove_fleet_flag = touhou_sky_control_ship_target_3_sel }
+}
+touhou_sky_control_ship_target_setup_flags = {
+    optimize_memory
+    touhou_sky_control_ship_target_cleanup_flags = yes
+    set_fleet_flag = touhou_sky_control_ship_target_$slot$_sel
+}
+touhou_sky_control_ship_target_set = {
+    optimize_memory
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_1_sel } fromfrom = { save_global_event_target_as = touhou_sky_control_ship_target_1 } }
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_2_sel } fromfrom = { save_global_event_target_as = touhou_sky_control_ship_target_2 } }
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_3_sel } fromfrom = { save_global_event_target_as = touhou_sky_control_ship_target_3 } }
+}
+touhou_sky_control_ship_target_clear = {
+    optimize_memory
+    clear_global_event_target = touhou_sky_control_ship_target_1
+    clear_global_event_target = touhou_sky_control_ship_target_2
+    clear_global_event_target = touhou_sky_control_ship_target_3
+}
+touhou_sky_control_ship_destroy_system = {
+    optimize_memory
+    if = {
+        limit = { exists = event_target:touhou_sky_control_ship_target_$slot$ }
+        event_target:touhou_sky_control_ship_target_$slot$ = {
+            random_system_planet = {
+                limit = { is_primary_star = yes }
+                planet_event = {
+                    id = touhou_ship_actions.102
+                    scopes = {
+                        from = root
+                    }
+                }
+                root.owner = {
+                    country_event = {
+                        id = touhou_ship_actions.101
+                        scopes = { from = event_target:touhou_sky_control_ship_temp fromfrom = root }
+                    }
+                }
+            }
+            if = {
+                limit = {
+                    exists = space_owner
+                    space_owner = {
+                        exists = this
+                        is_touhou_common_country = yes
+                        NOR = {
+                            is_same_value = root.owner
+                            is_hostile = root.owner
+                        }
+                    }
+                }
+                space_owner = {
+                    if = { limit = { NOT = { has_communications = root.owner } } establish_communications_no_message = root.owner }
+                    if = { limit = { is_in_federation_with = root.owner } leave_alliance = { override_requirements = yes apply_opinion_penalty = no } }
+                    country_event = { id = touhou_ship_actions.100 scopes = { from = root.owner } }
+                    if = {
+                        limit = { NOT = { is_at_war_with = root.owner } }
+                        root.owner = { declare_war = { target = prev attacker_war_goal = "wg_spth_assimilation" } }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -421,6 +421,49 @@ fleet_event = {
     }
 }
 
+fleet_event = {
+    id = Th_dynamic_battle_vict.25
+    hide_window = yes
+    is_triggered_only = yes
+    immediate = {
+        if = {
+            limit = { is_in_combat = yes }
+            if = {
+                limit = { NOT = { is_variable_set = touhou_nimble_fabric_status } }
+                set_variable = { which = touhou_nimble_fabric_status value = 1 }
+            }
+            if = {
+                limit = { check_variable = { which = touhou_nimble_fabric_status value = 1 } }
+                every_owned_ship = {
+                    limit = { check_modifier_value = { modifier = ship_has_touhou_nimble_fabric value > 0 } }
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_has_touhou_nimble_fabric_crisis value > 0 } }
+                        add_modifier = { modifier = touhou_nimble_fabric_crisis_protect days = 2 }
+                    } else = {
+                        add_modifier = { modifier = touhou_nimble_fabric_protect days = 2 }
+                    }
+                }
+                set_variable = { which = touhou_nimble_fabric_status value = 0 }
+            } else = {
+                every_owned_ship = {
+                    limit = { check_modifier_value = { modifier = ship_has_touhou_nimble_fabric value > 0 } }
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_has_touhou_nimble_fabric_crisis value > 0 } }
+                        remove_modifier = touhou_nimble_fabric_crisis_protect
+                    } else = {
+                        remove_modifier = touhou_nimble_fabric_protect
+                    }
+                }
+                set_variable = { which = touhou_nimble_fabric_status value = 1 }
+            }
+            fleet_event = { id = Th_dynamic_battle_vict.25 days = 2 }
+        } else = {
+            remove_fleet_flag = ship_has_touhou_nimble_fabric_protect
+            clear_variable = touhou_nimble_fabric_status
+        }
+    }
+}
+
 # 已弃用
 ship_event = {
     id = Th_dynamic_battle_vict.40
@@ -1050,6 +1093,25 @@ country_event = {
         fromfrom = {
             set_fleet_flag = spth_kamikakushi_cruiser_arua_protect
             fleet_event = { id = Th_dynamic_battle_vict.24 }
+        }
+    }
+}
+
+country_event = {
+    id = Th_dynamic_battle_vict.1006
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = ship_has_touhou_nimble_fabric_protect }
+            any_owned_ship = { check_modifier_value = { modifier = ship_has_touhou_nimble_fabric value > 0 } }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_fleet_flag = ship_has_touhou_nimble_fabric_protect
+            fleet_event = { id = Th_dynamic_battle_vict.25 }
         }
     }
 }

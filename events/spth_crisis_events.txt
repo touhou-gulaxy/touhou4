@@ -2080,3 +2080,76 @@ country_event = {
         country_event = { id = touhou_crisis.1001 days = 90 random = 90 }
     }
 }
+
+# on_fleet_auto_move_arrival触发
+# 检测被卡寻路超过180天，直接摧毁殖民地
+# This = owner of fleet
+# From = fleet
+# FromFrom = planet (if any)
+country_event = {
+    id = touhou_crisis.10000
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = {
+        is_touhou_crisis_faction = yes
+        exists = fromfrom
+        fromfrom = {
+            has_orbital_bombardment = no is_colony = yes exists = owner
+            controller = { is_hostile = root NOT = { is_same_value = root } }
+        }
+    }
+    immediate = {
+        from = {
+            fleet_event = {
+                id = touhou_crisis.10001 days = 30
+                scopes = { from = root.fromfrom }
+            }
+        }
+    }
+}
+fleet_event = {
+    id = touhou_crisis.10001
+    is_triggered_only = yes
+    hide_window = yes
+    immediate = {
+        if = {
+            limit = {
+                exists = controller
+                controller = { is_touhou_crisis_faction = yes }
+                exists = from
+                from = {
+                    any_fleet_in_orbit = { is_same_value = root }
+                    has_orbital_bombardment = no
+                    is_colony = yes exists = controller
+                    controller = {
+                        is_hostile = root.controller
+                        NOT = { is_same_value = root.controller }
+                    }
+                }
+            }
+            if = {
+                limit = { NOT = { is_variable_set = touhou_anti_anti_orbital_bombardment_counter } }
+                set_variable = { which = touhou_anti_anti_orbital_bombardment_counter value = 0 }
+            }
+            change_variable = { which = touhou_anti_anti_orbital_bombardment_counter value = 1 }
+            if = {
+                limit = { check_variable = { which = touhou_anti_anti_orbital_bombardment_counter value >= 6 } }
+                clear_variable = touhou_anti_anti_orbital_bombardment_counter
+                from = {
+                    spth_planet_kill_all_pop = yes
+                    destroy_colony = yes
+                }
+            } else = {
+                fleet_event = {
+                    id = touhou_crisis.10001 days = 30
+                    scopes = { from = root.from }
+                }
+            }
+        } else = {
+            if = {
+                limit = { is_variable_set = touhou_anti_anti_orbital_bombardment_counter }
+                clear_variable = touhou_anti_anti_orbital_bombardment_counter
+            }
+        }
+    }
+}
