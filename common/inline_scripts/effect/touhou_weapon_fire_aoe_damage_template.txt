@@ -1,0 +1,127 @@
+#     inline_script = {
+#         script = effect/touhou_weapon_fire_aoe_damage_template
+#         base_damage = 1                                               # aoe basic damage
+#         aoe_range = 1                                                 # aoe damage range
+#         bonus_factor = 1                                              # aoe damage bonus factor
+#         cooldown = 10                                                 # aoe cooldown
+#         hull_damage_modifier = weapon_gungnir_titanic_hull_damage     # modifier to deal hull damage
+#         size = titanic                                                # weapon size
+#         size_tag = t                                                  # weapon size tag, such as t/x/l/m/s
+#         type = spark                                                  # weapon type
+#         spawn_hit_effect = yes                                        # if spawn hit effect, yes/no
+#         effect_color = red                                            # hit effect color
+#         effect_size = extra                                           # hit effect size
+#         anti_psionic = no												# is this weapon has anti_psionic tag, yes/no
+#         archaeotech = no												# is this weapon has archaeotech tag, yes/no
+#         artillery = no												# is this weapon has artillery tag, yes/no
+#         difficulty_scale = no											# is this weapon has difficulty_scale tag, yes/no
+#         difficulty_scale_player = no									# is this weapon has difficulty_scale_player tag, yes/no
+#         energy = no													# is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+#         explosive = no												# is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+#         gravity = no													# is this weapon has gravity tag, yes/no
+#         gungnir = no													# is this weapon has gungnir tag, yes/no
+#         kappa = no													# is this weapon has kappa tag, yes/no
+#         kinetic = no													# is this weapon has kinetic tag, yes/no
+#         knife = no													# is this weapon has knife tag, yes/no
+#         laevatain = no												# is this weapon has laevatain tag, yes/no
+#         lingli = no													# is this weapon has lingli tag, yes/no
+#         loukanken = no												# is this weapon has loukanken tag, yes/no
+#         lunar_capital = no											# is this weapon has lunar_capital tag, yes/no
+#         lunar_capital_2 = no											# is this weapon has lunar_capital_2 tag, yes/no
+#         needle = no													# is this weapon has needle tag, yes/no
+#         point_defense = no											# is this weapon has point_defense tag, yes/no
+#         psionic = no													# is this weapon has psionic tag, yes/no
+#         reimu = no													# is this weapon has reimu tag, yes/no
+#         resurrection_butterfly = no									# is this weapon has resurrection_butterfly tag, yes/no
+#         resurrection_butterfly_sp = no								# is this weapon has resurrection_butterfly_sp tag, yes/no
+#         sakuya_watch = no												# is this weapon has sakuya_watch tag, yes/no
+#         sanae = no													# is this weapon has sanae tag, yes/no
+#         spark = no													# is this weapon has spark tag, yes/no
+#         touhou_difficulty_player = no									# is this weapon has touhou_difficulty_player tag, yes/no
+#         touhou_dynamic_damage_ag = no									# is this weapon has touhou_dynamic_damage_ag tag, yes/no
+#         xianzhe = no													# is this weapon has xianzhe tag, yes/no
+#         xieshi = no													# is this weapon has xieshi tag, yes/no
+#         yuzhu = no													# is this weapon has yuzhu tag, yes/no
+#     }
+if = {
+    limit = {
+        exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_template_$size$_$type$ } }
+    }
+    from = { set_timed_ship_flag = { flag = touhou_aoe_damage_template_$size$_$type$ days = $cooldown$ } }
+    set_variable = {
+        which = touhou_aoe_damage_template_$size$_$type$_total_self
+        value = from.value:touhou_aoe_damage_template_hit_damage|base_damage|$base_damage$|size_tag|$size_tag$|bonus_factor|$bonus_factor$|anti_psionic|$anti_psionic$|archaeotech|$archaeotech$|artillery|$artillery$|difficulty_scale|$difficulty_scale$|difficulty_scale_player|$difficulty_scale_player$|energy|$energy$|explosive|$explosive$|gravity|$gravity$|gungnir|$gungnir$|kappa|$kappa$|kinetic|$kinetic$|knife|$knife$|laevatain|$laevatain$|lingli|$lingli$|loukanken|$loukanken$|lunar_capital|$lunar_capital$|lunar_capital_2|$lunar_capital_2$|needle|$needle$|point_defense|$point_defense$|psionic|$psionic$|reimu|$reimu$|resurrection_butterfly|$resurrection_butterfly$|resurrection_butterfly_sp|$resurrection_butterfly_sp$|sakuya_watch|$sakuya_watch$|sanae|$sanae$|spark|$spark$|touhou_difficulty_player|$touhou_difficulty_player$|touhou_dynamic_damage_ag|$touhou_dynamic_damage_ag$|xianzhe|$xianzhe$|xieshi|$xieshi$|yuzhu|$yuzhu$|
+    }
+    solar_system = {
+        every_ship_in_system = {
+            limit = {
+                NOT = { has_ship_flag = touhou_aoe_damage_template_$size$_$type$_lock }
+                check_modifier_value = { modifier = ag_ship_aoe_damage_reduction value < 1.0 }
+                check_modifier_value = { modifier = ship_aoe_damage_reduction_mult value < 1.0 }
+                check_modifier_value = { modifier = touhou_ship_aoe_damage_reduction_mult value < 1.0 }
+                exists = controller controller = { is_hostile = root.from.owner }
+                distance = { same_solar_system = yes source = prevprev max_distance <= $aoe_range$ }
+            }
+            # i decide to not play explosion particle on every ship
+            # this may cause tons tons of lag.
+            set_timed_ship_flag = { flag = touhou_aoe_damage_template_$size$_$type$_lock days = $cooldown$ }
+            set_variable = { which = touhou_aoe_damage_template_$size$_$type$_total_temp value = value:touhou_aoe_damage_template_final_value|touhou_base|prevprev.touhou_aoe_damage_template_$size$_$type$_total_self| }
+            # calc shield damage here
+            if = {
+                limit = { has_shield_hp > 0 }
+                set_variable = { which = touhou_aoe_damage_template_$size$_$type$_shield_temp value = touhou_aoe_damage_template_$size$_$type$_total_temp }
+                multiply_variable = { which = touhou_aoe_damage_template_$size$_$type$_shield_temp value = prevprev.value:touhou_modifier_mult_multiplier|modifier|ship_shield_damage_mult| }
+                if = {
+                    limit = { has_shield_hp >= touhou_aoe_damage_template_$size$_$type$_shield_temp }
+                    reduce_shield = touhou_aoe_damage_template_$size$_$type$_shield_temp
+                }
+                else = {
+                    set_variable = { which = touhou_aoe_damage_template_$size$_$type$_shield_temp value = trigger:has_shield_hp }
+                    divide_variable = { which = touhou_aoe_damage_template_$size$_$type$_shield_temp value = prevprev.value:touhou_modifier_mult_multiplier|modifier|ship_shield_damage_mult| }
+                    reduce_shield = trigger:has_shield_hp
+                }
+                subtract_variable = { which = touhou_aoe_damage_template_$size$_$type$_total_temp value = touhou_aoe_damage_template_$size$_$type$_shield_temp }
+                clear_variable = touhou_aoe_damage_template_$size$_$type$_shield_temp
+            } else_if = { limit = { check_variable = { which = touhou_aoe_damage_template_$size$_$type$_total_temp value <= 0 } } clear_variable = touhou_aoe_damage_template_$size$_$type$_total_temp }
+            # calc armor damage here
+            if = {
+                limit = { check_variable = { which = touhou_aoe_damage_template_$size$_$type$_total_temp value > 0 } has_armor_percentage > 0 }
+                set_variable = { which = touhou_aoe_damage_template_ship_current_armor value = trigger:has_max_armor_hp }
+                multiply_variable = { which = touhou_aoe_damage_template_ship_current_armor value = trigger:has_armor_percentage }
+                set_variable = { which = touhou_aoe_damage_template_$size$_$type$_armor_temp value = touhou_aoe_damage_template_$size$_$type$_total_temp }
+                multiply_variable = { which = touhou_aoe_damage_template_$size$_$type$_armor_temp value = prevprev.value:touhou_modifier_mult_multiplier|modifier|ship_armor_damage_mult| }
+                if = {
+                    limit = { check_variable = { which = touhou_aoe_damage_template_ship_current_armor value >= touhou_aoe_damage_template_$size$_$type$_armor_temp } }
+                    multiply_variable = { which = touhou_aoe_damage_template_$size$_$type$_armor_temp value = -1 }
+                    repair_armor_amount = touhou_aoe_damage_template_$size$_$type$_armor_temp
+                }
+                else = {
+                    set_variable = { which = touhou_aoe_damage_template_$size$_$type$_armor_temp value = touhou_aoe_damage_template_ship_current_armor }
+                    multiply_variable = { which = touhou_aoe_damage_template_$size$_$type$_armor_temp value = -1 }
+                    repair_armor_amount = touhou_aoe_damage_template_$size$_$type$_armor_temp
+                    set_variable = { which = touhou_aoe_damage_template_$size$_$type$_armor_temp value = touhou_aoe_damage_template_ship_current_armor }
+                    divide_variable = { which = touhou_aoe_damage_template_$size$_$type$_armor_temp value = prevprev.value:touhou_modifier_mult_multiplier|modifier|ship_armor_damage_mult| }
+                    multiply_variable = { which = touhou_aoe_damage_template_$size$_$type$_armor_temp value = -1 }
+                }
+                change_variable = { which = touhou_aoe_damage_template_$size$_$type$_total_temp value = touhou_aoe_damage_template_$size$_$type$_armor_temp }
+                clear_variable = touhou_aoe_damage_template_ship_current_armor
+                clear_variable = touhou_aoe_damage_template_$size$_$type$_armor_temp
+                clear_variable = touhou_aoe_damage_template_$size$_$type$_armor_temp_alt
+            }
+            else_if = { limit = { check_variable = { which = touhou_aoe_damage_template_$size$_$type$_total_temp value <= 0 } } clear_variable = touhou_aoe_damage_template_$size$_$type$_total_temp }
+            # calc hull damage here
+            if = {
+                limit = { check_variable = { which = touhou_aoe_damage_template_$size$_$type$_total_temp value > 0 } }
+                multiply_variable = { which = touhou_aoe_damage_template_$size$_$type$_total_temp value = prevprev.value:touhou_modifier_mult_multiplier|modifier|ship_hull_damage_mult| }
+                if = { limit = { has_modifier = $hull_damage_modifier$ } remove_modifier = $hull_damage_modifier$ }
+                add_modifier = { modifier = $hull_damage_modifier$ days = 2 multiplier = touhou_aoe_damage_template_$size$_$type$_total_temp }
+            }
+            clear_variable = touhou_aoe_damage_template_$size$_$type$_total_temp
+        }
+    }
+    inline_script = {
+        script = effect/touhou_spawn_explosion_particle_$spawn_hit_effect$
+        color = $effect_color$ size = $effect_size$
+    }
+    clear_variable = touhou_aoe_damage_template_$size$_$type$_total_self
+}

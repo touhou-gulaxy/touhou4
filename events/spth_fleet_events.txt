@@ -3265,6 +3265,129 @@ country_event = {
                             }
                         }
                     }
+                    leader_trait_mugetsu = {
+                        prev = {
+                            if = {
+                                limit = {
+                                    NOT = { has_fleet_flag = leader_trait_mugetsu_mutex }
+                                    is_variable_set = touhou_mugetsu_combat_won_count
+                                    check_variable = { which = touhou_mugetsu_combat_won_count value > 0 }
+                                }
+                                set_timed_fleet_flag = { flag = leader_trait_mugetsu_mutex days = 30 }
+                                if = {
+                                    limit = { check_modifier_value = { modifier = weapon_type_lingli_weapon_damage_mult value > 0 } }
+                                    add_modifier = {
+                                        modifier = th_leader_trait_mugetsu_lingli_dmg
+                                        mult = modifier:weapon_type_lingli_weapon_damage_mult days = 20
+                                    }
+                                }
+                                if = {
+                                    limit = { check_modifier_value = { modifier = weapon_type_lingli_weapon_damage_mult value > 0 } }
+                                    add_modifier = {
+                                        modifier = th_leader_trait_mugetsu_lingli_rate
+                                        mult = modifier:weapon_type_lingli_weapon_damage_mult days = 20
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    leader_trait_gengetsu = {
+                        prev = {
+                            if = {
+                                limit = { NOT = { has_fleet_flag = leader_trait_gengetsu_cooldown } }
+                                set_timed_fleet_flag = { flag = leader_trait_gengetsu_cooldown days = 90 }
+                                save_event_target_as = leader_trait_gengetsu_fleet
+                                set_variable_to_random_value = { which = touhou_leader_spark_damage_random_gengetsu min = 1.0 max = 1.37128 }
+                                set_variable = {
+                                    which = touhou_leader_spark_damage_gengetsu_hull
+                                    value = value:touhou_leader_spark_damage|base|2214|type|marisa|layer|hull|factor|1.0|
+                                }
+                                every_combatant_fleet = {
+                                    limit = { is_in_combat = yes is_cloaked = no }
+                                    touhou_spawn_leader_master_spark_object = yes
+                                    every_owned_ship = {
+                                        add_modifier = {
+                                            modifier = th_leader_trait_gengetsu days = 2
+                                            mult = event_target:leader_trait_gengetsu_fleet.touhou_leader_spark_damage_gengetsu_hull
+                                        }
+                                    }
+                                }
+                                clear_variable = touhou_leader_spark_damage_random_gengetsu
+                                clear_variable = touhou_leader_spark_damage_gengetsu_hull
+                            }
+                        }
+                    }
+                    leader_trait_gengetsu_and_mugetsu = {
+                        prev = {
+                            if = {
+                                limit = {
+                                    NOT = { has_fleet_flag = leader_trait_gengetsu_and_mugetsu_mutex }
+                                    if = {
+                                        limit = {
+                                            prev = {
+                                                spth_is_touhou_gensokyo_leader = yes
+                                                has_trait = leader_trait_gengetsu
+                                                has_leader_flag = flag_gengetsu
+                                            }
+                                        }
+                                        solar_system = {
+                                            any_fleet_in_system = {
+                                                OR = {
+                                                    exists = controller controller = { is_same_value = root }
+                                                    exists = owner owner = { is_same_value = root }
+                                                }
+                                                exists = leader
+                                                leader = {
+                                                    has_leader_flag = flag_mugetsu
+                                                    spth_is_touhou_gensokyo_leader = yes
+                                                    has_trait = leader_trait_mugetsu
+                                                }
+                                            }
+                                        }
+                                    } else_if = {
+                                        limit = {
+                                            prev = {
+                                                spth_is_touhou_gensokyo_leader = yes
+                                                has_trait = leader_trait_mugetsu
+                                                has_leader_flag = flag_mugetsu
+                                            }
+                                        }
+                                        solar_system = {
+                                            any_fleet_in_system = {
+                                                OR = {
+                                                    exists = controller controller = { is_same_value = root }
+                                                    exists = owner owner = { is_same_value = root }
+                                                }
+                                                exists = leader
+                                                leader = {
+                                                    has_leader_flag = flag_gengetsu
+                                                    spth_is_touhou_gensokyo_leader = yes
+                                                    has_trait = leader_trait_gengetsu
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                set_timed_fleet_flag = { flag = leader_trait_gengetsu_and_mugetsu_mutex days = 60 }
+                                solar_system.star = {
+                                    create_fleet = {
+                                        name = touhou_gengetsu_and_mugetsu_phantom
+                                        settings = { is_ultra_boss = yes spawn_debris = no can_change_composition = no can_change_leader = no can_disband = no can_upgrade = no }
+                                        effect = {
+                                            set_fleet_flag = touhou_gengetsu_and_mugetsu_phantom
+                                            set_owner = prevprevprev.owner
+                                            create_ship = {
+                                                design = touhou_gengetsu_and_mugetsu_phantom
+                                                effect = { set_ship_flag = touhou_gengetsu_and_mugetsu_phantom }
+                                            }
+                                            set_location = { target = prevprev distance = 0 angle = random }
+                                            fleet_event = { id = spth_fleet.2037 days = 30 }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     default = {}
                 }
                 # 星空大盗
@@ -3664,11 +3787,14 @@ country_event = {
                     has_ship_flag = has_ship_reapers_instant_kill
                     NOT = { has_ship_flag = has_ship_reapers_instant_kill_unlimited }
                 }
-                if = {
-                    limit = { is_variable_set = ship_reapers_instant_kill_used }
-                    change_variable = { which = ship_reapers_instant_kill_used value = 1 }
-                } else = {
-                    set_variable = { which = ship_reapers_instant_kill_used value = 1 }
+                random = {
+                    chance = value:ship_reapers_instant_kill_use_chance_value
+                    if = {
+                        limit = { is_variable_set = ship_reapers_instant_kill_used }
+                        change_variable = { which = ship_reapers_instant_kill_used value = 1 }
+                    } else = {
+                        set_variable = { which = ship_reapers_instant_kill_used value = 1 }
+                    }
                 }
             }
         }
@@ -5403,6 +5529,10 @@ ship_event = {
     }
 }
 
+# This = owner of fleet 1
+# From = owner of fleet 2
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
 country_event = {
     id = spth_fleet.2033
     hide_window = yes
@@ -5419,6 +5549,7 @@ country_event = {
             set_timed_fleet_flag = { flag = spth_fleet_2033_fired days = 90 }
             save_global_event_target_as = location_touhou_sky_controll_ship_of_@root
         }
+        country_event = { id = spth_fleet.2034 }
     }
 }
 country_event = {
@@ -5498,6 +5629,55 @@ country_event = {
         set_country_flag = touhou_sky_controll_stratagem_input_close
         remove_country_flag = touhou_sky_controll_stratagem_call_fleet
         clear_global_event_target = location_touhou_sky_controll_ship_of_@root
+    }
+}
+
+fleet_event = {
+    id = spth_fleet.2037
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { exists = this }
+    immediate = {
+        delete_fleet = {
+            target = this
+            kill_leader = no
+            destroy_template = yes
+        }
+    }
+}
+# This = owner of fleet 1 (combatant)
+# From = owner of fleet 2 (destroyed)
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = spth_fleet.2038
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { is_same_value = from }
+        from = { is_touhou_country = yes }
+        fromfromfrom = {
+            has_fleet_flag = touhou_gengetsu_and_mugetsu_phantom
+        }
+    }
+    immediate = {
+        fromfromfrom.solar_system.star = {
+            create_fleet = {
+                name = touhou_gengetsu_and_mugetsu_storm
+                settings = { is_ultra_boss = yes spawn_debris = no can_change_composition = no can_change_leader = no can_disband = no can_upgrade = no }
+                effect = {
+                    set_fleet_flag = touhou_gengetsu_and_mugetsu_storm
+                    set_owner = root
+                    create_ship = {
+                        design = touhou_gengetsu_and_mugetsu_storm
+                        effect = { set_ship_flag = touhou_gengetsu_and_mugetsu_storm }
+                    }
+                    set_location = { target = prev distance = 0 angle = random }
+                    fleet_event = { id = spth_fleet.2000 days = 180 }
+                    set_event_locked = yes
+                }
+            }
+        }
     }
 }
 

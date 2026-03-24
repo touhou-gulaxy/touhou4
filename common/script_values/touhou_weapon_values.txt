@@ -421,7 +421,7 @@ touhou_minefield_starbase_debuff = {
 touhou_leader_spark_damage_factor = {
     base = 1
     add = modifier:weapon_type_lingli_weapon_damage_mult
-    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = modifier:weapon_type_spark_weapon_damage_mult
     add = modifier:ship_weapon_damage
     min = 1
 }
@@ -678,5 +678,101 @@ touhou_sky_control_ship_aux_reapers_value = {
     modifier = { add = spth_extra_life_used is_variable_set = spth_extra_life_used }
     divide = value:touhou_sky_control_ship_aux_reapers_divisor
     mult = $factor$
+    min = 0
+}
+
+ship_reapers_instant_kill_use_chance_value = {
+    base = 100
+    subtract = modifier:ship_reapers_instant_kill_use_chance
+    min = 0
+}
+touhou_sky_control_ship_attack_system_cooldown_factor = {
+    base = 1
+    complex_trigger_modifier = {
+        trigger_scope = event_target:touhou_sky_control_ship_temp
+        trigger = check_modifier_value
+        parameters = { modifier = touhou_sky_control_ship_attack_system_cooldown_mult }
+        mode = subtract
+    }
+    min = 0.1
+}
+touhou_sky_control_ship_attack_system_cooldown_duration = {
+    base = 800
+    mult = $factor$
+    mult = value:touhou_sky_control_ship_attack_system_cooldown_factor
+}
+
+touhou_modifier_mult_multiplier = {
+    base = 1
+    add = modifier:$modifier$
+    [[factor] mult = $factor$ ]
+    [[min] min = $min$ ]
+    [[max] max = $max$ ]
+}
+touhou_aoe_damage_template_hit_damage_factor_ship_weapon_damage = {
+    base = 1
+    add = modifier:ship_weapon_damage
+    square_root = yes
+}
+touhou_aoe_damage_template_hit_damage_factor = {
+    base = 1
+    add = modifier:$size_tag$_slot_weapon_damage_mult
+    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = value:touhou_aoe_damage_template_hit_damage_factor_ship_weapon_damage
+    [[archaeotech] add = modifier:weapon_archaeotech_weapon_damage_mult ]
+    [[artillery] add = modifier:artillery_weapon_damage_mult ]
+    [[point_defense] add = modifier:weapon_type_point_defense_weapon_damage_mult ]
+    [[explosive] add = modifier:weapon_type_explosive_weapon_damage_mult ]
+    [[lingli] add = modifier:weapon_type_lingli_weapon_damage_mult ]
+    [[energy] add = modifier:weapon_type_energy_weapon_damage_mult ]
+    [[kinetic] add = modifier:weapon_type_kinetic_weapon_damage_mult ]
+    [[gungnir] add = modifier:weapon_type_gungnir_weapon_damage_mult ]
+    [[spark] add = modifier:weapon_type_spark_weapon_damage_mult ]
+    [[xianzhe] add = modifier:weapon_type_xianzhe_weapon_damage_mult ]
+    [[knife] add = modifier:weapon_type_knife_weapon_damage_mult ]
+    [[kappa] add = modifier:weapon_type_kappa_weapon_damage_mult ]
+    [[yuzhu] add = modifier:weapon_type_yuzhu_weapon_damage_mult ]
+    [[needle] add = modifier:weapon_type_needle_weapon_damage_mult ]
+    [[xieshi] add = modifier:weapon_type_xieshi_weapon_damage_mult ]
+    [[reimu] add = modifier:weapon_type_reimu_weapon_damage_mult ]
+    [[sanae] add = modifier:weapon_type_sanae_weapon_damage_mult ]
+    [[laevatain] add = modifier:weapon_type_laevatain_weapon_damage_mult ]
+    [[lunar_capital] add = modifier:weapon_type_lunar_capital_weapon_damage_mult ]
+    [[lunar_capital_2] add = modifier:weapon_type_lunar_capital_2_weapon_damage_mult ]
+    [[loukanken] add = modifier:weapon_type_loukanken_weapon_damage_mult ]
+    [[resurrection_butterfly] add = modifier:weapon_type_resurrection_butterfly_weapon_damage_mult ]
+    [[resurrection_butterfly_sp] add = modifier:weapon_type_resurrection_butterfly_sp_weapon_damage_mult ]
+    [[touhou_difficulty_player] add = modifier:weapon_type_touhou_difficulty_player_weapon_damage_mult ]
+    [[touhou_dynamic_damage_ag] add = modifier:weapon_type_touhou_dynamic_damage_ag_weapon_damage_mult ]
+    [[sakuya_watch] add = modifier:weapon_type_sakuya_watch_weapon_damage_mult ]
+    [[psionic] add = modifier:weapon_type_psionic_weapon_damage_mult ]
+    [[anti_psionic] add = modifier:weapon_type_anti_psionic_weapon_damage_mult ]
+    [[gravity] add = modifier:weapon_type_gravity_weapon_damage_mult ]
+    [[difficulty_scale] add = modifier:weapon_type_difficulty_scale_weapon_damage_mult ]
+    [[difficulty_scale_player] add = modifier:weapon_type_difficulty_scale_player_weapon_damage_mult ]
+    mult = $bonus_factor$
+    min = 1
+}
+touhou_aoe_damage_template_hit_damage = {
+    base = 0
+    add = $base_damage$
+    mult = value:touhou_aoe_damage_template_hit_damage_factor|size_tag|$size_tag$|bonus_factor|$bonus_factor$|anti_psionic|$anti_psionic$|archaeotech|$archaeotech$|artillery|$artillery$|difficulty_scale|$difficulty_scale$|difficulty_scale_player|$difficulty_scale_player$|energy|$energy$|explosive|$explosive$|gravity|$gravity$|gungnir|$gungnir$|kappa|$kappa$|kinetic|$kinetic$|knife|$knife$|laevatain|$laevatain$|lingli|$lingli$|loukanken|$loukanken$|lunar_capital|$lunar_capital$|lunar_capital_2|$lunar_capital_2$|needle|$needle$|point_defense|$point_defense$|psionic|$psionic$|reimu|$reimu$|resurrection_butterfly|$resurrection_butterfly$|resurrection_butterfly_sp|$resurrection_butterfly_sp$|sakuya_watch|$sakuya_watch$|sanae|$sanae$|spark|$spark$|touhou_difficulty_player|$touhou_difficulty_player$|touhou_dynamic_damage_ag|$touhou_dynamic_damage_ag$|xianzhe|$xianzhe$|xieshi|$xieshi$|yuzhu|$yuzhu$|
+    mult = $factor|1$
+}
+touhou_aoe_damage_template_reduction_mult = {
+    base = 1
+    subtract = modifier:ship_aoe_damage_reduction_mult
+    subtract = modifier:touhou_ship_aoe_damage_reduction_mult
+    subtract = modifier:ag_ship_aoe_damage_reduction
+    subtract = modifier:ship_damage_reduction_mult
+    min = 0.1
+}
+touhou_aoe_damage_template_final_value = {
+    base = 0
+    add = $touhou_base$
+    mult = value:touhou_aoe_damage_template_reduction_mult
+    subtract = modifier:ship_aoe_damage_reduction_add
+    subtract = modifier:touhou_ship_aoe_damage_reduction_add
+    subtract = modifier:ship_damage_reduction_add
     min = 0
 }

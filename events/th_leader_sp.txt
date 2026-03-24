@@ -783,6 +783,66 @@ ship_event = {
     }
 }
 
+# This = owner of fleet 1 (combatant)
+# From = owner of fleet 2 (destroyed)
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = th_leader_sp.217
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = touhou_mugetsu_combat_won_mutex }
+            check_modifier_value = {
+                modifier = fleet_th_has_mugetsu
+                value > 0
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_timed_fleet_flag = { flag = touhou_mugetsu_combat_won_mutex days = 1 }
+            if = {
+                limit = { NOT = { is_variable_set = touhou_mugetsu_combat_won_count } }
+                set_variable = { which = touhou_mugetsu_combat_won_count value = 0 }
+            }
+            change_variable = { which = touhou_mugetsu_combat_won_count value = 1 }
+            if = {
+                limit = { check_variable = { which = touhou_mugetsu_combat_won_count value > 4 } }
+                set_variable = { which = touhou_mugetsu_combat_won_count value = 0 }
+            }
+        }
+    }
+}
+# This = owner of fleet 1 (loser)
+# From = owner of fleet 2 (winner)
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+# This fires whenever a fleet is finished with a combat through any means (emergency ftl, destroyed, disabled)
+country_event = {
+    id = th_leader_sp.218
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = touhou_mugetsu_combat_lost_mutex }
+            check_modifier_value = {
+                modifier = fleet_th_has_mugetsu
+                value > 0
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_timed_fleet_flag = { flag = touhou_mugetsu_combat_lost_mutex days = 1 }
+            set_variable = { which = touhou_mugetsu_combat_won_count value = 0 }
+        }
+    }
+}
+
 leader_event = {
     id = th_leader_sp.300
     hide_window = yes
