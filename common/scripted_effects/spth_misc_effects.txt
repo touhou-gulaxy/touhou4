@@ -1250,6 +1250,23 @@ touhou_repair_ship_shield_overflow = {
         repair_shield_percentage = $perc$
     }
 }
+touhou_repair_ship_shield_overflow_static = {
+    optimize_memory
+    if = {
+        limit = { has_shield_hp <= 100000000 }
+        if = {
+            limit = {
+                check_variable_arithmetic = {
+                    which = value:spth_max_shield_value|percent|2.0|
+                    value > trigger:has_shield_hp
+                }
+            }
+            reduce_shield = value:touhou_repair_ship_shield_overflow_static|amount|$amount$|
+        }
+    } else = {
+        repair_shield_amount = $amount$
+    }
+}
 
 touhou_create_fe_ancient_ship = {
     optimize_memory
@@ -1533,10 +1550,10 @@ touhou_cruise_missile_fire_aoe_damage = {
     optimize_memory
     inline_script = {
         script = effect/touhou_weapon_fire_aoe_damage_template
-        base_damage = value:touhou_cruise_missile_hit_damage|type|$type$| # aoe basic damage
+        base_damage = value:touhou_cruise_missile_hit_damage_$type$ # aoe basic damage
         aoe_range = $range$                                                 # aoe damage range
         bonus_factor = 1                                              # aoe damage bonus factor
-        cooldown = 4                                                 # aoe cooldown
+        cooldown = 2                                                 # aoe cooldown
         hull_damage_modifier = touhou_cruise_missile_hit_damage_modifier_$type$     # modifier to deal hull damage
         size = torpedo                                                # weapon size
         size_tag = g                                                  # weapon size tag, such as t/x/l/m/s
@@ -1594,7 +1611,7 @@ touhou_weapon_fire_aoe_damage = {
         script = effect/touhou_weapon_fire_aoe_damage_template
         base_damage = @touhou_aoe_damage_$size$ # aoe basic damage
         aoe_range = $range$                                                 # aoe damage range
-        bonus_factor = 0.5                                              # aoe damage bonus factor
+        bonus_factor = 0.75                                              # aoe damage bonus factor
         cooldown = @touhou_aoe_damage_$size$_cooldown                                                 # aoe cooldown
         hull_damage_modifier = weapon_$type$_$size$_hull_damage     # modifier to deal hull damage
         size = $size$                                                # weapon size
@@ -1636,6 +1653,63 @@ touhou_weapon_fire_aoe_damage = {
         yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
     }
 }
+touhou_weapon_fire_aoe_damage_psionic = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = touhou_weapon_fire_aoe_damage_psionic_titanic_tt
+        description_parameters = {
+            TOUHOU_DAMAGE = @touhou_psionic_aoe_damage_$size$
+            TOUHOU_RANGE = $range$
+        }
+    }
+    hidden_effect = {
+        inline_script = {
+            script = effect/touhou_weapon_fire_aoe_damage_template
+            base_damage = @touhou_psionic_aoe_damage_$size$ # aoe basic damage
+            aoe_range = $range$                                                 # aoe damage range
+            bonus_factor = 0.75                                              # aoe damage bonus factor
+            cooldown = @touhou_aoe_damage_$size$_cooldown                                                 # aoe cooldown
+            hull_damage_modifier = weapon_psionic_th_$type$_$size$_hull_damage     # modifier to deal hull damage
+            size = $size$                                                # weapon size
+            size_tag = $size_tag$                                                  # weapon size tag, such as t/x/l/m/s
+            type = $type$                                                  # weapon type
+            spawn_hit_effect = yes                                        # if spawn hit effect, yes/no
+            effect_color = purple                                            # hit effect color
+            effect_size = medium                                           # hit effect size
+            anti_psionic = $anti_psionic|no$                                                # is this weapon has anti_psionic tag, yes/no
+            archaeotech = $archaeotech|no$                                                # is this weapon has archaeotech tag, yes/no
+            artillery = $artillery|yes$                                                # is this weapon has artillery tag, yes/no
+            difficulty_scale = $difficulty_scale|no$                                            # is this weapon has difficulty_scale tag, yes/no
+            difficulty_scale_player = $difficulty_scale|no$                                    # is this weapon has difficulty_scale_player tag, yes/no
+            energy = $energy|no$                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+            explosive = no                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+            gravity = no                                                    # is this weapon has gravity tag, yes/no
+            gungnir = $gungnir|no$                                                    # is this weapon has gungnir tag, yes/no
+            kappa = no                                                    # is this weapon has kappa tag, yes/no
+            kinetic = $kinetic|no$                                                    # is this weapon has kinetic tag, yes/no
+            knife = no                                                    # is this weapon has knife tag, yes/no
+            laevatain = no                                                # is this weapon has laevatain tag, yes/no
+            lingli = yes                                                    # is this weapon has lingli tag, yes/no
+            loukanken = no                                                # is this weapon has loukanken tag, yes/no
+            lunar_capital = no                                            # is this weapon has lunar_capital tag, yes/no
+            lunar_capital_2 = no                                            # is this weapon has lunar_capital_2 tag, yes/no
+            needle = no                                                    # is this weapon has needle tag, yes/no
+            point_defense = no                                            # is this weapon has point_defense tag, yes/no
+            psionic = $psionic|yes$                                                    # is this weapon has psionic tag, yes/no
+            reimu = no                                                    # is this weapon has reimu tag, yes/no
+            resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+            resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+            sakuya_watch = no                                                # is this weapon has sakuya_watch tag, yes/no
+            sanae = no                                                    # is this weapon has sanae tag, yes/no
+            spark = $spark|no$                                                    # is this weapon has spark tag, yes/no
+            touhou_difficulty_player = $difficulty_scale|no$                                    # is this weapon has touhou_difficulty_player tag, yes/no
+            touhou_dynamic_damage_ag = no                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+            xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+            xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+            yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
+        }
+    }
+}
 touhou_weapon_fire_aoe_damage_lunar_capital = {
     optimize_memory
     inline_script = {
@@ -1644,7 +1718,7 @@ touhou_weapon_fire_aoe_damage_lunar_capital = {
         aoe_range = $range$                                                 # aoe damage range
         bonus_factor = 1                                              # aoe damage bonus factor
         cooldown = @touhou_aoe_damage_lunar_capital_$size$_cooldown                                                 # aoe cooldown
-        hull_damage_modifier = eapon_lunar_$type$_$size$_hull_damage     # modifier to deal hull damage
+        hull_damage_modifier = weapon_lunar_$type$_$size$_hull_damage     # modifier to deal hull damage
         size = $size$                                                # weapon size
         size_tag = $size_tag$                                                  # weapon size tag, such as t/x/l/m/s
         type = $type$                                                  # weapon type
@@ -1780,6 +1854,158 @@ touhou_weapon_fire_aoe_damage_lunar_turret_weapon = {
         yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
     }
 }
+touhou_weapon_fire_aoe_damage_fe_union_lunar_gravity_cannon = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = fe_union_lunar_gravity_cannon_aoe_tt
+        description_parameters = {
+            TOUHOU_DAMAGE = $base_damage$
+            TOUHOU_RANGE = $range$
+        }
+    }
+    hidden_effect = {
+        inline_script = {
+            script = effect/touhou_weapon_fire_aoe_damage_template
+            base_damage = $base_damage$                             # aoe basic damage
+            aoe_range = $range$                                                 # aoe damage range
+            bonus_factor = 1                                              # aoe damage bonus factor
+            cooldown = 8                                                 # aoe cooldown
+            hull_damage_modifier = weapon_gravity_cannon_$type$_$size$_hull_damage     # modifier to deal hull damage
+            size = $size$                                                # weapon size
+            size_tag = $size_tag$                                                  # weapon size tag, such as t/x/l/m/s
+            type = $type$                                                  # weapon type
+            spawn_hit_effect = no                                        # if spawn hit effect, yes/no
+            effect_color = blue                                            # hit effect color
+            effect_size = medium                                           # hit effect size
+            anti_psionic = no                                                # is this weapon has anti_psionic tag, yes/no
+            archaeotech = yes                                                # is this weapon has archaeotech tag, yes/no
+            artillery = yes                                                # is this weapon has artillery tag, yes/no
+            difficulty_scale = yes                                            # is this weapon has difficulty_scale tag, yes/no
+            difficulty_scale_player = yes                                    # is this weapon has difficulty_scale_player tag, yes/no
+            energy = yes                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+            explosive = no                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+            gravity = yes                                                    # is this weapon has gravity tag, yes/no
+            gungnir = no                                                    # is this weapon has gungnir tag, yes/no
+            kappa = no                                                    # is this weapon has kappa tag, yes/no
+            kinetic = no                                                    # is this weapon has kinetic tag, yes/no
+            knife = no                                                    # is this weapon has knife tag, yes/no
+            laevatain = no                                                # is this weapon has laevatain tag, yes/no
+            lingli = yes                                                    # is this weapon has lingli tag, yes/no
+            loukanken = no                                                # is this weapon has loukanken tag, yes/no
+            lunar_capital = yes                                            # is this weapon has lunar_capital tag, yes/no
+            lunar_capital_2 = yes                                            # is this weapon has lunar_capital_2 tag, yes/no
+            needle = no                                                    # is this weapon has needle tag, yes/no
+            point_defense = no                                            # is this weapon has point_defense tag, yes/no
+            psionic = no                                                    # is this weapon has psionic tag, yes/no
+            reimu = no                                                    # is this weapon has reimu tag, yes/no
+            resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+            resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+            sakuya_watch = no                                                # is this weapon has sakuya_watch tag, yes/no
+            sanae = no                                                    # is this weapon has sanae tag, yes/no
+            spark = no                                                    # is this weapon has spark tag, yes/no
+            touhou_difficulty_player = yes                                    # is this weapon has touhou_difficulty_player tag, yes/no
+            touhou_dynamic_damage_ag = yes                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+            xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+            xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+            yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
+        }
+    }
+}
+touhou_weapon_fire_aoe_damage_mega_weapon = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = touhou_weapon_fire_aoe_damage_mega_weapon_tt
+        description_parameters = {
+            TOUHOU_DAMAGE = $base_damage$
+            TOUHOU_RANGE = $range$
+        }
+    }
+    hidden_effect = {
+        inline_script = {
+            script = effect/touhou_weapon_fire_aoe_damage_template
+            base_damage = $base_damage$                             # aoe basic damage
+            aoe_range = $range$                                                 # aoe damage range
+            bonus_factor = 2                                              # aoe damage bonus factor
+            cooldown = 4                                                 # aoe cooldown
+            hull_damage_modifier = touhou_mega_weapon_$type$_$size$_hull_damage     # modifier to deal hull damage
+            size = $size$                                                # weapon size
+            size_tag = $size_tag$                                                  # weapon size tag, such as peta/giga/t/x/l/m/s
+            type = $type$                                                  # weapon type
+            spawn_hit_effect = yes                                        # if spawn hit effect, yes/no
+            effect_color = $hit_color|blue$                                            # hit effect color
+            effect_size = large                                           # hit effect size
+            anti_psionic = no                                                # is this weapon has anti_psionic tag, yes/no
+            archaeotech = $archaeotech|no$                                                # is this weapon has archaeotech tag, yes/no
+            artillery = $artillery|no$                                                # is this weapon has artillery tag, yes/no
+            difficulty_scale = $difficulty_scale|no$                                            # is this weapon has difficulty_scale tag, yes/no
+            difficulty_scale_player = $difficulty_scale|no$                                    # is this weapon has difficulty_scale_player tag, yes/no
+            energy = $energy$                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+            explosive = $explosive$                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+            gravity = $gravity|no$                                                    # is this weapon has gravity tag, yes/no
+            gungnir = $gungnir|no$                                                    # is this weapon has gungnir tag, yes/no
+            kappa = no                                                    # is this weapon has kappa tag, yes/no
+            kinetic = $kinetic$                                                    # is this weapon has kinetic tag, yes/no
+            knife = no                                                    # is this weapon has knife tag, yes/no
+            laevatain = no                                                # is this weapon has laevatain tag, yes/no
+            lingli = yes                                                    # is this weapon has lingli tag, yes/no
+            loukanken = no                                                # is this weapon has loukanken tag, yes/no
+            lunar_capital = $lunar_capital|no$                                            # is this weapon has lunar_capital tag, yes/no
+            lunar_capital_2 = $lunar_capital|no$                                            # is this weapon has lunar_capital_2 tag, yes/no
+            needle = no                                                    # is this weapon has needle tag, yes/no
+            point_defense = no                                            # is this weapon has point_defense tag, yes/no
+            psionic = no                                                    # is this weapon has psionic tag, yes/no
+            reimu = $reimu|no$                                                    # is this weapon has reimu tag, yes/no
+            resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+            resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+            sakuya_watch = $sakuya_watch|no$                                                # is this weapon has sakuya_watch tag, yes/no
+            sanae = no                                                    # is this weapon has sanae tag, yes/no
+            spark = $spark|no$                                                    # is this weapon has spark tag, yes/no
+            touhou_difficulty_player = $difficulty_scale|no$                                    # is this weapon has touhou_difficulty_player tag, yes/no
+            touhou_dynamic_damage_ag = $difficulty_scale|no$                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+            xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+            xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+            yuzhu = $yuzhu|no$                                                    # is this weapon has yuzhu tag, yes/no
+        }
+    }
+}
+
+touhou_stack_modifier_effect = {
+    optimize_memory
+    if = {
+        limit = { check_modifier_value = { modifier = $modifier$ value < $threshold|1$ } }
+        set_variable = { which = touhou_stack_modifier_$modifier$_temp value = $value$ }
+        change_variable = { which = touhou_stack_modifier_$modifier$_temp value = modifier:touhou_stackable_$modifier$ }
+        add_modifier = { modifier = touhou_stackable_modifier_$modifier$ multiplier = touhou_stack_modifier_$modifier$_temp days = $duration$ }
+        clear_variable = touhou_stack_modifier_$modifier$_temp
+    }
+}
+touhou_steal_modifier_effect = {
+    optimize_memory
+    set_variable = { which = touhou_steal_modifier_$modifier$_temp value = $value$ }
+    change_variable = { which = touhou_steal_modifier_$modifier$_temp value = modifier:touhou_steal_scripted_$modifier$ }
+    add_modifier = { modifier = touhou_steal_modifier_$modifier$ multiplier = touhou_steal_modifier_$modifier$_temp days = $duration$ }
+    clear_variable = touhou_steal_modifier_$modifier$_temp
+}
+touhou_steal_modifier_on_hit = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = touhou_steal_modifier_$modifier$_tooltip
+        description_parameters = {
+            "TOUHOU_VALUE" = $value$
+            "TOUHOU_DURATION" = $duration$
+        }
+    }
+    hidden_effect = {
+        if = {
+            limit = { check_modifier_value = { modifier = $modifier$ value > $threshold|0$ } }
+            touhou_steal_modifier_effect = {
+                modifier = $modifier$
+                value = $value$
+                duration = $duration$
+            }
+        }
+    }
+}
 
 touhou_weapon_emp_charge_module_effect = {
     optimize_memory
@@ -1830,17 +2056,26 @@ touhou_weapon_yuzhu_hit_effect = {
                 set_timed_ship_flag = { flag = touhou_weapon_yuzhu_hit_$size$_cooldown days = $TH_COOLDOWN$ }
             }
             reroll_random = yes
-            random_list = {
-                $TH_EXTRA_DMG_CHANCE$ = {
-                    spth_reduce_armor_max = { percent = @[$TH_EXTRA_DMG_PERC$ / 100] }
-                }
-                $TH_VULNERABLE_CHANCE$ = {
-                    add_modifier = {
-                        modifier = touhou_weapon_yuzhu_hit_effect_$size$
-                        days = $TH_VULNERABLE_DURATION$ mult = $TH_VULNERABLE_VALUE$
-                    }
-                }
+            inline_script = {
+                script = effect/touhou_weapon_yuzhu_hit_effect_random_list
+                TH_EXTRA_DMG_CHANCE = $TH_EXTRA_DMG_CHANCE$
+                TH_VULNERABLE_CHANCE = $TH_VULNERABLE_CHANCE$
+                TH_EXTRA_DMG_PERC = $TH_EXTRA_DMG_PERC$
+                size = $size$
+                TH_VULNERABLE_DURATION = $TH_VULNERABLE_DURATION$
+                TH_VULNERABLE_VALUE = $TH_VULNERABLE_VALUE$
             }
+            # random_list = {
+            #     $TH_EXTRA_DMG_CHANCE$ = {
+            #         spth_reduce_armor_max = { percent = @[$TH_EXTRA_DMG_PERC$ / 100] }
+            #     }
+            #     $TH_VULNERABLE_CHANCE$ = {
+            #         add_modifier = {
+            #             modifier = touhou_weapon_yuzhu_hit_effect_$size$
+            #             days = $TH_VULNERABLE_DURATION$ mult = $TH_VULNERABLE_VALUE$
+            #         }
+            #     }
+            # }
             th_spawn_explosion_particle = { color = white size = small }
         }
     }
@@ -2284,13 +2519,13 @@ touhou_psionic_inhibitor_weapon_hit_effect = {
                 NOT = { has_ship_flag = touhou_psionic_inhibitor_weapon_hit_fired }
                 exists = from touhou_is_psionic_ship = yes
             }
-            set_timed_ship_flag = { flag = touhou_psionic_inhibitor_weapon_hit_fired days = 10 }
+            set_timed_ship_flag = { flag = touhou_psionic_inhibitor_weapon_hit_fired days = 4 }
             if = {
                 limit = { NOT = { has_modifier = touhou_psionic_inhibitor_weapon_modifier_1 } }
-                add_modifier = { modifier = touhou_psionic_inhibitor_weapon_modifier_1 days = 3 }
+                add_modifier = { modifier = touhou_psionic_inhibitor_weapon_modifier_1 days = 5 }
             }
             add_modifier = {
-                modifier = touhou_psionic_inhibitor_weapon_modifier_2 days = 3
+                modifier = touhou_psionic_inhibitor_weapon_modifier_2 days = 5
                 mult = value:touhou_min_capped_modifier|modifier|weapon_type_lingli_weapon_damage_mult|factor|1|
             }
         }
@@ -2592,7 +2827,7 @@ ship_reapers_instant_kill_on_hit = {
             set_ship_flag = has_ship_reapers_instant_kill
             add_modifier = {
                 modifier = weapon_type_makai_instant_kill_damage_modifier
-                mult = value:th_instant_kill_value|base_dmg|$base_dmg$|final_dmg|768000000|size_damage_factor|0|
+                mult = value:th_instant_kill_value|base_dmg|$base_dmg$|final_dmg|@touhou_instant_kill_weapon_target_damage|size_damage_factor|0|
             }
             create_ambient_object = {
                 type = touhou_lunar_superlaser_instant_kill_upgrade
@@ -2606,8 +2841,8 @@ ship_reapers_instant_kill_on_hit = {
                 scale = 0.1
             }
         }
-        reduce_shield = 922337203
-        repair_armor_amount = -922337202
+        reduce_shield = @touhou_instant_kill_reduce_shield_amount
+        repair_armor_amount = @touhou_instant_kill_reduce_armor_amount
         create_ambient_object = {
             type = lunar_capital_superlaser_instant_kill_hit_explosion
             location = this
@@ -2739,4 +2974,58 @@ touhou_sky_control_ship_destroy_system = {
             }
         }
     }
+}
+
+touhou_spawn_seija_boss = {
+    optimize_memory
+    if = {
+        limit = { NOT = { exists = event_target:touhou_boss_seija } }
+        create_country = {
+            name = "touhou_seija_entity"
+            type = touhou_boss_seija
+            flag = {
+                icon = {
+                    category = "pirate"
+                    file = "flag_pirate_1.dds"
+                }
+                background= {
+                    category = "backgrounds"
+                    file = "00_solid.dds"
+                }
+                colors={
+                    "pink"
+                    "pink"
+                    "null"
+                    "null"
+                }
+            }
+        }
+        last_created_country = {
+            set_country_flag = touhou_boss_seija
+            save_global_event_target_as = touhou_boss_seija
+        }
+    }
+    event_target:touhou_boss_seija = { create_fleet = {
+        name = "touhou_seija_entity"
+        settings = { spawn_debris = no }
+        effect = {
+            set_owner = event_target:touhou_boss_seija
+            save_global_event_target_as = touhou_seija_entity_fleet
+            set_fleet_flag = touhou_seija_entity_fleet
+            create_ship = {
+                name = "NAME_touhou_kedama_the_grand_archive_ship"
+                design = "touhou_seija_entity"
+                effect = {
+                    set_ship_flag = touhou_seija_entity
+                    touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                }
+            }
+            set_location = { target = root.capital_star distance = 10 angle = random }
+            set_fleet_stance = aggressive
+            set_aggro_range_measure_from = self
+            set_aggro_range = 50
+        }
+    } }
+    set_global_flag = touhou_seija_crisis_sound_begin
+    spth_set_stage_crisis_sound = yes
 }

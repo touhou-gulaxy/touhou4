@@ -2555,6 +2555,7 @@ touhou_district_btn_planet_barrier = {
         always = yes
     }
     allow = {
+        from = { is_touhou_player_faction = yes }
         NOT = { has_deposit = d_hakurei_barrier }
     }
     effect = {
@@ -2565,7 +2566,17 @@ touhou_district_btn_planet_barrier = {
 touhou_district_btn_planet_deposit = {
     potential = { always = yes }
     allow = {
-        is_artificial = no
+        from = { is_touhou_player_faction = yes }
+        OR = {
+            is_artificial = no
+            custom_tooltip = {
+                fail_text = mod_touhou_can_shellworld_use_th_deposits_build
+                AND = {
+                    ag_is_shell_world = yes
+                    check_modifier_value = { modifier = touhou_can_shellworld_use_th_deposits_build value != 0 }
+                }
+            }
+        }
         NOT = { is_planet_class = pc_machine }
         NOT = { is_planet_class = pc_hive }
         NOT = { is_planet_class = pc_city }
@@ -2577,12 +2588,27 @@ touhou_district_btn_planet_deposit = {
     effect = {
         custom_tooltip = th_deposits_build
         custom_tooltip = decision_th_deposits_uncovered_effect
-        select_decision = { name = th_deposits_build }
+        if = {
+            limit = {
+                ag_is_shell_world = yes
+                check_modifier_value = { modifier = touhou_can_shellworld_use_th_deposits_build value != 0 }
+            }
+            select_decision = { name = th_deposits_build_shell_world }
+        }
+        else = {
+            select_decision = { name = th_deposits_build }
+        }
     }
 }
 touhou_district_btn_planet_fumo = {
     potential = { always = yes }
-    allow = { NOT = { has_modifier = fumo_deploy } }
+    allow = {
+        from = {
+            is_touhou_player_faction = yes
+            hidden_trigger = { has_country_flag = fumo_deploy }
+        }
+        NOT = { has_modifier = fumo_deploy }
+    }
     effect = {
         custom_tooltip = fumo_deploy
         select_decision = { name = fumo_deploy }
@@ -2590,7 +2616,13 @@ touhou_district_btn_planet_fumo = {
 }
 touhou_district_btn_planet_convert = {
     potential = { always = yes }
-    allow = { NOT = { has_modifier = fumo_deploy } }
+    allow = {
+        from = {
+            is_touhou_player_faction = yes
+            hidden_trigger = { has_country_flag = spth_pop_convert_enabled }
+        }
+        NOT = { has_modifier = spth_planet_pop_convert }
+    }
     effect = {
         if = {
             limit = { NOT = { has_modifier = spth_planet_pop_convert } }
@@ -2606,6 +2638,7 @@ touhou_district_btn_planet_convert = {
 touhou_district_btn_planet_shield = {
     potential = { always = yes }
     allow = {
+        from = { is_touhou_player_faction = yes }
         has_deposit = d_hakurei_barrier
         has_building = building_spth_planet_shirne
     }
@@ -2653,5 +2686,62 @@ touhou_district_btn_planet_shield = {
                 }
             }
         }
+    }
+}
+touhou_district_btn_planet_shrine = {
+    potential = { always = yes }
+    allow = {
+        from = {
+            is_touhou_player_faction = yes
+            has_technology = tech_build_spth_capital_shirne
+        }
+        OR = {
+            custom_tooltip = {
+                fail_text = requires_building_system_capital
+                has_building = building_system_capital
+            }
+            custom_tooltip = {
+                fail_text = requires_building_system_capital
+                has_building = building_ancient_palace
+            }
+            custom_tooltip = {
+                fail_text = requires_building_nirvana_empire_palace
+                has_building = building_nirvana_empire_palace
+            }
+            custom_tooltip = {
+                fail_text = requires_building_hab_system_capital
+                has_building = building_hab_system_capital
+            }
+            custom_tooltip = {
+                fail_text = requires_ag_shell_world_capital_lv4
+                has_building = ag_shell_world_capital_lv4
+            }
+        }
+        NOR = {
+            has_building = building_spth_old_shirne
+            has_building = building_spth_planet_shirne
+        }
+        NOR = {
+            has_modifier = resort_colony
+            has_modifier = slave_colony
+            has_building = building_imperial_capital
+        }
+        sapient_pop_amount >= 6000
+    }
+    effect = {
+        select_decision = { name = spth_build_spth_capital_shirne }
+    }
+}
+touhou_district_btn_planetary_ascension = {
+    potential = { always = no }
+    allow = {
+        from = { is_touhou_player_faction = yes }
+        custom_tooltip = {
+            fail_text = touhou_district_btn_planetary_ascension_allow
+            has_planetary_ascension_tier < @define_planetary_ascension_max
+        }
+    }
+    effect = {
+        set_planetary_ascension_tier = value:touhou_standard_value|touhou_base|trigger:has_planetary_ascension_tier|add|1|
     }
 }

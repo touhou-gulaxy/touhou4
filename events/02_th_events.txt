@@ -12523,6 +12523,28 @@ country_event = {
         country_event = { id = toho.4207 scopes = { from = root.from fromfrom = root.fromfrom } }
     }
     option = {
+        name = toho.4207.ca
+        trigger = {
+            NOT = { has_country_flag = touhou_system_warper_jump_force_gen_hyperlane }
+        }
+        hidden_effect = {
+            set_country_flag = touhou_system_warper_jump_force_gen_hyperlane
+        }
+        custom_tooltip = toho.4207.ca.tooltip
+        country_event = { id = toho.4207 scopes = { from = root.from fromfrom = root.fromfrom } }
+    }
+    option = {
+        name = toho.4207.ca.alt
+        trigger = {
+            has_country_flag = touhou_system_warper_jump_force_gen_hyperlane
+        }
+        hidden_effect = {
+            remove_country_flag = touhou_system_warper_jump_force_gen_hyperlane
+        }
+        custom_tooltip = toho.4207.ca.tooltip
+        country_event = { id = toho.4207 scopes = { from = root.from fromfrom = root.fromfrom } }
+    }
+    option = {
         name = toho.4207.d
         hidden_effect = {
             root.fromfrom.star = { touhou_create_temp_jump_particle_effect = yes }
@@ -12610,6 +12632,13 @@ country_event = {
         }
         else = {
             inline_script = { script = effect/touhou_system_warper_move_system_angle link = no }
+        }
+        if = {
+            limit = {
+                has_country_flag = touhou_system_warper_jump_force_gen_hyperlane
+                NOT = { root.from = { has_hyperlane_to = root.fromfrom } }
+            }
+            add_hyperlane = { from = root.from to = root.fromfrom }
         }
     }
     option = {
@@ -13637,6 +13666,142 @@ country_event = {
         hidden_effect = {
             set_country_flag = touhou_trait_reflex_improved_trait_touhou
         }
+    }
+}
+
+country_event = {
+    id = toho.10030
+    title = toho.10030.name
+    desc = toho.10030.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_es2_aethon_room }
+    option = {
+        name = TH_WHAT_HAPPENED
+        country_event = { id = toho.10031 days = 120 random = 60 }
+    }
+}
+country_event = {
+    id = toho.10031
+    title = toho.10031.name
+    desc = toho.10031.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_skrand_ship_room }
+    immediate = {
+        if = {
+            limit = {
+                NOT = { exists = event_target:touhou_makai_netural }
+            }
+            create_country = {
+                name = touhou_makai_netural
+                type = touhou_makai_netural
+                flag = {
+                    icon = {
+                        category = "touhou_fe_union"
+                        file = "th_ag_fallen_empires_1.dds"
+                    }
+                    colors = {
+                        "sky_blue"
+                        "sky_blue"
+                        "sky_blue"
+                        "null"
+                    }
+                    background = {
+                        category = "backgrounds"
+                        file = "00_solid.dds"
+                    }
+                }
+                name_list = random
+                effect = {
+                    set_graphical_culture = strg_01
+                    set_country_flag = touhou_mod_country
+                    set_country_flag = touhou_crisis_country
+                    set_country_flag = touhou_makai_netural
+                    set_country_flag = protected_from_queen_storm
+                    add_modifier = { modifier = touhou_immune_from_terrify }
+                    save_global_event_target_as = touhou_makai_netural
+                    every_playable_country = {
+                        limit = { NOT = { is_same_value = prev } }
+                        establish_communications_no_message = prev
+                        add_intel = { who = prev amount = 70 }
+                    }
+                    every_country = {
+                        limit = {
+                            OR = {
+                                is_country_type = default
+                                is_country_type = fallen_empire
+                                is_country_type = awakened_fallen_empire
+                            }
+                            NOT = { has_communications = prev }
+                        }
+                        establish_communications_no_message = prev
+                    }
+                }
+            }
+        }
+        event_target:touhou_makai_netural = {
+            spth_effect_init_gengetsu_effect = yes
+        }
+        event_target:spth_precursor_makai_network_system = {
+            random_system_megastructure = {
+                limit = {
+                    OR = {
+                        is_megastructure_type = touhou_gateway_network_master_node_damaged
+                        is_megastructure_type = touhou_gateway_network_master_node_locked
+                        is_megastructure_type = touhou_gateway_network_master_node
+                        is_megastructure_type = touhou_gateway_network_master_node_configure
+                    }
+                }
+                create_fleet = {
+                    name = NAME_touhou_sky_control_fleet
+                    settings = { can_disband = no can_change_composition = no can_change_leader = no spawn_debris = no }
+                    effect = {
+                        set_owner = event_target:touhou_makai_netural
+                        set_location = prev
+                        while = {
+                            count = 1
+                            create_ship = {
+                                fleet_cache_recalc = no
+                                design = NAME_touhou_sky_control_ship
+                                effect = {
+                                    set_ship_flag = touhou_sky_control_ship_event
+                                    save_global_event_target_as = touhou_sky_control_ship_event_target
+                                    touhou_difficulty_bonus_ship = yes
+                                }
+                            }
+                        }
+                        set_fleet_flag = NAME_touhou_sky_control_fleet
+                        set_fleet_flag = touhou_makai_netural
+                        assign_leader = event_target:touhou_leader_temp_last_created
+                    }
+                }
+            }
+        }
+        country_event = { id = toho.10032 days = 60 random = 60 }
+    }
+    option = {
+        name = toho.10031.a
+    }
+    option = {
+        name = toho.10031.b
+    }
+}
+country_event = {
+    id = toho.10032
+    title = toho.10032.name
+    desc = toho.10032.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_unidentified_ship_room }
+    option = {
+        name = toho.10032.a
     }
 }
 

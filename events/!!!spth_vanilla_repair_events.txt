@@ -30,3 +30,87 @@ country_event = {
     trigger = { always = no }
     immediate = {}
 }
+
+#########################################
+# Cutholoids Engulf Events #
+#########################################
+
+@engulf_return_delay_in_days = 30
+
+# Transfer ship to mia
+# This = Engulfed Ship (Defender)
+# From = Engulfing Ship (Attacker)
+ship_event = {
+    id = grand_archive.3200
+    hide_window = yes
+    is_triggered_only = yes
+
+    trigger = {
+        from = {
+            exists = controller
+            controller = { is_country_type = default }
+            OR = {
+                is_ship_size = cutholoids_hatchling
+                is_ship_size = cutholoids_juvenile
+                is_ship_size = cutholoids
+            }
+        }
+    }
+
+    immediate = {
+        switch = {
+            trigger = is_ship_size
+            space_whale_1 = { from.controller = { add_resource = { food = 1000 } } }
+            space_whale_2 = { from.controller = { add_resource = { food = 1000 } } }
+            space_whale_3 = { from.controller = { add_resource = { food = 1000 } } }
+            space_whale_4 = { from.controller = { add_resource = { food = 1000 } } }
+            space_whale_5 = { from.controller = { add_resource = { food = 1000 } } }
+            space_amoeba = { from.controller = { add_resource = { physics_research = 500 } } }
+            space_amoeba_mother = { from.controller = { add_resource = { physics_research = 1000 } } }
+            voidworms_small = { from.controller = { add_resource = { food = 100 } } }
+            voidworms_medium = { from.controller = { add_resource = { food = 200 } } }
+            crystal_ship_small_blue = { from.controller = { add_resource = { rare_crystals = 50 } } }
+            crystal_ship_medium_blue = { from.controller = { add_resource = { rare_crystals = 100 } } }
+            crystal_ship_large_blue = { from.controller = { add_resource = { rare_crystals = 150 } } }
+            crystal_ship_small_green = { from.controller = { add_resource = { rare_crystals = 50 } } }
+            crystal_ship_medium_green = { from.controller = { add_resource = { rare_crystals = 100 } } }
+            crystal_ship_large_green = { from.controller = { add_resource = { rare_crystals = 150 } } }
+            crystal_ship_small_yellow = { from.controller = { add_resource = { rare_crystals = 50 } } }
+            crystal_ship_medium_yellow = { from.controller = { add_resource = { rare_crystals = 100 } } }
+            crystal_ship_large_yellow = { from.controller = { add_resource = { rare_crystals = 150 } } }
+            crystal_ship_small_red = { from.controller = { add_resource = { rare_crystals = 50 } } }
+            crystal_ship_medium_red = { from.controller = { add_resource = { rare_crystals = 100 } } }
+            crystal_ship_large_red = { from.controller = { add_resource = { rare_crystals = 150 } } }
+            crystal_ship_small_blue_elite = { from.controller = { add_resource = { rare_crystals = 100 } } }
+            crystal_ship_medium_blue_elite = { from.controller = { add_resource = { rare_crystals = 150 } } }
+            crystal_ship_large_blue_elite = { from.controller = { add_resource = { rare_crystals = 200 } } }
+            crystal_ship_small_green_elite = { from.controller = { add_resource = { rare_crystals = 100 } } }
+            crystal_ship_medium_green_elite = { from.controller = { add_resource = { rare_crystals = 150 } } }
+            crystal_ship_large_green_elite = { from.controller = { add_resource = { rare_crystals = 200 } } }
+            crystal_ship_small_yellow_elite = { from.controller = { add_resource = { rare_crystals = 100 } } }
+            crystal_ship_medium_yellow_elite = { from.controller = { add_resource = { rare_crystals = 150 } } }
+            crystal_ship_large_yellow_elite = { from.controller = { add_resource = { rare_crystals = 200 } } }
+            crystal_ship_small_red_elite = { from.controller = { add_resource = { rare_crystals = 100 } } }
+            crystal_ship_medium_red_elite = { from.controller = { add_resource = { rare_crystals = 150 } } }
+            crystal_ship_large_red_elite = { from.controller = { add_resource = { rare_crystals = 200 } } }
+            default = {
+                create_fleet = {
+                    name = fleet
+                    effect = {
+                        set_owner = prev.from.controller
+                        set_location = prev.fleet
+                        create_ship = {
+                            name = random
+                            design = prev
+                            graphical_culture = prev
+                            graphical_culture_fallback = prev.controller
+                            upgradable = no
+                        }
+                        set_mia = mia_return_home
+                        set_mia_return_delay = @engulf_return_delay_in_days
+                    }
+                }
+            }
+        }
+    }
+}

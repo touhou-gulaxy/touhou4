@@ -108,7 +108,7 @@ spth_dynamic_battle_init = {
             limit = { NOT = { has_fleet_flag = TH_$type$_dynamic_vict } }
             if = {
                 limit = { NOT = { is_variable_set = $type$_dynamic_vict_duration_debug } }
-                log = "reset var for enemy \\[This.GetName]"
+                # log = "reset var for enemy \\[This.GetName]"
                 set_variable = { which = $type$_dynamic_vict_duration_debug value = event_target:spth_dynamic_our_temp.$type$_dynamic_boost_duration_debug }
             }
             every_owned_ship = { set_variable = { which = $type$_dynamic_vict_duration_debug value = prev.$type$_dynamic_vict_duration_debug } }
@@ -931,6 +931,9 @@ TH_clear_all_dynamic_modifier = {
     if = { limit = { has_modifier = TH_dynamic_remove_ship_damage_reduction_mult } remove_modifier = TH_dynamic_remove_ship_damage_reduction_mult }
     if = { limit = { has_modifier = TH_dynamic_remove_ship_monthly_hull_damage } remove_modifier = TH_dynamic_remove_ship_monthly_hull_damage }
     if = { limit = { has_modifier = TH_dynamic_remove_strike_craft_regeneration_mult } remove_modifier = TH_dynamic_remove_strike_craft_regeneration_mult }
+    if = { limit = { has_modifier = TH_dynamic_remove_ship_hull_regen_mult } remove_modifier = TH_dynamic_remove_ship_hull_regen_mult }
+    if = { limit = { has_modifier = TH_dynamic_remove_ship_armor_regen_mult } remove_modifier = TH_dynamic_remove_ship_armor_regen_mult }
+    if = { limit = { has_modifier = TH_dynamic_remove_ship_shield_regen_mult } remove_modifier = TH_dynamic_remove_ship_shield_regen_mult }
 
     # 二次修正使用
     if = { limit = { has_modifier = TH_dynamic_reset_ship_speed_mult } remove_modifier = TH_dynamic_reset_ship_speed_mult }
@@ -1004,6 +1007,9 @@ TH_clear_all_dynamic_modifier = {
     if = { limit = { is_variable_set = basic_touhou_ship_damage_reduction_mult_value } clear_variable = basic_touhou_ship_damage_reduction_mult_value }
     if = { limit = { is_variable_set = basic_touhou_ship_monthly_hull_damage_value } clear_variable = basic_touhou_ship_monthly_hull_damage_value }
     if = { limit = { is_variable_set = basic_touhou_strike_craft_regeneration_mult_value } clear_variable = basic_touhou_strike_craft_regeneration_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_hull_regen_mult_value } clear_variable = basic_touhou_ship_hull_regen_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_armor_regen_mult_value } clear_variable = basic_touhou_ship_armor_regen_mult_value }
+    if = { limit = { is_variable_set = basic_touhou_ship_shield_regen_mult_value } clear_variable = basic_touhou_ship_shield_regen_mult_value }
 }
 
 clear_shield = {
@@ -1018,6 +1024,13 @@ spth_reduce_shield = {
     if = {
         limit = { has_shield_hp > 0 }
         reduce_shield = value:spth_reduce_shield_value|percent|$percent$|factor|$factor$|subtract|2|
+    }
+}
+spth_reduce_armor = {
+    optimize_memory
+    if = {
+        limit = { has_armor_percentage > 0 }
+        repair_armor_amount = value:spth_reduce_armor_value|percent|$percent$|neg|yes|
     }
 }
 spth_reduce_shield_max = {
@@ -1066,7 +1079,7 @@ spth_kamikakushi_cruiser_arua_protect_effect = {
     optimize_memory
     if = {
         limit = { spth_kamikakushi_cruiser_arua_protect_close = no }
-        log = "启动protect for [This.GetName]"
+        # log = "启动protect for [This.GetName]"
         every_owned_ship = {
             spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_damage }
             spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_fire_rate_mult }
@@ -1076,7 +1089,7 @@ spth_kamikakushi_cruiser_arua_protect_effect = {
             spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_evasion_mult }
         }
     } else = {
-        log = "未启动protect for [This.GetName]"
+        # log = "未启动protect for [This.GetName]"
     }
 }
 

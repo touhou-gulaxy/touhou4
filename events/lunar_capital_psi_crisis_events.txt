@@ -382,11 +382,14 @@ country_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        has_global_flag = spth_lunar_capital_psi_crisis_begin
-        NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
+        touhou_is_lunar_capital_psi_active = yes
+        # is_country_type = spth_lunar_capital_psi_fleet
         OR = {
             has_global_flag = touhou_lunar_psi_extra_14
             has_global_flag = touhou_lunar_psi_extra_32
+            has_global_flag = touhou_lunar_psi_extra_42
+            has_global_flag = touhou_lunar_psi_extra_43
+            has_global_flag = touhou_lunar_psi_extra_44
         }
         fromfrom = { has_fleet_flag = spth_lunar_psi_fleet }
         # is_touhou_crisis_faction = yes
@@ -408,6 +411,93 @@ country_event = {
                 set_variable = { which = lunar_capital_psi_7_value value = root.from.modifier:weapon_type_lingli_weapon_fire_rate_mult }
                 add_modifier = { modifier = touhou_lunar_psi_extra_14 days = 15 mult = lunar_capital_psi_7_value }
                 clear_variable = lunar_capital_psi_7_value
+            }
+        }
+        if = {
+            limit = { has_global_flag = touhou_lunar_psi_extra_42 }
+            if = {
+                limit = { fromfrom = { NOT = { has_fleet_flag = touhou_lunar_psi_extra_42_fleet_mutex } } }
+                fromfrom = {
+                    set_fleet_flag = touhou_lunar_psi_extra_42_fleet_mutex
+                    set_variable = { which = touhou_lunar_psi_extra_42_kd_@root.from value = root.touhou_lunar_psi_extra_42_kd_@from }
+                    set_variable = { which = touhou_lunar_psi_extra_42_kd_temp value = touhou_lunar_psi_extra_42_kd_@root.from }
+                    # p=K/D玩家与月之都战损比，月之都获得B(r)=2*min(难度系数, sqrt(max(0, p-1)))的额外伤害与船体加成。
+                    set_variable = {
+                        which = touhou_lunar_psi_extra_42_factor_@root.from
+                        value = value:touhou_lunar_psi_extra_42_factor|touhou_base|touhou_lunar_psi_extra_42_kd_temp|
+                    }
+                    every_controlled_ship = {
+                        set_variable = { which = touhou_lunar_psi_extra_42_factor_temp value = prev.touhou_lunar_psi_extra_42_factor_@root.from }
+                        add_modifier = {
+                            modifier = touhou_lunar_psi_extra_42
+                            mult = touhou_lunar_psi_extra_42_factor_temp
+                        }
+                        add_modifier = {
+                            modifier = touhou_lunar_psi_extra_42_hull
+                            mult = touhou_lunar_psi_extra_42_factor_temp
+                        }
+                        clear_variable = touhou_lunar_psi_extra_42_factor_temp
+                    }
+                }
+            }
+            if = {
+                limit = { NOT = { has_country_flag = touhou_lunar_psi_extra_42_recalc_mutex_@from } }
+                set_timed_country_flag = { flag = touhou_lunar_psi_extra_42_recalc_mutex_@from days = 30 }
+                from = {
+                    set_variable = { which = scope_prev_touhou_lunar_psi_extra_42_death value = 0 }
+                    export_trigger_value_to_variable = {
+                        trigger = num_killed_ships
+                        parameters = { target = root }
+                        variable = scope_prev_touhou_lunar_psi_extra_42_death
+                    }
+                }
+                set_variable = { which = touhou_lunar_psi_extra_42_death_@from value = from.scope_prev_touhou_lunar_psi_extra_42_death }
+                from = { clear_variable = scope_prev_touhou_lunar_psi_extra_42_death }
+                set_variable = { which = touhou_lunar_psi_extra_42_kill_@from value = 0 }
+                export_trigger_value_to_variable = {
+                    trigger = num_killed_ships
+                    parameters = { target = from }
+                    variable = touhou_lunar_psi_extra_42_kill_@from
+                }
+                if = {
+                    limit = { check_variable = { which = touhou_lunar_psi_extra_42_kill_@from value = 0 } }
+                    set_variable = { which = touhou_lunar_psi_extra_42_kill_@from value = 1 }
+                }
+                set_variable = { which = touhou_lunar_psi_extra_42_kd_@from value = touhou_lunar_psi_extra_42_death_@from }
+                divide_variable = { which = touhou_lunar_psi_extra_42_kd_@from value = touhou_lunar_psi_extra_42_kill_@from }
+                clear_variable = touhou_lunar_psi_extra_42_death_@from
+                clear_variable = touhou_lunar_psi_extra_42_kill_@from
+            }
+        }
+        if = {
+            limit = { has_global_flag = touhou_lunar_psi_extra_43 }
+            fromfrom.solar_system = {
+                if = {
+                    limit = { NOT = { has_star_flag = touhou_lunar_psi_extra_43_mutex } }
+                    set_timed_star_flag = { flag = touhou_lunar_psi_extra_43_mutex days = 30 }
+                    star = { save_event_target_as = touhou_lunar_psi_extra_43_loction }
+                    spth_create_fleet = {
+                        NAME = NAME_lunar_capital_psi_shroud_anchor
+                        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+                        OWNER = event_target:spth_lunar_capital_psi_country
+                        location = event_target:touhou_lunar_psi_extra_43_loction distance = 0
+                        lunar_capital_psi_shroud_anchor = 1
+                        lunar_capital_bonus = yes
+                        fleet_action_delayed = lunar_capital_psi.153 DAYS = 30 DAYS_RANDOM = 0
+                    }
+                }
+            }
+        }
+        if = {
+            limit = { has_global_flag = touhou_lunar_psi_extra_44 }
+            fromfrom = {
+                if = {
+                    limit = { NOT = { has_fleet_flag = touhou_lunar_psi_extra_44_mutex } }
+                    set_timed_fleet_flag = { flag = touhou_lunar_psi_extra_44_mutex days = 60 }
+                    set_variable = { which = touhou_lunar_psi_extra_44_factor value = value:touhou_lunar_psi_extra_44_factor }
+                    every_controlled_ship = { add_modifier = { modifier = touhou_lunar_psi_extra_44 days = 60 mult = prev.touhou_lunar_psi_extra_44_factor } }
+                    clear_variable = touhou_lunar_psi_extra_44_factor
+                }
             }
         }
     }
@@ -1617,6 +1707,52 @@ fleet_event = {
     option = {
         name = TH_ACKNOWLEDGED
         default_hide_option = yes
+    }
+}
+
+fleet_event = {
+    id = lunar_capital_psi.152
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        has_fleet_flag = touhou_lunar_psi_extra_42_fleet_mutex
+        exists = controller controller = { is_country_type = spth_lunar_capital_psi_fleet }
+    }
+    immediate = {
+        remove_fleet_flag = touhou_lunar_psi_extra_42_fleet_mutex
+        every_controlled_ship = {
+            remove_modifier = touhou_lunar_psi_extra_42
+            remove_modifier = touhou_lunar_psi_extra_42_hull
+        }
+    }
+}
+fleet_event = {
+    id = lunar_capital_psi.153
+    is_triggered_only = yes
+    trigger = { exists = this }
+    hide_window = yes
+    immediate = {
+        solar_system = {
+            remove_star_flag = touhou_lunar_psi_extra_43_mutex
+            set_timed_star_flag = { flag = touhou_lunar_psi_extra_43_mutex days = 180 }
+            star = { save_event_target_as = touhou_lunar_psi_extra_43_loction }
+        }
+        spth_create_fleet = {
+            NAME = NAME_lunar_capital_psi_shroud_storm
+            can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+            OWNER = event_target:spth_lunar_capital_psi_country
+            location = event_target:touhou_lunar_psi_extra_43_loction distance = 0
+            lunar_capital_psi_shroud_storm = 1
+            lunar_capital_bonus = yes
+            fleet_action_delayed = spth_fleet.2000 DAYS = 180 DAYS_RANDOM = 0
+            event_lock = yes
+        }
+        delete_fleet = {
+            target = this
+            destroy_template = yes
+            kill_leader = yes
+        }
     }
 }
 

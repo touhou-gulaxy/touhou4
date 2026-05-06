@@ -29,7 +29,7 @@ th_instant_kill_hull_damage = {
     base = 0
     add = 1
     add = modifier:ship_hull_damage_mult
-    add = $weapon_hull_damage$
+    mult = $weapon_hull_damage$
     min = 1
 }
 th_instant_kill_size_factor = {
@@ -42,7 +42,7 @@ th_instant_kill_value = {
     base = 0
     add = $final_dmg$
     divide = value:th_instant_kill_size_factor|size_damage_factor|$size_damage_factor$|
-    divide = value:th_instant_kill_hull_damage|weapon_hull_damage|$weapon_hull_damage|0$|
+    divide = value:th_instant_kill_hull_damage|weapon_hull_damage|$weapon_hull_damage|1$|
     divide = $base_dmg$
     subtract = modifier:ship_weapon_damage
     subtract = modifier:weapon_type_$tag1|energy$_weapon_damage_mult
@@ -52,6 +52,27 @@ th_instant_kill_value = {
     [[tag5] subtract = modifier:weapon_type_$tag5$_weapon_damage_mult ]
     [[tag6] subtract = modifier:weapon_type_$tag6$_weapon_damage_mult ]
     abs = yes
+}
+touhou_spth_yuzhu_instant_kill_value = {
+    base = 0
+    add = $final_dmg$
+    [[size_damage_factor] divide = value:th_instant_kill_size_factor|size_damage_factor|$size_damage_factor$| ]
+    divide = value:th_instant_kill_hull_damage|weapon_hull_damage|$weapon_hull_damage|1$|
+    divide = $base_dmg|1$
+    subtract = modifier:ship_weapon_damage
+    subtract = modifier:$slot$_slot_weapon_damage_mult
+    [[tag1] subtract = modifier:weapon_type_$tag1$_weapon_damage_mult ]
+    [[tag2] subtract = modifier:weapon_type_$tag2$_weapon_damage_mult ]
+    [[tag3] subtract = modifier:weapon_type_$tag3$_weapon_damage_mult ]
+    [[tag4] subtract = modifier:weapon_type_$tag4$_weapon_damage_mult ]
+    [[tag5] subtract = modifier:weapon_type_$tag5$_weapon_damage_mult ]
+    [[tag6] subtract = modifier:weapon_type_$tag6$_weapon_damage_mult ]
+    abs = yes
+}
+touhou_modifier_min_modifier_value = {
+    base = 0
+    add = $touhou_base|1$
+    subtract = modifier:$modifier$
 }
 
 th_kappa_torpedo_modifier_value = {
@@ -260,7 +281,11 @@ concept_touhou_cleanse_health = {
     mult = value:concept_touhou_cleanse_health_factor
     mult = -1
     max = -50
-    min = -14400
+}
+concept_touhou_cleanse_damage = {
+    base = @spth_common_energy_$size$_damage_min
+    mult = @touhou_spread_weapon_damage_factor
+    mult = value:concept_touhou_cleanse_health_factor
 }
 
 touhou_spellcard_41_chain_amount = {
@@ -318,6 +343,16 @@ touhou_repair_ship_shield_overflow_value = {
     add = value:spth_max_shield_value|percent|$factor$|
     abs = yes
     mult = -1
+}
+touhou_repair_ship_shield_overflow_static_factor = {
+    base = 1.0
+    add = modifier:ship_shield_mult
+    min = 1.0
+}
+touhou_repair_ship_shield_overflow_static = {
+    base = 0
+    add = $amount$
+    mult = value:touhou_repair_ship_shield_overflow_static_factor
 }
 
 touhou_aoe_damage_reduction_mult = {
@@ -526,6 +561,11 @@ touhou_min_capped_modifier = {
     mult = $factor$
     min = $min|0.1$
 }
+touhou_standard_value = {
+    base = 0
+    add = $touhou_base|0$
+    [[add] add = $add$ ]
+}
 
 touhou_psionic_lighting_hit_damage_factor = {
     base = 1
@@ -539,10 +579,10 @@ touhou_psionic_lighting_hit_damage_factor = {
     min = 0.1
 }
 touhou_psionic_lighting_hit_damage = {
-    base = 0
+    base = @spth_psionic_$ag_tag$lightning_$size$_damage_min
     add = @spth_psionic_$ag_tag$lightning_$size$_damage_max
     mult = @touhou_generic_scale_damage_$size$_factor
-    # mult = 0.5
+    mult = 0.5
     mult = value:touhou_psionic_lighting_hit_damage_factor|size_short|$size_short$|ag_weapon|$ag_weapon$|
     mult = value:touhou_min_capped_modifier|modifier|ship_armor_damage_mult|factor|1|
     mult = -1
@@ -598,6 +638,16 @@ touhou_cruise_missile_hit_damage = {
     mult = 0.5
     mult = value:touhou_cruise_missile_dmg_factor
 }
+touhou_cruise_missile_hit_damage_utsuho = {
+    base = @spth_special_utsuho_cruise_torpedo_damage_min
+    add = @spth_special_utsuho_cruise_torpedo_damage_max
+    mult = 0.5
+}
+touhou_cruise_missile_hit_damage_lunar = {
+    base = @spth_special_lunar_cruise_torpedo_damage_min
+    add = @spth_special_lunar_cruise_torpedo_damage_max
+    mult = 0.5
+}
 touhou_swarm_rocket_dmg_factor = {
     base = 1
     add = modifier:weapon_type_explosive_weapon_damage_mult
@@ -615,6 +665,8 @@ touhou_swarm_rocket_hit_damage = {
 # 0.72 to 0.1 -> needs 720% = 7.2
 touhou_sakuya_cards_extra_fire_rate = {
     base = 0
+    add = modifier:weapon_type_kinetic_weapon_fire_rate_mult
+    add = modifier:weapon_type_lingli_weapon_fire_rate_mult
     add = modifier:weapon_type_knife_weapon_fire_rate_mult
     subtract = 7.2
     min = 0
@@ -711,8 +763,8 @@ touhou_modifier_mult_multiplier = {
 }
 touhou_aoe_damage_template_hit_damage_factor_ship_weapon_damage = {
     base = 1
-    add = modifier:ship_weapon_damage
-    square_root = yes
+    add = value:touhou_min_capped_modifier|modifier|ship_weapon_damage|min|0|factor|1|
+    # square_root = yes
 }
 touhou_aoe_damage_template_hit_damage_factor = {
     base = 1
@@ -775,4 +827,12 @@ touhou_aoe_damage_template_final_value = {
     subtract = modifier:touhou_ship_aoe_damage_reduction_add
     subtract = modifier:ship_damage_reduction_add
     min = 0
+}
+
+touhou_echo_status_full_factor = {
+    base = 1.0
+    add = modifier:weapon_type_energy_weapon_damage_mult
+    add = modifier:weapon_type_lingli_weapon_damage_mult
+    add = modifier:weapon_type_spark_weapon_damage_mult
+    min = 1.0
 }

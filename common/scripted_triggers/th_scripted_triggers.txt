@@ -251,8 +251,16 @@ touhou_has_ship_action = {
 spth_fleet_has_special_leader = {
     optimize_memory
     fromfrom = {
-        exists = leader
+        # exists = leader
         OR = {
+            any_controlled_ship = {
+                OR = {
+                    check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 }
+                    check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 }
+                    check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 }
+                    check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 }
+                }
+            }
             AND = {
                 check_modifier_value = { modifier = fleet_th_has_tenshi value != 0 }
                 NOT = { has_fleet_flag = has_tenshi_aura_effect }
@@ -551,8 +559,10 @@ is_touhou_crisis_faction = {
         is_country_type = spth_lunar_capital_psi_fleet
         is_country_type = touhou_fe_union_titan_hostile
         is_country_type = touhou_fe_union_materialist_hostile
+        is_country_type = touhou_makai_netural
         is_country_type = touhou_mirror_empire
         is_country_type = touhou_dreamworld
+        is_country_type = touhou_boss_seija
     }
 }
 is_touhou_lunar_crisis_faction = {
@@ -562,6 +572,14 @@ is_touhou_lunar_crisis_faction = {
         is_country_type = lunar_capital_remain_fleet
         is_country_type = spth_lunar_capital_union_fleet
         is_country_type = spth_lunar_capital_psi_fleet
+    }
+}
+is_touhou_known_crisis_faction = {
+    optimize_memory
+    OR = {
+        is_touhou_crisis_faction = yes
+        is_invisable_faction = yes
+        ag_is_ancient_country = yes
     }
 }
 cannot_trigger_touhou_crisis_generic_damage_reduction = {
@@ -977,10 +995,7 @@ spth_subcapital_allow_pretrigger = {
     optimize_memory
     OR = {
         pop_amount >= 4000
-        has_building = building_spth_old_shirne
-        has_building = building_spth_planet_shirne
-        has_building = building_major_capital
-        has_building = building_system_capital
+        capital_tier >= 3
     }
 }
 
@@ -1456,4 +1471,21 @@ touhou_sky_controll_stratagem_check_direction = {
         which = touhou_sky_controll_stratagem_res_seq_$idx$
         value = @touhou_sky_controll_stratagem_$dir$
     }
+}
+
+touhou_seija_boss_title_check = {
+    optimize_memory
+    exists = event_target:is_touhou_seija_boss
+    event_target:is_touhou_seija_boss = {
+        is_variable_set = touhou_seija_boss_stage
+        check_variable = { which = touhou_seija_boss_stage value = $stg$ }
+        is_variable_set = touhou_seija_boss_title
+        check_variable = { which = touhou_seija_boss_title value = $idx$ }
+    }
+}
+
+touhou_gensokyo_planet_district_converted = {
+    optimize_memory
+    check_modifier_value = { modifier = touhou_$district$_converted value != 0 }
+    [[type] check_modifier_value = { modifier = touhou_$district$_swap_$type$ value != 0 } ]
 }

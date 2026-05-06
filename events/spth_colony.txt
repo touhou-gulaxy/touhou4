@@ -63,6 +63,25 @@ country_event = {
 				}
 			}
 		}
+        if = {
+            limit = { has_valid_civic = civic_gensokyo }
+            every_owned_planet = {
+                limit = { uses_district_set = gensokyo_planet }
+                if = {
+                    limit = { NOT = { is_variable_set = touhou_planet_wrlv_var } }
+                    set_variable = { which = touhou_planet_wrlv_var value = 0 }
+                }
+                if = {
+                    limit = { has_modifier = touhou_gensokyo_planet_wrlv }
+                    remove_modifier = touhou_gensokyo_planet_wrlv
+                }
+                add_modifier = { modifier = touhou_gensokyo_planet_wrlv mult = touhou_planet_wrlv_var }
+                if = {
+                    limit = { NOT = { has_deposit = d_gensokyo_planet } }
+                    add_deposit = d_gensokyo_planet
+                }
+            }
+        }
 	}
 }
 
@@ -425,6 +444,38 @@ country_event = {
 			}
 		}
 	}
+}
+country_event = {
+    id = spth_colony.5
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_authority = auth_gensokyo
+        has_valid_civic = civic_gensokyo
+    }
+    immediate = {
+        every_owned_planet = {
+            limit = { uses_district_set = gensokyo_planet }
+            if = {
+                limit = { NOT = { is_variable_set = touhou_planet_wrlv_var } }
+                set_variable = { which = touhou_planet_wrlv_var value = 0 }
+            }
+            change_variable = { which = touhou_planet_wrlv_var value = value:touhou_planet_wrlv_contaminate }
+            if = {
+                limit = { check_variable = { which = touhou_planet_wrlv_var value < 0 } }
+                set_variable = { which = touhou_planet_wrlv_var value = 0 }
+            }
+            if = {
+                limit = { has_modifier = touhou_gensokyo_planet_wrlv }
+                remove_modifier = touhou_gensokyo_planet_wrlv
+            }
+            add_modifier = { modifier = touhou_gensokyo_planet_wrlv mult = touhou_planet_wrlv_var }
+            if = {
+                limit = { NOT = { has_deposit = d_gensokyo_planet } }
+                add_deposit = d_gensokyo_planet
+            }
+        }
+    }
 }
 
 planet_event = {
