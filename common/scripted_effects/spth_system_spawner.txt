@@ -266,11 +266,47 @@ spth_spawn_kamikakushi_fallen_empire = {
             to = event_target:spth_real_kamikakushi_capital
         }
         event_target:spth_real_kamikakushi_system_3 = {
+            spawn_megastructure = {
+                type = kamikakushi_gateway
+                coords_from = star
+                orbit_distance = 200
+                orbit_angle = 120
+                init_effect = {
+                    activate_gateway = this
+                }
+            }
             random_neighbor_system_euclidean = {
                 limit = { NOT = { has_star_flag = lcluster } }
                 add_hyperlane = {
                     from = this
                     to = event_target:spth_real_kamikakushi_system_3
+                }
+            }
+        }
+        while = {
+            count = 3
+            random_rim_system = {
+                limit = { NOT = { has_star_flag = spth_system } }
+                weights = {
+                    base = 1
+                    modifier = {
+                        set = 0
+                        has_star_flag = spth_real_kamikakushi_system_connect
+                    }
+                    modifier = {
+                        set = 0
+                        OR = { exists = owner exists = space_owner }
+                    }
+                }
+                set_star_flag = spth_real_kamikakushi_system_connect
+                spawn_megastructure = {
+                    type = kamikakushi_gateway
+                    coords_from = star
+                    orbit_distance = 200
+                    orbit_angle = 120
+                    init_effect = {
+                        activate_gateway = this
+                    }
                 }
             }
         }

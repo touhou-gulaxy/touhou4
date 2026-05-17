@@ -1068,6 +1068,13 @@ country_event = {
             every_owned_fleet = { delete_fleet = this }
             destroy_country = yes
         }
+        if = {
+            limit = { exists = event_target:touhou_hostile_faction_type_lunar_capital_psi_before }
+            event_target:touhou_hostile_faction_type_lunar_capital_psi_before = {
+                every_owned_fleet = { delete_fleet = this }
+                destroy_country = yes
+            }
+        }
         every_country = {
             limit = {
                 OR = {
@@ -1647,13 +1654,1842 @@ country_event = {
     custom_gui_option = spth_event_large_ui_option
     picture_event_data = { room = spth_star_chart_room }
     immediate = {
+        save_global_event_target_as = lunar_capital_psi_107_trigger_country
+        set_country_flag = lunar_capital_psi_107_trigger_country
+        set_global_flag = spth_lunar_capital_psi_crisis_begin
+        set_global_flag = touhou_shroud_excited
         country_event = { id = spth_timeline.101 }
-        country_event = { id = disappear_barrier.1026 days = 180 random = 180 }
+        country_event = { id = lunar_capital_psi.108 }
     }
     option = {
-        name = TH_SO_BAD
+        name = lunar_capital_psi.107.fast
+        allow = {
+            resource_stockpile_compare = { resource = sr_lingli value > 500000 }
+            resource_stockpile_compare = { resource = sr_zro value > 50000 }
+        }
+        add_resource = {
+            sr_lingli = -125000 sr_zro = -12500
+            energy = -125000 trade = -12500
+            mult = value:touhou_difficulty
+        }
+        hidden_effect = {
+            set_global_flag = spth_lunar_capital_psi_crisis_invade
+            country_event = { id = disappear_barrier.1026 days = 180 random = 180 }
+        }
+    }
+    option = {
+        name = lunar_capital_psi.107.slow
+        every_playable_country = {
+            limit = { NOT = { country_has_situation = { SITUATION = situation_lunar_capital_psionic_crisis_stage_0 } } }
+            start_situation = { type = situation_lunar_capital_psionic_crisis_stage_0 target = this }
+        }
+        hidden_effect = {
+            event_target:global_event_country = {
+                country_event = { id = lunar_capital_psi.200 days = 120 random = 120 }
+                if = {
+                    limit = { NOT = { country_has_situation = { SITUATION = situation_lunar_capital_psionic_crisis_stage_0 } } }
+                    start_situation = { type = situation_lunar_capital_psionic_crisis_stage_0 target = this }
+                }
+                country_event = { id = lunar_capital_psi.202 days = 1440 random = 360 }
+            }
+            spth_set_crisis_sound = { sound = lunar_capital_psi_crisis_stage_0 }
+        }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.108
+    title = lunar_capital_psi.108.name
+    desc = lunar_capital_psi.108.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ag_excited_shroud_room portrait = shroud1 }
+    immediate = {
+    }
+    option = {
+        name = TH_INTERESTRING
         default_hide_option = yes
     }
+}
+
+# psionic portal
+planet_event = {
+    id = lunar_capital_psi.109
+    title = lunar_capital_psi.109.name
+    desc = lunar_capital_psi.109.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_cosmic_storms_shroud_storm_room }
+    immediate = {
+        if = {
+            limit = { any_owned_pop_group = { pop_group_has_trait = trait_touhou } }
+            set_planet_flag = lunar_capital_psi_portal_planet_event_has_touhou_species
+        }
+        reroll_random = yes
+        random_list = {
+            10 = {
+                modifier = { factor = 0 colony_age_years < 5 }
+                modifier = { factor = 0 has_moon = no }
+                modifier = { factor = 0.1 has_planet_flag = lunar_capital_psi_portal_planet_event_id_111_recent }
+                set_timed_planet_flag = { flag = lunar_capital_psi_portal_planet_event_id_111_recent days = 720 }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_111
+            }
+            5 = { set_planet_flag = lunar_capital_psi_portal_planet_event_id_112 }
+            10 = { set_planet_flag = lunar_capital_psi_portal_planet_event_id_113 }
+            10 = {
+                modifier = { factor = 0 NOT = { has_planet_flag = lunar_capital_psi_portal_planet_event_has_touhou_species } }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_114
+            }
+            10 = {
+                modifier = { factor = 0 NOT = { has_planet_flag = lunar_capital_psi_portal_planet_event_has_touhou_species } }
+                modifier = { factor = 0 touhou_planet_has_lunar_rabbit = no }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_115
+            }
+            10 = {
+                modifier = { factor = 0 NOT = { has_planet_flag = lunar_capital_psi_portal_planet_event_has_touhou_species } }
+                modifier = { factor = 0 touhou_planet_has_shrine = no }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_116
+            }
+            10 = {
+                modifier = { factor = 0 NOT = { has_planet_flag = lunar_capital_psi_portal_planet_event_has_touhou_species } }
+                modifier = { factor = 0 NOT = { has_deposit = d_hakurei_barrier } }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_117
+            }
+            10 = {
+                modifier = { factor = 0 has_planet_flag = lunar_capital_psi_portal_planet_event_has_touhou_species }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_118
+            }
+            10 = { set_planet_flag = lunar_capital_psi_portal_planet_event_id_119 }
+            10 = {
+                modifier = {
+                    factor = 0
+                    OR = {
+                        is_planet_class = pc_arctic
+                        is_planet_class = pc_ringworld_th
+                        is_planet_class = pc_ringworld_habitable
+                        is_planet_class = pc_ag_ringworld_city
+                        spth_is_habitat = yes
+                    }
+                }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_120
+            }
+            50 = {
+                modifier = { factor = 0 NOT = { has_global_flag = touhou_lunar_psi_extra_33 } }
+                modifier = { factor = 0.02 has_planet_flag = lunar_capital_psi_portal_planet_event_id_121_happened }
+                set_timed_planet_flag = { flag = lunar_capital_psi_portal_planet_event_id_121_happened days = 1800 }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_121
+            }
+            10 = { set_planet_flag = lunar_capital_psi_portal_planet_event_id_122 }
+            10 = { set_planet_flag = lunar_capital_psi_portal_planet_event_id_123 }
+            10 = {
+                modifier = {
+                    factor = 0
+                    OR = {
+                        is_planet_class = pc_ringworld_th
+                        is_planet_class = pc_ringworld_habitable
+                        is_planet_class = pc_ag_ringworld_city
+                        spth_is_habitat = yes
+                        is_artificial = yes
+                    }
+                }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_124
+            }
+            10 = {
+                modifier = {
+                    factor = 0
+                    OR = {
+                        is_planet_class = pc_ringworld_th
+                        is_planet_class = pc_ringworld_habitable
+                        is_planet_class = pc_ag_ringworld_city
+                        spth_is_habitat = yes
+                        is_artificial = yes
+                    }
+                }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_125
+            }
+            10 = {
+                modifier = {
+                    factor = 0
+                    NOT = { has_global_flag = touhou_lunar_psi_extra_33 }
+                    free_district_slots < 2
+                }
+                modifier = {
+                    factor = 1.5
+                    OR = {
+                        is_planet_class = pc_ringworld_th
+                        is_planet_class = pc_ringworld_habitable
+                        is_planet_class = pc_ag_ringworld_city
+                        spth_is_habitat = yes
+                        is_artificial = yes
+                    }
+                }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_125
+            }
+            10 = {
+                modifier = {
+                    factor = 0
+                    NOT = { has_global_flag = touhou_lunar_psi_extra_33 }
+                    free_district_slots < 2
+                }
+                modifier = {
+                    factor = 1.5
+                    OR = {
+                        is_planet_class = pc_ringworld_th
+                        is_planet_class = pc_ringworld_habitable
+                        is_planet_class = pc_ag_ringworld_city
+                        spth_is_habitat = yes
+                        is_artificial = yes
+                    }
+                }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_126
+            }
+            10 = { set_planet_flag = lunar_capital_psi_portal_planet_event_id_127 }
+            50 = {
+                modifier = { factor = 0 NOT = { has_global_flag = touhou_lunar_psi_extra_33 } }
+                modifier = { factor = 0.02 has_planet_flag = lunar_capital_psi_portal_planet_event_id_128_happened }
+                set_timed_planet_flag = { flag = lunar_capital_psi_portal_planet_event_id_128_happened days = 1800 }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_128
+            }
+            25 = {
+                modifier = { factor = 0 NOT = { has_global_flag = touhou_lunar_psi_extra_33 } }
+                modifier = { factor = 0.04 has_planet_flag = lunar_capital_psi_portal_planet_event_id_129_happened }
+                set_timed_planet_flag = { flag = lunar_capital_psi_portal_planet_event_id_129_happened days = 1800 }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_129
+            }
+            50 = {
+                modifier = { factor = 0 NOT = { has_global_flag = touhou_lunar_psi_extra_33 } }
+                modifier = { factor = 0.02 has_planet_flag = lunar_capital_psi_portal_planet_event_id_130_happened }
+                set_timed_planet_flag = { flag = lunar_capital_psi_portal_planet_event_id_130_happened days = 1800 }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_130
+            }
+            10 = { set_planet_flag = lunar_capital_psi_portal_planet_event_id_131 }
+            10 = { set_planet_flag = lunar_capital_psi_portal_planet_event_id_132 }
+            10 = {
+                modifier = { factor = 0 planet_resource_compare = { resource = minerals value < 1000 type = produces } }
+                modifier = { factor = 2 planet_resource_compare = { resource = minerals value >= 2500 type = produces } }
+                modifier = { factor = 1.5 total_workforce_with_job_tag = { tags = { minerals } value > 1000 } }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_133
+            }
+            10 = {
+                modifier = { factor = 0 planet_resource_compare = { resource = energy value < 1000 type = produces } }
+                modifier = { factor = 2 planet_resource_compare = { resource = energy value >= 2500 type = produces } }
+                modifier = { factor = 1.5 total_workforce_with_job_tag = { tags = { energy } value > 1000 } }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_134
+            }
+            10 = { set_planet_flag = lunar_capital_psi_portal_planet_event_id_135 }
+            10 = {
+                modifier = { factor = 0 has_deposit = d_touhou_corrupted_corps }
+                modifier = { factor = 0 planet_resource_compare = { resource = food value < 1000 type = produces } }
+                modifier = { factor = 2 planet_resource_compare = { resource = food value >= 2500 type = produces } }
+                modifier = { factor = 1.5 total_workforce_with_job_tag = { tags = { food } value > 1000 } }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_136
+            }
+            10 = {
+                modifier = {
+                    factor = 0
+                    planet_resource_compare = { resource = alloys value < 1000 type = produces }
+                    planet_resource_compare = { resource = consumer_goods value < 1000 type = produces }
+                }
+                modifier = {
+                    factor = 2
+                    OR = {
+                        planet_resource_compare = { resource = alloys value >= 2500 type = produces }
+                        planet_resource_compare = { resource = consumer_goods value >= 2500 type = produces }
+                    }
+                }
+                modifier = {
+                    factor = 1.5
+                    OR = {
+                        total_workforce_with_job_tag = { tags = { alloys } value > 1000 }
+                        total_workforce_with_job_tag = { tags = { consumer_goods } value > 1000 }
+                    }
+                }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_137
+            }
+            50 = {
+                modifier = { factor = 0 NOT = { has_global_flag = touhou_lunar_psi_extra_33 } }
+                modifier = { factor = 0.02 has_planet_flag = lunar_capital_psi_portal_planet_event_id_138_happened }
+                set_timed_planet_flag = { flag = lunar_capital_psi_portal_planet_event_id_138_happened days = 1800 }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_138
+            }
+            50 = {
+                modifier = { factor = 0 NOT = { has_global_flag = touhou_lunar_psi_extra_33 } }
+                modifier = { factor = 0.02 has_planet_flag = lunar_capital_psi_portal_planet_event_id_139_happened }
+                set_timed_planet_flag = { flag = lunar_capital_psi_portal_planet_event_id_139_happened days = 1800 }
+                set_planet_flag = lunar_capital_psi_portal_planet_event_id_139
+            }
+        }
+        remove_planet_flag = lunar_capital_psi_portal_planet_event_has_touhou_species
+        planet_event = { id = lunar_capital_psi.110 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_WORYING
+        default_hide_option = yes
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.110
+    title = lunar_capital_psi.110.name
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_111 } text = lunar_capital_psi.110.desc.111 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_112 } text = lunar_capital_psi.110.desc.112 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_113 } text = lunar_capital_psi.110.desc.113 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_114 } text = lunar_capital_psi.110.desc.114 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_115 } text = lunar_capital_psi.110.desc.115 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_116 } text = lunar_capital_psi.110.desc.116 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_117 } text = lunar_capital_psi.110.desc.117 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_118 } text = lunar_capital_psi.110.desc.118 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_119 } text = lunar_capital_psi.110.desc.119 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_120 } text = lunar_capital_psi.110.desc.120 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_121 } text = lunar_capital_psi.110.desc.121 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_122 } text = lunar_capital_psi.110.desc.122 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_123 } text = lunar_capital_psi.110.desc.123 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_124 } text = lunar_capital_psi.110.desc.124 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_125 } text = lunar_capital_psi.110.desc.125 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_126 } text = lunar_capital_psi.110.desc.126 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_127 } text = lunar_capital_psi.110.desc.127 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_128 } text = lunar_capital_psi.110.desc.128 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_129 } text = lunar_capital_psi.110.desc.129 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_130 } text = lunar_capital_psi.110.desc.130 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_131 } text = lunar_capital_psi.110.desc.131 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_132 } text = lunar_capital_psi.110.desc.132 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_133 } text = lunar_capital_psi.110.desc.133 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_134 } text = lunar_capital_psi.110.desc.134 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_135 } text = lunar_capital_psi.110.desc.135 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_136 } text = lunar_capital_psi.110.desc.136 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_137 } text = lunar_capital_psi.110.desc.137 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_138 } text = lunar_capital_psi.110.desc.138 }
+    desc = { trigger = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_139 } text = lunar_capital_psi.110.desc.139 }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_shroud_psionic_aura_room }
+    immediate = {
+        add_modifier = { modifier = touhou_lunar_capital_psi_crisis_marked days = -1 }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_111 } planet_event = { id = lunar_capital_psi.111 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_112 } planet_event = { id = lunar_capital_psi.112 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_113 } planet_event = { id = lunar_capital_psi.113 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_114 } planet_event = { id = lunar_capital_psi.114 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_115 } planet_event = { id = lunar_capital_psi.115 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_116 } planet_event = { id = lunar_capital_psi.116 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_117 } planet_event = { id = lunar_capital_psi.117 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_118 } planet_event = { id = lunar_capital_psi.118 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_119 } planet_event = { id = lunar_capital_psi.119 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_120 } planet_event = { id = lunar_capital_psi.120 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_121 } planet_event = { id = lunar_capital_psi.121 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_122 } planet_event = { id = lunar_capital_psi.122 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_123 } planet_event = { id = lunar_capital_psi.123 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_124 } planet_event = { id = lunar_capital_psi.124 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_125 } planet_event = { id = lunar_capital_psi.125 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_126 } planet_event = { id = lunar_capital_psi.126 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_127 } planet_event = { id = lunar_capital_psi.127 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_128 } planet_event = { id = lunar_capital_psi.128 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_129 } planet_event = { id = lunar_capital_psi.129 days = 240 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_130 } planet_event = { id = lunar_capital_psi.130 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_131 } planet_event = { id = lunar_capital_psi.131 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_132 } planet_event = { id = lunar_capital_psi.132 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_133 } planet_event = { id = lunar_capital_psi.133 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_134 } planet_event = { id = lunar_capital_psi.134 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_135 } planet_event = { id = lunar_capital_psi.135 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_136 } planet_event = { id = lunar_capital_psi.136 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_137 } planet_event = { id = lunar_capital_psi.137 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_138 } planet_event = { id = lunar_capital_psi.138 days = 90 random = 60 } }
+        if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_139 } planet_event = { id = lunar_capital_psi.139 days = 90 random = 60 } }
+    }
+    option = {
+        name = TH_WORYING
+        default_hide_option = yes
+        tooltip = {
+            add_modifier = { modifier = touhou_lunar_capital_psi_crisis_marked days = -1 }
+        }
+    }
+    after = {
+        hidden_effect = {
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_111 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_111 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_112 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_112 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_113 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_113 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_114 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_114 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_115 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_115 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_116 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_116 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_117 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_117 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_118 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_118 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_119 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_119 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_120 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_120 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_121 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_121 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_122 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_122 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_123 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_123 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_124 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_124 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_125 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_125 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_126 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_126 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_127 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_127 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_128 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_128 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_129 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_129 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_130 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_130 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_131 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_131 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_132 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_132 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_133 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_133 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_134 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_134 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_135 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_135 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_136 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_136 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_137 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_137 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_138 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_138 }
+            if = { limit = { has_planet_flag = lunar_capital_psi_portal_planet_event_id_139 } remove_planet_flag = lunar_capital_psi_portal_planet_event_id_139 }
+        }
+    }
+}
+# actual events
+planet_event = {
+    id = lunar_capital_psi.111
+    title = lunar_capital_psi.111.name
+    desc = lunar_capital_psi.111.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ancient_city_dark_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_eternal_night" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_eternal_night" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_eternal_night" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_eternal_night" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_eternal_night" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_eternal_night days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.112
+    title = lunar_capital_psi.112.name
+    desc = lunar_capital_psi.112.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ongoing_disaster_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        add_planet_devastation = 25.0
+        add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_life_wither" days = 540 }
+        random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.10 } }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        owner = {
+            add_resource = { sr_zro = 0.02 mult = trigger:pop_amount }
+            if = {
+                limit = { has_authority = auth_gensokyo }
+                add_resource = { sr_lingli = 0.02 mult = trigger:pop_amount }
+            }
+        }
+        tooltip = {
+            add_planet_devastation = 25.0
+            add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_life_wither" days = 540 }
+            random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.10 } }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.113
+    title = lunar_capital_psi.113.name
+    desc = lunar_capital_psi.113.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_surreal_visions_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nightmare" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nightmare" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nightmare" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nightmare" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nightmare" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_nightmare days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.114
+    title = lunar_capital_psi.114.name
+    desc = lunar_capital_psi.114.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_emergency_workers_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_warith" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_warith" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_warith" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_warith" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_warith" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_warith days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.115
+    title = lunar_capital_psi.115.name
+    desc = lunar_capital_psi.115.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_dark_alley_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_rabbit" days = 360 mult = value:touhou_min_capped_modifier|modifier|bonus_pop_growth_mult|factor|1| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_rabbit" days = 540 mult = value:touhou_min_capped_modifier|modifier|bonus_pop_growth_mult|factor|1| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_rabbit" days = 720 mult = value:touhou_min_capped_modifier|modifier|bonus_pop_growth_mult|factor|1| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_rabbit" days = 900 mult = value:touhou_min_capped_modifier|modifier|bonus_pop_growth_mult|factor|1| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_rabbit" days = 1080 mult = value:touhou_min_capped_modifier|modifier|bonus_pop_growth_mult|factor|1| } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_rabbit" days = -1 mult = value:touhou_min_capped_modifier|modifier|bonus_pop_growth_mult|factor|1| } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.116
+    title = lunar_capital_psi.116.name
+    desc = lunar_capital_psi.116.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_surreal_visions_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_shrine" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_shrine" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_shrine" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_shrine" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_lunar_shrine" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_lunar_shrine days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.117
+    title = lunar_capital_psi.117.name
+    desc = lunar_capital_psi.117.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_strange_sands_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_spiritual_power" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_spiritual_power" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_spiritual_power" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_spiritual_power" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_spiritual_power" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_spiritual_power days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.118
+    title = lunar_capital_psi.118.name
+    desc = lunar_capital_psi.118.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_shroud_psionic_aura_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_shadow" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_shadow" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_shadow" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_shadow" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_shadow" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_psionic_shadow days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.119
+    title = lunar_capital_psi.119.name
+    desc = lunar_capital_psi.119.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_dark_alley_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crime_up" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crime_up" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crime_up" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crime_up" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crime_up" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_crime_up days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.120
+    title = lunar_capital_psi.120.name
+    desc = {
+        trigger = { exists = owner owner = { is_touhou_player_faction = yes } }
+        text = lunar_capital_psi.120.desc.gensokyo
+    }
+    desc = {
+        trigger = { OR = { NOT = { exists = owner } owner = { is_touhou_player_faction = no } } }
+        text = lunar_capital_psi.120.desc
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_arctic_planet_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_winter" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_winter" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_winter" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_winter" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_winter" days = 1080 } }
+        }
+        random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.025 } }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = {
+            add_modifier = { modifier = touhou_lunar_capital_psi_crisis_winter days = -1 }
+            random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.025 } }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.121
+    title = lunar_capital_psi.121.name
+    desc = lunar_capital_psi.121.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ground_combat_room }
+    show_sound = event_ground_battle
+    location = root
+    immediate = {
+        if = {
+            limit = {
+                OR = { has_galactic_custodian = yes has_galactic_emperor = yes }
+                owner = { is_ai = yes is_galactic_community_member = yes is_galactic_custodian = no is_galactic_emperor = no }
+            }
+            owner = { save_event_target_as = touhou_target_community_member }
+            random_playable_country = {
+                limit = { OR = { is_galactic_custodian = yes is_galactic_emperor = yes } }
+                country_event = { id = lunar_capital_psi.141 }
+            }
+        }
+        ag_shell_world_forced_allow_invasion = yes
+        reroll_random = yes
+        random_list = {
+            25 = {
+                while = {
+                    count = 3
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 4
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 6
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 8
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army"
+                        # land_army = yes
+                    }
+                }
+            }
+        }
+        reroll_random = yes
+        random_list = {
+            25 = {
+                while = {
+                    count = 6
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army_alt"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 8
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army_alt"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 12
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army_alt"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 16
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army_alt"
+                        # land_army = yes
+                    }
+                }
+            }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        custom_tooltip = lunar_capital_psi_avatar_tt
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.122
+    title = lunar_capital_psi.122.name
+    desc = {
+        trigger = { exists = owner owner = { is_touhou_player_faction = yes } }
+        text = lunar_capital_psi.122.desc.gensokyo
+    }
+    desc = {
+        trigger = { OR = { NOT = { exists = owner } owner = { is_touhou_player_faction = no } } }
+        text = lunar_capital_psi.122.desc
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_georadiation_bell_broken_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_mindless" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_mindless" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_mindless" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_mindless" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_mindless" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_mindless days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.123
+    title = lunar_capital_psi.123.name
+    desc = {
+        trigger = { exists = owner owner = { is_touhou_player_faction = yes } }
+        text = lunar_capital_psi.123.desc.gensokyo
+    }
+    desc = {
+        trigger = { OR = { NOT = { exists = owner } owner = { is_touhou_player_faction = no } } }
+        text = lunar_capital_psi.123.desc
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_particle_storm_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_scarlet_fog" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_scarlet_fog" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_scarlet_fog" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_scarlet_fog" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_scarlet_fog" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_scarlet_fog days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.124
+    title = lunar_capital_psi.124.name
+    desc = lunar_capital_psi.124.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_drilling_for_gas_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        add_planet_devastation = 25
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nether_spring" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nether_spring" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nether_spring" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nether_spring" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_nether_spring" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = {
+            add_planet_devastation = 25
+            add_modifier = { modifier = touhou_lunar_capital_psi_crisis_nether_spring days = -1 }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.125
+    title = lunar_capital_psi.125.name
+    desc = lunar_capital_psi.125.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_continental_planet_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        add_planet_devastation = 30
+        if = {
+            limit = { free_district_slots >= 4 }
+            while = { count = 2 add_deposit = d_touhou_corrupted_sinkhole }
+        } else = {
+            add_deposit = d_touhou_corrupted_sinkhole
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = {
+            add_planet_devastation = 30
+            if = {
+                limit = { free_district_slots >= 4 }
+                while = { count = 2 add_deposit = d_touhou_corrupted_sinkhole }
+            } else = {
+                add_deposit = d_touhou_corrupted_sinkhole
+            }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.126
+    title = lunar_capital_psi.126.name
+    desc = lunar_capital_psi.126.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_city_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        add_planet_devastation = 10
+        add_deposit = d_touhou_corrupted_city_ruins
+        while = {
+            count = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+            random_planet_army = {
+                reroll_random = yes
+                random_list = {
+                    33 = { remove_army = yes }
+                    67 = { damage_army = 250 }
+                }
+            }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = {
+            add_planet_devastation = 10
+            add_deposit = d_touhou_corrupted_city_ruins
+            while = {
+                count = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+                random_planet_army = {
+                    reroll_random = yes
+                    random_list = {
+                        33 = { remove_army = yes }
+                        67 = { damage_army = 250 }
+                    }
+                }
+            }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.127
+    title = lunar_capital_psi.127.name
+    desc = lunar_capital_psi.127.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_gaia_planet_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        while = {
+            count = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+            add_deposit = d_touhou_corrupted_corps
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = {
+            while = {
+                count = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+                add_deposit = d_touhou_corrupted_corps
+            }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.128
+    title = lunar_capital_psi.128.name
+    desc = lunar_capital_psi.128.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_shroud_whisperers_in_the_void_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        if = {
+            limit = {
+                OR = { has_galactic_custodian = yes has_galactic_emperor = yes }
+                owner = { is_ai = yes is_galactic_community_member = yes is_galactic_custodian = no is_galactic_emperor = no }
+            }
+            owner = { save_event_target_as = touhou_target_community_member }
+            random_playable_country = {
+                limit = { OR = { is_galactic_custodian = yes is_galactic_emperor = yes } }
+                country_event = { id = lunar_capital_psi.141 }
+            }
+        }
+        ag_shell_world_forced_allow_invasion = yes
+        reroll_random = yes
+        random_list = {
+            25 = {
+                while = {
+                    count = 2
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_psionic_fog"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 4
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_psionic_fog"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 6
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_psionic_fog"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 8
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_psionic_fog"
+                        # land_army = yes
+                    }
+                }
+            }
+        }
+        random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.16 } }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        custom_tooltip = lunar_capital_psi_avatar_tt
+        tooltip = {
+            random_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.16 } }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.129
+    title = lunar_capital_psi.129.name
+    desc = {
+        trigger = { has_planet_flag = lunar_capital_psi_129_no_psionic_inhibitor }
+        text = lunar_capital_psi.129.desc.no_psionic_inhibitor
+    }
+    desc = {
+        trigger = { NOT = { has_planet_flag = lunar_capital_psi_129_no_psionic_inhibitor } }
+        text = lunar_capital_psi.129.desc
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_planet_beam_violet_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        if = {
+            limit = {
+                solar_system = {
+                    NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value != 0 } } }
+                    any_ship_in_system = { check_modifier_value = { modifier = is_psionic_inhibitor value > 0 } }
+                }
+            }
+            th_spawn_explosion_particle = { color = purple size = large }
+            set_planet_flag = lunar_capital_psi_129_no_psionic_inhibitor
+            add_planet_devastation = 100
+            every_owned_pop_group = { reroll_random = yes random_list = { 75 = { } 25 = { kill_pop_group = { pop_group = this percentage = 0.75 } } } }
+            reroll_random = yes
+            random_list = {
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" days = 360 } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" days = 540 } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" days = 720 } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" days = 900 } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" days = 1080 } }
+            }
+        } else = {
+            th_spawn_explosion_particle = { color = purple size = medium }
+            add_planet_devastation = 10
+            reroll_random = yes
+            random_list = {
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" mult = 0.5 days = 180 } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" mult = 0.5 days = 270 } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" mult = 0.5 days = 360 } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" mult = 0.5 days = 450 } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" mult = 0.5 days = 600 } }
+            }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    after = {
+        hidden_effect = {
+            remove_planet_flag = lunar_capital_psi_129_no_psionic_inhibitor
+        }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = {
+            if = {
+                limit = { has_planet_flag = lunar_capital_psi_129_no_psionic_inhibitor }
+                add_planet_devastation = 100
+                add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" days = -1 }
+                every_owned_pop_group = { reroll_random = yes random_list = { 75 = { } 25 = { kill_pop_group = { pop_group = this percentage = 0.75 } } } }
+            } else = {
+                add_planet_devastation = 10
+                add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_psionic_attack" mult = 0.5 days = -1 }
+            }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.130
+    title = lunar_capital_psi.130.name
+    desc = lunar_capital_psi.130.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_evil_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        if = {
+            limit = {
+                OR = { has_galactic_custodian = yes has_galactic_emperor = yes }
+                owner = { is_ai = yes is_galactic_community_member = yes is_galactic_custodian = no is_galactic_emperor = no }
+            }
+            owner = { save_event_target_as = touhou_target_community_member }
+            random_playable_country = {
+                limit = { OR = { is_galactic_custodian = yes is_galactic_emperor = yes } }
+                country_event = { id = lunar_capital_psi.141 }
+            }
+        }
+        solar_system = {
+            spth_create_fleet = {
+                NAME = NAME_lunar_capital_psionic_avatar
+                can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+                OWNER = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                location = root
+                lunar_capital_psionic_avatar = 1
+                lunar_capital_bonus = yes
+                flag = touhou_hostile_faction_enable_move
+                flag2 = touhou_hostile_faction_type_lunar_capital_psi_before
+                evt_target = lunar_capital_psionic_avatar
+            }
+            event_target:lunar_capital_psionic_avatar = {
+                fleet_event = { id = touhou_hostile_faction.12 days = 2 random = 3 }
+            }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        custom_tooltip = lunar_capital_psi.130.effect
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.131
+    title = lunar_capital_psi.131.name
+    desc = lunar_capital_psi.131.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_temple_of_whispers_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        if = {
+            limit = { any_owned_pop_group = { NOT = { pop_group_has_trait = trait_touhou_lunar_crisis_shroud_whisper } } }
+            random_owned_pop_group = {
+                limit = { NOT = { pop_group_has_trait = trait_touhou_lunar_crisis_shroud_whisper } }
+                modify_species = {
+                    species = this
+                    add_trait = trait_touhou_lunar_crisis_shroud_whisper
+                    effect = { save_event_target_as = touhou_target_species }
+                }
+                change_species = event_target:touhou_target_species
+            }
+        } else = {
+            random_owned_pop_group = {
+                limit = { pop_group_has_trait = trait_touhou_lunar_crisis_shroud_whisper }
+                kill_pop_group = { pop_group = this percentage = 0.10 }
+            }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = {
+            if = {
+                limit = { any_owned_pop_group = { NOT = { pop_group_has_trait = trait_touhou_lunar_crisis_shroud_whisper } } }
+                random_owned_pop_group = {
+                    limit = { NOT = { pop_group_has_trait = trait_touhou_lunar_crisis_shroud_whisper } }
+                    modify_species = {
+                        species = this
+                        add_trait = trait_touhou_lunar_crisis_shroud_whisper
+                        effect = { save_event_target_as = touhou_target_species }
+                    }
+                    change_species = event_target:touhou_target_species
+                }
+            } else = {
+                random_owned_pop_group = {
+                    limit = { pop_group_has_trait = trait_touhou_lunar_crisis_shroud_whisper }
+                    kill_pop_group = { pop_group = this percentage = 0.10 }
+                }
+            }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.132
+    title = lunar_capital_psi.132.name
+    desc = lunar_capital_psi.132.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_shroud_spacemadness_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crimson_rain" days = 360 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crimson_rain" days = 540 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crimson_rain" days = 720 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crimson_rain" days = 900 } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_crimson_rain" days = 1080 } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = touhou_lunar_capital_psi_crisis_crimson_rain days = -1 } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.133
+    title = lunar_capital_psi.133.name
+    desc = lunar_capital_psi.133.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mineralized_lava_tube_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_minerals" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_minerals_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_minerals" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_minerals_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_minerals" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_minerals_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_minerals" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_minerals_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_minerals" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_minerals_produces_mult| } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_minerals" days = -1 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_minerals_produces_mult| } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.134
+    title = lunar_capital_psi.134.name
+    desc = lunar_capital_psi.134.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_shocking_developments_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_energy" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_energy_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_energy" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_energy_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_energy" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_energy_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_energy" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_energy_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_energy" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_energy_produces_mult| } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_energy" days = -1 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_energy_produces_mult| } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.135
+    title = lunar_capital_psi.135.name
+    desc = lunar_capital_psi.135.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_deserted_mining_facility_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = energy extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = minerals extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = food extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = alloys extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = consumer_goods extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = trade extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = unity extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = volatile_motes extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = exotic_gases extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = rare_crystals extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = sr_living_metal extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = sr_zro extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = sr_dark_matter extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = nanites extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = minor_artifacts extra_condition = "always = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = sr_lingli extra_condition = "is_touhou_player_faction = no" }
+            inline_script = { script = events/touhou_lunar_psi_stole_resource_prod resource = sr_fuka extra_condition = "is_touhou_player_faction = no" }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    after = { hidden_effect = { clear_variable = lunar_capital_psi_135_temp } }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = {
+            random_list = {
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = energy extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = minerals extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = food extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = alloys extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = consumer_goods extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = trade extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = unity extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = volatile_motes extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = exotic_gases extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = rare_crystals extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = sr_living_metal extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = sr_zro extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = sr_dark_matter extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = nanites extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = minor_artifacts extra_condition = "always = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = sr_lingli extra_condition = "is_touhou_player_faction = no" }
+                inline_script = { script = events/touhou_lunar_psi_stole_resource_prod_tooltip resource = sr_fuka extra_condition = "is_touhou_player_faction = no" }
+            }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.136
+    title = lunar_capital_psi.136.name
+    desc = lunar_capital_psi.136.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_failed_observation_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        reroll_random = yes
+        random_list = {
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_food" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_food_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_food" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_food_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_food" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_food_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_food" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_food_produces_mult| } }
+            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_food" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_food_produces_mult| } }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_food" days = -1 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_food_produces_mult| } }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.137
+    title = lunar_capital_psi.137.name
+    desc = lunar_capital_psi.137.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_poor_stormshelter_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        if = {
+            limit = {
+                planet_resource_compare = { resource = alloys value >= 2500 type = produces }
+                planet_resource_compare = { resource = consumer_goods value >= 2500 type = produces }
+            }
+            reroll_random = yes
+            random_list = {
+                50 = {
+                    reroll_random = yes
+                    random_list = {
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                    }
+                }
+                50 = {
+                    reroll_random = yes
+                    random_list = {
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                        10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                    }
+                }
+            }
+        }
+        else_if = {
+            limit = { planet_resource_compare = { resource = alloys value >= 2500 type = produces } }
+            reroll_random = yes
+            random_list = {
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+            }
+        }
+        else = {
+            reroll_random = yes
+            random_list = {
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+            }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        tooltip = {
+            if = {
+                limit = {
+                    planet_resource_compare = { resource = alloys value >= 2500 type = produces }
+                    planet_resource_compare = { resource = consumer_goods value >= 2500 type = produces }
+                }
+                random_list = {
+                    50 = {
+                        random_list = {
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                        }
+                    }
+                    50 = {
+                        random_list = {
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                            10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                        }
+                    }
+                }
+            }
+            else_if = {
+                limit = { planet_resource_compare = { resource = alloys value >= 2500 type = produces } }
+                random_list = {
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_alloys" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_alloys_produces_mult| } }
+                }
+            }
+            else = {
+                random_list = {
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 360 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 540 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 720 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 900 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                    10 = { add_modifier = { modifier = "touhou_lunar_capital_psi_crisis_debuff_consumer_goods" days = 1080 multiplier = value:touhou_lunar_capital_crisis_debuff_multiplier|base|0.25|modifier|planet_jobs_consumer_goods_produces_mult| } }
+                }
+            }
+        }
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.138
+    title = lunar_capital_psi.138.name
+    desc = lunar_capital_psi.138.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_shroud_storm_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        if = {
+            limit = {
+                OR = { has_galactic_custodian = yes has_galactic_emperor = yes }
+                owner = { is_ai = yes is_galactic_community_member = yes is_galactic_custodian = no is_galactic_emperor = no }
+            }
+            owner = { save_event_target_as = touhou_target_community_member }
+            random_playable_country = {
+                limit = { OR = { is_galactic_custodian = yes is_galactic_emperor = yes } }
+                country_event = { id = lunar_capital_psi.141 }
+            }
+        }
+        solar_system = {
+            spth_create_fleet = {
+                NAME = NAME_lunar_capital_psionic_avatar
+                can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+                OWNER = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                location = root
+                lunar_capital_psionic_avatar = 1
+                lunar_capital_bonus = yes
+                flag = touhou_hostile_faction_enable_move
+                flag2 = touhou_hostile_faction_type_lunar_capital_psi_before
+                evt_target = lunar_capital_psionic_avatar
+            }
+            event_target:lunar_capital_psionic_avatar = {
+                fleet_event = { id = touhou_hostile_faction.12 days = 2 random = 3 }
+            }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        custom_tooltip = lunar_capital_psi.130.effect
+    }
+}
+planet_event = {
+    id = lunar_capital_psi.139
+    title = lunar_capital_psi.139.name
+    desc = lunar_capital_psi.139.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_unspeakable_horror_room }
+    show_sound = event_mystic_reveal
+    location = root
+    immediate = {
+        if = {
+            limit = {
+                OR = { has_galactic_custodian = yes has_galactic_emperor = yes }
+                owner = { is_ai = yes is_galactic_community_member = yes is_galactic_custodian = no is_galactic_emperor = no }
+            }
+            owner = { save_event_target_as = touhou_target_community_member }
+            random_playable_country = {
+                limit = { OR = { is_galactic_custodian = yes is_galactic_emperor = yes } }
+                country_event = { id = lunar_capital_psi.141 }
+            }
+        }
+        ag_shell_world_forced_allow_invasion = yes
+        reroll_random = yes
+        random_list = {
+            25 = {
+                while = {
+                    count = 3
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 4
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 6
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 8
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army"
+                        # land_army = yes
+                    }
+                }
+            }
+        }
+        reroll_random = yes
+        random_list = {
+            25 = {
+                while = {
+                    count = 6
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army_alt"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 8
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army_alt"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 12
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army_alt"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 16
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_assault_army_alt"
+                        # land_army = yes
+                    }
+                }
+            }
+        }
+        reroll_random = yes
+        random_list = {
+            25 = {
+                while = {
+                    count = 2
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_psionic_fog"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 4
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_psionic_fog"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 6
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_psionic_fog"
+                        # land_army = yes
+                    }
+                }
+            }
+            25 = {
+                while = {
+                    count = 8
+                    create_army = {
+                        name = "NAME_lunar_capital_psi_avatar"
+                        owner = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                        type = "lunar_capital_psi_psionic_fog"
+                        # land_army = yes
+                    }
+                }
+            }
+        }
+        planet_event = { id = lunar_capital_psi.140 days = 60 random = 60 }
+    }
+    option = {
+        name = TH_UNFORTUNATE
+        default_hide_option = yes
+        custom_tooltip = lunar_capital_psi_avatar_tt
+    }
+}
+# end event, remove modifier
+planet_event = {
+    id = lunar_capital_psi.140
+    title = lunar_capital_psi.140.name
+    desc = lunar_capital_psi.140.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_shroud_generic_room }
+    immediate = {
+        remove_modifier = touhou_lunar_capital_psi_crisis_marked
+    }
+    option = {
+        name = TH_FINALLY
+        default_hide_option = yes
+        tooltip = {
+            remove_modifier = touhou_lunar_capital_psi_crisis_marked
+        }
+    }
+}
+# Community Member Pleads for Help, to emperor or custodian.
+country_event = {
+    id = lunar_capital_psi.141
+    title = lunar_capital_psi.141.name
+    desc = {
+        trigger = { is_galactic_custodian = yes }
+        text = lunar_capital_psi.141.galactic_custodian
+    }
+    desc = {
+        trigger = { has_galactic_emperor = yes }
+        text = lunar_capital_psi.141.galactic_emperor
+    }
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    force_open = yes
+    location = from
+    picture_event_data = {
+        portrait = event_target:touhou_target_community_member
+        planet_background = event_target:touhou_target_community_member
+        graphical_culture = event_target:touhou_target_community_member
+        city_level = event_target:touhou_target_community_member
+        room = event_target:touhou_target_community_member
+    }
+    option = { name = "emperor.93.a" }
 }
 
 country_event = {
@@ -1755,6 +3591,595 @@ fleet_event = {
         }
     }
 }
+
+# Hidden, trigger of common psionic events.
+country_event = {
+    id = lunar_capital_psi.200
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { touhou_is_lunar_capital_psi_active = yes }
+    immediate = {
+        if = {
+            limit = { NOT = { exists = event_target:touhou_hostile_faction_type_lunar_capital_psi_before } }
+            create_country = {
+                name = lunar_cluster34_shroud_country
+                type = spth_lunar_capital_psi_fleet
+                flag = {
+                    icon = {
+                        category = "touhousp"
+                        file = "lunar_capital.dds"
+                    }
+                    colors = {
+                        "purple"
+                        "purple"
+                        "purple"
+                        "null"
+                    }
+                    background = {
+                        category = "backgrounds"
+                        file = "00_solid.dds"
+                    }
+                }
+                name_list = touhouchs
+                effect = {
+                    set_graphical_culture = strg_01
+                    set_country_flag = touhou_mod_country
+                    set_country_flag = touhou_crisis_country
+                    set_country_flag = touhou_hostile_faction_type_lunar_capital_psi_before
+                    set_country_flag = protected_from_queen_storm
+                    add_modifier = { modifier = touhou_immune_from_terrify }
+                    save_global_event_target_as = touhou_hostile_faction_type_lunar_capital_psi_before
+                    every_playable_country = {
+                        limit = { NOT = { is_same_value = prev } }
+                        establish_communications_no_message = prev
+                        add_intel = { who = prev amount = 70 }
+                    }
+                    every_country = {
+                        limit = {
+                            OR = {
+                                is_country_type = default
+                                is_country_type = fallen_empire
+                                is_country_type = awakened_fallen_empire
+                            }
+                            NOT = { has_communications = prev }
+                        }
+                        establish_communications_no_message = prev
+                    }
+                }
+            }
+            if = {
+                limit = {
+                    spth_has_ag_mod = yes
+                    has_global_flag = touhou_lunar_psi_extra_ag
+                }
+                event_target:touhou_hostile_faction_type_lunar_capital_psi_before = {
+                    every_playable_country = {
+                        limit = { NOT = { is_same_value = prev } }
+                        country_event = { id = lunar_capital_psi.33 }
+                    }
+                    if = {
+                        limit = { exists = event_target:ag_zeta_crisis_country }
+                        set_faction_hostility = {
+                            target = event_target:ag_zeta_crisis_country
+                            set_friendly = yes
+                        }
+                    }
+                    if = {
+                        limit = { exists = event_target:ag_zeta_crisis_portal_holder }
+                        set_faction_hostility = {
+                            target = event_target:ag_zeta_crisis_portal_holder
+                            set_friendly = yes
+                        }
+                    }
+                    if = {
+                        limit = { exists = event_target:ag_zeta_crisis_relic_country }
+                        set_faction_hostility = {
+                            target = event_target:ag_zeta_crisis_relic_country
+                            set_friendly = yes
+                        }
+                    }
+                }
+            }
+        }
+        touhou_create_lunar_psi_random_planet_blocker = yes
+        touhou_create_lunar_psi_random_mark_leader = yes
+        touhou_create_lunar_psi_random_effect_misc = yes
+        if = {
+            limit = { has_global_flag = spth_lunar_capital_psi_crisis_invade }
+            country_event = { id = lunar_capital_psi.200 days = 360 random = 360 }
+        } else = {
+            country_event = { id = lunar_capital_psi.200 days = 150 random = 150 }
+        }
+    }
+}
+# set situation progress for situation.
+situation_event = {
+    id = lunar_capital_psi.201
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { owner = { is_country_type = global_event } }
+    immediate = {
+        owner = {
+            set_variable = { which = situation_lunar_capital_psionic_crisis_stage_0_progress value = 0 }
+            if = {
+                limit = {
+                    has_global_flag = lunar_capital_psionic_crisis_prev_stage_2
+                    NOT = { has_global_flag = spth_lunar_capital_psi_crisis_invade }
+                }
+                touhou_randomize_variable = { which = situation_lunar_capital_psionic_crisis_stage_0_progress scale = 8 }
+                change_variable = { which = situation_lunar_capital_psionic_crisis_stage_0_progress value = 9.6 }
+            }
+            else_if = {
+                limit = {
+                    has_global_flag = lunar_capital_psionic_crisis_prev_stage_1
+                    NOT = { has_global_flag = lunar_capital_psionic_crisis_prev_stage_2 }
+                }
+                touhou_randomize_variable = { which = situation_lunar_capital_psionic_crisis_stage_0_progress scale = 1 }
+                change_variable = { which = situation_lunar_capital_psionic_crisis_stage_0_progress value = 1 }
+            }
+            else_if = {
+                limit = { always = yes }
+                touhou_randomize_variable = { which = situation_lunar_capital_psionic_crisis_stage_0_progress scale = 0.075 }
+                change_variable = { which = situation_lunar_capital_psionic_crisis_stage_0_progress value = 0.005 }
+            }
+            # set other countries' progress
+            every_playable_country = {
+                limit = { country_has_situation = { SITUATION = situation_lunar_capital_psionic_crisis_stage_0 } }
+                set_variable = {
+                    which = situation_lunar_capital_psionic_crisis_stage_0_progress
+                    value = root.owner.situation_lunar_capital_psionic_crisis_stage_0_progress
+                }
+            }
+            # lunar_capital_psionic_crisis_prev_stage_2
+            if = {
+                limit = { prev = { situation_progress >= 96 } }
+                country_event = { id = lunar_capital_psi.203 days = 5 random = 5 }
+            }
+        }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.202
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { NOT = { has_global_flag = lunar_capital_psionic_crisis_prev_stage_1 } }
+    immediate = {
+        set_global_flag = lunar_capital_psionic_crisis_prev_stage_1
+    }
+}
+country_event = {
+    id = lunar_capital_psi.203
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { NOT = { has_global_flag = lunar_capital_psionic_crisis_prev_stage_2 } }
+    immediate = {
+        set_global_flag = lunar_capital_psionic_crisis_prev_stage_2
+    }
+}
+
+# blocker events.
+planet_event = {
+    id = lunar_capital_psi.400
+    title = lunar_capital_psi.400.name
+    desc = lunar_capital_psi.400.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_jungle slots = 2 }
+}
+planet_event = {
+    id = lunar_capital_psi.401
+    title = lunar_capital_psi.401.name
+    desc = lunar_capital_psi.401.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_swamp slots = 2 }
+}
+planet_event = {
+    id = lunar_capital_psi.402
+    title = lunar_capital_psi.402.name
+    desc = lunar_capital_psi.402.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_mountain slots = 3 }
+}
+planet_event = {
+    id = lunar_capital_psi.403
+    title = lunar_capital_psi.403.name
+    desc = lunar_capital_psi.403.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_volcano slots = 3 }
+}
+planet_event = {
+    id = lunar_capital_psi.404
+    title = lunar_capital_psi.404.name
+    desc = lunar_capital_psi.404.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_sinkhole slots = 2 }
+}
+planet_event = {
+    id = lunar_capital_psi.405
+    title = lunar_capital_psi.405.name
+    desc = lunar_capital_psi.405.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_quicksand slots = 2 }
+}
+planet_event = {
+    id = lunar_capital_psi.406
+    title = lunar_capital_psi.406.name
+    desc = lunar_capital_psi.406.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_glacier slots = 3 }
+}
+planet_event = {
+    id = lunar_capital_psi.407
+    title = lunar_capital_psi.407.name
+    desc = lunar_capital_psi.407.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_shroudstone slots = 2 }
+}
+planet_event = {
+    id = lunar_capital_psi.408
+    title = lunar_capital_psi.408.name
+    desc = lunar_capital_psi.408.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_city_ruins slots = 2 }
+}
+planet_event = {
+    id = lunar_capital_psi.409
+    title = lunar_capital_psi.409.name
+    desc = lunar_capital_psi.409.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers deposit = d_touhou_corrupted_corps }
+}
+planet_event = {
+    id = lunar_capital_psi.410
+    title = lunar_capital_psi.410.name
+    desc = lunar_capital_psi.410.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers deposit = d_touhou_corrupted_moss }
+}
+planet_event = {
+    id = lunar_capital_psi.411
+    title = lunar_capital_psi.411.name
+    desc = lunar_capital_psi.411.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers deposit = d_touhou_corrupted_wall }
+}
+planet_event = {
+    id = lunar_capital_psi.412
+    title = lunar_capital_psi.412.name
+    desc = lunar_capital_psi.412.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_fields slots = 1 }
+}
+planet_event = {
+    id = lunar_capital_psi.413
+    title = lunar_capital_psi.413.name
+    desc = lunar_capital_psi.413.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers deposit = d_touhou_corrupted_statue }
+}
+planet_event = {
+    id = lunar_capital_psi.414
+    title = lunar_capital_psi.414.name
+    desc = lunar_capital_psi.414.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers deposit = d_touhou_corrupted_pipe }
+}
+planet_event = {
+    id = lunar_capital_psi.415
+    title = lunar_capital_psi.415.name
+    desc = lunar_capital_psi.415.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers deposit = d_touhou_corrupted_room }
+}
+planet_event = {
+    id = lunar_capital_psi.416
+    title = lunar_capital_psi.416.name
+    desc = lunar_capital_psi.416.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_kelp slots = 2 }
+}
+planet_event = {
+    id = lunar_capital_psi.417
+    title = lunar_capital_psi.417.name
+    desc = lunar_capital_psi.417.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers_has_swap deposit = d_touhou_corrupted_wildlives slots = 2 }
+}
+planet_event = {
+    id = lunar_capital_psi.418
+    title = lunar_capital_psi.418.name
+    desc = lunar_capital_psi.418.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_burning_settlement_room }
+    show_sound = event_yellow_alert
+    location = root
+    trigger = {
+        touhou_is_lunar_capital_psi_active = yes
+        solar_system = {
+            NAND = {
+                any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value > 0 } }
+                NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value > 0 } } }
+            }
+        }
+    }
+    inline_script = { script = events/lunar_capital_psi_event_blockers deposit = d_touhou_corrupted_aura_blocker }
+}
+
+# misc events.
+
+# leader events.
 
 # 杀了土著
 country_event = {
