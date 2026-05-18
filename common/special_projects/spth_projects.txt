@@ -814,7 +814,7 @@ special_project = {
 }
 special_project = {
     icon = "gfx/interface/icons/situation_log/situation_log_gensokyo.dds"
-    picture = GFX_evt_drifting_gateway
+    picture = GFX_evt_shroud_tunnel
     key = lunar_capital_psi_close_sub_gate
     days_to_research = 90
     tech_department = physics_technology
@@ -823,23 +823,71 @@ special_project = {
     on_start = {}
     on_success = {
         if = {
-            limit = { fleet.solar_system = { has_star_flag = spth_lunar_capital_psi_sub_gate_1 } }
-            fleet.solar_system = {
-                set_global_flag = spth_lunar_capital_psi_gate_1_killed
-                set_global_flag = spth_lunar_capital_psi_sub_gate_1_killed
-                every_fleet_in_system = { limit = { is_cloaked = yes } set_cloaking_active = no }
-                event_target:spth_lunar_psi_gate_fleet_1 = { set_event_locked = no }
-                star = { th_spawn_explosion_particle = { color = green size = extra } }
-                save_event_target_as = spth_system
+            limit = { has_global_flag = spth_lunar_capital_psi_version_new }
+            if = {
+                limit = {
+                    fleet.solar_system = {
+                        has_star_flag = spth_lunar_capital_psi_sub_gate_in_system
+                        NOT = { has_star_flag = spth_lunar_capital_psi_sub_gate_closed }
+                    }
+                }
+                fleet.solar_system = {
+                    set_star_flag = spth_lunar_capital_psi_sub_gate_closed
+                    switch = {
+                        trigger = has_star_flag
+                        spth_lunar_capital_psi_sub_gate_1 = {
+                            set_global_flag = spth_lunar_capital_psi_gate_1_killed
+                            set_global_flag = spth_lunar_capital_psi_sub_gate_1_killed
+                        }
+                        spth_lunar_capital_psi_sub_gate_2 = {
+                            set_global_flag = spth_lunar_capital_psi_gate_2_killed
+                            set_global_flag = spth_lunar_capital_psi_sub_gate_2_killed
+                        }
+                        spth_lunar_capital_psi_sub_gate_3 = {
+                            set_global_flag = spth_lunar_capital_psi_gate_3_killed
+                            set_global_flag = spth_lunar_capital_psi_sub_gate_3_killed
+                        }
+                        spth_lunar_capital_psi_sub_gate_4 = {
+                            set_global_flag = spth_lunar_capital_psi_gate_4_killed
+                            set_global_flag = spth_lunar_capital_psi_sub_gate_4_killed
+                        }
+                    }
+                    every_fleet_in_system = { limit = { is_cloaked = yes } set_cloaking_active = no }
+                    every_fleet_in_system = {
+                        limit = { has_fleet_flag = spth_lunar_psi_gate_fleet }
+                        set_event_locked = no
+                    }
+                    star = { th_spawn_explosion_particle = { color = green size = extra } }
+                    save_event_target_as = spth_system
+                }
+                event_target:global_event_country = {
+                    if = {
+                        limit = { NOT = { is_variable_set = spth_lunar_capital_psi_sub_gate_destroyed } }
+                        set_variable = { which = spth_lunar_capital_psi_sub_gate_destroyed value = 0 }
+                    }
+                    change_variable = { which = spth_lunar_capital_psi_sub_gate_destroyed value = 1 }
+                }
             }
         } else = {
-            fleet.solar_system = {
-                set_global_flag = spth_lunar_capital_psi_gate_2_killed
-                set_global_flag = spth_lunar_capital_psi_sub_gate_2_killed
-                every_fleet_in_system = { limit = { is_cloaked = yes } set_cloaking_active = no }
-                event_target:spth_lunar_psi_gate_fleet_2 = { set_event_locked = no }
-                star = { th_spawn_explosion_particle = { color = green size = extra } }
-                save_event_target_as = spth_system
+            if = {
+                limit = { fleet.solar_system = { has_star_flag = spth_lunar_capital_psi_sub_gate_1 } }
+                fleet.solar_system = {
+                    set_global_flag = spth_lunar_capital_psi_gate_1_killed
+                    set_global_flag = spth_lunar_capital_psi_sub_gate_1_killed
+                    every_fleet_in_system = { limit = { is_cloaked = yes } set_cloaking_active = no }
+                    event_target:spth_lunar_psi_gate_fleet_1 = { set_event_locked = no }
+                    star = { th_spawn_explosion_particle = { color = green size = extra } }
+                    save_event_target_as = spth_system
+                }
+            } else = {
+                fleet.solar_system = {
+                    set_global_flag = spth_lunar_capital_psi_gate_2_killed
+                    set_global_flag = spth_lunar_capital_psi_sub_gate_2_killed
+                    every_fleet_in_system = { limit = { is_cloaked = yes } set_cloaking_active = no }
+                    event_target:spth_lunar_psi_gate_fleet_2 = { set_event_locked = no }
+                    star = { th_spawn_explosion_particle = { color = green size = extra } }
+                    save_event_target_as = spth_system
+                }
             }
         }
         owner = { country_event = { id = lunar_capital_psi.24 days = 1 } }
