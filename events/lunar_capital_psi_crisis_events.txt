@@ -6184,7 +6184,68 @@ fleet_event = {
     }
 }
 
-# leader events.
+# corrupt creature events.
+# on_ship_destroyed_victim, kill space creature, corrupt them.
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
+    id = lunar_capital_psi.600
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = {
+        is_touhou_crisis_faction = no
+        from = {  is_lunar_capital_faction = yes }
+        fromfromfrom = { check_modifier_value = { modifier = ship_is_touhou_psi_ship value > 0 } }
+        fromfrom = { is_lunar_capital_psi_corruptable_ship = yes }
+    }
+    immediate = {
+        fromfrom = {
+            switch = {
+                trigger = is_ship_size
+                dimensional_horror = {
+                    save_event_target_as = spth_lunar_spawnpoint
+                    spth_create_fleet = {
+                        NAME = NAME_lunar_capital_corrupted_dimensional_horror
+                        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+                        OWNER = event_target:spth_lunar_capital_psi_country
+                        location = event_target:spth_lunar_spawnpoint
+                        lunar_capital_corrupted_dimensional_horror = 1
+                        lunar_capital_bonus = yes
+                        flag = spth_lunar_psi_fleet
+                        flag2 = spth_lunar_psi_corrupted_fleet
+                        evt_target = spth_lunar_fleet
+                    }
+                    event_target:spth_lunar_fleet = {
+                        every_owned_ship = { set_ship_flag = spth_lunar_psi_tmp_ship }
+                    }
+                    every_playable_country = {
+                        country_event = { id = lunar_capital_psi.601 scopes = { from = root.from.solar_system } }
+                    }
+                }
+                default = { }
+            }
+        }
+    }
+}
+country_event = {
+    id = lunar_capital_psi.601
+    title = lunar_capital_psi.601.name
+    desc = lunar_capital_psi.601.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_dimensional_horror_corrupted_room }
+    show_sound = event_psionic_robot
+    location = from
+    immediate = {
+    }
+    option = {
+        name = TH_WHAT_HAPPENED
+    }
+}
 
 # 杀了土著
 country_event = {
