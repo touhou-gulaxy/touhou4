@@ -2223,6 +2223,97 @@ country_event = {
         country_event = { id = touhou_crisis.302 days = 360 }
     }
 }
+event = {
+    id = touhou_crisis.303
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        exists = event_target:spth_kamikaushi_crisis_super_shipyard
+        event_target:spth_kamikaushi_crisis_super_shipyard = { exists = space_owner }
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { exists = event_target:spth_kamikaushi_crisis_super_shipyard_mega } }
+            event_target:spth_kamikaushi_crisis_super_shipyard = {
+                random_system_megastructure = {
+                    limit = { is_megastructure_type = touhou_kamikakushi_super_shipyard }
+                    save_global_event_target_as = spth_kamikaushi_crisis_super_shipyard_mega
+                }
+            }
+        } else_if = {
+            limit = {
+                OR = {
+                    event_target:spth_kamikaushi_crisis_super_shipyard_mega = { NOT = { exists = owner } }
+                    event_target:spth_kamikaushi_crisis_super_shipyard_mega.owner = {
+                        NOT = { is_same_value = event_target:spth_kamikaushi_crisis_super_shipyard.space_owner }
+                    }
+                }
+            }
+            if = {
+                limit = { event_target:spth_kamikaushi_crisis_super_shipyard_mega = { NOT = { exists = owner } } }
+                event_target:spth_kamikaushi_crisis_super_shipyard_mega = {
+                    set_owner = event_target:spth_kamikaushi_crisis_super_shipyard.space_owner
+                }
+                event_target:spth_kamikaushi_crisis_super_shipyard.space_owner = {
+                    if = {
+                        limit = { is_touhou_player_faction = yes }
+                        country_event = { id = touhou_crisis.305 }
+                    }
+                }
+            } else = {
+                event_target:spth_kamikaushi_crisis_super_shipyard_mega = {
+                    if = {
+                        limit = {
+                            has_global_flag = spth_kamikaushi_crisis_start
+                            NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+                            event_target:spth_kamikaushi_crisis_super_shipyard_mega.owner = {
+                                is_country_type = spth_kamikakushi_country
+                            }
+                        }
+                        event_target:spth_kamikaushi_crisis_super_shipyard.space_owner = {
+                            if = {
+                                limit = { is_touhou_player_faction = yes }
+                                country_event = { id = touhou_crisis.304 }
+                            }
+                        }
+                    } else_if = {
+                        limit = { is_touhou_player_faction = yes }
+                        event_target:spth_kamikaushi_crisis_super_shipyard.space_owner = {
+                            country_event = { id = touhou_crisis.305 }
+                        }
+                    }
+                    set_owner = event_target:spth_kamikaushi_crisis_super_shipyard.space_owner
+                }
+            }
+        }
+    }
+}
+country_event = {
+    id = touhou_crisis.304
+    title = touhou_crisis.304.name
+    desc = touhou_crisis.304.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_the_last_stormshelter_room }
+    is_triggered_only = yes
+    option = {
+        name = touhou_crisis.304.a
+    }
+}
+country_event = {
+    id = touhou_crisis.305
+    title = touhou_crisis.305.name
+    desc = touhou_crisis.305.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_the_last_stormshelter_room }
+    is_triggered_only = yes
+    option = {
+        name = touhou_crisis.304.a
+    }
+}
 
 # 杀了土著
 country_event = {

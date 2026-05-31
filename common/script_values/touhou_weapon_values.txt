@@ -189,6 +189,16 @@ ship_spth_damage_reduction_mult_min_value = {
 ship_spth_damage_reduction_mult_max_value = {
     base = 1
     add = modifier:ship_spth_damage_reduction_mult_max
+    modifier = {
+        has_ship_flag = ship_has_touhou_nimble_fabric_effect
+        check_modifier_value = { modifier = ship_has_touhou_nimble_fabric_crisis value > 0 }
+        min = 0.99
+    }
+    modifier = {
+        has_ship_flag = ship_has_touhou_nimble_fabric_effect
+        check_modifier_value = { modifier = ship_has_touhou_nimble_fabric_crisis value > 0 }
+        min = 0.90
+    }
 }
 # modifier, max->modifier-val=max->val=max-modifier
 ship_spth_damage_reduction_mult_max_buf_value = {
@@ -257,7 +267,7 @@ concept_touhou_echo_strike_damage_modifier = {
     add = event_target:touhou_echo_strike_target.modifier:weapon_type_kinetic_weapon_damage_mult
     mult = 0.25
 }
-concept_touhou_echo_strike_damage_factor = {
+concept_touhou_echo_strike_damage_factor_1 = {
     base = 1
     add = value:concept_touhou_echo_strike_damage_modifier
     add = event_target:touhou_echo_strike_target.modifier:ship_weapon_damage
@@ -266,7 +276,7 @@ concept_touhou_echo_strike_damage_factor = {
 concept_touhou_echo_strike_damage = {
     base = @spth_common_energy_$size$_damage_min
     mult = @spth_common_energy_$size$_armor_damage
-    mult = value:concept_touhou_echo_strike_damage_factor
+    mult = value:concept_touhou_echo_strike_damage_factor_1
     mult = -1
 }
 concept_touhou_cleanse_health_factor = {
@@ -841,4 +851,21 @@ touhou_echo_status_full_factor = {
     add = modifier:weapon_type_lingli_weapon_damage_mult
     add = modifier:weapon_type_spark_weapon_damage_mult
     min = 1.0
+}
+touhou_steal_modifier_on_hit_dynamic_threshold_crisis_factor = {
+    base = 0
+    add = value:touhou_difficulty
+    divide = 8
+    add = 1
+    min = 1
+}
+touhou_steal_modifier_on_hit_dynamic_threshold = {
+    base = 0
+    add = trigger:ship_size_multiplier
+    mult = $factor$
+    modifier = {
+        has_ship_flag = touhou_mod_crisis_ship
+        mult = value:touhou_steal_modifier_on_hit_dynamic_threshold_crisis_factor
+    }
+    min = $min_value$
 }

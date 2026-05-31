@@ -149,8 +149,8 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
     target_focus = spread
     on_hit = {
-        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 16.00 duration = 8.00 }
-        touhou_steal_modifier_on_hit = { modifier = ship_hull_regen_add_static value = 16.00 duration = 8.00 }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 16.00 duration = 8.00 dynamic = yes threshold = 12 }
+        touhou_steal_modifier_on_hit = { modifier = ship_hull_regen_add_static value = 16.00 duration = 8.00 dynamic = yes threshold = 60 }
     }
 }
 
@@ -423,6 +423,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.60 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_weapon_muso"
@@ -440,6 +443,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.30 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "LARGE_th_weapon_muso"
@@ -457,6 +463,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.15 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 # 下面两个为0.5双穿同时ai任务反护盾反装甲
 weapon_component_template = {
@@ -476,6 +485,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_resources class = special size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
     target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 1.50 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "LARGE_th_weapon_ex_muso"
@@ -494,6 +506,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_resources class = special size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
     target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 1.50 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 
 ###################阴阳玉################
@@ -518,11 +533,14 @@ weapon_component_template = {
         custom_tooltip_with_params = {
             description = th_yinyang_jade_hit_effect
             description_parameters = {
-                TOUHOU_AMOUNT = 1.25
+                TOUHOU_AMOUNT = 0.8
             }
         }
         hidden_effect = {
-            touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = 0.0125 duration = 4 }
+            if = {
+                limit = { NOT = { has_ship_flag = ship_has_touhou_nimble_fabric_effect } }
+                touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = 0.008 duration = 4 threshold = 0.5 }
+            }
         }
     }
 }
@@ -546,11 +564,14 @@ weapon_component_template = {
         custom_tooltip_with_params = {
             description = th_yinyang_jade_hit_effect
             description_parameters = {
-                TOUHOU_AMOUNT = 2.50
+                TOUHOU_AMOUNT = 1.6
             }
         }
         hidden_effect = {
-            touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = 0.025 duration = 4 }
+            if = {
+                limit = { NOT = { has_ship_flag = ship_has_touhou_nimble_fabric_effect } }
+                touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = 0.016 duration = 4 threshold = 0.5 }
+            }
         }
     }
 }
@@ -574,11 +595,14 @@ weapon_component_template = {
         custom_tooltip_with_params = {
             description = th_yinyang_jade_hit_effect
             description_parameters = {
-                TOUHOU_AMOUNT = 5.00
+                TOUHOU_AMOUNT = 3.2
             }
         }
         hidden_effect = {
-            touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = 0.05 duration = 4 }
+            if = {
+                limit = { NOT = { has_ship_flag = ship_has_touhou_nimble_fabric_effect } }
+                touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = 0.032 duration = 4 threshold = 0.5 }
+            }
         }
     }
 }
@@ -1153,6 +1177,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.60 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_weapon_xianzhe"
@@ -1168,6 +1195,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.30 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_weapon_xianzhe"
@@ -1183,6 +1213,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = energy type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.15 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 
 #女仆飞刀
@@ -1201,6 +1234,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.60 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_weapon_knife"
@@ -1216,6 +1252,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.30 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_weapon_knife"
@@ -1231,6 +1270,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.15 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 
 #泄矢铁轮
@@ -1251,6 +1293,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.60 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_weapon_xieshi"
@@ -1268,6 +1313,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.30 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_weapon_xieshi"
@@ -1285,6 +1333,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = common tag = kinetic type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.15 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 
 #封魔针
@@ -1410,7 +1461,7 @@ weapon_component_template = {
             #     add_modifier = { modifier = th_weapon_sanae_hit_effect }
             # }
         }
-        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 6.00 duration = 4.00 }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 6.00 duration = 4.00 dynamic = yes threshold = 16 }
     }
 }
 weapon_component_template = {
@@ -1441,7 +1492,7 @@ weapon_component_template = {
             #     add_modifier = { modifier = th_weapon_sanae_hit_effect }
             # }
         }
-        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 3.00 duration = 4.00 }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 3.00 duration = 4.00 dynamic = yes threshold = 16 }
     }
 }
 weapon_component_template = {
@@ -1471,7 +1522,7 @@ weapon_component_template = {
             #     add_modifier = { modifier = th_weapon_sanae_hit_effect }
             # }
         }
-        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 1.50 duration = 4.00 }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 1.50 duration = 4.00 dynamic = yes threshold = 16 }
     }
 }
 
@@ -2070,6 +2121,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = yuyuko_fan type = large }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.40 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_yuyuko_butterfly"
@@ -2092,6 +2146,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = yuyuko_fan type = medium }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.20 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_yuyuko_butterfly"
@@ -2114,6 +2171,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_component_attributes name = special tag = yuyuko_fan type = small }
     inline_script = { script = ship_components/spth_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.10 duration = 4.00 dynamic = yes threshold = 20 }
+    }
 }
 
 weapon_component_template = {
@@ -2175,6 +2235,7 @@ weapon_component_template = {
             spth_toyohime_instant_kill_on_hit = yes
             touhou_weapon_fire_aoe_damage_lunar_capital = { size = titanic size_tag = giga type = instant_kill_crisis range = 150 }
         }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 32.00 duration = 8.00 }
     }
     inline_script = { script = ship_components/spth_basic_ai_weight_lunar base = @touhou_components_basic_weight }
 }
@@ -2205,6 +2266,7 @@ weapon_component_template = {
             spth_toyohime_instant_kill_on_hit = yes
             touhou_weapon_fire_aoe_damage_lunar_capital = { size = titanic size_tag = giga type = instant_kill_crisis range = 120 }
         }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 32.00 duration = 8.00 }
     }
     inline_script = { script = ship_components/spth_basic_ai_weight_lunar base = @touhou_components_basic_weight }
 }
@@ -2248,6 +2310,7 @@ weapon_component_template = {
             }
             touhou_weapon_fire_aoe_damage_lunar_capital = { size = titanic size_tag = t type = crisis range = 120 }
         }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 16.00 duration = 8.00 dynamic = yes threshold = 8 }
     }
     inline_script = { script = ship_components/spth_basic_ai_weight_lunar base = @touhou_components_basic_weight }
     target_focus = spread
@@ -2290,6 +2353,7 @@ weapon_component_template = {
             }
             touhou_weapon_fire_aoe_damage_lunar_capital = { size = extra_large size_tag = x type = crisis range = 60 }
         }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 12.00 duration = 6.00 dynamic = yes threshold = 8 }
     }
     inline_script = { script = ship_components/spth_basic_ai_weight_lunar base = @touhou_components_basic_weight }
     target_focus = spread
@@ -2334,6 +2398,7 @@ weapon_component_template = {
             touhou_weapon_fire_aoe_damage_lunar_capital = { size = titanic size_tag = t type = alt range = 100 }
             touhou_weapon_emp_charge_module_effect = { size = titanic }
         }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 16.00 duration = 8.00 dynamic = yes threshold = 8 }
     }
     potential = {
         ship_from_touhou_country = yes
@@ -2380,6 +2445,7 @@ weapon_component_template = {
             touhou_weapon_fire_aoe_damage_lunar_capital = { size = extra_large size_tag = x type = alt range = 50 }
             touhou_weapon_emp_charge_module_effect = { size = extra_large }
         }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 12.00 duration = 6.00 dynamic = yes threshold = 8 }
     }
     potential = {
         ship_from_touhou_country = yes
@@ -2417,7 +2483,7 @@ weapon_component_template = {
         touhou_steal_modifier_on_hit = { modifier = ship_shield_penetration_mult value = 0.15 duration = 4.00 }
         touhou_steal_modifier_on_hit = { modifier = ship_armor_penetration_mult value = 0.15 duration = 4.00 }
         touhou_steal_modifier_on_hit = { modifier = ship_armor_regen_add_static value = 8.00 duration = 4.00 }
-        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 10.00 duration = 4.00 }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 10.00 duration = 4.00 dynamic = yes threshold = 8 }
     }
 }
 weapon_component_template = {
@@ -2449,7 +2515,7 @@ weapon_component_template = {
         touhou_steal_modifier_on_hit = { modifier = ship_shield_penetration_add value = 0.15 duration = 4.00 }
         touhou_steal_modifier_on_hit = { modifier = ship_armor_penetration_add value = 0.15 duration = 4.00 }
         touhou_steal_modifier_on_hit = { modifier = ship_armor_regen_add_static value = 4.00 duration = 4.00 }
-        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 5.00 duration = 4.00 }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 5.00 duration = 4.00 dynamic = yes threshold = 8 }
     }
 }
 weapon_component_template = {
@@ -2563,7 +2629,7 @@ weapon_component_template = {
     }
     inline_script = { script = ship_components/spth_basic_ai_weight_lunar base = @touhou_components_basic_weight }
     on_hit = {
-        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 20.00 duration = 8.00 }
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 20.00 duration = 8.00 dynamic = yes threshold = 8 }
     }
 }
 
@@ -2637,6 +2703,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_basic_ai_weight_psionic base = @touhou_components_basic_weight }
     upgrades_to = LARGE_touhou_psionic_ag_lighting
     target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.80 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_touhou_psionic_lighting"
@@ -2653,6 +2722,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_basic_ai_weight_psionic base = @touhou_components_basic_weight }
     upgrades_to = MEDIUM_touhou_psionic_ag_lighting
     target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.40 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     key = "SMALL_touhou_psionic_lighting"
@@ -2669,6 +2741,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_basic_ai_weight_psionic base = @touhou_components_basic_weight }
     upgrades_to = SMALL_touhou_psionic_ag_lighting
     target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.20 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     key = "touhou_psionic_lighting_ex"
@@ -2749,6 +2824,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight_psionic base = @touhou_components_basic_weight }
     target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.80 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_touhou_psionic_ag_lighting"
@@ -2764,6 +2842,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight_psionic base = @touhou_components_basic_weight }
     target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.40 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     key = "SMALL_touhou_psionic_ag_lighting"
@@ -2779,6 +2860,9 @@ weapon_component_template = {
     inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight_psionic base = @touhou_components_basic_weight }
     target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.20 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     key = "touhou_psionic_ag_lighting_ex"
@@ -2853,6 +2937,9 @@ weapon_component_template = {
     ship_modifier = {
         component_lifesteal_add = 0.10
     }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.80 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     inline_script = {
@@ -2864,6 +2951,9 @@ weapon_component_template = {
     ship_modifier = {
         component_lifesteal_add = 0.10
     }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.40 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     inline_script = {
@@ -2874,6 +2964,9 @@ weapon_component_template = {
     upgrades_to = touhou_psionic_singularity_alt_s
     ship_modifier = {
         component_lifesteal_add = 0.10
+    }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.20 duration = 4.00 dynamic = yes threshold = 16 }
     }
 }
 weapon_component_template = {
@@ -2946,6 +3039,9 @@ weapon_component_template = {
     ship_modifier = {
         component_lifesteal_add = 0.10
     }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.80 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     inline_script = {
@@ -2956,6 +3052,9 @@ weapon_component_template = {
     ship_modifier = {
         component_lifesteal_add = 0.10
     }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.40 duration = 4.00 dynamic = yes threshold = 16 }
+    }
 }
 weapon_component_template = {
     inline_script = {
@@ -2965,6 +3064,9 @@ weapon_component_template = {
     }
     ship_modifier = {
         component_lifesteal_add = 0.10
+    }
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.20 duration = 4.00 dynamic = yes threshold = 16 }
     }
 }
 weapon_component_template = {
@@ -3050,7 +3152,7 @@ weapon_component_template = {
     inline_script = {
         script = ship_components/touhou_anti_psionic_weapon_stats
         size_short = l size = large extra_tags = "weapon_archaeotech"
-        prerequisites = tech_touhou_anti_psionic_weapon stack_modifier = 0.060
+        prerequisites = tech_touhou_anti_psionic_weapon stack_modifier = 0.010 stack_modifier_alt = 1.00
     }
     size_damage_factor = @spth_high_psionic_size_damage_factor
 }
@@ -3058,7 +3160,7 @@ weapon_component_template = {
     inline_script = {
         script = ship_components/touhou_anti_psionic_weapon_stats
         size_short = m size = medium extra_tags = "weapon_archaeotech"
-        prerequisites = tech_touhou_anti_psionic_weapon stack_modifier = 0.030
+        prerequisites = tech_touhou_anti_psionic_weapon stack_modifier = 0.020 stack_modifier_alt = 2.00
     }
     size_damage_factor = @spth_high_psionic_size_damage_factor
 }
@@ -3066,7 +3168,7 @@ weapon_component_template = {
     inline_script = {
         script = ship_components/touhou_anti_psionic_weapon_stats
         size_short = s size = small extra_tags = "weapon_archaeotech"
-        prerequisites = tech_touhou_anti_psionic_weapon stack_modifier = 0.015
+        prerequisites = tech_touhou_anti_psionic_weapon stack_modifier = 0.040 stack_modifier_alt = 4.00
     }
     size_damage_factor = @spth_high_psionic_size_damage_factor
 }

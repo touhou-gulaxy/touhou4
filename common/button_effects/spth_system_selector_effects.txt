@@ -420,6 +420,61 @@ spth_system_selector_confirm_touhou_system_warper_attack = {
         }
     }
 }
+spth_system_selector_confirm_touhou_system_warper_attack_multiple_target = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            if = {
+                limit = { is_scope_type = galactic_object }
+                save_event_target_as = spth_system_selector_target
+            } else_if = {
+                limit = { exists = solar_system }
+                solar_system = {
+                    save_event_target_as = spth_system_selector_target
+                }
+            } else = {
+                from = {
+                    country_event = { id = toho.4230 }
+                    country_event = { id = toho.4201 }
+                }
+            }
+            if = {
+                limit = { exists = event_target:spth_system_selector_target }
+                event_target:spth_system_selector_target = {
+                    log = "选中了星系[This.GetName]QAQ"
+                    if = {
+                        limit = {
+                            OR = {
+                                AND = {
+                                    exists = space_owner
+                                    space_owner = { is_same_value = root.from }
+                                }
+                                spth_can_not_star_killer_hit_system = yes
+                            }
+                        }
+                        from = {
+                            country_event = { id = toho.4230 }
+                            country_event = { id = toho.4201 }
+                        }
+                    } else = {
+                        event_target:spth_system_selector_target = {
+                            root.from = {
+                                fire_on_action = {
+                                    on_action = on_touhou_system_warper_select_system_confirm
+                                    scopes = {
+                                        from = prev
+                                        fromfrom = prev
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 spth_system_selector_confirm_touhou_system_warper_self_warp = {
     potential = { always = yes }
     allow = { always = yes }
