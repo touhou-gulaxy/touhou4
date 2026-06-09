@@ -1,7 +1,7 @@
 fun generateSiteEvent(prefix: String, index: Int) {
     println(
         """
-        planet_event = {
+        carrier_event = {
         	id = ${prefix}.$index
         	title = "${prefix}.$index"
         	desc = "${prefix}.${index}.desc"

@@ -25,11 +25,11 @@ touhou_flower_incident_system = {
     remove_star_flag = touhou_flower_incident_stage_3
     set_star_flag = touhou_flower_incident_stage_$level$
     every_system_planet_colony = {
-        limit = { NOT = { has_planet_flag = touhou_flower_incident_stage_$level$ } }
-        remove_planet_flag = touhou_flower_incident_stage_1
-        remove_planet_flag = touhou_flower_incident_stage_2
-        remove_planet_flag = touhou_flower_incident_stage_3
-        set_planet_flag = touhou_flower_incident_stage_$level$
+        limit = { NOT = { has_carrier_flag = touhou_flower_incident_stage_$level$ } }
+        remove_carrier_flag = touhou_flower_incident_stage_1
+        remove_carrier_flag = touhou_flower_incident_stage_2
+        remove_carrier_flag = touhou_flower_incident_stage_3
+        set_carrier_flag = touhou_flower_incident_stage_$level$
         touhou_flower_incident_colony_modifier = { level = $level$ }
     }
 }
@@ -1296,18 +1296,18 @@ touhou_create_fe_ancient_ship = {
 
 touhou_great_patron_dragon_accord_4_select_planet = {
     optimize_memory
-    random_owned_planet = {
+    random_owned_colony = {
         limit = {
             solar_system = {
                 has_psionic_aura = yes
                 aura_owner = { is_same_value = root }
             }
             has_deposit = d_hakurei_barrier
-            NOT = { has_planet_flag = touhou_great_patron_dragon_accord_4_planet_lock }
-            [[has_flag] has_planet_flag = touhou_great_patron_dragon_accord_4 ]
-            [[not_has_flag] NOT = { has_planet_flag = touhou_great_patron_dragon_accord_4 } ]
+            NOT = { has_carrier_flag = touhou_great_patron_dragon_accord_4_planet_lock }
+            [[has_flag] has_carrier_flag = touhou_great_patron_dragon_accord_4 ]
+            [[not_has_flag] NOT = { has_carrier_flag = touhou_great_patron_dragon_accord_4 } ]
         }
-        set_timed_planet_flag = { flag = touhou_great_patron_dragon_accord_4_planet_lock days = 1 }
+        set_timed_carrier_flag = { flag = touhou_great_patron_dragon_accord_4_planet_lock days = 1 }
         save_event_target_as = touhou_great_patron_dragon_accord_4_planet_$id$
     }
 }
@@ -2148,12 +2148,12 @@ touhou_remove_planet = {
     optimize_memory
     if = { limit = { is_star = yes } change_pc = pc_spth_void }
     else = { change_pc = pc_spth_void_planet }
-    planet_event = { id = toho.4020 days = 1 }
+    carrier_event = { id = toho.4020 days = 1 }
 }
 # planet scope
 touhou_create_shell_world_layer = {
     optimize_memory
-    set_planet_flag = has_megastructure
+    set_carrier_flag = has_megastructure
     save_event_target_as = ag_shell_world_prev_layer
     set_planet_entity = { entity = "ag_void_entity" }
     if = {
@@ -2197,16 +2197,16 @@ touhou_create_shell_world_layer = {
                 set_all_comms_surveyed = yes
                 clear_blockers = yes
                 clear_planet_modifiers = yes
-                set_planet_flag = megastructure
-                set_planet_flag = is_megastructure
+                set_carrier_flag = megastructure
+                set_carrier_flag = is_megastructure
                 set_planet_size = prevprev.trigger:planet_size
                 change_planet_size = 1
                 set_variable = { which = ag_shell_world_layer value = prevprev.ag_shell_world_layer }
                 change_variable = { which = ag_shell_world_layer value = 1 }
                 save_event_target_as = ag_shell_world_new_layer
                 save_global_event_target_as = ag_shell_world_next_layer_@event_target:ag_shell_world_prev_layer
-                set_planet_flag = ag_shell_world_surface_layer
-                [[flag] set_planet_flag = $flag$ ]
+                set_carrier_flag = ag_shell_world_surface_layer
+                [[flag] set_carrier_flag = $flag$ ]
                 set_owner = prevprev.owner
                 set_controller = prevprev.owner
                 create_pop_group = { species = prevprev.owner.species size = 100 }
@@ -2216,7 +2216,7 @@ touhou_create_shell_world_layer = {
         }
     }
     save_global_event_target_as = ag_shell_world_prev_layer_@event_target:ag_shell_world_new_layer
-    if = { limit = { has_planet_flag = ag_shell_world_surface_layer } remove_planet_flag = ag_shell_world_surface_layer }
+    if = { limit = { has_carrier_flag = ag_shell_world_surface_layer } remove_carrier_flag = ag_shell_world_surface_layer }
     if = { limit = { is_planet_class = pc_ag_shell_world_surface } ag_change_pc = { ag_planet_class = pc_ag_shell_world } }
     event_target:ag_shell_world_base_layer_temp = {
         save_global_event_target_as = ag_shell_world_base_layer_@event_target:ag_shell_world_new_layer
@@ -2266,8 +2266,8 @@ touhou_create_damaged_shell_world_layer = {
             10 = { last_created_ambient_object = { set_location = { target = prev distance = 15 angle = random } } }
         }
     }
-    set_planet_flag = $prev_layer_type$
-    set_planet_flag = has_megastructure
+    set_carrier_flag = $prev_layer_type$
+    set_carrier_flag = has_megastructure
     if = {
         limit = { NOT = { is_variable_set = ag_shell_world_layer } }
         set_variable = { which = ag_shell_world_layer value = $init_layer$ }
@@ -2285,8 +2285,8 @@ touhou_create_damaged_shell_world_layer = {
                 set_name = "touhou_megastructure_shell_world_damaged"
                 clear_blockers = yes
                 clear_planet_modifiers = yes
-                set_planet_flag = megastructure
-                set_planet_flag = is_megastructuree
+                set_carrier_flag = megastructure
+                set_carrier_flag = is_megastructuree
                 set_variable = { which = ag_shell_world_layer value = 1 }
                 save_global_event_target_as = ag_shell_world_next_layer_@prevprev
                 save_global_event_target_as = ag_shell_world_surface_layer_@prevprev
@@ -2940,7 +2940,7 @@ touhou_sky_control_ship_destroy_system = {
             }
             random_system_planet = {
                 limit = { is_primary_star = yes }
-                planet_event = {
+                carrier_event = {
                     id = touhou_ship_actions.102
                     scopes = {
                         from = root
