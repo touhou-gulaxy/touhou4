@@ -1,3 +1,109 @@
+#reloadable with 'reload stats'
+# This file is where you start when you want to configure something new, then go to sections
+
+####################
+# NOTE FOR MODDERS #
+####################
+# modifier = { }					# Modifiers for values shown in the ship designer. For starbases, also supports modifiers shown in some other UIs.
+# ship_modifier = { }				# Modifiers not shown in the ship designer.
+# use_shipnames_from = other_size	# allows a ship size to use names from another size
+# icon = ship_size_military_1
+		#ship_size_military_1 is default. The following sprite keys are generated from it:
+			#GFX_text_<key>
+			#GFX_<key>
+			#GFX_<key>_top
+			#GFX_<key>_top_damaged
+# icon_frame: now only used for starbases. Value of 2 or more means it shows up on the galaxy map, 1-5 denote which icon it uses on starbase sprite sheets (e.g. gfx/interface/icons/starbase_ship_sizes.dds)
+# ship_class_icon_frame = 21				# Determines which frame on the ship class sprite sheets this ship uses (e.g. gfx/interface/icons/ship_classes.dds). Only shown for non-mobile fleets by default.
+# force_show_ship_class_icon_frame = yes	# If yes, the ship_class_icon_frame icon is shown on the galactic map even when the fleet is mobile. Default: no.
+# ai_ship_data = {					#For determining how many ships the AI wants. Ships it can't recruit (i.e. missing tech prereqs or fails potential_country or possible_country) are pre-filtered out.
+# 	fraction = { }					#As standard, base, modifier = { factor }, etc. The AI will want this divided by the total fraction it is able to recruit. Note: it is the fraction of the naval cap, so the final value is divided by size_multiplier
+#									#Note: if the fraction is > 0, the following lines will not be applied
+#	min = 1							#Sets a minimum absolute number the country will aim to have
+#	system_mult/planet_mult = 0.1	#Adds this amount for each system/colony the country owns. I.e. min + ( num colonies * planet_mult ) + ( num systems * system_mult )
+#	max = 5							#Sets a maximum absolute number the country will aim to have. Note that it will still want only the minimum unless you define a system_mult or planet_mult
+#}
+# ship_roles = { name1 name2 } # Show up as selectable roles in the ship designer
+# never_lost = <yes/no> # Removes the chance for the ship size to instantly get killed by emergency ftl. It can still be killed by the random Emergency FTL damage effect.
+# triggered_ship_roles = { { name = test1 trigger = {} } { name = test1 trigger = {} } } # List of triggered ship roles, show up in the ship designer when the trigger is true, executes on country scope
+# evaluation_resource = food # strategic resource to evaluate the cost of a ship design associated with this size
+							 # default is energy
+							 # this is used to determine if a ship design is more advanced than another:
+							 #  the one that costs more is considered an upgrade compared to the cheaper one
+#
+# is_bio_ship = yes					# this indicates that this ship uses bioship mechanic
+# is_entropy_conduit = yes			# this indicates that this ship is a type of entropy conduit ship used in the galactic hyperthermia crisis
+# upgrades_to = mauler_stage_2		# the next stage of the bioship growth
+#
+# bioship_growth_progress_required  = 150	# for bioships: growth threshold at which the ship will grow into its next stage
+#                                 			# for hero ships that are NOT bioships: if > 0 this activates the manual growth interface. threshold at which the manual growth is enabled
+#											# if manual growth interface is shown on the fleet UI, leader portrait and info will be hidden
+#
+# hero_ship = yes/no		# If yes, enables hero ship behavior (special UI, can't be merged or disbanded)
+#							# If its combat computer allows it to unlock from combat, it also exposes its actions during combat in the combat view
+#							# default: no
+# hero_ship = {				# Setting it this way sets it to yes and allows to specify parameters
+#
+# 	capabilities = {		# All of these capabilities are blocked for hero ships by default
+#							# Include them in this list to enable them (other not hero-ship related restrictions may still apply)
+#		can_repair
+#		can_upgrade
+#		can_turn_into_mercenary_enclave
+#		can_transfer
+#		can_split
+#		can_reinforce
+# 	}
+#
+#	custom_state_loc_prefix = "STATUS_LOC_KEY_PREFIX"	# for single-ship fleets with a single hero ship, if not empty this activates the status bar on the fleet UI
+#														# if status bar is shown on the fleet UI, leader portrait and info will be hidden
+#														# the status bar consists of two scripted localization driven strings (scope: selected fleet)
+#														# the localization keys for those two strings result from appending to this prefix "_title" or "_value"
+#														# (in this example, "STATUS_LOC_KEY_PREFIX_title" and "STATUS_LOC_KEY_PREFIX_value")
+#
+#	custom_class_text_color = "Color Code Key"			# Accepts a text color code for displaying the color of the ship class.
+#
+#	hero_ship_fleet_background = "GFX_fleet_view_behemoth_stage_4"	# Name of sprite to use as a background for Fleet UI for single-ship hero-ship fleets.
+#																	# default: empty (uses default background)
+# }
+#
+# can_lead_armada = yes		# If yes, a fleet containing a single ship of this size will be able to command fleet armadas
+#							# default: no
+#
+# on_click_sound = "sound_clip_name"		# Sound clip to play when selecting a single fleet that contains exclusively a single ship of this size
+# family_name = "bioship_family"			# root for the name used to described the whole set (so "mauler" for bantam mauler, absolute mauler, etc). This is also used to localize the variant (ie mauler_cap, mauler_pluralized, etc) through localization
+# growth_stage_descriptor = "ship_growth_stage_1"	# localization for the growth stage of the current ship size (so "bantam", "absolute", etc.)
+#
+# # Note: These variables only apply to ships collecting from other ships'/starbases' stockpiles, not to waystations collecting from the system (waystations ignore these variables).
+# # To transfer resources to this ship, if it is not a waystation, collects_stockpile_from must be non-empty and collects_stockpile_to_country must be false.
+# collects_stockpile_from = {}				# List of ship classes that this ship can collect stockpiles from
+# collects_stockpile_to_country = yes/no	# If yes, resources collected from a stockpile go directly to the country; otherwise to this ship's own stockpile (default: no)
+# ship_stockpile_capacity = 1000.0			# Maximum total resources in this ship's stockpile
+#
+# construction_capabilities = {	# If class is shipclass_constructor, determines which construction orders are available and if the AI economic minister should use this ship size for the construction order.
+#								# ai_ship_data should be set appropriately to ensure the AI has sufficient ships for their construction orders.
+#	starbase
+#	mining_station
+#	research_station
+#	observation_station
+#	automated_construction
+#	automated_collection
+#	megastructure
+# }
+#
+# scripted_action = { scripted_action_1 scripted_action_2 ... } # list of scripted actions enabled by this ship size
+# automation_icon = GFX_fleet_order_auto_construct	# GFX sprite key for the automation button icon. The selected state uses <key>_selected automatically.
+#													# default: GFX_fleet_order_automate / GFX_fleet_order_automate_selected
+#
+# carries_colony = <planet_class>			# default: empty. If filled, ship is able to carry a colony of that class and a colony is created by default when the ship is created
+#								  			# (see create_ship effect for special case). Ships that are not carrying a colony when supposed to are killed on a daily basis.
+#								  			# The ship size must also have "class = shipclass_starbase".
+# arkship_picture = "arkship_civilian"		# Image from gfx/portraits/arkships/ships used in portrait background for arkships
+#
+# encampment_required_progress: 50.0	# default: 100.0. Base required progress for arkship encampment/going mobile transition.
+# display_attack_neutral_fleet_button = no	# Default yes, if yes show attack neutral fleet button on military fleet UI
+# construction_offset_mult = 1.0		# distance multiplier for construction ships, will multiply the default construction distance between construction ship and construction site to adapt it to the size of the ship.
+# base_ship_size = "civilian_arkship_tier_1" # will set a base ship size for a ship size; it is used for ark ships so higher tier ark ships can be downgraded to the base version in empire creation
+
 th_marauder = {
 	graphical_culture = no
 	can_be_inspected = no
@@ -564,6 +670,7 @@ TH_super_carrier = {
 	required_component_set = "combat_computers"
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
+	required_component_set = "ship_aura_components"
 	required_component_set = "ship_aura_components"
 	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = gensokyo size = titan ship_class_sub = "" }
@@ -1179,6 +1286,7 @@ spth_kamikakushi_titan = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	required_component_set = "ship_aura_components"
 	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = gensokyo size = titan ship_class_sub = "_scarlet" }
 	on_click_sound = spth_select_non_gensokyo_fleet
@@ -1260,6 +1368,7 @@ spth_kamikakushi_cruiser = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	required_component_set = "ship_aura_components"
 	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = kamikakushi size = medium ship_class_sub = "" }
 	on_click_sound = spth_select_non_gensokyo_fleet
@@ -1336,6 +1445,7 @@ spth_makai_ship_core_0 = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	required_component_set = "ship_aura_components"
 	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = makai size = large ship_class_sub = "" }
 	on_click_sound = spth_select_non_gensokyo_fleet
@@ -1399,6 +1509,7 @@ spth_makai_ship_core_1 = {
 	required_component_set = "combat_computers"
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
+	required_component_set = "ship_aura_components"
 	required_component_set = "ship_aura_components"
 	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = makai size = extra_large ship_class_sub = "" }
@@ -1487,6 +1598,7 @@ touhou_makai_wedge_titan = {
     required_component_set = "thruster_components"
     required_component_set = "sensor_components"
     required_component_set = "ship_aura_components"
+	required_component_set = "ship_aura_components"
     inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = makai size = titan ship_class_sub = "" }
     on_click_sound = spth_select_non_gensokyo_fleet
@@ -1584,6 +1696,7 @@ touhou_sky_control_ship = {
     required_component_set = "combat_computers"
     required_component_set = "thruster_components"
     required_component_set = "sensor_components"
+    required_component_set = "ship_aura_components"
     required_component_set = "ship_aura_components"
     inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = makai size = titan ship_class_sub = "" }
@@ -1748,6 +1861,7 @@ spth_kamikakushi_gate = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "ship_aura_components"
+	required_component_set = "ship_aura_components"
 	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = kamikakushi size = small ship_class_sub = "" }
 	on_click_sound = spth_select_non_gensokyo_fleet
@@ -1816,6 +1930,7 @@ starbase_spth_kamikakushi = {
 
 	required_component_set = "power_core"
 	required_component_set = "combat_computers"
+	required_component_set = "ship_aura_components"
 	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = kamikakushi size = small ship_class_sub = "" }
 	on_click_sound = spth_select_non_gensokyo_fleet
@@ -1969,7 +2084,15 @@ spth_space_shrine_station = {
 	is_designable = no
 	available_to_everyone = yes
 	can_disable = yes
-    is_hero_ship = yes
+    # is_hero_ship = yes
+	hero_ship = {
+		hero_ship_fleet_background = "GFX_fleet_view_touhou_gensokyo_ship"
+		capabilities = {
+			can_repair
+			# can_upgrade
+		}
+		custom_class_text_color = M
+	}
 	class = shipclass_starbase
 	prerequisites = { tech_spth_space_shrine_station }
 	construction_type = starbase_shipyard
@@ -2756,7 +2879,15 @@ doremy_sweet_book_phantom = {
     is_designable = no
     available_to_everyone = yes
     can_disable = yes
-    is_hero_ship = yes
+    # is_hero_ship = yes
+	hero_ship = {
+		hero_ship_fleet_background = "GFX_fleet_view_touhou_gensokyo_ship"
+		capabilities = {
+			can_repair
+			can_upgrade
+		}
+		custom_class_text_color = U
+	}
     class = shipclass_military_special
     construction_type = starbase_shipyard
     potential_construction = { always = no }
@@ -2808,7 +2939,7 @@ touhou_gengetsu_and_mugetsu_phantom = {
     is_designable = no
     available_to_everyone = yes
     can_disable = yes
-    is_hero_ship = yes
+    # is_hero_ship = yes
     class = shipclass_military_special
     construction_type = starbase_shipyard
     potential_construction = { always = no }
@@ -2863,7 +2994,7 @@ touhou_gengetsu_and_mugetsu_storm = {
     is_designable = no
     available_to_everyone = yes
     can_disable = yes
-    is_hero_ship = yes
+    # is_hero_ship = yes
     class = shipclass_military_special
     construction_type = starbase_shipyard
     potential_construction = { always = no }
@@ -3209,12 +3340,12 @@ touhou_fe_union_titan = {
     }
     prerequisites = { tech_touhou_fe_union_titan }
     default_behavior = spth_flagship_attack
-    # required_component_set = "power_core"
-    # required_component_set = "ftl_components"
-    # required_component_set = "combat_computers"
-    # required_component_set = "thruster_components"
-    # required_component_set = "sensor_components"
-    # required_component_set = "ship_aura_components"
+    required_component_set = "power_core"
+    required_component_set = "ftl_components"
+    required_component_set = "combat_computers"
+    required_component_set = "thruster_components"
+    required_component_set = "sensor_components"
+    required_component_set = "ship_aura_components"
     potential_country = {
         always = no
         # is_touhou_country = yes
@@ -3325,6 +3456,12 @@ th_fallen_empire_union_fallen_ship = {
     class = shipclass_military
     is_designable = no
     potential_construction = { always = no }
+    required_component_set = "power_core"
+    required_component_set = "ftl_components"
+    required_component_set = "combat_computers"
+    required_component_set = "thruster_components"
+    required_component_set = "sensor_components"
+    required_component_set = "ship_aura_components"
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = ag size = titan ship_class_sub = "_fallen_union" }
 }
 
@@ -3407,6 +3544,14 @@ touhou_gunpower_turret_moveable = {
             alloys = 2.5
         }
     }
+    required_component_set = "power_core"
+    required_component_set = "ftl_components"
+    required_component_set = "combat_computers"
+    required_component_set = "thruster_components"
+    required_component_set = "sensor_components"
+    required_component_set = "ship_aura_components"
+    required_component_set = "ship_aura_components"
+    required_component_set = "ship_aura_components"
     available_to_everyone = yes
 }
 touhou_gunpower_turret_stationary = {
@@ -3482,6 +3627,14 @@ touhou_gunpower_turret_stationary = {
             alloys = 5
         }
     }
+    required_component_set = "power_core"
+    required_component_set = "ftl_components"
+    required_component_set = "combat_computers"
+    required_component_set = "thruster_components"
+    required_component_set = "sensor_components"
+    required_component_set = "ship_aura_components"
+    required_component_set = "ship_aura_components"
+    required_component_set = "ship_aura_components"
     available_to_everyone = yes
 }
 

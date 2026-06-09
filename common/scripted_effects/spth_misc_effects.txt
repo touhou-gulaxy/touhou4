@@ -3243,7 +3243,60 @@ touhou_disallow_instant_finish_tech = {
     remove_modifier = r_touhou_fragments_of_the_world_modifier_5
 }
 
+# prevent destroy ship-planet
 touhou_destroy_colony = {
 	optimize_memory
+	if = {
+		limit = { touhou_is_ship_planet = no }
+		destroy_colony = yes
+	} else = {
+		touhou_add_planet_devastation = { amount = 100 }
+	}
+}
+# prevent destory ship-planet via add_planet_devastation
+touhou_add_planet_devastation = {
+	optimize_memory
+	if = {
+		limit = { touhou_is_ship_planet = no }
+		add_planet_devastation = $amount$
+	} else = {
+		limit = { exists = ship }
+		custom_tooltip_with_params = {
+			description = touhou_add_planet_devastation_tooltip
+			description_parameters = { TOUHOU_AMOUNT = $amount$ }
+		}
+		hidden_effect = {
+			if = {
+				limit = { NOT = { is_variable_set = touhou_added_planet_devastation_var } }
+				set_variable = { which = touhou_added_planet_devastation_var value = 0 }
+			}
+			change_variable = { which = touhou_added_planet_devastation_var value = $amount$ }
+			if = {
+				limit = { check_variable = { which = touhou_added_planet_devastation_var > 100 } }
+				set_variable = { which = touhou_added_planet_devastation_var value = 100 }
+			}
+			if = {
+				limit = { has_modifier = touhou_added_planet_devastation }
+				remove_modifier = touhou_added_planet_devastation
+			}
+			add_modifier = {
+				modifier = touhou_added_planet_devastation
+				mult = touhou_added_planet_devastation_var
+				days = 1 time_multiplier = touhou_added_planet_devastation_var
+			}
+			carrier? = { carrier_event = { id = spth_colony.1001 days = 1 } }
+		}
+	}
 }
 
+touhou_add_monthly_resource_mult_if_produced = {
+	if = {
+		limit = {
+			has_monthly_income = { resource = $RESOURCE$ value > 0 }
+		}
+		add_monthly_resource_mult = {
+			resource = $RESOURCE$
+			value = $VALUE$
+		}
+	}
+}

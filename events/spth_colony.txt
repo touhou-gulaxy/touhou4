@@ -520,6 +520,45 @@ planet_event = {
 	}
 }
 
+carrier_event = {
+	id = spth_colony.1001
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					NOT = { exists = colony }
+					NOT = { is_variable_set = touhou_added_planet_devastation_var }
+					check_variable = { which = touhou_added_planet_devastation_var value <= 0 }
+				}
+			}
+			set_variable = { which = touhou_added_planet_devastation_var value = 0 }
+			if = {
+				limit = { has_planet_flag = touhou_add_planet_devastation_event_ongoing }
+				remove_planet_flag = touhou_add_planet_devastation_event_ongoing
+			}
+		} else = {
+			if = {
+				limit = { NOT = { has_planet_flag = touhou_add_planet_devastation_event_ongoing } }
+				set_planet_flag = touhou_add_planet_devastation_event_ongoing
+			}
+			subtract_variable = { which = touhou_added_planet_devastation_var value = 1 }
+			if = {
+				limit = { has_modifier = touhou_added_planet_devastation }
+				remove_modifier = touhou_added_planet_devastation
+			}
+			add_modifier = {
+				modifier = touhou_added_planet_devastation
+				mult = touhou_added_planet_devastation_var
+				days = 1 time_multiplier = touhou_added_planet_devastation_var
+			}
+			carrier_event = { id = spth_colony.1001 days = 1 }
+		}
+	}
+}
+
 planet_event = {
 	id = spth_colony.11
 	title = spth_colony.11
