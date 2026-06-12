@@ -1336,6 +1336,45 @@ touhou_gateway_master_node_flags_cleans_up_effect = {
     ]
 }
 
+touhou_damage_ship = {
+    optimize_memory
+	if = {
+		limit = { this? = { is_disabled = no } }
+		damage_ship = {
+			amount = $amount$
+			attacker = $source$
+		}
+	}
+}
+touhou_instant_kill_ship = {
+    optimize_memory
+	if = {
+		limit = { this? = { is_disabled = no } }
+		reduce_shield = @touhou_instant_kill_reduce_shield_amount
+		repair_armor_amount = @touhou_instant_kill_reduce_armor_amount
+		damage_ship = {
+			amount = @touhou_instant_kill_standard_damage
+			attacker = $source$
+		}
+	}
+}
+touhou_add_or_set_variable = {
+    optimize_memory
+	if = {
+		limit = { is_variable_set = $var$ }
+		change_variable = { which = $var$ value = $val$ }
+	} else = {
+		set_variable = { which = $var$ value = $val$ }
+	}
+}
+touhou_copy_to_debug_var = {
+    optimize_memory
+	if = {
+		limit = { has_global_flag = touhou_debug_mode is_variable_set = $var$ }
+		set_variable = { which = touhou_debug_$var$ value = $var$ }
+	}
+}
+
 # touhou_cruise_missile_fire_aoe_damage = {
 #     optimize_memory
 #     if = {
@@ -2517,18 +2556,23 @@ touhou_set_black_hole_class = {
 touhou_psionic_inhibitor_weapon_hit_effect = {
     optimize_memory
     hidden_effect = {
+		if = {
+			limit = { from? = { NOT = { has_ship_flag = touhou_psionic_inhibitor_weapon_$type$_fired } } }
+			from = { set_timed_ship_flag = { flag = touhou_psionic_inhibitor_weapon_$type$_fired days = 4 } }
+			touhou_damage_ship = { amount = value:touhou_ship_hp_value|hull_max|yes|factor|0.005| source = from }
+		}
         if = {
             limit = {
                 NOT = { has_ship_flag = touhou_psionic_inhibitor_weapon_hit_fired }
                 exists = from touhou_is_psionic_ship = yes
             }
             set_timed_ship_flag = { flag = touhou_psionic_inhibitor_weapon_hit_fired days = 4 }
-            if = {
-                limit = { NOT = { has_modifier = touhou_psionic_inhibitor_weapon_modifier_1 } }
-                add_modifier = { modifier = touhou_psionic_inhibitor_weapon_modifier_1 days = 5 }
-            }
+            # if = {
+            #     limit = { NOT = { has_modifier = touhou_psionic_inhibitor_weapon_modifier_1 } }
+            #     add_modifier = { modifier = touhou_psionic_inhibitor_weapon_modifier_1 days = 4 }
+            # }
             add_modifier = {
-                modifier = touhou_psionic_inhibitor_weapon_modifier_2 days = 5
+                modifier = touhou_psionic_inhibitor_weapon_modifier_2 days = 4
                 mult = value:touhou_min_capped_modifier|modifier|weapon_type_lingli_weapon_damage_mult|factor|1|
             }
         }

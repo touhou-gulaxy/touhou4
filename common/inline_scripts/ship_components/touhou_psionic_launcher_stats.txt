@@ -16,7 +16,13 @@ ship_modifier = {
 }
 on_hit = {
     custom_tooltip = touhou_psionic_advanced_weapon_lunar_hit_effect
-    hidden_effect = { spth_reduce_armor = { percent = 0.01 } }
+    hidden_effect = {
+		if = {
+			limit = { from? = { NOT = { has_ship_flag = touhou_psionic_advanced_weapon_lunar_fired } } }
+			from = { set_timed_ship_flag = { flag = touhou_psionic_advanced_weapon_lunar_fired days = 4 } }
+			touhou_damage_ship = { amount = value:touhou_ship_hp_value|hull|yes|armor|yes|divide|2|factor|0.005| source = from }
+		}
+	}
     touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 3.00 duration = 4.00 dynamic = yes threshold = 16 }
 }
 military_power_multiplier = @touhou_generic_scale_military_power_multiplier

@@ -1769,7 +1769,7 @@ ship_event = {
         set_disabled = no
     }
 }
-@spth_extra_life_cooldown = 180
+
 ship_event = {
     id = spth_fleet.1103
     hide_window = yes
@@ -1792,144 +1792,257 @@ ship_event = {
     is_triggered_only = yes
     trigger = { NOT = { has_ship_flag = is_spth_space_shrine_station } }
     immediate = {
-        if = {
-            limit = {
-                exists = fromfrom
-                fromfrom = { OR = { has_fleet_flag = spth_kamikakushi_fleet has_fleet_flag = spth_kamikakushi_defence_fleet } }
-                OR = { has_global_flag = touhou_kamikakushi_extra_31 has_global_flag = touhou_kamikakushi_extra_32 }
-            }
+		if = {
+			limit = {
+				OR = { has_global_flag = touhou_kamikakushi_extra_31 has_global_flag = touhou_kamikakushi_extra_32 }
+				fromfrom? = { OR = { has_fleet_flag = spth_kamikakushi_fleet has_fleet_flag = spth_kamikakushi_defence_fleet } }
+			}
+			if = {
+				limit = { has_global_flag = touhou_kamikakushi_extra_31 }
+				touhou_add_or_set_variable = { var = touhou_common_extra_life_consume_chance_value val = 15 }
+			}
+			if = {
+				limit = { has_global_flag = touhou_kamikakushi_extra_32 }
+				set_variable = { which = touhou_common_extra_life_regen_factor value = 0.5 }
+			}
+		}
+		if = {
+			limit = {
+				OR = { has_global_flag = touhou_lunar_psi_extra_31 has_global_flag = touhou_lunar_psi_extra_34 }
+				fromfrom? = { has_fleet_flag = spth_lunar_psi_fleet }
+			}
+			if = {
+				limit = { has_global_flag = touhou_lunar_psi_extra_31 }
+				touhou_add_or_set_variable = { var = touhou_common_extra_life_consume_chance_value val = 15 }
+			}
+			if = {
+				limit = { has_global_flag = touhou_lunar_psi_extra_34 }
+				set_variable = { which = touhou_common_extra_life_regen_factor value = 0.5 }
+			}
+		}
+		if = {
+			limit = {
+				NOT = { has_ship_flag = ship_th_has_void_snack_used }
+                check_modifier_value = { modifier = ship_th_has_void_snack value != 0 }
+			}
+            set_timed_ship_flag = { flag = ship_th_has_void_snack_used days = 180 }
             if = {
-                limit = { has_global_flag = touhou_kamikakushi_extra_31 }
-                reroll_random = yes
-                random_list = {
-                    15 = {  }
-                    85 = {
-                        if = {
-                            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
-                            change_variable = { which = spth_extra_life_used value = 1 }
-                            remove_modifier = ship_spth_extra_life_lose
-                            if = {
-                                limit = { has_global_flag = touhou_kamikakushi_extra_32 }
-                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 90 }
-                                ship_event = { id = spth_fleet.1105 days = 90 }
-                            } else = {
-                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
-                                ship_event = { id = spth_fleet.1105 days = 180 }
-                            }
-                        }
-                        set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
-                        add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
-                        clear_variable = ship_spth_extra_life_reduce
-                    }
-                }
-                reroll_random = yes
-            }
-        } else_if = {
-            limit = {
-                exists = fromfrom
-                fromfrom = { has_fleet_flag = spth_lunar_psi_fleet }
-                OR = { has_global_flag = touhou_lunar_psi_extra_31 has_global_flag = touhou_lunar_psi_extra_34 }
-            }
-            if = {
-                limit = { has_global_flag = touhou_lunar_psi_extra_31 }
-                reroll_random = yes
-                random_list = {
-                    15 = {  }
-                    85 = {
-                        if = {
-                            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
-                            change_variable = { which = spth_extra_life_used value = 1 }
-                            remove_modifier = ship_spth_extra_life_lose
-                            if = {
-                                limit = { has_global_flag = touhou_lunar_psi_extra_34 }
-                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 90 }
-                                ship_event = { id = spth_fleet.1105 days = 90 }
-                            } else = {
-                                add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
-                                ship_event = { id = spth_fleet.1105 days = 180 }
-                            }
-                        }
-                        set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
-                        add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
-                        clear_variable = ship_spth_extra_life_reduce
-                    }
-                }
-                reroll_random = yes
-            }
-        } else = {
-            if = {
-                limit = {
-                    NOT = { has_ship_flag = ship_th_has_void_snack_used }
-                    check_modifier_value = { modifier = ship_th_has_void_snack value != 0 }
-                }
-                set_timed_ship_flag = { flag = ship_th_has_void_snack_used days = 180 }
+                limit = { has_shield_hp <= 100000000 }
                 if = {
-                    limit = { has_shield_hp <= 100000000 }
-                    if = {
-                        limit = {
-                            check_variable_arithmetic = {
-                                which = value:spth_max_shield_value|percent|3.0|
-                                value > trigger:has_shield_hp
-                            }
+                    limit = {
+                        check_variable_arithmetic = {
+                            which = value:spth_max_shield_value|percent|3.0|
+                            value > trigger:has_shield_hp
                         }
-                        reduce_shield = value:touhou_repair_ship_shield_overflow_value|factor|1.0|
                     }
+                    reduce_shield = value:touhou_repair_ship_shield_overflow_value|factor|1.0|
                 }
             }
-            else_if = {
-                limit = {
-                    OR = {
-                        check_modifier_value = { modifier = ship_th_mokou_skill value != 0 }
-                        check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 }
-                        AND = { exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
-                    }
+			touhou_add_or_set_variable = { var = touhou_common_extra_life_consume_chance_value val = 100 }
+		}
+		if = {
+			limit = {
+                OR = {
+                    check_modifier_value = { modifier = ship_th_mokou_skill value != 0 }
+                    check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 }
+                    AND = { exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
                 }
-                reroll_random = yes
-                random_list = {
-                    0 = {
-                        modifier = { min = 0 always = yes }
-                        modifier = { max = 100 always = yes }
-                        modifier = { add = 10 check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
-                        modifier = { add = modifier:ship_th_mokou_skill }
-                        modifier = { add = 10 exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
-                    }
-                    100 = {
-                        modifier = { min = 0 always = yes }
-                        modifier = { max = 100 always = yes }
-                        modifier = { subtract = 10 check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
-                        modifier = { subtract = modifier:ship_th_mokou_skill }
-                        modifier = { subtract = 10 exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
-                        if = {
-                            limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
-                            change_variable = { which = spth_extra_life_used value = 1 }
-                            remove_modifier = ship_spth_extra_life_lose
-                            add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
-                            ship_event = { id = spth_fleet.1105 days = 180 }
-                        }
-                        set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
-                        add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
-                        clear_variable = ship_spth_extra_life_reduce
-                    }
-                }
-            }
-            else = {
+			}
+			if = {
+				limit = { check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
+				touhou_add_or_set_variable = { var = touhou_common_extra_life_consume_chance_value val = 10 }
+			}
+			touhou_add_or_set_variable = { var = touhou_common_extra_life_consume_chance_value val = modifier:ship_th_mokou_skill }
+			if = {
+				limit = { owner? = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
+				touhou_add_or_set_variable = { var = touhou_common_extra_life_consume_chance_value val = 10 }
+			}
+		}
+		touhou_copy_to_debug_var = { var = touhou_common_extra_life_regen_factor }
+		touhou_copy_to_debug_var = { var = touhou_common_extra_life_consume_chance_value }
+		reroll_random = yes
+		random_list = {
+			1 = {
+                modifier = { min = 0 always = yes }
+                modifier = { max = 100 always = yes }
+				modifier = {
+					add = touhou_common_extra_life_consume_chance_value
+					is_variable_set = touhou_common_extra_life_consume_chance_value
+				}
+				modifier = { subtract = 1 is_variable_set = touhou_common_extra_life_consume_chance_value }
+				# do nothing here.
+				if = {
+					limit = { is_variable_set = touhou_common_extra_life_consume_chance_value }
+					clear_variable = touhou_common_extra_life_consume_chance_value
+				}
+				if = {
+					limit = { is_variable_set = touhou_common_extra_life_regen_factor }
+					clear_variable = touhou_common_extra_life_regen_factor
+				}
+			}
+			99 = {
+                modifier = { min = 0 always = yes }
+                modifier = { max = 100 always = yes }
+				modifier = {
+					subtract = touhou_common_extra_life_consume_chance_value
+					is_variable_set = touhou_common_extra_life_consume_chance_value
+				}
+				modifier = { add = 1 is_variable_set = touhou_common_extra_life_consume_chance_value }
                 if = {
                     limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
                     change_variable = { which = spth_extra_life_used value = 1 }
                     remove_modifier = ship_spth_extra_life_lose
-                    if = {
-                        limit = { check_modifier_value = { modifier = ship_spth_extra_life_no_regen value != 0 } }
-                        add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used }
-                    } else = {
-                        add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
-                        ship_event = { id = spth_fleet.1105 days = 180 }
-                    }
+                    add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 1 time_multiplier = value:touhou_extra_life_regen_delay }
+                    ship_event = { id = spth_fleet.1105 days = value:touhou_extra_life_regen_delay }
                 }
                 set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
-                add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+                add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 10 }
                 clear_variable = ship_spth_extra_life_reduce
-            }
-        }
+				if = {
+					limit = { is_variable_set = touhou_common_extra_life_regen_factor }
+					clear_variable = touhou_common_extra_life_regen_factor
+				}
+			}
+		}
+        # if = {
+        #     limit = {
+        #         exists = fromfrom
+        #         fromfrom = { OR = { has_fleet_flag = spth_kamikakushi_fleet has_fleet_flag = spth_kamikakushi_defence_fleet } }
+        #         OR = { has_global_flag = touhou_kamikakushi_extra_31 has_global_flag = touhou_kamikakushi_extra_32 }
+        #     }
+        #     if = {
+        #         limit = { has_global_flag = touhou_kamikakushi_extra_31 }
+        #         reroll_random = yes
+        #         random_list = {
+        #             15 = {  }
+        #             85 = {
+        #                 if = {
+        #                     limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+        #                     change_variable = { which = spth_extra_life_used value = 1 }
+        #                     remove_modifier = ship_spth_extra_life_lose
+        #                     if = {
+        #                         limit = { has_global_flag = touhou_kamikakushi_extra_32 }
+        #                         add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 90 }
+        #                         ship_event = { id = spth_fleet.1105 days = 90 }
+        #                     } else = {
+        #                         add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+        #                         ship_event = { id = spth_fleet.1105 days = 180 }
+        #                     }
+        #                 }
+        #                 set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+        #                 add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+        #                 clear_variable = ship_spth_extra_life_reduce
+        #             }
+        #         }
+        #         reroll_random = yes
+        #     } else = {
+        #     }
+        # } else_if = {
+        #     limit = {
+        #         exists = fromfrom
+        #         fromfrom = { has_fleet_flag = spth_lunar_psi_fleet }
+        #         OR = { has_global_flag = touhou_lunar_psi_extra_31 has_global_flag = touhou_lunar_psi_extra_34 }
+        #     }
+        #     if = {
+        #         limit = { has_global_flag = touhou_lunar_psi_extra_31 }
+        #         reroll_random = yes
+        #         random_list = {
+        #             15 = {  }
+        #             85 = {
+        #                 if = {
+        #                     limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+        #                     change_variable = { which = spth_extra_life_used value = 1 }
+        #                     remove_modifier = ship_spth_extra_life_lose
+        #                     if = {
+        #                         limit = { has_global_flag = touhou_lunar_psi_extra_34 }
+        #                         add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 90 }
+        #                         ship_event = { id = spth_fleet.1105 days = 90 }
+        #                     } else = {
+        #                         add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+        #                         ship_event = { id = spth_fleet.1105 days = 180 }
+        #                     }
+        #                 }
+        #                 set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+        #                 add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+        #                 clear_variable = ship_spth_extra_life_reduce
+        #             }
+        #         }
+        #         reroll_random = yes
+        #     }
+        # } else = {
+        #     if = {
+        #         limit = {
+        #             NOT = { has_ship_flag = ship_th_has_void_snack_used }
+        #             check_modifier_value = { modifier = ship_th_has_void_snack value != 0 }
+        #         }
+        #         set_timed_ship_flag = { flag = ship_th_has_void_snack_used days = 180 }
+        #         if = {
+        #             limit = { has_shield_hp <= 100000000 }
+        #             if = {
+        #                 limit = {
+        #                     check_variable_arithmetic = {
+        #                         which = value:spth_max_shield_value|percent|3.0|
+        #                         value > trigger:has_shield_hp
+        #                     }
+        #                 }
+        #                 reduce_shield = value:touhou_repair_ship_shield_overflow_value|factor|1.0|
+        #             }
+        #         }
+        #     }
+        #     else_if = {
+        #         limit = {
+        #             OR = {
+        #                 check_modifier_value = { modifier = ship_th_mokou_skill value != 0 }
+        #                 check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 }
+        #                 AND = { exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
+        #             }
+        #         }
+        #         reroll_random = yes
+        #         random_list = {
+        #             0 = {
+        #                 modifier = { min = 0 always = yes }
+        #                 modifier = { max = 100 always = yes }
+        #                 modifier = { add = 10 check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
+        #                 modifier = { add = modifier:ship_th_mokou_skill }
+        #                 modifier = { add = 10 exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
+        #             }
+        #             100 = {
+        #                 modifier = { min = 0 always = yes }
+        #                 modifier = { max = 100 always = yes }
+        #                 modifier = { subtract = 10 check_modifier_value = { modifier = ship_th_has_swcjswb value != 0 } }
+        #                 modifier = { subtract = modifier:ship_th_mokou_skill }
+        #                 modifier = { subtract = 10 exists = owner owner = { has_policy_flag = ag_ancient_ship_upkeep_energy_rare_resource } }
+        #                 if = {
+        #                     limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+        #                     change_variable = { which = spth_extra_life_used value = 1 }
+        #                     remove_modifier = ship_spth_extra_life_lose
+        #                     add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+        #                     ship_event = { id = spth_fleet.1105 days = 180 }
+        #                 }
+        #                 set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+        #                 add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+        #                 clear_variable = ship_spth_extra_life_reduce
+        #             }
+        #         }
+        #     }
+        #     else = {
+        #         if = {
+        #             limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
+        #             change_variable = { which = spth_extra_life_used value = 1 }
+        #             remove_modifier = ship_spth_extra_life_lose
+        #             if = {
+        #                 limit = { check_modifier_value = { modifier = ship_spth_extra_life_no_regen value != 0 } }
+        #                 add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used }
+        #             } else = {
+        #                 add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = @spth_extra_life_cooldown }
+        #                 ship_event = { id = spth_fleet.1105 days = 180 }
+        #             }
+        #         }
+        #         set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
+        #         add_modifier = { modifier = ship_spth_extra_life_reduce multiplier = ship_spth_extra_life_reduce days = 16 }
+        #         clear_variable = ship_spth_extra_life_reduce
+        #     }
+        # }
     }
 }
 ship_event = {
@@ -3694,7 +3807,7 @@ country_event = {
                     NOT = { has_fleet_flag = touhou_standard_dynamic_modifier_system_fired }
                     any_controlled_ship = {
                         OR = {
-                            check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 }
+                            # check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 }
                             check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 }
                             check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 }
                             check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 }
@@ -5060,7 +5173,7 @@ fleet_event = {
                     remove_modifier = touhou_psionic_inhibitor_weapon_self_modifier
                 }
                 add_modifier = {
-                    modifier = touhou_psionic_inhibitor_weapon_self_modifier days = 3
+                    modifier = touhou_psionic_inhibitor_weapon_self_modifier days = 4
                     mult = value:touhou_psionic_inhibitor_weapon_damage_modifier
                 }
             }
@@ -5836,19 +5949,19 @@ fleet_event = {
             every_controlled_ship = {
                 limit = {
                     OR = {
-                        check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 }
+                        # check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 }
                         check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 }
                         check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 }
                         check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 }
                     }
                 }
-                if = {
-                    limit = { check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 } }
-                    add_modifier = {
-                        modifier = touhou_standard_correct_damage_spth_yuzhu days = 30
-                        mult = value:touhou_spth_yuzhu_instant_kill_value|final_dmg|@touhou_instant_kill_weapon_target_damage|slot|giga|
-                    }
-                }
+                # if = {
+                #     limit = { check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 } }
+                #     add_modifier = {
+                #         modifier = touhou_standard_correct_damage_spth_yuzhu days = 30
+                #         mult = value:touhou_spth_yuzhu_instant_kill_value|final_dmg|@touhou_instant_kill_weapon_target_damage|slot|giga|
+                #     }
+                # }
                 if = {
                     limit = { check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 } }
                     TH_dynamic_modifier_conditional = { modifier = ship_hull_regen_mult relation = "<" limit_value = 0 value = 0 }

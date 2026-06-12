@@ -1072,7 +1072,7 @@ activate_behemoth_superweapon = {
     # Add 100 devastation to all remaining colonies
     # and kill pops
     every_system_planet = {
-        limit = { exists = owner owner = { ag_is_common_country = yes } NOT = { has_modifier = "ag_ancient_shield_modifier" } }
+        limit = { exists = owner owner = { ag_is_common_country = yes } touhou_has_planet_shield = no }
         add_planet_devastation = 100
         random_list = {
             5 = { every_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.05 } } }
@@ -1164,4 +1164,378 @@ activate_behemoth_superweapon = {
         every_owned_ship = { damage_ship = @behemoth_superweapon_damage }
         add_modifier = { modifier = behemoth_superweapon_modifier days = @behemoth_superweapon_duration multiplier = 11 }
     }
+}
+
+vanilla_overwrite_damage_ship = {
+	optimize_memory
+	set_variable = { which = dyson_gun_damage_value value = $value$ }
+	set_variable = { which = dyson_gun_damage_value_factor value = 1 }
+	subtract_variable = { which = dyson_gun_damage_value_factor value = modifier:ship_damage_reduction_mult }
+	multiply_variable = { which = dyson_gun_damage_value value = dyson_gun_damage_value_factor }
+	clear_variable = dyson_gun_damage_value_factor
+	subtract_variable = { which = dyson_gun_damage_value value = modifier:ship_damage_reduction_add }
+	if = {
+		limit = { has_shield_hp < dyson_gun_damage_value }
+		reduce_shield = trigger:has_shield_hp
+		subtract_variable = { which = dyson_gun_damage_value value = trigger:has_shield_hp }
+		set_variable = { which = dyson_gun_damage_value_neg value = dyson_gun_damage_value }
+		multiply_variable = { which = dyson_gun_damage_value_neg value = -1 }
+		if = {
+			limit = {
+				check_variable_arithmetic = {
+					which = trigger:has_max_armor_hp
+					multiply = trigger:has_armor_percentage
+					value < dyson_gun_damage_value
+				}
+			}
+			set_variable = { which = dyson_gun_damage_value_neg value = trigger:has_max_armor_hp }
+			multiply_variable = { which = dyson_gun_damage_value_neg value = trigger:has_armor_percentage }
+			multiply_variable = { which = dyson_gun_damage_value_neg value = -1 }
+			repair_armor_amount = dyson_gun_damage_value_neg
+			change_variable = { which = dyson_gun_damage_value value = dyson_gun_damage_value_neg }
+			if = {
+				limit = { check_variable = { which = dyson_gun_damage_value value > 0 } }
+				add_modifier = {
+					modifier = vanilla_overwrite_hull_damage days = 2
+					multiplier = dyson_gun_damage_value
+				}
+			}
+		} else = {
+			repair_armor_amount = dyson_gun_damage_value_neg
+		}
+		clear_variable = dyson_gun_damage_value_neg
+	} else = {
+		reduce_shield = dyson_gun_damage_value
+	}
+	clear_variable = dyson_gun_damage_value
+}
+touhou_dyson_gun_firing_damage_ship = {
+	optimize_memory
+	if = {
+		limit = {
+			any_fleet_in_system = {
+				controller? = {
+					OR = {
+						is_touhou_crisis_faction = yes
+						ag_is_psionic_country = yes
+					}
+				}
+			}
+		}
+		random_fleet_in_system = {
+			limit = {
+				controller? = {
+					OR = {
+						is_touhou_crisis_faction = yes
+						ag_is_psionic_country = yes
+					}
+				}
+			}
+			controller = {
+				save_event_target_as = touhou_dyson_gun_firing_strike_back_country
+			}
+		}
+	}
+	every_fleet_in_system = {
+		if = {
+			controller? = {
+				OR = {
+					is_touhou_crisis_faction = yes
+                    is_touhou_other_faction = yes
+                    ag_is_psionic_country = yes
+                    ag_is_ancient_country = yes
+				}
+			}
+			every_controlled_ship = {
+				if = {
+					limit = {
+						check_variable_arithmetic = {
+							which = trigger:has_shield_hp
+							multiply = 0.01
+							value < from.owner.dyson_gun_charge
+						}
+					}
+					spth_reduce_shield = { percent = 0.01 factor = 0.01 }
+				} else = {
+					reduce_shield = from.owner.dyson_gun_charge
+				}
+			}
+		} else = {
+			every_controlled_ship = {
+				if = {
+					limit = {
+						OR = {
+							is_touhou_ship = yes
+							ag_is_ancient_ship = yes
+						}
+					}
+					if = {
+						limit = {
+							check_variable_arithmetic = {
+								which = trigger:has_shield_hp
+								multiply = 0.01
+								value < from.owner.dyson_gun_charge
+							}
+						}
+						spth_reduce_shield = { percent = 0.01 factor = 0.01 }
+					} else = {
+						reduce_shield = from.owner.dyson_gun_charge
+					}
+				} else = {
+					vanilla_overwrite_damage_ship = { value = from.owner.dyson_gun_charge }
+				}
+			}
+		}
+	}
+}
+# this new version can make this fucking effect works without DAMAGE_SHIP.
+# static_modifier needs to register/需要注册的static_modifier: vanilla_overwrite_hull_damage = { ship_hull_regen_add_static = -1 }
+## The Dyson Gun converts your entire energy stockpile into a shot, dealing 100th, 10th, full damage per level of the Dyson Gun
+# THIS = Target System
+# FROM = Megastructure
+dyson_gun_firing = {
+	optimize_memory
+	from.owner = {
+		export_resource_stockpile_to_variable = {
+			resource = energy
+			variable = dyson_gun_charge
+		}
+		set_resource = {
+			resource = energy
+			value = 0
+		}
+	}
+	if = {
+		limit = {
+			from = {
+				is_megastructure_type = dyson_gun_1
+			}
+		}
+		from.owner = {
+			divide_variable = {
+				which = dyson_gun_charge
+				value = 100
+			}
+		}
+		touhou_dyson_gun_firing_damage_ship = yes
+		every_system_planet = {
+			limit = {
+				is_colony = yes
+				touhou_has_planet_shield = no
+			}
+			add_planet_devastation = 10
+		}
+	}
+	if = {
+		limit = {
+			from = {
+				is_megastructure_type = dyson_gun_2
+			}
+		}
+		from.owner = {
+			divide_variable = {
+				which = dyson_gun_charge
+				value = 10
+			}
+		}
+		touhou_dyson_gun_firing_damage_ship = yes
+		every_system_planet = {
+			limit = {
+				is_colony = yes
+				touhou_has_planet_shield = no
+			}
+			add_planet_devastation = 25
+		}
+	}
+	if = {
+		limit = {
+			from = {
+				is_megastructure_type = dyson_gun_3
+			}
+		}
+		from.owner = {
+			divide_variable = {
+				which = dyson_gun_charge
+				value = 1
+			}
+		}
+
+		touhou_dyson_gun_firing_damage_ship = yes
+		every_system_planet = {
+			limit = {
+				is_colony = yes
+				touhou_has_planet_shield = no
+			}
+			add_planet_devastation = 50
+		}
+		every_system_planet = {
+			limit = {
+				from.owner = {
+					check_variable = {
+						which = dyson_gun_charge
+						value > 50000
+					}
+				}
+				touhou_has_planet_shield = no
+			}
+			increase_planet_temperature_without_habitables = yes
+		}
+		if = {
+			limit = {
+				OR = {
+					is_active_resolution = "resolution_ecology_environmental_control_board"
+					is_active_resolution = "resolution_ecology_paradise_initiative"
+				}
+				from.owner = {
+					check_variable = {
+						which = dyson_gun_charge
+						value > 50000
+					}
+				}
+			}
+			from.owner = {
+				set_timed_country_flag = { flag = resolution_breached_terraformed days = 3600 }
+			}
+		}
+	}
+	if = {
+		limit = {
+			space_owner? = {
+				NOT = {
+					is_same_value = from.owner
+				}
+			}
+		}
+		space_owner = {
+			create_message = {
+				type = MESSAGE_DYSON_SHOT
+				localization =  MESSAGE_DYSON_SHOT_DESC
+				days = @toast_message_days
+			}
+			add_opinion_modifier = {
+				who = from.owner
+				modifier = opinion_dyson_gun_target
+			}
+		}
+	}
+	if = {
+		limit = {
+			any_system_planet = { is_colony = yes }
+			OR = {
+				is_active_resolution = "resolution_rulesofwar_independent_tribunals"
+				is_active_resolution = "resolution_rulesofwar_last_resort_doctrine"
+				is_active_resolution = "resolution_rulesofwar_demobilization_initiative"
+			}
+		}
+		from.owner = {
+			set_timed_country_flag = { flag = resolution_breached_fired_dyson_gun days = 3600 }
+		}
+	}
+	if = {
+		limit = {
+			any_system_planet = { is_homeworld = yes }
+		}
+		from.owner = {
+			set_country_flag = fired_dyson_gun_at_homeworld
+		}
+	}
+	# Destroy impact ambient objects after a short delay
+	system_event = {
+		id = nomads.8005
+		days = 5
+	}
+}
+
+arkship_exodus_jump_system_effects = {
+	# Apply VFX
+	create_ambient_object = {
+		type = "dyson_gun_stage_2_impact"
+		location = event_target:arkship
+		duration = @dyson_gun_impact_duration
+	}
+	# Damage every ship in the system
+	every_ship_in_system = {
+		limit = {
+			controller? = {
+				NOT = {
+					is_same_value = event_target:arkship.controller
+				}
+			}
+		}
+		vanilla_overwrite_damage_ship = { value = 10000 }
+		if = {
+			limit = {
+				is_arkship_ship = yes
+			}
+			controller? = {
+				add_opinion_modifier = {
+					who = event_target:arkship.controller
+					modifier = opinion_arkship_exodus_jump
+				}
+				create_message = {
+					type = TOAST_EXODUS_JUMP_AFTERMATH
+					localization =  TOAST_EXODUS_JUMP_AFTERMATH_DESC
+					days = @toast_message_days
+					variable = {
+						type = name
+						localization = ARKSHIP
+						scope = event_target:arkship
+					}
+					variable = {
+						type = name
+						localization = SYSTEM
+						scope = from
+					}
+				}
+			}
+		}
+	}
+	# Damage every colonised planet in the system
+	every_system_planet = {
+		limit = {
+			is_colony = yes
+		}
+		add_planet_devastation = 33
+	}
+	# Fire a Toast for the system owner
+	# And nuke their opinion of us
+	if = {
+		limit = {
+			exists = space_owner
+		}
+		space_owner = {
+			add_opinion_modifier = {
+				who = event_target:arkship.controller
+				modifier = opinion_arkship_exodus_jump
+			}
+			create_message = {
+				type = TOAST_EXODUS_JUMP_AFTERMATH
+				localization =  TOAST_EXODUS_JUMP_AFTERMATH_DESC
+				days = @toast_message_days
+				variable = {
+					type = name
+					localization = ARKSHIP
+					scope = event_target:arkship
+				}
+				variable = {
+					type = name
+					localization = SYSTEM
+					scope = from
+				}
+			}
+		}
+	}
+	if = {
+		limit = {
+			any_system_planet = { is_colony = yes }
+			OR = {
+				is_active_resolution = "resolution_rulesofwar_independent_tribunals"
+				is_active_resolution = "resolution_rulesofwar_last_resort_doctrine"
+				is_active_resolution = "resolution_rulesofwar_demobilization_initiative"
+			}
+		}
+		event_target:arkship.controller = {
+			set_timed_country_flag = { flag = resolution_breached_exodus_jump days = 3600 }
+		}
+	}
 }
