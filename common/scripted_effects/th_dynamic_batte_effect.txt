@@ -336,25 +336,28 @@ spth_armor_shield_efficiency_system_buff = {
     #     add_modifier = { modifier = spth_armor_efficiency_hardening_rst multiplier = spth_armor_efficiency_var_debug }
     # }
     # set_update_modifiers_batch = end
+	# new version:
     add_modifier = { modifier = spth_shield_efficiency_regen multiplier = value:ship_spth_shield_efficiency_count }
     add_modifier = { modifier = spth_armor_efficiency_regen multiplier = value:ship_spth_armor_efficiency_count }
-    if = {
-        limit = { check_modifier_value = { modifier = ship_shield_hardening_add value < value:ship_spth_shield_efficiency_value } }
-        set_variable = { which = spth_shield_efficiency_hardening_value value = modifier:ship_shield_hardening_add }
-        subtract_variable = { which = spth_shield_efficiency_hardening_value value = value:ship_spth_shield_efficiency_value }
-        change_variable = { which = basic_spth_shield_efficiency_hardening_value value = spth_shield_efficiency_hardening_value }
-        add_modifier = { modifier = spth_shield_efficiency_hardening multiplier = basic_spth_shield_efficiency_hardening_value days = @touhou_dynamic_modifier_system_modifier_last_time  }
-        clear_variable = spth_shield_efficiency_hardening_value
-    }
-
-    if = {
-        limit = { check_modifier_value = { modifier = ship_armor_hardening_add value < value:ship_spth_armor_efficiency_value } }
-        set_variable = { which = spth_armor_efficiency_hardening_value value = modifier:ship_armor_hardening_add }
-        subtract_variable = { which = spth_armor_efficiency_hardening_value value = value:ship_spth_armor_efficiency_value }
-        change_variable = { which = basic_spth_armor_efficiency_hardening_value value = spth_armor_efficiency_hardening_value }
-        add_modifier = { modifier = spth_armor_efficiency_hardening multiplier = basic_spth_armor_efficiency_hardening_value days = @touhou_dynamic_modifier_system_modifier_last_time  }
-        clear_variable = spth_armor_efficiency_hardening_value
-    }
+	# this version will takes too many memory, deprecated.
+	# inline_script = { script = effect/touhou_add_eternal_modifier modifier = shield_regen_add_static days = 30 mult = value:ship_spth_shield_efficiency_count|factor|120| }
+	# inline_script = { script = effect/touhou_add_eternal_modifier modifier = armor_regen_add_static days = 30 mult = value:ship_spth_armor_efficiency_count|factor|120| }
+	if = {
+		limit = { check_modifier_value = { modifier = ship_shield_hardening_add value < value:ship_spth_shield_efficiency_value } }
+		set_variable = { which = spth_shield_efficiency_hardening_value value = modifier:ship_shield_hardening_add }
+		subtract_variable = { which = spth_shield_efficiency_hardening_value value = value:ship_spth_shield_efficiency_value }
+		change_variable = { which = basic_spth_shield_efficiency_hardening_value value = spth_shield_efficiency_hardening_value }
+		add_modifier = { modifier = spth_shield_efficiency_hardening multiplier = basic_spth_shield_efficiency_hardening_value days = @touhou_dynamic_modifier_system_modifier_last_time  }
+		clear_variable = spth_shield_efficiency_hardening_value
+	}
+	if = {
+		limit = { check_modifier_value = { modifier = ship_armor_hardening_add value < value:ship_spth_armor_efficiency_value } }
+		set_variable = { which = spth_armor_efficiency_hardening_value value = modifier:ship_armor_hardening_add }
+		subtract_variable = { which = spth_armor_efficiency_hardening_value value = value:ship_spth_armor_efficiency_value }
+		change_variable = { which = basic_spth_armor_efficiency_hardening_value value = spth_armor_efficiency_hardening_value }
+		add_modifier = { modifier = spth_armor_efficiency_hardening multiplier = basic_spth_armor_efficiency_hardening_value days = @touhou_dynamic_modifier_system_modifier_last_time  }
+		clear_variable = spth_armor_efficiency_hardening_value
+	}
 }
 # 减益系统
 spth_armor_shield_efficiency_system_debuff = {
@@ -407,6 +410,9 @@ spth_armor_shield_efficiency_system_end = {
     remove_modifier = spth_armor_efficiency_hardening
     remove_modifier = spth_shield_efficiency_hardening_rst
     remove_modifier = spth_armor_efficiency_hardening_rst
+	# this version will takes too many memory, deprecated.
+	# inline_script = { script = effect/touhou_remove_eternal_modifier modifier = shield_regen_add_static }
+	# inline_script = { script = effect/touhou_remove_eternal_modifier modifier = armor_regen_add_static }
     remove_modifier = spth_shield_efficiency_regen
     remove_modifier = spth_armor_efficiency_regen
     remove_modifier = spth_shield_efficiency_debuff

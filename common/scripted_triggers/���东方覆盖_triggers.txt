@@ -260,3 +260,132 @@ has_psionic_leader_trait = {
         has_trait = leader_trait_ag_psionic_ConstructorofDistanceStars
     }
 }
+can_enter_system_by_jump_trigger = {
+	optimize_memory
+	custom_tooltip = {
+		# success_text = "debug: can jump"
+		fail_text = cannot_jump_to_system
+		OR = {
+			###	|绝对通行|	FW
+			root = {
+				OR = {
+					has_country_flag = FW_flg_cntr_CHT_orrery_ON		# 璀璨星图
+					has_country_flag = FW_flg_cntr_CHT_beacon_ON		# 永恒星炬
+				}
+			}
+			##	|特殊通行|	+AAR/TAC/多彩
+			root = {
+				#	|通行|
+				OR = {
+					has_country_flag = AAR_flg_cntr_WEBWAY_relic_ON		# |AAR|网道行者relic
+					has_country_flag = TAC_traveler						# |TAC|
+					has_country_flag = wtmnb_order						# |多彩|wtmnb
+				}
+				#	|限定|
+			}
+			##	特殊通行_Giga
+			AND = { has_star_flag = ehof_system_created_by_@root
+				cohesive_system = yes
+				ROOT = { is_eager_explorer_empire = yes }
+				#	|限定|
+				NOT = { has_star_flag = formless_system }
+				OR = {
+					NOT = { has_star_flag = sealed_system }
+					AND = {
+						root = { has_country_flag = entered_sealed_system }
+						has_star_flag = sealed_system
+					}
+				}
+			}
+
+			###_|基础条件|
+			AND = {
+				##_Sealed system
+				OR = {
+					# vanilla
+					NOT = { has_star_flag = sealed_system }
+					AND = {
+						root = { has_country_flag = entered_sealed_system }
+						has_star_flag = sealed_system
+					}
+				}
+
+				##_特殊禁入星系		+wsg/古代帝国/阿夸/SBTG/Giga/Ehof/seooc/多彩/TAC/莉莉
+				NOR = {
+					# vanilla
+					has_star_flag = lcluster
+
+					# wsg
+					AND = { has_global_flag = has_wsg_mod	# 舰r激活
+						OR = {
+							has_star_flag = wg_sealed_system
+							has_star_flag = wg_psionic_systems
+							AND = { exists = space_owner
+								space_owner = { is_country_type = monolith_crisis_country }
+							}
+						}
+					}
+					#	古代帝国
+					has_star_flag = ag_no_jump_in_system
+					#	阿夸
+					has_star_flag = kuat_initial_system
+					has_star_flag = Kuat_empire_system
+					has_star_flag = ag_kae_e_area_system
+					AND = {
+						has_global_flag = starkillerbase_not_passed
+						has_star_flag = starkiller_system
+					}
+					#	SBTG
+					has_star_flag = outercluster
+					#	Giga
+					has_star_flag = ehof_compound_system
+					has_star_flag = giga_core_03
+					cohesive_system = yes
+					urmazin_system = yes
+					everchanging_system = yes
+					katzen_jump_blocked_system = yes
+					has_star_flag = maginot_anti_jump_star	# Maginot World subspace disruption
+					has_star_flag = siegfried_anti_jump_star	# Katzen version
+					#	seooc
+					has_star_flag = nep_Krahen_cluster
+					has_star_flag = nep_Scrus_cluster
+					AND = {
+						has_global_flag = nep_not_pass_Aemethms
+						OR = {
+							has_star_flag = nep_dragon_system
+							has_star_flag = nep_heptagram_cluster
+						}
+					}
+					#	|多彩|
+					AND = { has_global_flag = love_between_us	# |安装|
+						OR = {
+							has_star_flag = ten_crisis_system
+							any_neighbor_system = { has_star_flag = ten_crisis_system }
+							AND = {
+								exists = event_target:holylight_god_heaven_empire
+								OR = {
+									has_star_flag = SUC_lustgod_ring_world_system
+									has_star_flag = init_sample_of_death
+									has_star_flag = init_sample_of_prosperity
+									has_star_flag = init_INN_holylight_god_system2
+								}
+							}
+						}
+					}
+					#	|精灵|
+					has_star_flag = ELF_Singularity_System
+					has_star_flag = wtmnb_star_11th		# wtmnb
+					#	莉莉
+					has_star_flag = al_huge_home_bed
+					#	驴岛
+					has_star_flag = ark_isolated
+					#	IFE
+					has_star_flag = formless_system
+					AND = { has_star_flag = scfe_shaded_colony_system		root = { scfe_can_jump_in_shaded_system = no } }
+					#	spth
+					has_star_flag = spth_no_jump_in_system
+				}
+			}
+		}
+	}
+}

@@ -210,6 +210,55 @@ touhou_ship_action = {
 	wait = no
 	slot = 1
 }
+touhou_ship_skill_reimu = {
+	user_scope = fleet
+	scope = galactic_object
+
+	on_queued = on_touhou_ship_skill_reimu_queued
+	on_completed = on_touhou_ship_skill_reimu
+	tooltip = touhou_ship_skill_reimu_tooltip
+	click_to_act_key = touhou_galaxy_target_system
+	icon = GFX_overclock_touhou_system_warper_system_jump_project_fleet
+	icon_selected = GFX_overclock_touhou_system_warper_system_jump_project_fleet
+
+	possible = {
+		custom_tooltip = {
+			fail_text = touhou_requires_no_coldown
+			NOT = { has_fleet_flag = touhou_ship_action_leader_reimu_cooldown }
+		}
+		spth_can_not_jump_in_system = no
+		touhou_has_ship_action = yes
+	}
+
+	button_visible = {
+		any_owned_ship = {
+			check_modifier_value = { modifier = ship_spth_reimu_ruler_effect_2 value != 0 }
+			NOT = { check_modifier_value = { modifier = ship_is_touhou_station value != 0 } }
+		}
+	}
+
+	button_clickable = {
+		touhou_has_ship_action = yes
+	}
+
+	# This behaves as a Quantum Catapult, using the ship as the bypass.
+	specific_behavior = scripted_catapult_order
+
+	activity_key = touhou_ship_skill_reimu_activity_key
+	context_menu_name = touhou_ship_skill_reimu
+	required_progress = 5
+	progress_activity_key = touhou_ship_skill_reimu_progress_activity_key
+	required_progress_key = touhou_ship_skill_reimu_required_progress_key
+	cooldown = 360
+
+	cost = {
+		energy = 6400
+		sr_fuka = 3200
+		sr_lingli = 1600
+	}
+	wait = no
+	slot = 1
+}
 touhou_gunpower_turret_dismiss = {
 	user_scope = fleet
 	scope = self
@@ -399,4 +448,38 @@ touhou_megastructure_system_warper_attack = {
 
 	# begin_anim_state = "working"
 	# progress_anim_state = "working_looping"
+}
+touhou_megastructure_system_warper_proj_fleet = {
+	user_scope = megastructure
+	scope = galactic_object
+
+	possible = {
+		fromfrom = {
+			has_technology = tech_touhou_system_warper
+			custom_tooltip = {
+				fail_text = can_touhou_system_warper_jump_with_fleet_fail
+				check_modifier_value = { modifier = can_touhou_system_warper_jump_with_fleet value > 0 }
+			}
+			custom_tooltip = {
+				fail_text = touhou_system_warper_opened_function
+				NOT = { has_country_flag = touhou_system_warper_opened_function }
+			}
+		}
+	}
+
+	icon = GFX_ship_class_touhou_unused
+	icon_selected = GFX_ship_class_touhou_unused
+
+	on_completed = on_touhou_megastructure_system_warper_proj_fleet
+	on_started = on_touhou_megastructure_system_warper_proj_fleet_started
+	context_menu_name = "touhou_megastructure_system_warper_proj_fleet_action"
+	activity_key = "touhou_megastructure_system_warper_proj_fleet_activity_key"
+	tooltip = touhou_megastructure_system_warper_proj_fleet_tooltip
+	cooldown = 360
+	required_progress = 0
+
+	cost = {
+		energy = 25000
+		sr_lingli = 25000
+	}
 }

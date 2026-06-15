@@ -3450,3 +3450,78 @@ planet_event = {
         clear_deposits = yes
     }
 }
+system_event = {
+	id = touhou_ship_actions.303
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		from.owner = {
+			country_event = {
+				id = touhou_ship_actions.304
+				scopes = {
+					from = root
+					fromfrom = root.from
+				}
+			}
+		}
+		from.solar_system = {
+			every_fleet_in_system = {
+				limit = {
+					owner? = { is_same_value = root.from.owner } is_in_combat = no
+					any_controlled_ship = { is_disabled = no is_ship_class = shipclass_military }
+				}
+				reroll_random = yes
+				random_list = {
+					40 = { set_location = { target = root distance = 30 angle = random } }
+					40 = { set_location = { target = root distance = 25 angle = random } }
+					20 = { set_location = { target = root distance = 20 angle = random } }
+					20 = { set_location = { target = root distance = 10 angle = random } }
+					20 = { set_location = { target = root distance = 5 angle = random } }
+				}
+				reroll_random = yes
+			}
+		}
+	}
+}
+country_event = {
+	id = touhou_ship_actions.304
+	title = touhou_ship_actions.304.name
+	desc = touhou_ship_actions.304.desc
+	diplomatic = yes
+	custom_gui = touhou_spellcard_ui_window
+	custom_gui_option = touhou_spellcard_ui_button
+	picture_event_data = { room = touhou_system_warper_settings_room }
+	is_triggered_only = yes
+	location = from
+	show_sound = event_sensor_ping
+	trigger = {
+		NOT = {
+			has_country_flag = touhou_ship_actions_304_not_show
+		}
+	}
+	option = {
+		name = touhou_ship_actions.304.a
+		default_hide_option = yes
+	}
+	option = {
+		name = touhou_ship_actions.304.b
+		hidden_effect = {
+			set_country_flag = touhou_ship_actions_304_not_show
+		}
+	}
+}
+# THIS = System jumping to
+# FROM = Fleet
+# Note: This executes before the specific_behavior override hijacks the order.
+system_event = {
+	id = touhou_ship_actions.305
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		from = {
+			every_controlled_ship = {
+				touhou_create_temp_jump_particle_effect = yes
+			}
+		}
+	}
+}

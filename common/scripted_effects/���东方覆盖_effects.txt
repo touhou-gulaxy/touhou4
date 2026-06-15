@@ -1294,7 +1294,6 @@ touhou_dyson_gun_firing_damage_ship = {
 # THIS = Target System
 # FROM = Megastructure
 dyson_gun_firing = {
-	optimize_memory
 	from.owner = {
 		export_resource_stockpile_to_variable = {
 			resource = energy
@@ -1305,6 +1304,121 @@ dyson_gun_firing = {
 			value = 0
 		}
 	}
+
+	if = {
+		# The Elder Voidspawn shrugs off the blast, then surges through space for two years
+		limit = {
+			any_ship_in_system = { is_ship_size = leviathan_01_voidspawn }
+		}
+		every_fleet_in_system = {
+			limit = {
+				any_owned_ship = { is_ship_size = leviathan_01_voidspawn }
+			}
+			add_modifier = {
+				modifier = voidspawn_dyson_surge
+				days = 730
+			}
+		}
+	}
+	else_if = {
+		# A Contingency Sterilization Hub scatters the shot to a random system
+		limit = {
+			any_system_planet = {
+				is_planet_class = pc_ai
+				owner = { is_country_type = ai_empire }
+			}
+		}
+		random_system = {
+			limit = {
+				NOT = { is_same_value = root }
+			}
+			dyson_gun_apply_damage = yes
+		}
+		# The Contingency reports that it has hijacked our targeting (FROM = the Contingency)
+		random_system_planet = {
+			limit = {
+				is_planet_class = pc_ai
+				owner = { is_country_type = ai_empire }
+			}
+			owner = { from.owner = { country_event = { id = nomads.8050 } } }
+		}
+	}
+	else_if = {
+		# Striking an Unbidden Dimensional Anchor only tears open a new rift, dealing no damage
+		limit = {
+			any_ship_in_system = { is_ship_size = dimensional_portal_ed }
+		}
+		create_unbidden_fleet = yes
+		# The Unbidden savor the energy we just fed them (FROM = the Unbidden anchor's owner)
+		random_ship_in_system = {
+			limit = { is_ship_size = dimensional_portal_ed }
+			owner = { from.owner = { country_event = { id = nomads.8055 } } }
+		}
+	}
+	else_if = {
+		# Once struck, Cetana reflects every following shot back at the attacker's capital
+		limit = {
+			any_ship_in_system = { is_ship_size = synth_queen_titan }
+			from.owner = { has_country_flag = dyson_gun_struck_cetana }
+		}
+		from.owner = {
+			capital_scope = {
+				solar_system = {
+					dyson_gun_apply_damage = yes
+				}
+			}
+		}
+		# Cetana reproaches us as she turns the shot back on our capital (FROM = Cetana)
+		event_target:synth_queen_country_global = {
+			from.owner = { country_event = { id = nomads.8065 } }
+		}
+	}
+	else = {
+		dyson_gun_apply_damage = yes
+		# The first strike on Cetana primes her to reflect every shot to come
+		if = {
+			limit = {
+				any_ship_in_system = { is_ship_size = synth_queen_titan }
+			}
+			from.owner = { set_country_flag = dyson_gun_struck_cetana }
+			# Cetana voices her disappointment (FROM = Cetana)
+			event_target:synth_queen_country_global = {
+				from.owner = { country_event = { id = nomads.8060 } }
+			}
+		}
+	}
+
+	set_timed_star_flag = {
+		flag = ai_dyson_gun_limit
+		days = 3600
+	}
+	# Destroy impact ambient objects after a short delay
+	system_event = {
+		id = nomads.8005
+		days = 5
+	}
+}
+
+## Resolves a Dyson Gun impact against the system it runs in: damages ships, devastates colonies, and raises the relevant diplomatic flags
+# THIS = System being hit
+# FROM = Megastructure
+dyson_gun_apply_damage = {
+	# Devastation is only inflicted when at least 10,000 energy was spent charging the shot
+	from.owner = {
+		if = {
+			limit = {
+				check_variable = {
+					which = dyson_gun_charge
+					value >= 10000
+				}
+			}
+			set_country_flag = dyson_gun_devastating_shot
+		}
+		else = {
+			remove_country_flag = dyson_gun_devastating_shot
+		}
+	}
+
 	if = {
 		limit = {
 			from = {
@@ -1312,18 +1426,32 @@ dyson_gun_firing = {
 			}
 		}
 		from.owner = {
+			set_variable = {
+				which = dyson_gun_damage
+				value = dyson_gun_charge
+			}
 			divide_variable = {
-				which = dyson_gun_charge
+				which = dyson_gun_damage
 				value = 100
+			}
+			set_variable = {
+				which = dyson_gun_damage_shielded
+				value = dyson_gun_damage
+			}
+			multiply_variable = {
+				which = dyson_gun_damage_shielded
+				value = 0.4
 			}
 		}
 		touhou_dyson_gun_firing_damage_ship = yes
 		every_system_planet = {
 			limit = {
 				is_colony = yes
-				touhou_has_planet_shield = no
 			}
-			add_planet_devastation = 10
+			dyson_gun_devastate_colony = {
+				AMOUNT = 10
+				SHIELDED = 1
+			}
 		}
 	}
 	if = {
@@ -1333,18 +1461,32 @@ dyson_gun_firing = {
 			}
 		}
 		from.owner = {
+			set_variable = {
+				which = dyson_gun_damage
+				value = dyson_gun_charge
+			}
 			divide_variable = {
-				which = dyson_gun_charge
-				value = 10
+				which = dyson_gun_damage
+				value = 50
+			}
+			set_variable = {
+				which = dyson_gun_damage_shielded
+				value = dyson_gun_damage
+			}
+			multiply_variable = {
+				which = dyson_gun_damage_shielded
+				value = 0.4
 			}
 		}
 		touhou_dyson_gun_firing_damage_ship = yes
 		every_system_planet = {
 			limit = {
 				is_colony = yes
-				touhou_has_planet_shield = no
 			}
-			add_planet_devastation = 25
+			dyson_gun_devastate_colony = {
+				AMOUNT = 25
+				SHIELDED = 2.5
+			}
 		}
 	}
 	if = {
@@ -1354,9 +1496,21 @@ dyson_gun_firing = {
 			}
 		}
 		from.owner = {
+			set_variable = {
+				which = dyson_gun_damage
+				value = dyson_gun_charge
+			}
 			divide_variable = {
-				which = dyson_gun_charge
-				value = 1
+				which = dyson_gun_damage
+				value = 10
+			}
+			set_variable = {
+				which = dyson_gun_damage_shielded
+				value = dyson_gun_damage
+			}
+			multiply_variable = {
+				which = dyson_gun_damage_shielded
+				value = 0.4
 			}
 		}
 
@@ -1364,9 +1518,11 @@ dyson_gun_firing = {
 		every_system_planet = {
 			limit = {
 				is_colony = yes
-				touhou_has_planet_shield = no
 			}
-			add_planet_devastation = 50
+			dyson_gun_devastate_colony = {
+				AMOUNT = 50
+				SHIELDED = 5
+			}
 		}
 		every_system_planet = {
 			limit = {
@@ -1376,7 +1532,8 @@ dyson_gun_firing = {
 						value > 50000
 					}
 				}
-				touhou_has_planet_shield = no
+				# A planetary shield generator blocks the terraforming heat
+				has_planetary_shield_building = no
 			}
 			increase_planet_temperature_without_habitables = yes
 		}
@@ -1439,10 +1596,49 @@ dyson_gun_firing = {
 			set_country_flag = fired_dyson_gun_at_homeworld
 		}
 	}
-	# Destroy impact ambient objects after a short delay
-	system_event = {
-		id = nomads.8005
-		days = 5
+}
+
+## Devastates one colony from a Dyson Gun impact. A planetary shield generator blocks 90% of the devastation.
+## Only fires while the shot cleared the energy threshold flag.
+# THIS = Colony being hit
+# FROM = Megastructure
+# $AMOUNT$ = devastation on an unshielded colony, $SHIELDED$ = devastation behind a planetary shield generator
+dyson_gun_devastate_colony = {
+	if = {
+		limit = {
+			from.owner = { has_country_flag = dyson_gun_devastating_shot }
+		}
+		if = {
+			limit = { has_planetary_shield_building = yes }
+			add_planet_devastation = $SHIELDED$
+		}
+		else_if = {
+			limit = { touhou_has_planet_shield = no }
+			add_planet_devastation = $AMOUNT$
+		}
+	}
+}
+
+## Applies a Dyson Gun hit to one ship. Defense platforms and ion cannons defended by a defense grid take 60% less damage.
+## This reduction is exclusive to the Stellar Cannon; normal combat is unaffected.
+# THIS = Ship being hit
+# FROM = Megastructure
+dyson_gun_damage_ship = {
+	if = {
+		limit = {
+			OR = {
+				is_ship_size = military_station_small
+				is_ship_size = ion_cannon
+			}
+			# The platform's own starbase, so an orbital ring or deep space citadel is matched rather than the system's primary starbase
+			fleet = {
+				starbase? = { has_starbase_building = defense_grid }
+			}
+		}
+		vanilla_overwrite_damage_ship = { value = from.owner.dyson_gun_damage_shielded }
+	}
+	else = {
+		vanilla_overwrite_damage_ship = { value = from.owner.dyson_gun_damage }
 	}
 }
 
