@@ -388,7 +388,91 @@ touhou_super_flagship_science = {
 		}
 	}
 
-	context_menu_name = touhou_super_flagship_science
+	context_menu_name = touhou_super_flagship_science_explore
+}
+touhou_common_ship_science = {
+	user_scope = fleet
+	scope = planet
+
+	# This behaves as the Survey order from Science Ships
+	specific_behavior = scripted_survey_order
+
+	important = yes
+	automation_priority = 1
+	automation_default_on = yes
+	slot = 1
+	icon = GFX_fleet_order_button_survey_small
+	icon_selected = GFX_fleet_order_button_survey_small_selected
+
+	hide_from_context_menu = {
+		is_surveyed = {
+			who = from.controller
+			status = yes
+		}
+	}
+
+	possible = {
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_leader_failed
+			success_text = touhou_super_flagship_science_requires_leader_success
+			exists = from.leader
+		}
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_sciencitist_fail
+			success_text = touhou_super_flagship_science_requires_sciencitist_success
+			from.leader = {
+				leader_class = scientist
+			}
+		}
+		is_surveyed = {
+			who = from.controller
+			status = no
+		}
+		NOT = {
+			is_being_surveyed = { who = from }
+		}
+	}
+
+	button_visible = {
+		check_modifier_value = {
+			modifier = ship_touhou_allow_scientist_command_mil
+			value != 0
+		}
+	}
+
+	button_clickable = {
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_leader_failed
+			success_text = touhou_super_flagship_science_requires_leader_success
+			exists = leader
+		}
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_sciencitist_fail
+			success_text = touhou_super_flagship_science_requires_sciencitist_success
+			leader = {
+				leader_class = scientist
+			}
+		}
+	}
+
+	context_menu_name = touhou_common_ship_science_explore
+}
+touhou_super_flagship_science_build_megastructure = {
+	user_scope = fleet
+	scope = self
+
+	# This behaves as the Build Megastructure order from Construction Ships.
+	specific_behavior = scripted_build_megastructure_order
+
+	slot = 0
+
+	button_visible = {
+		always = yes
+	}
+
+	button_clickable = {
+		hidden_trigger = { always = yes }
+	}
 }
 th_tenshi_aux_action = {
 	user_scope = fleet
