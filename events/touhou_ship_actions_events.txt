@@ -3488,9 +3488,9 @@ country_event = {
 	title = touhou_ship_actions.304.name
 	desc = touhou_ship_actions.304.desc
 	diplomatic = yes
-	custom_gui = touhou_spellcard_ui_window
-	custom_gui_option = touhou_spellcard_ui_button
-	picture_event_data = { room = touhou_system_warper_settings_room }
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_es2_aethon_room }
 	is_triggered_only = yes
 	location = from
 	show_sound = event_sensor_ping
@@ -3519,9 +3519,76 @@ system_event = {
 	is_triggered_only = yes
 	immediate = {
 		from = {
+			set_timed_country_flag = {
+				flag = touhou_system_warper_jump_with_fleet_cooldown
+				days = 360
+			}
 			every_controlled_ship = {
 				touhou_create_temp_jump_particle_effect = yes
 			}
+		}
+	}
+}
+# THIS = System jumping to
+# FROM = Fleet
+# Note: This executes before the specific_behavior override hijacks the order.
+system_event = {
+	id = touhou_ship_actions.306
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		from = {
+			starbase = {
+				add_modifier = {
+					modifier = touhou_space_shrine_after_warp days = 2
+				}
+			}
+		}
+	}
+}
+# THIS = Fleet
+# FROM = System jumping to
+# FROMFROM = System jumped from
+fleet_event = {
+	id = touhou_ship_actions.307
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		fromfrom = {
+			every_fleet_in_system = {
+				limit = {
+					owner? = { is_same_value = root.owner } is_in_combat = no
+					any_controlled_ship = { is_disabled = no is_ship_class = shipclass_military }
+				}
+				fleet_event = {
+					id = touhou_ship_actions.308
+					scopes = {
+						from = root.from
+					}
+					days = 1
+				}
+			}
+		}
+	}
+}
+fleet_event = {
+	id = touhou_ship_actions.308
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		reroll_random = yes
+		random_list = {
+			40 = { set_location = { target = from.star distance = 50 angle = random } }
+			40 = { set_location = { target = from.star distance = 40 angle = random } }
+			30 = { set_location = { target = from.star distance = 30 angle = random } }
+			30 = { set_location = { target = from.star distance = 25 angle = random } }
+			20 = { set_location = { target = from.star distance = 20 angle = random } }
+			20 = { set_location = { target = from.star distance = 10 angle = random } }
+			20 = { set_location = { target = from.star distance = 5 angle = random } }
+		}
+		reroll_random = yes
+		every_controlled_ship = {
+			touhou_create_temp_jump_particle_effect = yes
 		}
 	}
 }

@@ -222,15 +222,11 @@ touhou_ship_skill_reimu = {
 	icon_selected = GFX_overclock_touhou_system_warper_system_jump_project_fleet
 
 	possible = {
-		custom_tooltip = {
-			fail_text = touhou_requires_no_coldown
-			NOT = { has_fleet_flag = touhou_ship_action_leader_reimu_cooldown }
-		}
-		spth_can_not_jump_in_system = no
-		touhou_has_ship_action = yes
+		# touhou_has_ship_action = yes
 	}
 
 	button_visible = {
+		always = no
 		any_owned_ship = {
 			check_modifier_value = { modifier = ship_spth_reimu_ruler_effect_2 value != 0 }
 			NOT = { check_modifier_value = { modifier = ship_is_touhou_station value != 0 } }
@@ -239,6 +235,10 @@ touhou_ship_skill_reimu = {
 
 	button_clickable = {
 		touhou_has_ship_action = yes
+		custom_tooltip = {
+			fail_text = touhou_requires_no_coldown
+			NOT = { has_fleet_flag = touhou_ship_action_leader_reimu_cooldown }
+		}
 	}
 
 	# This behaves as a Quantum Catapult, using the ship as the bypass.
@@ -250,6 +250,48 @@ touhou_ship_skill_reimu = {
 	progress_activity_key = touhou_ship_skill_reimu_progress_activity_key
 	required_progress_key = touhou_ship_skill_reimu_required_progress_key
 	cooldown = 360
+
+	cost = {
+		energy = 6400
+		sr_fuka = 3200
+		sr_lingli = 1600
+	}
+	wait = no
+	slot = 1
+}
+touhou_ship_skill_space_shrine_warp = {
+	user_scope = fleet
+	scope = galactic_object
+
+	on_completed = on_touhou_ship_skill_space_shrine_warp
+	tooltip = touhou_ship_skill_space_shrine_warp_tooltip
+	click_to_act_key = touhou_galaxy_target_system
+	icon = GFX_overclock_touhou_system_warper_system_jump_project_fleet
+	icon_selected = GFX_overclock_touhou_system_warper_system_jump_project_fleet
+
+	possible = {
+		from.starbase? = {
+			has_starbase_module = touhou_arkship_warp_module
+		}
+	}
+
+	button_visible = {
+		always = yes
+	}
+
+	button_clickable = {
+		always = yes
+	}
+
+	# This behaves as a Quantum Catapult, using the ship as the bypass.
+	specific_behavior = scripted_catapult_order
+
+	activity_key = touhou_ship_skill_space_shrine_warp_key
+	context_menu_name = touhou_ship_skill_space_shrine_warp
+	required_progress = 0
+	progress_activity_key = touhou_ship_skill_space_shrine_warp_activity_key
+	required_progress_key = touhou_ship_skill_space_shrine_warp_required_progress_key
+	cooldown = 0
 
 	cost = {
 		energy = 6400
@@ -334,8 +376,8 @@ touhou_super_flagship_science = {
 	automation_priority = 1
 	automation_default_on = yes
 	slot = 1
-	icon = GFX_fleet_order_button_survey_small
-	icon_selected = GFX_fleet_order_button_survey_small_selected
+	icon = GFX_fleet_order_button_survey
+	icon_selected = GFX_fleet_order_button_survey_selected
 
 	hide_from_context_menu = {
 		is_surveyed = {
@@ -401,8 +443,8 @@ touhou_common_ship_science = {
 	automation_priority = 1
 	automation_default_on = yes
 	slot = 1
-	icon = GFX_fleet_order_button_survey_small
-	icon_selected = GFX_fleet_order_button_survey_small_selected
+	icon = GFX_fleet_order_button_survey
+	icon_selected = GFX_fleet_order_button_survey_selected
 
 	hide_from_context_menu = {
 		is_surveyed = {
@@ -538,8 +580,7 @@ touhou_megastructure_system_warper_proj_fleet = {
 	scope = galactic_object
 
 	possible = {
-		fromfrom = {
-			has_technology = tech_touhou_system_warper
+		fromfrom.owner? = {
 			custom_tooltip = {
 				fail_text = can_touhou_system_warper_jump_with_fleet_fail
 				check_modifier_value = { modifier = can_touhou_system_warper_jump_with_fleet value > 0 }
@@ -548,8 +589,15 @@ touhou_megastructure_system_warper_proj_fleet = {
 				fail_text = touhou_system_warper_opened_function
 				NOT = { has_country_flag = touhou_system_warper_opened_function }
 			}
+			custom_tooltip = {
+				fail_text = touhou_system_warper_cooldown
+				NOT = { has_country_flag = touhou_system_warper_jump_with_fleet_cooldown }
+			}
 		}
 	}
+	# button_clickable = {
+	# 	touhou_debug_print_scopes_trigger = yes
+	# }
 
 	icon = GFX_ship_class_touhou_unused
 	icon_selected = GFX_ship_class_touhou_unused
@@ -560,7 +608,7 @@ touhou_megastructure_system_warper_proj_fleet = {
 	activity_key = "touhou_megastructure_system_warper_proj_fleet_activity_key"
 	tooltip = touhou_megastructure_system_warper_proj_fleet_tooltip
 	cooldown = 360
-	required_progress = 0
+	required_progress = 1
 
 	cost = {
 		energy = 25000
