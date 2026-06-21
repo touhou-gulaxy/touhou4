@@ -189,27 +189,6 @@
 #     uses_vfx_type = survey_effect/harvest_effect    # If specified, uses the specified vfx while performing the scripted action
 # }
 
-touhou_ship_action = {
-	user_scope = fleet
-	scope = self
-
-	possible = {
-		touhou_has_ship_action = yes
-	}
-	button_visible = { always = yes }
-	button_clickable = { hidden_trigger = { owner = { NOT = { has_country_flag = touhou_ship_action_menu_opened } } } }
-
-	important = yes
-	on_completed = on_touhou_fleet_action_actived
-	tooltip = touhou_fleetview_action_button_title
-	icon = GFX_spth_fleet_view_ship_action_button
-	icon_selected = "GFX_spth_fleet_view_ship_action_button"
-	activity_key = touhou_ship_action_title
-	context_menu_name = touhou_ship_action_title
-	on_click_sound = "interface"
-	wait = no
-	slot = 1
-}
 touhou_ship_skill_reimu = {
 	user_scope = fleet
 	scope = galactic_object
@@ -476,9 +455,15 @@ touhou_common_ship_science = {
 	}
 
 	button_visible = {
-		check_modifier_value = {
-			modifier = ship_touhou_allow_scientist_command_mil
-			value != 0
+		OR = {
+			check_modifier_value = {
+				modifier = ship_touhou_allow_scientist_command_mil
+				value != 0
+			}
+			check_modifier_value = {
+				modifier = ship_touhou_allow_scientist_command_mil_alt
+				value != 0
+			}
 		}
 	}
 
@@ -529,6 +514,229 @@ th_tenshi_aux_action = {
 	context_menu_name = th_tenshi_aux_name
 	required_progress = 30
     progress_activity_key = th_tenshi_aux_name_progress_activity_key
+}
+touhou_sensor_deep_scan = {
+	user_scope = fleet
+	scope = planet
+
+	automation_priority = 3
+	on_completed = on_arkship_deep_scan
+	tooltip = arkship_deep_scan_ship_button
+	icon = GFX_fleet_action_button_arkship_deep_scan
+	icon_selected = GFX_fleet_action_button_arkship_deep_scan
+
+	possible = {
+		custom_tooltip = {
+			fail_text = arkship_has_leader_tt_fail
+			success_text = arkship_has_leader_tt_success
+			exists = from.leader
+		}
+		if = {
+			limit = {
+				from = { is_science_arkship = yes }
+			}
+			OR = {
+				custom_tooltip = {
+					fail_text = is_tier_2_or_3_arkship_fail_tt
+					success_text = is_tier_2_or_3_arkship_pass_tt
+					from = { is_arkship_tier_1 = no }
+				}
+				custom_tooltip = {
+					fail_text = has_arkship_sensor_array_fail_tt
+					success_text = has_arkship_sensor_array_pass_tt
+					from.starbase? = {
+						has_starbase_module = arkship_sensor_array
+					}
+				}
+				custom_tooltip = {
+					fail_text = has_arkship_system_scanner_fail_tt
+					success_text = has_arkship_system_scanner_pass_tt
+					from.starbase? = {
+						has_starbase_module = arkship_system_scanner
+					}
+				}
+			}
+		}
+		else = {
+			OR = {
+				custom_tooltip = {
+					fail_text = has_arkship_sensor_array_fail_tt
+					success_text = has_arkship_sensor_array_pass_tt
+					from.starbase? = {
+						has_starbase_module = arkship_sensor_array
+					}
+				}
+				custom_tooltip = {
+					fail_text = has_arkship_system_scanner_fail_tt
+					success_text = has_arkship_system_scanner_pass_tt
+					from.starbase? = {
+						has_starbase_module = arkship_system_scanner
+					}
+				}
+			}
+		}
+		has_anomaly = no
+		if = {
+			limit = {
+				habitable_planet = yes
+			}
+			custom_tooltip = {
+				fail_text = arkship_target_habitable_world_fail_tt
+				from.leader? = {
+					has_leader_flag = nomadic_naturalist
+				}
+			}
+		}
+		custom_tooltip = {
+			fail_text = arkship_target_artificial_world_fail_tt
+			is_artificial = no
+		}
+		custom_tooltip = {
+			fail_text = arkship_target_ring_world_fail_tt
+			is_ringworld = no
+		}
+		custom_tooltip = {
+			fail_text = arkship_target_astral_scar_fail_tt
+			NOT = {
+				is_planet_class = pc_astral_scar
+			}
+		}
+	}
+
+	button_visible = {
+		always = yes
+	}
+
+	button_clickable = {
+		custom_tooltip = {
+			fail_text = arkship_has_leader_tt_fail
+			success_text = arkship_has_leader_tt_success
+			exists = leader
+		}
+		if = {
+			limit = {
+				is_science_arkship = yes
+			}
+			OR = {
+				custom_tooltip = {
+					fail_text = is_tier_2_or_3_arkship_fail_tt
+					success_text = is_tier_2_or_3_arkship_pass_tt
+					is_arkship_tier_1 = no
+				}
+				custom_tooltip = {
+					fail_text = has_arkship_sensor_array_fail_tt
+					success_text = has_arkship_sensor_array_pass_tt
+					starbase? = {
+						has_starbase_module = arkship_sensor_array
+					}
+				}
+				custom_tooltip = {
+					fail_text = has_arkship_system_scanner_fail_tt
+					success_text = has_arkship_system_scanner_pass_tt
+					starbase? = {
+						has_starbase_module = arkship_system_scanner
+					}
+				}
+			}
+		}
+		else = {
+			OR = {
+				custom_tooltip = {
+					fail_text = has_arkship_sensor_array_fail_tt
+					success_text = has_arkship_sensor_array_pass_tt
+					starbase? = {
+						has_starbase_module = arkship_sensor_array
+					}
+				}
+				custom_tooltip = {
+					fail_text = has_arkship_system_scanner_fail_tt
+					success_text = has_arkship_system_scanner_pass_tt
+					starbase? = {
+						has_starbase_module = arkship_system_scanner
+					}
+				}
+			}
+		}
+	}
+
+	activity_key = arkship_deep_scan_activity_key
+	context_menu_name = arkship_deep_scan
+	required_progress = value:arkship_deep_scan_required_progress_value
+	required_progress_key = arkship_deep_scan_required_progress_key
+	progress_activity_key = arkship_deep_scan_progress_activity_key
+	cooldown = @arkship_deep_scan_cooldown
+
+	uses_vfx_type = survey_effect
+
+	cost = {
+		energy = @arkship_deep_scan_cost
+	}
+	slot = 1
+
+	ai = {
+		#This - Target Planet
+		#From - Acting Fleet
+		weight = {
+			base = @ai_action_weight_15
+			modifier = {
+				factor = 0 #cannot afford
+				FROM.controller = {
+					resource_stockpile_compare = {
+						resource = energy
+						value < @arkship_deep_scan_cost
+						mult = 1.5
+					}
+				}
+			}
+			inline_script = {
+				script = scripted_actions/ai_distance_modifiers
+				LOCAL_SYSTEM_CHECK = "any_system_planet = { is_same_value = ROOT }"
+			}
+			modifier = {
+				factor = @ai_action_weight_100 #strongly prioritize planets that are targets of a deep scan contract
+				is_point_of_interest = {
+					id = deep_scan_poi@this
+					event_chain = contract_deep_scan_chain
+					owner = FROM.controller
+				}
+			}
+			modifier = {
+				factor = @ai_action_weight_factor_0_1 #already deep scanned and not a contract target
+				is_variable_set = times_deep_scanned
+				NOT = {
+					is_point_of_interest = {
+						id = deep_scan_poi@this
+						event_chain = contract_deep_scan_chain
+						owner = FROM.controller
+					}
+				}
+			}
+		}
+		max_jumps = @ai_action_weight_5
+		good_enough_weight = @ai_action_weight_30
+		ai_minister = interior
+	}
+}
+touhou_ship_action = {
+	user_scope = fleet
+	scope = self
+
+	possible = {
+		touhou_has_ship_action = yes
+	}
+	button_visible = { always = yes }
+	button_clickable = { hidden_trigger = { owner = { NOT = { has_country_flag = touhou_ship_action_menu_opened } } } }
+
+	important = yes
+	on_completed = on_touhou_fleet_action_actived
+	tooltip = touhou_fleetview_action_button_title
+	icon = GFX_spth_fleet_view_ship_action_button
+	icon_selected = "GFX_spth_fleet_view_ship_action_button"
+	activity_key = touhou_ship_action_title
+	context_menu_name = touhou_ship_action_title
+	on_click_sound = "interface"
+	wait = no
+	slot = 1
 }
 
 touhou_megastructure_system_warper_attack = {
