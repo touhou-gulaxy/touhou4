@@ -3698,3 +3698,145 @@ fleet_event = {
 		}
 	}
 }
+
+planet_event = {
+	id = touhou_ship_actions.309
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		from = {
+			every_controlled_ship = {
+				limit = { check_modifier_value = { modifier = ship_can_use_touhou_deep_scan value > 0 } }
+				root = {
+					if = {
+						limit = { is_surveyed = { who = from.controller status = no } }
+						set_surveyed = { surveyed = yes surveyor = from.controller }
+						fire_on_action = { on_action = on_planet_surveyed scopes = { from = root.from.controller fromfrom = root.from } }
+						prev = { fire_on_action = { on_action = on_survey_planet scopes = { from = root } } }
+					}
+					if = {
+						limit = {
+							solar_system = {
+								NOR = {
+									has_star_flag = touhou_system_surveyed_flag
+									any_system_planet = { is_surveyed = { who = from.controller status = no } }
+								}
+							}
+						}
+						solar_system = { set_timed_star_flag = { flag = touhou_system_surveyed_flag days = 360 } }
+						from.controller = { fire_on_action = { on_action = on_system_survey scopes = { from = root.solar_system fromfrom = root.from } } }
+						prev = { fire_on_action = { on_action = on_system_survey_ship scopes = { from = root.solar_system } } }
+					}
+
+					if = {
+						limit = { exists = colony colony = { capital_tier > 2 exists = owner owner = { NOT = { is_same_value = root.from.controller } } } }
+						from.controller = { add_intel = { amount = 5 who = prev.controller } }
+					}
+					else_if = {
+						limit = {
+							OR = {
+								has_orbital_station = yes
+								AND = { exists = colony colony = { capital_tier <= 2 exists = owner owner = { NOT = { is_same_value = root.from.controller } } } }
+							}
+						}
+						from.controller = { add_intel = { amount = 2.5 who = prev.orbital_station.controller } }
+					}
+					else_if = {
+						limit = { exists = space_owner space_owner = { NOT = { is_same_value = root.from.controller } } }
+						from.controller = { add_intel = { amount = 1.25 who = prev.space_owner } }
+					}
+					prev = {
+						reroll_random = yes
+						random_list = {
+							99 = { modifier = { subtract = value:touhou_deep_scan_level always = yes } }
+							1 = {
+								modifier = { add = value:touhou_deep_scan_level always = yes }
+								root = {
+									if = {
+										limit = {
+											NOT = { has_carrier_flag = colony_event }
+											touhou_is_colonizable_planet = no
+											is_artificial = no
+											is_ringworld = no
+											# ag_is_ancient_ringworld = no
+											NOR = {
+												is_planet_class = pc_shielded
+												is_planet_class = pc_ai
+												is_planet_class = pc_infested
+												is_planet_class = pc_shrouded
+												is_planet_class = pc_astral_scar
+												is_planet_class = pc_gray_goo
+												is_planet_class = pc_egg_cracked
+												is_planet_class = pc_habitat_shielded
+												is_planet_class = pc_ag_shrouded
+											}
+										}
+										if = {
+											limit = { has_deposit_for = shipclass_mining_station }
+											touhou_ship_system_scan_mining = { touhou_scope = this touhou_scope_type = carrier }
+										}
+										else_if = {
+											limit = { has_deposit_for = shipclass_research_station }
+											touhou_ship_system_scan_research = { touhou_scope = this touhou_scope_type = carrier }
+										}
+										else_if = {
+											limit = { always = yes }
+											reroll_random = yes
+											random_list = {
+												10 = { touhou_ship_system_scan_mining = { touhou_scope = this touhou_scope_type = carrier } }
+												10 = { touhou_ship_system_scan_research = { touhou_scope = this touhou_scope_type = carrier } }
+											}
+										}
+									}
+									if = {
+										limit = { has_planet_flag = touhou_spawned_random_deposit }
+										if = {
+											limit = { has_modifier = "harvested_resources_mining" }
+											remove_modifier = "harvested_resources_mining"
+										}
+										remove_planet_flag = touhou_spawned_random_deposit
+									}
+									if = {
+										limit = { NAND = { has_anomaly = yes exists = archaeological_site } }
+										reroll_random = yes
+										random_list = {
+											90 = { }
+											7 = {
+												modifier = { factor = prev.value:touhou_modifier_mult_multiplier|modifier|ship_anomaly_generation_chance_mult| always = yes }
+												modifier = { factor = 0 has_anomaly = yes }
+												if = { limit = { has_anomaly = no } spawn_random_anomaly = { target = root.from.controller } }
+											}
+											3 = {
+												modifier = { factor = prev.value:touhou_modifier_mult_multiplier|modifier|find_arc_site_on_survey_chance_mult| always = yes }
+												modifier = { factor = 0 exists = archaeological_site }
+												if = { limit = { NOT = { exists = archaeological_site } } create_archaeological_site = random }
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+country_event = {
+	id = touhou_ship_actions.310
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_technology = tech_gensokyo_ringworld_arkship
+		NOT = { has_country_flag = has_given_gensokyo_ringworld_arkship_designs }
+	}
+	immediate = {
+		set_country_flag = has_given_gensokyo_ringworld_arkship_designs
+		if = {
+			limit = { NOT = { has_existing_ship_design = gensokyo_ringworld_arkship } }
+			create_ship_design = { design = NAME_gensokyo_ringworld_arkship }
+			add_ship_design = last_created_design
+		}
+	}
+}
