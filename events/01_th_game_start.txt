@@ -275,6 +275,41 @@ country_event = {
                     }
                 }
             }
+			origin_touhou_cosmogenesis_arkship = {
+				add_resource = {
+					sr_lingli = 3000
+					sr_fuka = 4000
+					alloys = 5000
+					consumer_goods = 2000
+					energy = 5000
+					minerals = 6000
+					food = 4000
+				}
+				add_tech_progress = { tech = tech_spth_spirit_power_beginning progress = 0.50 }
+				create_fleet = {
+					name = NAME_touhou_synaptic_lathe_arkship_ship
+					settings = { spawn_debris = no uses_naval_capacity = no }
+					effect = {
+						set_owner = root
+						create_ship = {
+							name = NAME_touhou_synaptic_lathe_arkship_ship
+							design = NAME_touhou_synaptic_lathe_arkship
+							prefix = yes
+							fleet_cache_recalc = no
+							effect = {
+								save_event_target_as = touhou_synaptic_lathe_arkship
+								set_colony_type = col_touhou_cosmogenesis_world
+							}
+						}
+						set_location = { target = root.capital_scope angle = random distance = -10 }
+					}
+				}
+				event_target:touhou_synaptic_lathe_arkship.planet = {
+					save_event_target_as = touhou_synaptic_lathe_arkship_planet
+					set_colony_type = col_touhou_cosmogenesis_world
+					add_building = building_touhou_lathe_capital
+				}
+			}
 			default = {
 				capital_scope = {
 					create_pop_group = { species = owner.founder_species size = 400 }
@@ -511,6 +546,18 @@ event = {
 			limit = { NOT = { has_global_flag = has_touhou_mod } }
 			set_global_flag = has_touhou_mod
 		}
+		if = {
+			limit = {
+				any_country = {
+					has_authority = auth_gensokyo
+					has_origin = origin_touhou_cosmogenesis_arkship
+				}
+			}
+			date_distortion = yes
+			event_target:global_event_country = {
+				country_event = { id = gensokyo_start.8 days = 60 }
+			}
+		}
     }
 }
 
@@ -534,6 +581,15 @@ country_event = {
 		hidden_effect = {
 			remove_global_flag = spth_allow_non_disappear_barrier_story
 		}
+	}
+}
+
+country_event = {
+	id = gensokyo_start.8
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		date_distortion = no
 	}
 }
 # 非起源主事件链触发

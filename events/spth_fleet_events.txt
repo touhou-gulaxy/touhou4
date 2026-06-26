@@ -1704,7 +1704,10 @@ fleet_event = {
             every_owned_ship = {
                 limit = { has_ship_flag = has_triggered_spth_extra_life }
                 remove_ship_flag = has_triggered_spth_extra_life
-                clear_variable = spth_extra_life_used
+				if = {
+					limit = { NOT = { has_modifier = ship_spth_extra_life_lose } }
+					clear_variable = spth_extra_life_used
+				}
             }
         }
     }
@@ -1878,10 +1881,10 @@ ship_event = {
 					limit = { is_variable_set = touhou_common_extra_life_consume_chance_value }
 					clear_variable = touhou_common_extra_life_consume_chance_value
 				}
-				if = {
-					limit = { is_variable_set = touhou_common_extra_life_regen_factor }
-					clear_variable = touhou_common_extra_life_regen_factor
-				}
+				# if = {
+				# 	limit = { is_variable_set = touhou_common_extra_life_regen_factor }
+				# 	clear_variable = touhou_common_extra_life_regen_factor
+				# }
 			}
 			99 = {
                 modifier = { min = 0 always = yes }
@@ -2058,7 +2061,7 @@ ship_event = {
             limit = { check_variable = { which = spth_extra_life_used value > 0 } }
             subtract_variable = { which = spth_extra_life_used value = 1 }
             remove_modifier = ship_spth_extra_life_lose
-            add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 90 }
+            add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 180 time_multiplier = value:touhou_extra_life_regen_delay_factor }
         }
     }
 }

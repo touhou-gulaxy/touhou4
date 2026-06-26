@@ -15,7 +15,7 @@ country_event = {
 				OR = {
 					has_modifier = spth_planet_pop_convert
 					has_deposit = d_hakurei_barrier
-					NOT = { is_variable_set = spth_planet_reactor_upkeep_mult }
+					NOT = { carrier = { is_variable_set = spth_planet_reactor_upkeep_mult } }
 				}
 			}
 			if = {
@@ -33,9 +33,11 @@ country_event = {
 				limit = { has_deposit = d_hakurei_barrier }
 				carrier = { spth_effect_refresh_barrier_and_faith = yes }
 			}
-			if = {
-				limit = { NOT = { is_variable_set = spth_planet_reactor_upkeep_mult } }
-				set_variable = { which = spth_planet_reactor_upkeep_mult value = 100 }
+			carrier = {
+				if = {
+					limit = { NOT = { is_variable_set = spth_planet_reactor_upkeep_mult } }
+					set_variable = { which = spth_planet_reactor_upkeep_mult value = 100 }
+				}
 			}
 			spth_count_to_be_converted_pops = yes
 			if = {
@@ -67,18 +69,20 @@ country_event = {
             limit = { has_valid_civic = civic_gensokyo }
             every_owned_colony = {
                 limit = { uses_district_set = gensokyo_planet }
-                if = {
-                    limit = { NOT = { is_variable_set = touhou_planet_wrlv_var } }
-                    set_variable = { which = touhou_planet_wrlv_var value = 0 }
-                }
-                if = {
-                    limit = { has_modifier = touhou_gensokyo_planet_wrlv }
-                    remove_modifier = touhou_gensokyo_planet_wrlv
-                }
-                add_modifier = { modifier = touhou_gensokyo_planet_wrlv mult = touhou_planet_wrlv_var }
-                if = {
-                    limit = { NOT = { has_deposit = d_gensokyo_planet } }
-                    add_deposit = d_gensokyo_planet
+                carrier = {
+					if = {
+						limit = { NOT = { is_variable_set = touhou_planet_wrlv_var } }
+						set_variable = { which = touhou_planet_wrlv_var value = 0 }
+					}
+					if = {
+						limit = { has_modifier = touhou_gensokyo_planet_wrlv }
+						remove_modifier = touhou_gensokyo_planet_wrlv
+					}
+					add_modifier = { modifier = touhou_gensokyo_planet_wrlv mult = touhou_planet_wrlv_var }
+					if = {
+						limit = { NOT = { has_deposit = d_gensokyo_planet } }
+						add_deposit = d_gensokyo_planet
+					}
                 }
             }
         }
@@ -388,19 +392,21 @@ country_event = {
 	immediate = {
 		every_owned_colony = {
 			limit = { has_modifier = spth_planet_pop_convert }
-			set_variable = { which = to_be_converted_amount value = 0 }
-			if = {
-				limit = { any_owned_pop_group = { has_living_standard = { type = spth_living_standards_assimilation } } }
-				random_owned_pop_group = {
-					limit = { has_living_standard = { type = spth_living_standards_assimilation } }
-					prev = { set_variable = { which = to_be_converted_amount value = prev.trigger:pop_group_size } }
-					set_pop_group_flag = spth_planet_pop_convert
+			carrier = {
+				set_variable = { which = to_be_converted_amount value = 0 }
+				if = {
+					limit = { any_owned_pop_group = { has_living_standard = { type = spth_living_standards_assimilation } } }
+					random_owned_pop_group = {
+						limit = { has_living_standard = { type = spth_living_standards_assimilation } }
+						prev = { set_variable = { which = to_be_converted_amount value = prev.trigger:pop_group_size } }
+						set_pop_group_flag = spth_planet_pop_convert
+					}
 				}
-			}
-			create_pop_group = { species = root.owner_main_species size = to_be_converted_amount }
-			random_owned_pop_group = {
-				limit = { has_pop_group_flag = spth_planet_pop_convert }
-				spth_kill_pop_group = yes
+				create_pop_group = { species = root.owner_main_species size = to_be_converted_amount }
+				random_owned_pop_group = {
+					limit = { has_pop_group_flag = spth_planet_pop_convert }
+					spth_kill_pop_group = yes
+				}
 			}
 		}
 	}
@@ -456,23 +462,25 @@ country_event = {
     immediate = {
         every_owned_colony = {
             limit = { uses_district_set = gensokyo_planet }
-            if = {
-                limit = { NOT = { is_variable_set = touhou_planet_wrlv_var } }
-                set_variable = { which = touhou_planet_wrlv_var value = 0 }
-            }
-            change_variable = { which = touhou_planet_wrlv_var value = value:touhou_planet_wrlv_contaminate }
-            if = {
-                limit = { check_variable = { which = touhou_planet_wrlv_var value < 0 } }
-                set_variable = { which = touhou_planet_wrlv_var value = 0 }
-            }
-            if = {
-                limit = { has_modifier = touhou_gensokyo_planet_wrlv }
-                remove_modifier = touhou_gensokyo_planet_wrlv
-            }
-            add_modifier = { modifier = touhou_gensokyo_planet_wrlv mult = touhou_planet_wrlv_var }
-            if = {
-                limit = { NOT = { has_deposit = d_gensokyo_planet } }
-                add_deposit = d_gensokyo_planet
+            carrier = {
+				if = {
+					limit = { NOT = { is_variable_set = touhou_planet_wrlv_var } }
+					set_variable = { which = touhou_planet_wrlv_var value = 0 }
+				}
+				change_variable = { which = touhou_planet_wrlv_var value = value:touhou_planet_wrlv_contaminate }
+				if = {
+					limit = { check_variable = { which = touhou_planet_wrlv_var value < 0 } }
+					set_variable = { which = touhou_planet_wrlv_var value = 0 }
+				}
+				if = {
+					limit = { has_modifier = touhou_gensokyo_planet_wrlv }
+					remove_modifier = touhou_gensokyo_planet_wrlv
+				}
+				add_modifier = { modifier = touhou_gensokyo_planet_wrlv mult = touhou_planet_wrlv_var }
+				if = {
+					limit = { NOT = { has_deposit = d_gensokyo_planet } }
+					add_deposit = d_gensokyo_planet
+				}
             }
         }
     }

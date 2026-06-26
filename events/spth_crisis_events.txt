@@ -638,7 +638,7 @@ country_event = {
     option = { name = touhou_crisis.14.b }
 }
 
-# the gate gains invincible for 30 days
+# the gate gains invincible for 30 days, with 90 days cooldown
 country_event = {
     id = touhou_crisis.15
     hide_window = yes
@@ -647,11 +647,13 @@ country_event = {
         is_touhou_crisis_faction = yes
         fromfrom = {
             has_fleet_flag = spth_kamikakushi_gate
+			NOT = { has_fleet_flag = spth_kamikakushi_gate_invincible_cooldown }
             NOT = { any_owned_ship = { has_ship_flag = spth_invincible } }
         }
     }
     immediate = {
         fromfrom = {
+			set_timed_fleet_flag = { flag = spth_kamikakushi_gate_invincible_cooldown days = 90 }
             every_owned_ship = {
                 set_timed_ship_flag = { flag = spth_invincible days = 30 }
                 add_modifier = { modifier = spth_kamikakushi_gate_modifier days = 30 }
@@ -2438,4 +2440,25 @@ fleet_event = {
             }
         }
     }
+}
+
+fleet_event = {
+	id = touhou_crisis.10002
+	is_triggered_only = yes
+	hide_window = yes
+	trigger = {
+		NOT = { has_fleet_flag = touhou_prevent_fast_return_from_mia }
+		OR = {
+			controller? = { is_touhou_crisis_faction = yes }
+			any_controlled_ship = {
+				check_modifier_value = {
+					modifier = ship_touhou_fast_return_from_mia
+					value > 0
+				}
+			}
+		}
+	}
+	immediate = {
+		return_from_mia = this
+	}
 }

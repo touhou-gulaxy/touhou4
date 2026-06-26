@@ -13330,6 +13330,301 @@ country_event = {
     }
 }
 
+# Nomad Dyson Gun Impact
+# THIS = Target System
+# FROM = Megastructure
+# Fired by on_dyson_shoot_started, destroy dyson gun when hit touhou crisis.
+# Make sure the dyson gun can not be fixed anymore.
+system_event = {
+	id = toho.4234
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { touhou_is_dyson_gun_cannot_attack_system = yes }
+	immediate = {
+		# Stole all the energy to avoid damage.
+		from.owner = { add_resource = { energy = -92233720368547 } }
+		if = {
+			limit = { touhou_is_dyson_gun_counterattack_system = yes }
+			from.owner? = { country_event = { id = toho.4236 scopes = { from = root } } }
+			if = {
+				limit = {
+					OR = {
+						has_star_flag = spth_kamikaushi_system_special
+						has_star_flag = spth_kamikaushi_crisis_gate_1
+						has_star_flag = spth_kamikaushi_crisis_gate_2
+						has_star_flag = spth_kamikaushi_crisis_gate_3
+						space_owner? = { is_kamikakushi_faction = yes }
+						any_system_planet_colony = { owner? = { is_kamikakushi_faction = yes } }
+						any_ship_in_system = { owner? = { is_kamikakushi_faction = yes } }
+					}
+				}
+				from.owner? = {
+					country_event = { id = toho.4238 scopes = { from = root fromfrom = from.solar_system } }
+					country_event = { id = toho.4242 }
+				}
+				from = { th_spawn_explosion_particle = { size = large color = red } }
+				spawn_megastructure = {
+					type = touhou_dummy_dyson_gun_ruined_by_kamikakushi
+					coords_from = from
+					owner = from.owner
+				}
+				remove_megastructure = from
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_star_flag = spth_lunar_capital_psi_sub_gate_in_system
+						space_owner? = { is_lunar_capital_faction = yes }
+						any_system_planet_colony = { owner? = { is_lunar_capital_faction = yes } }
+						any_ship_in_system = { owner? = { is_lunar_capital_faction = yes } }
+					}
+				}
+				from.owner? = {
+					country_event = { id = toho.4239 scopes = { from = root fromfrom = from.solar_system } }
+					country_event = { id = toho.4243 }
+				}
+				from = { th_spawn_explosion_particle = { size = large color = blue } }
+				spawn_megastructure = {
+					type = touhou_dummy_dyson_gun_ruined_by_lunar_capital
+					coords_from = from
+					owner = from.owner
+				}
+				remove_megastructure = from
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_star_flag = spth_makai_defence_system_home
+						space_owner? = { is_makai_faction = yes }
+						any_system_planet_colony = { owner? = { is_makai_faction = yes } }
+						any_ship_in_system = { owner? = { is_makai_faction = yes } }
+					}
+				}
+				from.owner? = {
+					country_event = { id = toho.4240 scopes = { from = root fromfrom = from.solar_system } }
+					country_event = { id = toho.4244 }
+				}
+				from = { th_spawn_explosion_particle = { size = large color = purple } }
+				spawn_megastructure = {
+					type = touhou_dummy_dyson_gun_ruined_by_makai
+					coords_from = from
+					owner = from.owner
+				}
+				remove_megastructure = from
+			}
+			else = {
+				limit = { always = yes }
+				from.owner? = {
+					country_event = { id = toho.4241 scopes = { from = root fromfrom = from.solar_system } }
+					country_event = { id = toho.4245 }
+				}
+				from = { th_spawn_explosion_particle = { size = large color = pink } }
+				spawn_megastructure = {
+					type = touhou_dummy_dyson_gun_ruined
+					coords_from = from
+					owner = from.owner
+				}
+				remove_megastructure = from
+			}
+		}
+		else = {
+			limit = { always = yes }
+			# Delete megastructure and replace it into another for now
+			# to block the execution of some effects.
+			from = {
+				switch = {
+					trigger = is_megastructure_type
+					dyson_gun_0 = { prev = { set_megastructure_flag = dyson_gun_0 } }
+					dyson_gun_0 = { prev = { set_megastructure_flag = dyson_gun_1 } }
+					dyson_gun_0 = { prev = { set_megastructure_flag = dyson_gun_2 } }
+					dyson_gun_0 = { prev = { set_megastructure_flag = dyson_gun_3 } }
+					dyson_gun_ruined = { prev = { set_megastructure_flag = dyson_gun_ruined } }
+					dyson_gun_0_restored = { prev = { set_megastructure_flag = dyson_gun_0_restored } }
+				}
+			}
+			# spawn_megastructure = {
+			# 	type = touhou_dummy_dyson_gun
+			# 	coords_from = from
+			# 	owner = from.owner
+			# 	init_effect = {
+			# 		set_megastructure_flag = touhou_dyson_gun_attacked_@root
+			# 		set_megastructure_flag = touhou_need_recover_later
+			# 		from = {
+			# 			switch = {
+			# 				trigger = is_megastructure_type
+			# 				dyson_gun_0 = { prev = { set_megastructure_flag = dyson_gun_0 } }
+			# 				dyson_gun_0 = { prev = { set_megastructure_flag = dyson_gun_1 } }
+			# 				dyson_gun_0 = { prev = { set_megastructure_flag = dyson_gun_2 } }
+			# 				dyson_gun_0 = { prev = { set_megastructure_flag = dyson_gun_3 } }
+			# 				dyson_gun_ruined = { prev = { set_megastructure_flag = dyson_gun_ruined } }
+			# 				dyson_gun_0_restored = { prev = { set_megastructure_flag = dyson_gun_0_restored } }
+			# 			}
+			# 		}
+			# 	}
+			# }
+			from.owner? = { country_event = { id = toho.4237 scopes = { from = root } } }
+			remove_megastructure = from
+		}
+	}
+}
+
+# Nomad Dyson Gun Impact
+# THIS = Target System
+# FROM = Megastructure
+system_event = {
+	id = toho.4235
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		any_megastructure = {
+			has_megastructure_flag = touhou_need_recover_later
+			has_megastructure_flag = touhou_dyson_gun_attacked_@root
+			is_megastructure_type = touhou_dummy_dyson_gun
+		}
+	}
+	immediate = {
+		every_megastructure = {
+			limit = {
+				has_megastructure_flag = touhou_need_recover_later
+				has_megastructure_flag = touhou_dyson_gun_attacked_@root
+				is_megastructure_type = touhou_dummy_dyson_gun
+			}
+			switch = {
+				trigger = has_megastructure_flag
+				dyson_gun_0 = { spawn_megastructure = { type = dyson_gun_0 coords_from = this owner = owner } }
+				dyson_gun_1 = { spawn_megastructure = { type = dyson_gun_1 coords_from = this owner = owner } }
+				dyson_gun_2 = { spawn_megastructure = { type = dyson_gun_2 coords_from = this owner = owner } }
+				dyson_gun_3 = { spawn_megastructure = { type = dyson_gun_3 coords_from = this owner = owner } }
+				dyson_gun_ruined = { spawn_megastructure = { type = dyson_gun_ruined coords_from = this owner = owner } }
+				dyson_gun_0_restored = { spawn_megastructure = { type = dyson_gun_0_restored coords_from = this owner = owner } }
+			}
+			remove_megastructure = this
+		}
+	}
+}
+
+country_event = {
+	id = toho.4236
+	title = toho.4236.name
+	desc = toho.4236.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_decryption_room }
+	option = { name = toho.4236.a }
+}
+country_event = {
+	id = toho.4237
+	title = toho.4237.name
+	desc = toho.4237.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_decryption_room }
+	option = { name = toho.4237.a }
+}
+
+country_event = {
+	id = toho.4238
+	title = toho.4238.name
+	desc = toho.4238.desc.touhou_crisis_kamikakushi
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_wormhole_room }
+	option = { name = toho.4238.a }
+	option = { name = toho.4238.b }
+	after = { custom_tooltip = toho.4238.effect.touhou_crisis_kamikakushi }
+}
+country_event = {
+	id = toho.4239
+	title = toho.4238.name
+	desc = toho.4238.desc.touhou_crisis_lunar_capital
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_wormhole_room }
+	option = { name = toho.4238.a }
+	option = { name = toho.4238.b }
+	after = { custom_tooltip = toho.4238.effect.touhou_crisis_lunar_capital }
+}
+country_event = {
+	id = toho.4240
+	title = toho.4238.name
+	desc = toho.4238.desc.touhou_crisis_makai
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_wormhole_room }
+	option = { name = toho.4238.a }
+	option = { name = toho.4238.b }
+	after = { custom_tooltip = toho.4238.effect.touhou_crisis_makai }
+}
+country_event = {
+	id = toho.4241
+	title = toho.4238.name
+	desc = toho.4238.desc.touhou_crisis_general
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_wormhole_room }
+	option = { name = toho.4238.a }
+	option = { name = toho.4238.b }
+	after = { custom_tooltip = toho.4238.effect.touhou_crisis_general }
+}
+
+country_event = {
+	id = toho.4242
+	title = toho.4242.name
+	desc = toho.4242.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_large_explosion_room }
+	option = { name = toho.4242.a }
+}
+country_event = {
+	id = toho.4243
+	title = toho.4243.name
+	desc = toho.4243.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_large_explosion_room }
+	option = { name = toho.4242.a }
+}
+country_event = {
+	id = toho.4244
+	title = toho.4244.name
+	desc = toho.4244.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_large_explosion_room }
+	option = { name = toho.4242.a }
+}
+country_event = {
+	id = toho.4245
+	title = toho.4245.name
+	desc = toho.4245.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_large_explosion_room }
+	option = { name = toho.4242.a }
+}
+
+
 country_event = {
 	id = toho.5000
 	title = BUTTON_TEXT_NULL

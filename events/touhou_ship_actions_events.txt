@@ -2508,6 +2508,11 @@ fleet_event = {
     is_triggered_only = yes
     immediate = {
 		if = {
+			limit = { count_controlled_ship = { count <= 0 limit = { is_ship_size = touhou_gunpower_turret_moveable } } }
+			leader = { save_event_target_as = touhou_target_leader }
+			unassign_leader = this
+		}
+		if = {
 			limit = { any_controlled_ship = { check_modifier_value = { modifier = touhou_has_gravity_cannon value > 0 } } }
 			create_fleet = {
 				name = NAME_touhou_gunpower_turret_stationary_fleet
@@ -2614,10 +2619,10 @@ fleet_event = {
             limit = { is_ship_size = touhou_gunpower_turret_moveable }
             delete_ship = this
         }
-        if = {
-            limit = { num_ships <= 0 }
-            unassign_leader = this
-        }
+		if = {
+			limit = { num_ships >= 1 }
+			assign_leader = event_target:touhou_target_leader
+		}
     }
 }
 fleet_event = {
@@ -2635,6 +2640,11 @@ fleet_event = {
     hide_window = yes
     is_triggered_only = yes
     immediate = {
+		if = {
+			limit = { count_controlled_ship = { count <= 0 limit = { is_ship_size = touhou_gunpower_turret_moveable } } }
+			leader = { save_event_target_as = touhou_target_leader }
+			unassign_leader = this
+		}
 		if = {
 			limit = { any_controlled_ship = { check_modifier_value = { modifier = touhou_has_gravity_cannon value > 0 } } }
 			create_fleet = {
@@ -2740,10 +2750,10 @@ fleet_event = {
 			limit = { is_ship_size = touhou_gunpower_turret_moveable }
 			delete_ship = this
 		}
-        if = {
-            limit = { num_ships <= 0 }
-            unassign_leader = this
-        }
+		if = {
+			limit = { num_ships >= 1 }
+			assign_leader = event_target:touhou_target_leader
+		}
     }
 }
 fleet_event = {
@@ -3837,6 +3847,98 @@ country_event = {
 			limit = { NOT = { has_existing_ship_design = gensokyo_ringworld_arkship } }
 			create_ship_design = { design = NAME_gensokyo_ringworld_arkship }
 			add_ship_design = last_created_design
+		}
+	}
+}
+
+fleet_event = {
+	id = touhou_ship_actions.311
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		set_timed_fleet_flag = { flag = touhou_prevent_fast_return_from_mia days = 1800 }
+		set_mia = mia_return_home
+		set_mia_return_delay = 1800
+		fleet_event = {
+			id = touhou_ship_actions.312
+			days = 1800
+		}
+	}
+}
+fleet_event = {
+	id = touhou_ship_actions.312
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		return_from_mia = this
+	}
+}
+fleet_event = {
+	id = touhou_ship_actions.313
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		set_timed_fleet_flag = { flag = touhou_prevent_fast_return_from_mia days = 720 }
+		set_mia = mia_return_home
+		set_mia_return_delay = 720
+		fleet_event = {
+			id = touhou_ship_actions.312
+			days = 720
+		}
+	}
+}
+fleet_event = {
+	id = touhou_ship_actions.314
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		solar_system = {
+			if = {
+				limit = { NOT = { has_star_flag = spth_no_jump_in_system } }
+				set_timed_star_flag = {
+					flag = spth_no_jump_in_system
+					days = 90
+				}
+			}
+			every_neighbor_system = {
+				limit = { NOT = { has_star_flag = spth_no_jump_in_system } }
+				set_timed_star_flag = {
+					flag = spth_no_jump_in_system
+					days = 90
+				}
+			}
+			every_fleet_in_system = {
+				limit = { controller? = { is_hostile = root.controller } }
+				set_terrified_by = this
+				fleet_event = { id = touhou_ship_actions.315 days = 1 }
+			}
+		}
+		every_controlled_ship = { add_modifier = { modifier = touhou_player_inv_modifier days = 30 } }
+	}
+}
+fleet_event = {
+	id = touhou_ship_actions.315
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		if = {
+			limit = { NOT = { is_variable_set = touhou_synaptic_lathe_exouds_days } }
+			set_variable = { which = touhou_synaptic_lathe_exouds_days value = 0 }
+		}
+		change_variable = { which = touhou_synaptic_lathe_exouds_days value = 1 }
+		set_terrified_by = this
+		if = {
+			limit = {
+				OR = {
+					is_in_combat = no
+					check_variable = { which = touhou_synaptic_lathe_exouds_days value >= 15 }
+				}
+			}
+			remove_terrified = yes
+		} else = {
+			fleet_event = { id = touhou_ship_actions.315 days = 1 }
 		}
 	}
 }
