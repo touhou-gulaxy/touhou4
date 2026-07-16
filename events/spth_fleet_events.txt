@@ -6072,3 +6072,21 @@ carrier_event = {
         }
     }
 }
+
+# 月检通用修正下限，每个国家都应该触发
+# 索敌权重：不能低于-99%，防止触发无敌bug。
+country_event = {
+	id = spth_fleet.3002
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		spth_has_kuat_mod = no	# 阿夸已经有-90%索敌权重下限了，防止冲突禁用。
+		any_owned_ship = { check_modifier_value = { modifier = ship_target_weight_mult value < -0.99 } }
+	}
+	immediate = {
+		every_owned_ship = {
+			limit = { check_modifier_value = { modifier = ship_target_weight_mult value < -0.99 } }
+			touhou_standardize_clear_ship_modifier = { modifier = ship_target_weight_mult change = 0.99 DAYS = 30 }
+		}
+	}
+}

@@ -7,6 +7,6 @@ tags={
 	"TouhouProject"
 	"AnimationGirls"
 }
-name="东方繁星录 special touhou species"
+name="东方繁星录 ~ Symphony of Phantasm"
 supported_version="v4.4.*"
 remote_file_id="1834433554"

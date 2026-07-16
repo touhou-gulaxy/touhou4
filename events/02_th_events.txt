@@ -3264,6 +3264,17 @@ country_event = {
 		reroll_random = yes
 		random_list = {
 			10 = {
+				modifier = { factor = 0 is_ai = yes }
+				modifier = { factor = 0 is_nomadic = yes }
+				modifier = { factor = 0 count_owned_colony = { count < 2 } }
+				modifier = { factor = 0.5 years_passed <= 12 }
+				modifier = { factor = 0 has_global_flag = toho_4246_fired }
+				random_planet_within_border = {
+					limit = { is_colony = yes }
+					planet_event = { id = toho.4246 }
+				}
+			}
+			10 = {
 				modifier = { factor = 0 OR = { has_country_flag = toho_8100_fired NOT = { has_country_flag = th_terakoya_reset } } }
 				set_country_flag = toho_8100_fired
 				country_event = { id = toho.8100 days = 30 random = 30 }
@@ -13465,6 +13476,16 @@ system_event = {
 			from.owner? = { country_event = { id = toho.4237 scopes = { from = root } } }
 			remove_megastructure = from
 		}
+		every_system_ambient_object = {
+			limit = {
+				OR = {
+					is_ambient_object_type = dyson_gun_stage_1_impact
+					is_ambient_object_type = dyson_gun_stage_2_impact
+					is_ambient_object_type = dyson_gun_stage_3_impact
+				}
+			}
+			destroy_ambient_object = this
+		}
 	}
 }
 
@@ -13622,6 +13643,72 @@ country_event = {
 	custom_gui_option = spth_event_large_ui_option
 	picture_event_data = { room = spth_large_explosion_room }
 	option = { name = toho.4242.a }
+}
+
+# 永恒的终结
+planet_event = {
+	id = toho.4246
+	title = toho.4246.name
+	desc = toho.4246.desc
+	is_triggered_only = yes
+	fire_only_once = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_alien_city_room }
+	immediate = {
+		set_global_flag = toho_4246_fired
+	}
+	option = {
+		name = toho.4246.a
+		enable_special_project = { name = TOUHOU_ETERNAL_SPACE_SHIELD owner = root.owner }
+	}
+	option = {
+		name = toho.4246.b
+		planet_event = { id = toho.4247 }
+	}
+}
+planet_event = {
+	id = toho.4247
+	title = toho.4247.name
+	desc = toho.4247.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_alien_planet_room }
+	option = {
+		name = TH_NO_INTERESTS
+		add_deposit = d_ruins_of_eternal_space
+	}
+}
+planet_event = {
+	id = toho.4248
+	title = toho.4248.name
+	desc = toho.4248.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_alien_ruins_room }
+	option = {
+		name = TH_INTERESTRING
+		add_deposit = d_buildings_eternal_space_relic
+	}
+}
+planet_event = {
+	id = toho.4249
+	title = toho.4249.name
+	desc = toho.4249.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_black_needle_base_room }
+	option = {
+		name = TH_WHAT_HAPPENED
+		create_archaeological_site = touhou_end_of_eternal_time
+	}
 }
 
 

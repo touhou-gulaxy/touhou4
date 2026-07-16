@@ -1,92 +1,78 @@
-# shipyard = {
-#     icon = "GFX_starbase_shipyard"
-#     section = "ASSEMBLYYARD_STARBASE_SECTION"
-#     construction_days = 180
-#     initial = yes
-#
-#     potential = {
-#         is_normal_starbase = yes
-#         solar_system = {
-#             count_starbase_modules = {
-#                 type = hatchery
-#                 count < 1
-#                 include_being_constructed = yes
-#             }
-#             count_starbase_modules = {
-#                 type = beastport
-#                 count < 1
-#                 include_being_constructed = yes
-#             }
-#         }
-#     }
-#
-#     possible = {
-#         solar_system = {
-#             count_starbase_modules = {
-#                 type = hatchery
-#                 count < 1
-#                 include_being_constructed = yes
-#             }
-#             count_starbase_modules = {
-#                 type = beastport
-#                 count < 1
-#                 include_being_constructed = yes
-#             }
-#         }
-#     }
-#
-#     abort_construction_trigger = {
-#         OR = {
-#             has_starbase_module = hatchery
-#             has_starbase_module = beastport
-#         }
-#     }
-#
-#     resources = {
-#         category = starbase_modules
-#         cost = {
-#             alloys = 50
-#         }
-#
-#         upkeep = {
-#             energy = 1
-#         }
-#     }
-#
-#     station_modifier = {
-#         starbase_shipyard_capacity_add = 1
-#     }
-#     triggered_station_modifier = {
-#         potential = { has_starbase_building = irassian_naval_yards }
-#         starbase_shipyard_capacity_add = 1
-#     }
-#     triggered_station_modifier = {
-#         potential = { exists = fleet }
-#         starbase_shipyard_capacity_add = 1
-#         mult = fleet.value:starbase_shipyard_module_extra_capacity
-#     }
-#     triggered_station_modifier = {  }
-#
-#     on_finished = {
-#         set_ship_construction_type = starbase_shipyard
-#     }
-#     on_destroyed = {
-#         if = {
-#             limit = { NOT = { has_starbase_module = shipyard } }
-#             set_ship_construction_type = none
-#         }
-#     }
-#
-#     ai_weight = {
-#         inline_script = {
-#             script = starbase_modules/ship_construction_ai_weight
-#             MODULE = shipyard
-#         }
-#         modifier = {
-#             factor = 0
-#             owner = {
-#                 uses_fauna_ship_sizes = yes
-#             }
-#         }
-#     }
-# }
+shipyard = {
+	icon = "GFX_starbase_shipyard"
+	section = "ASSEMBLYYARD_STARBASE_SECTION"
+	construction_days = 180
+	category = sm_naval_support_cat
+	initial = yes
+
+	potential = {
+		is_normal_starbase = yes
+		solar_system = {
+			count_starbase_modules = {
+				type = beastport
+				count < 1
+				include_being_constructed = yes
+			}
+		}
+	}
+
+	possible = {
+		solar_system = {
+			count_starbase_modules = {
+				type = beastport
+				count < 1
+				include_being_constructed = yes
+			}
+		}
+	}
+
+	abort_construction_trigger = {
+		has_starbase_module = beastport
+	}
+
+	resources = {
+		category = starbase_modules
+		cost = {
+			alloys = 50
+		}
+
+		upkeep = {
+			energy = 1
+		}
+	}
+
+	station_modifier = {
+		starbase_shipyard_capacity_add = 1
+	}
+	triggered_station_modifier = {
+		potential = { has_starbase_building = irassian_naval_yards }
+		starbase_shipyard_capacity_add = 1
+	}
+	triggered_station_modifier = {
+		starbase_shipyard_capacity_add = 1
+		mult = ship.value:starbase_shipyard_module_capacity_extra
+	}
+
+	on_finished = {
+		set_ship_construction_type = starbase_shipyard
+	}
+	on_destroyed = {
+		if = {
+			limit = { NOT = { has_starbase_module = shipyard } }
+			set_ship_construction_type = none
+		}
+	}
+
+	ai_weight = {
+		inline_script = {
+			script = starbase_modules/ship_construction_ai_weight
+			MODULE = shipyard
+		}
+		modifier = {
+			factor = 0
+			owner = {
+				uses_fauna_ship_sizes = yes
+			}
+		}
+	}
+}

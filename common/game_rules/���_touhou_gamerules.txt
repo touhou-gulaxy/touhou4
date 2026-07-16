@@ -111,3 +111,73 @@ shroud_delve_cooldown_days = {
     subtract = modifier:shroud_delve_cooldown_add
     min = 1
 }
+
+###_[星球可移民]	EMB/ZOFE/EE/ev/PD/时空/modifier/touhou	###############################################################
+# This = planet
+# Checked before can_pop_auto_migrate to save performance
+can_colony_auto_migrate = {
+	hidden_trigger = {
+		is_colony = yes
+	}
+	custom_tooltip = {
+		fail_text = AUTO_MIGRATE_CULTURE_SHOCK
+		NOT = { has_modifier = planet_culture_shock }
+	}
+	custom_tooltip = {
+		fail_text = AUTO_MIGRATE_COLONY_TOO_NEW
+		OR = {
+			AND = {
+				is_under_colonization = no
+				colony_age > 60
+			}
+			is_capital = yes # Don't break Doomsday!
+			# EMB
+			pop_amount > 600
+			has_carrier_flag = void_dweller_habitat # Don't break Void Dwellers!
+			has_modifier = deteriorating_ecosystem
+			has_modifier = catastrophe_approach
+			has_modifier = apocalypse
+			has_modifier = ravenous_locusts
+			has_modifier = planet_active_worm
+			# PD
+			has_carrier_flag = pd_habitat_start_luna
+			has_carrier_flag = pd_habitat_start_mars
+		}
+	}
+	custom_tooltip = {
+		fail_text = AUTO_MIGRATE_ONLY_HAS_ONE_POP
+		sapient_pop_amount > 100
+	}
+	#	+ZOFE/EE/ev
+	hidden_trigger = {
+		exists = owner
+		owner = {
+			OR = {
+				is_country_type = default
+				is_country_type = awakened_fallen_empire
+				#	ZOFE
+				is_country_type = ascended_empire
+				is_country_type = lost_empire
+				is_country_type = awakened_original_empire
+				#	EE
+				is_country_type = eternal_empire
+				#	ev				
+				is_country_type = default_ev
+			}
+		}
+	}
+	hidden_trigger = {
+		owner? = { is_nomadic = no }
+	}
+
+	##	时空
+	TIME_RULE_trgr_Can_planet_auto_migrate = yes
+
+	custom_tooltip = {
+		fail_text = modifier_colony_cannot_auto_migrate_failed
+		check_modifier_value = {
+			modifier = colony_cannot_auto_migrate
+			value = 0
+		}
+	}
+}
