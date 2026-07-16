@@ -43,9 +43,9 @@ spth_spawn_kamikakushi_guard = {
     }
     event_target:makai_wedge_ruined_object = {
         solar_system = {
-            every_system_colony = {
+            every_system_planet_colony = {
                 spth_planet_kill_all_pop = yes
-                destroy_colony = yes
+                touhou_destroy_colony = yes
             }
             every_fleet_in_system = {
                 set_mia = mia_return_home
@@ -232,6 +232,27 @@ spth_spawn_kamikakushi_invade_system = {
     }
     set_spawn_system_batch = end
 }
+spth_spawn_kamikakushi_super_shipyard_system = {
+    optimize_memory
+    set_spawn_system_batch = begin
+    random_rim_system = {
+        limit = { spth_is_no_spawn_crisis_system = no }
+        set_star_flag = spth_no_jump_in_system
+        set_star_flag = ag_no_jump_in_system
+        save_event_target_as = spth_kamikaushi_crisis_super_shipyard_base_system
+        spawn_system = {
+            initializer = spth_kamikaushi_crisis_super_shipyard
+            hyperlane = no
+            effect = {
+                add_hyperlane = {
+                    from = this
+                    to = prev
+                }
+            }
+        }
+    }
+    set_spawn_system_batch = end
+}
 
 spth_kamikaushi_refused = {
     optimize_memory
@@ -391,7 +412,9 @@ spth_kamikakushi_spawn_preview_fleet = {
         spth_kamikakushi_invader_bc_ylx = @kamikakushi_invader_bc_ylx_preview_count
         spth_kamikakushi_cruiser_1 = @kamikakushi_invader_cruiser_preview_count
         kamikakushi_bonus = yes
+        evt_target = spth_kamikakushi_preview
     }
+    spth_kamikakushi_init_crisis_leader = { fleet = spth_kamikakushi_preview }
     spth_kamikakushi_add_fleet_counter = yes
 }
 spth_kamikakushi_spawn_invader_fleet = {
@@ -458,6 +481,28 @@ spth_kamikakushi_spawn_defence_fleet = {
     spth_kamikakushi_init_crisis_leader = { fleet = spth_kamikakushi_defence }
     spth_kamikakushi_add_fleet_counter = yes
 }
+# 1*160+8*80+26*40+10*16
+spth_kamikakushi_spawn_elite_defence_fleet = {
+    optimize_memory
+    spth_create_fleet = {
+        NAME = NAME_spth_kamikakushi_elite_defence
+        can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
+        OWNER = event_target:spth_kamikakushi_country
+        location = event_target:spth_kamikakushi_spawnpoint
+        flag = spth_kamikakushi_defence_fleet
+        flag2 = spth_kamikakushi_elite_defence_fleet
+        spth_kamikakushi_super_carrier = 1
+        spth_kamikakushi_invader_titan = 8
+        spth_kamikakushi_invader_bc_tlx = 8
+        spth_kamikakushi_invader_bc_tmp = 8
+        spth_kamikakushi_invader_bc_tor = 10
+        spth_kamikakushi_cruiser_1 = 16
+        kamikakushi_bonus = yes
+        evt_target = spth_kamikakushi_defence
+    }
+    spth_kamikakushi_init_crisis_leader = { fleet = spth_kamikakushi_defence }
+    spth_kamikakushi_add_fleet_counter = yes
+}
 spth_kamikakushi_spawn_super_carrier_fleet = {
     optimize_memory
     if = {
@@ -471,10 +516,10 @@ spth_kamikakushi_spawn_super_carrier_fleet = {
             flag2 = spth_kamikakushi_flagship_fleet
             spth_kamikakushi_super_carrier = 1
             spth_kamikakushi_invader_titan = 2
-            spth_kamikakushi_invader_bc_yyk = 10
-            spth_kamikakushi_invader_bc_yyk_g = 10
-            spth_kamikakushi_invader_bc_yyk_p = 10
-            spth_kamikakushi_cruiser_1 = 8
+            spth_kamikakushi_invader_bc_yyk = 6
+            spth_kamikakushi_invader_bc_yyk_g = 4
+            spth_kamikakushi_invader_bc_yyk_p = 4
+            spth_kamikakushi_cruiser_1 = 6
             kamikakushi_bonus = yes
             evt_target = spth_kamikakushi_super_carrier
         }
@@ -495,10 +540,10 @@ spth_kamikakushi_spawn_small_defence_fleet = {
         OWNER = event_target:spth_kamikakushi_country
         location = event_target:spth_kamikakushi_spawnpoint
         flag = spth_kamikakushi_defence_fleet
-        spth_kamikakushi_invader_titan = 1
-        spth_kamikakushi_invader_bc_tmp = 10
-        spth_kamikakushi_invader_bc_tor = 10
-        spth_kamikakushi_cruiser_1 = 10
+        spth_kamikakushi_invader_titan = @kamikakushi_guard_small_titan_count
+        spth_kamikakushi_invader_bc_tmp = 15
+        spth_kamikakushi_invader_bc_tor = 15
+        spth_kamikakushi_cruiser_1 = 8
         kamikakushi_bonus = yes
         evt_target = spth_kamikakushi_defence
     }
@@ -609,7 +654,7 @@ spth_kamikakushi_spawn_fleets_detail = {
             random_system = {
                 limit = { has_star_flag = spth_kamikaushi_crisis_gate_$spth_id$ }
                 random_system_planet = {
-                    limit = { has_planet_flag = spth_kamikaushi_crisis_spawnpoint }
+                    limit = { has_carrier_flag = spth_kamikaushi_crisis_spawnpoint }
                     save_event_target_as = spth_kamikakushi_spawnpoint
                 }
                 if = {
@@ -619,12 +664,12 @@ spth_kamikakushi_spawn_fleets_detail = {
                         spth_kamikakushi_spawn_main_fleet = { id = $spth_id$ }
                     }
                     event_target:spth_kamikakushi_spawnpoint = {
-                        planet_event = { id = touhou_crisis.111 days = 5 }
+                        carrier_event = { id = touhou_crisis.111 days = 5 }
                     }
                     event_target:spth_kamikakushi_country = { change_variable = { which = spth_kamikakushi_spawn_interval value = 1 } }
                 } else = {
                     event_target:spth_kamikakushi_spawnpoint = {
-                        planet_event = { id = touhou_crisis.122 days = 5 }
+                        carrier_event = { id = touhou_crisis.122 days = 5 }
                     }
                 }
             }

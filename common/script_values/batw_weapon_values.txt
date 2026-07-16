@@ -1,0 +1,51 @@
+batw_aoe_hit_damage_factor_ship_weapon_damage = {
+    base = 1
+    add = modifier:ship_weapon_damage
+    square_root = yes
+}
+batw_aoe_hit_damage_factor = {
+    base = 1
+    add = modifier:weapon_type_$tag$_weapon_damage_mult
+    add = modifier:$size_tag$_slot_weapon_damage_mult
+    add = modifier:weapon_role_artillery_weapon_damage_mult
+    add = value:batw_aoe_hit_damage_factor_ship_weapon_damage
+    [[archaeotech] add = modifier:weapon_archaeotech_weapon_damage_mult ]
+    min = 1
+}
+batw_modifier_mult_multiplier = {
+    base = 1
+    add = modifier:$modifier$
+}
+batw_aoe_damage_reduction_mult = {
+    base = 1
+    subtract = modifier:ship_aoe_damage_reduction_mult
+    subtract = modifier:touhou_ship_aoe_damage_reduction_mult
+    subtract = modifier:ag_ship_aoe_damage_reduction
+    subtract = modifier:ship_damage_reduction_mult
+    min = 0
+}
+batw_aoe_damage_final_value = {
+    base = 0
+    add = $batw_base$
+    mult = value:batw_aoe_damage_reduction_mult
+    subtract = modifier:ship_aoe_damage_reduction_add
+    subtract = modifier:touhou_ship_aoe_damage_reduction_add
+    subtract = modifier:ship_damage_reduction_add
+
+    min = 0
+}
+batw_aoe_hit_damage = {
+    base = 0
+    add = $base_damage$
+    mult = value:batw_aoe_hit_damage_factor|tag|$tag$|archaeotech|$archaeotech$|size_tag|$size_tag$|
+    mult = $factor|1$
+}
+# curr = max * prec
+batw_armor_value = {
+    base = 0
+    add = trigger:has_max_armor_hp
+    mult = trigger:has_armor_percentage
+    floor = yes
+    [[neg] mult = -1 ]
+    min = 0
+}

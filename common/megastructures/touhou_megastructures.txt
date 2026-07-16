@@ -1,3 +1,137 @@
+# TOUHOU_MEGASTRUCTURE_BRANCH_UPGRADE = {
+# 	portrait = GFX_megastructure_construction_background
+# 	entity = "spth_empty_planet"
+# 	construction_entity = "spth_empty_planet"
+# 	place_entity_on_planet_plane = no
+# 	entity_offset = { x = -20 y = -20 }
+# 	show_galactic_map_icon = yes
+# 	build_time = 1
+# 	resources = {
+# 		category = touhou_megastructures
+# 		cost = {
+# 		}
+# 		upkeep = {
+# 		}
+# 	}
+# 	potential = { is_touhou_country = yes }
+# 	possible = {
+# 		hidden_trigger = {
+# 			from? = {
+# 				is_touhou_country = yes
+# 				OR = {
+# 					is_ai = no
+# 					NOT = { has_country_flag = touhou_megastructure_branch_upgrade_ai_cooldown }
+# 				}
+# 			}
+# 		}
+# 		custom_tooltip = {
+# 			fail_text = TOUHOU_MEGASTRUCTURE_BRANCH_UPGRADE_OPENED
+# 			from? = {
+# 				NOT = { has_country_flag = touhou_megastructure_branch_upgrade_opened }
+# 			}
+# 		}
+# 	}
+# 	upgrade_from = {
+# 		th_shrine_mega
+# 		spth_story_ring_world_base
+# 		spth_makai_wedge_0
+# 		touhou_system_warper
+# 	}
+# 	on_build_complete = {
+# 		from = {
+# 			set_country_flag = touhou_megastructure_branch_upgrade_opened
+# 			set_timed_country_flag = { flag = touhou_megastructure_branch_upgrade_ai_cooldown days = 30 }
+# 		}
+# 		fromfrom = {
+# 			switch = {
+# 				trigger = is_megastructure_type
+# 				th_shrine_mega = {
+# 					spawn_megastructure = {
+# 						type = th_shrine_mega
+# 						coords_from = fromfrom
+# 						owner = from
+# 						init_effect = {
+# 							save_event_target_as = touhou_last_created_megastructure
+# 						}
+# 					}
+# 					root.from = {
+# 						country_event = {
+# 							id = touhou_mega_misc.1
+# 							scopes = {
+# 								from = event_target:touhou_last_created_megastructure
+# 							}
+# 						}
+# 					}
+# 				}
+# 				spth_story_ring_world_base = {
+# 					spawn_megastructure = {
+# 						type = spth_story_ring_world_base
+# 						coords_from = fromfrom
+# 						owner = from
+# 						init_effect = {
+# 							save_event_target_as = touhou_last_created_megastructure
+# 						}
+# 					}
+# 					root.from = {
+# 						country_event = {
+# 							id = touhou_mega_misc.2
+# 							scopes = {
+# 								from = event_target:touhou_last_created_megastructure
+# 							}
+# 						}
+# 					}
+# 				}
+# 				spth_makai_wedge_0 = {
+# 					spawn_megastructure = {
+# 						type = spth_makai_wedge_0
+# 						coords_from = fromfrom
+# 						owner = from
+# 						init_effect = {
+# 							save_global_event_target_as = makai_wedge_ruined_object
+# 							set_megastructure_flag = is_repaired_makai_wedge
+# 							save_event_target_as = touhou_last_created_megastructure
+# 						}
+# 					}
+# 					root.from = {
+# 						country_event = {
+# 							id = touhou_mega_misc.3
+# 							scopes = {
+# 								from = event_target:touhou_last_created_megastructure
+# 							}
+# 						}
+# 					}
+# 				}
+# 				touhou_system_warper = {
+# 					spawn_megastructure = {
+# 						type = touhou_system_warper
+# 						coords_from = fromfrom
+# 						owner = from
+# 						init_effect = {
+# 							save_event_target_as = touhou_last_created_megastructure
+# 						}
+# 					}
+# 					root.from = {
+# 						country_event = {
+# 							id = touhou_mega_misc.4
+# 							scopes = {
+# 								from = event_target:touhou_last_created_megastructure
+# 							}
+# 						}
+# 					}
+# 				}
+# 			}
+# 		}
+# 		remove_megastructure = fromfrom
+# 	}
+# 	ai_weight = {
+# 		weight = 114514
+# 		modifier = {
+# 			from = { has_country_flag = touhou_megastructure_branch_upgrade_ai_cooldown }
+# 			set = 0
+# 		}
+# 	}
+# }
+
 touhou_system_warper_base = {
     portrait = GFX_megastructure_construction_background
     entity = "construction_platform_entity"
@@ -65,6 +199,7 @@ touhou_system_warper_base = {
     }
     custom_tooltip_requirements = "MEGASTRUCTURE_TOOLTIP_REQUIREMENTS_OUTSIDE_GRAVITY_WELL"
     country_modifier = {
+        country_touhou_system_warper_use_add = 1
     }
     ai_weight = {
         weight = 0
@@ -109,13 +244,14 @@ touhou_system_warper_stage_1 = {
     potential = { has_technology = tech_touhou_system_warper is_ai = no }
     possible = {
         from = { has_technology = tech_touhou_system_warper }
-        custom_tooltip = {
-            fail_text = "requires_no_existing_touhou_system_warper"
-            from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
-        }
+        # custom_tooltip = {
+        #     fail_text = "requires_no_existing_touhou_system_warper"
+        #     from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
+        # }
     }
     upgrade_from = { touhou_system_warper_base }
     country_modifier = {
+        country_touhou_system_warper_use_add = 1
         ship_interstellar_speed_mult = 0.16
     }
     station_modifier = {
@@ -160,13 +296,14 @@ touhou_system_warper_stage_2 = {
     potential = { has_technology = tech_touhou_system_warper is_ai = no }
     possible = {
         from = { has_technology = tech_touhou_system_warper }
-        custom_tooltip = {
-            fail_text = "requires_no_existing_touhou_system_warper"
-            from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
-        }
+        # custom_tooltip = {
+        #     fail_text = "requires_no_existing_touhou_system_warper"
+        #     from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
+        # }
     }
     upgrade_from = { touhou_system_warper_stage_1 }
     country_modifier = {
+        country_touhou_system_warper_use_add = 1
         ship_interstellar_speed_mult = 0.16
         ship_ftl_jumpdrive_range_mult = 0.16
     }
@@ -214,13 +351,14 @@ touhou_system_warper_stage_3 = {
     potential = { has_technology = tech_touhou_system_warper is_ai = no }
     possible = {
         from = { has_technology = tech_touhou_system_warper }
-        custom_tooltip = {
-            fail_text = "requires_no_existing_touhou_system_warper"
-            from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
-        }
+        # custom_tooltip = {
+        #     fail_text = "requires_no_existing_touhou_system_warper"
+        #     from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
+        # }
     }
     upgrade_from = { touhou_system_warper_stage_2 }
     country_modifier = {
+        country_touhou_system_warper_use_add = 1
         ship_interstellar_speed_mult = 0.15
         ship_ftl_jumpdrive_range_mult = 0.15
         ship_emergency_ftl_mult = -0.10
@@ -268,13 +406,14 @@ touhou_system_warper_stage_4 = {
     potential = { has_technology = tech_touhou_system_warper is_ai = no }
     possible = {
         from = { has_technology = tech_touhou_system_warper }
-        custom_tooltip = {
-            fail_text = "requires_no_existing_touhou_system_warper"
-            from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
-        }
+        # custom_tooltip = {
+        #     fail_text = "requires_no_existing_touhou_system_warper"
+        #     from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
+        # }
     }
     upgrade_from = { touhou_system_warper_stage_3 }
     country_modifier = {
+        country_touhou_system_warper_use_add = 1
         ship_interstellar_speed_mult = 0.32
         ship_ftl_jumpdrive_range_mult = 0.32
         ship_emergency_ftl_mult = -0.25
@@ -323,11 +462,14 @@ touhou_system_warper = {
     potential = { has_technology = tech_touhou_system_warper is_ai = no }
     possible = {
         from = { has_technology = tech_touhou_system_warper }
-        custom_tooltip = {
-            fail_text = "requires_no_existing_touhou_system_warper"
-            from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
-        }
+        # custom_tooltip = {
+        #     fail_text = "requires_no_existing_touhou_system_warper"
+        #     from = { check_variable_arithmetic = { which = value:touhou_num_owned_touhou_system_warper value < value:touhou_max_owned_touhou_system_warper } }
+        # }
     }
+	scripted_action = {
+		touhou_megastructure_system_warper_proj_fleet
+	}
     placement_rules = {
     }
     upgrade_from = { touhou_system_warper_stage_4 }
@@ -345,6 +487,11 @@ touhou_system_warper = {
         quantum_catapult_megastructure_bypass_windup_mult = -0.99
     }
     bypass_type = quantum_catapult
+    # overclock_types = {
+    #     touhou_system_warper_system_jump_default
+    #     touhou_system_warper_system_jump_with_fleet
+    #     touhou_system_warper_system_jump_project_fleet
+    # }
     ai_weight = {
         weight = 0
     }
@@ -579,20 +726,380 @@ touhou_system_warper_attack = {
             }
         }
         from = {
-            country_event = { id = toho.4200 }
+            if = {
+                limit = { check_modifier_value = { modifier = touhou_system_warper_attack_target_max_add value >= 2 } }
+                country_event = { id = toho.4229 }
+            } else = {
+                country_event = { id = toho.4200 }
+            }
         }
         remove_megastructure = fromfrom
     }
     construction_blocks_and_blocked_by = self_type
 }
 
+touhou_kamikakushi_super_shipyard = {
+    portrait = GFX_megastructure_construction_background
+    entity = "touhou_super_shipyard_entity"
+    construction_entity = "touhou_super_shipyard_entity"
+    place_entity_on_planet_plane = no
+    entity_offset = { x = 0 y = 0 }
+    show_galactic_map_icon = yes
+    build_time = 495000
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            sr_living_metal = 10000
+            nanites = 5000
+            sr_dark_matter = 5000
+            sr_lingli = 25000
+        }
+        upkeep = {
+            energy = 1000
+            alloys = 500
+        }
+    }
+    potential = { always = no }
+    possible = { always = no }
+    placement_rules = { }
+    country_modifier = {
+        starbase_shipyard_artificial_build_speed_mult = 3
+        touhou_kamikakushi_super_shipyard_speed = 1
+    }
+    station_modifier = {
+        starbase_shipyard_capacity_add = 128
+		megastructure_can_build_colossus = 1
+		megastructure_can_build_juggernaut = 1
+		megastructure_can_build_titan = 1
+    }
+    ai_weight = {
+        weight = 0
+    }
+    dismantle_potential = { always = no }
+    on_build_start = {}
+    on_build_cancel = {}
+    on_build_complete = {}
+}
+
+touhou_signal_jammer_tower_disabled = {
+    entity = "touhou_inhiborter_idle2_entity"
+    construction_entity = "spth_empty_planet"
+    portrait = GFX_megastructure_construction_background
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+        upkeep = {
+            energy = 20
+            sr_lingli = 10
+            sr_living_metal = 5
+            nanites = 5
+            sr_dark_matter = 2.5
+            astral_threads = 2.5
+        }
+    }
+    construction_blocks_and_blocked_by = self_type
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+    }
+    potential = { always = no }
+    possible = { always = no }
+}
+touhou_signal_jammer_tower_repair = {
+    entity = "touhou_inhiborter_idle2_entity"
+    construction_entity = "spth_empty_planet"
+    portrait = GFX_megastructure_construction_background
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+        upkeep = {
+            energy = 20
+            sr_lingli = 10
+            sr_living_metal = 5
+            nanites = 5
+            sr_dark_matter = 2.5
+            astral_threads = 2.5
+        }
+    }
+    construction_blocks_and_blocked_by = self_type
+    upgrade_from = { touhou_signal_jammer_tower_disabled }
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        fromfrom = {
+            save_global_event_target_as = touhou_repair_jammer_tower_@root.from
+        }
+        from = {
+            set_country_flag = touhou_helldiver_stratagem_code_repair_jammer_tower
+            country_event = {
+                id = gensokyo_start.3036
+            }
+        }
+    }
+    potential = { always = yes }
+    possible = { always = yes }
+}
+touhou_signal_jammer_tower = {
+    entity = "touhou_inhiborter_started_entity"
+    construction_entity = "touhou_inhiborter_started_entity"
+    portrait = GFX_megastructure_construction_background
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+        produces = {
+            physics_research = 100
+            society_research = 50
+            engineering_research = 200
+        }
+        upkeep = {
+            energy = 200
+            sr_lingli = 100
+            sr_living_metal = 50
+            nanites = 50
+            sr_dark_matter = 25
+            astral_threads = 25
+        }
+    }
+    country_modifier = {
+        ship_damage_reduction_mult = 0.1
+        ship_damage_reduction_add = 160
+    }
+    construction_blocks_and_blocked_by = self_type
+    build_time = 7200
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        touhou_signal_jammer_tower_init = { dis = 5 }
+    }
+    prerequisites = { tech_touhou_signal_jammer_tower_repair }
+    potential = { has_technology = tech_touhou_signal_jammer_tower_repair }
+    possible = { from = { has_technology = tech_touhou_signal_jammer_tower_repair } }
+}
+touhou_signal_jammer_tower_restore = {
+    entity = "touhou_inhiborter_started_entity"
+    construction_entity = "touhou_inhiborter_started_entity"
+    portrait = GFX_megastructure_construction_background
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+        produces = {
+            physics_research = 100
+            society_research = 50
+            engineering_research = 200
+        }
+        upkeep = {
+            energy = 200
+            sr_lingli = 100
+            sr_living_metal = 50
+            nanites = 50
+            sr_dark_matter = 25
+            astral_threads = 25
+        }
+    }
+    country_modifier = {
+        ship_damage_reduction_mult = 0.1
+        ship_damage_reduction_add = 160
+    }
+    upgrade_from = { touhou_signal_jammer_tower_closed }
+    construction_blocks_and_blocked_by = self_type
+    build_time = 1800
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        spawn_megastructure = {
+            type = touhou_signal_jammer_tower
+            coords_from = fromfrom
+            owner = from
+        }
+        remove_megastructure = fromfrom
+    }
+    potential = { always = yes }
+    possible = { always = yes }
+}
+touhou_signal_jammer_tower_close = {
+    entity = "touhou_inhiborter_idle_entity"
+    construction_entity = "touhou_inhiborter_idle_entity"
+    portrait = GFX_megastructure_construction_background
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+        produces = {
+            physics_research = 100
+            society_research = 50
+            engineering_research = 200
+        }
+        upkeep = {
+            energy = 20
+            sr_lingli = 10
+            sr_living_metal = 5
+            nanites = 5
+            sr_dark_matter = 2.5
+            astral_threads = 2.5
+        }
+    }
+    country_modifier = {
+        ship_damage_reduction_mult = 0.05
+        ship_damage_reduction_add = 80
+    }
+    upgrade_from = { touhou_signal_jammer_tower }
+    construction_blocks_and_blocked_by = self_type
+    build_time = 1800
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        spawn_megastructure = {
+            type = touhou_signal_jammer_tower_closed
+            coords_from = fromfrom
+            owner = from
+        }
+        remove_megastructure = fromfrom
+    }
+    potential = { always = yes }
+    possible = { always = yes }
+}
+touhou_signal_jammer_tower_closed = {
+    entity = "touhou_inhiborter_idle_entity"
+    construction_entity = "touhou_inhiborter_idle_entity"
+    portrait = GFX_megastructure_construction_background
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        cost = {
+            alloys = 5000
+            sr_lingli = 25000
+            astral_threads = 2500
+            influence = 100
+        }
+        produces = {
+            physics_research = 100
+            society_research = 50
+            engineering_research = 200
+        }
+        upkeep = {
+            energy = 20
+            sr_lingli = 10
+            sr_living_metal = 5
+            nanites = 5
+            sr_dark_matter = 2.5
+            astral_threads = 2.5
+        }
+    }
+    country_modifier = {
+        ship_damage_reduction_mult = 0.05
+        ship_damage_reduction_add = 80
+    }
+    construction_blocks_and_blocked_by = self_type
+    build_time = 1800
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+        touhou_signal_jammer_tower_destruct = { dis = 5 }
+    }
+    potential = { always = no }
+    possible = { always = no }
+}
+
 # touhou_artificial_blackhole = {
 #
 # }
 #
-# touhou_blackhole_generator = {
-#
-# }
+touhou_blackhole_generator_destoryed = {
+    entity = "touhou_blackhole_generator_test_attach_entity"
+    construction_entity = "spth_empty_planet"
+    portrait = GFX_megastructure_construction_background
+    entity_offset = { x = 0 y = 0 }
+    place_entity_on_planet_plane = no
+    show_galactic_map_icon = yes
+    show_in_outliner = yes
+    scales_with_planet = yes
+    upgrade_desc = hide
+    resources = {
+        category = touhou_megastructures
+        produces = {
+            energy = 5000
+        }
+        upkeep = {
+            alloys = 200
+            sr_living_metal = 50
+            nanites = 50
+        }
+    }
+    construction_blocks_and_blocked_by = self_type
+    ai_weight = { weight = 0 }
+    dismantle_potential = { always = no }
+    on_build_start = { }
+    on_build_cancel = { }
+    on_build_complete = {
+    }
+    potential = { always = no }
+    possible = { always = no }
+}
 #
 # touhou_planetary_shield = {
 #

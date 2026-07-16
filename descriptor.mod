@@ -1,4 +1,4 @@
-version="2.4.0"
+version="2.5.0"
 tags={
 	"Gameplay"
 	"Galaxy Generation"
@@ -7,6 +7,6 @@ tags={
 	"TouhouProject"
 	"AnimationGirls"
 }
-name="东方繁星录 special touhou species"
-supported_version="v4.2.*"
+name="东方繁星录 ~ Symphony of Phantasm"
+supported_version="v4.4.*"
 remote_file_id="1834433554"

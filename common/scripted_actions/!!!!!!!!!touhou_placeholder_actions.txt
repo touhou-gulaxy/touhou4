@@ -1,0 +1,55 @@
+ag_mod_ship_action_menu = {
+	user_scope = fleet
+	scope = self
+	button_visible = {
+		spth_has_ag_mod = yes
+		hidden_trigger = { any_owned_ship = { OR = {
+			check_modifier_value = { modifier = "ag_allow_ship_action" value > 0 }
+			check_modifier_value = { modifier = "ag_triggered_allow_ship_action" value > 0 }
+			check_modifier_value = { modifier = "ship_has_touhou_action" value > 0 }
+		} } }
+	}
+	button_clickable = {
+		custom_tooltip = { fail_text = "ag_action_empty" NOT = { has_fleet_flag = ag_no_ship_action_cooldown } }
+		hidden_trigger = { owner = { NOT = { has_country_flag = ag_ship_action_menu_opened } } }
+	}
+	on_completed = on_ag_fleet_action_actived
+	icon = GFX_ag_fleet_view_ship_action_button
+	icon_selected = GFX_ag_fleet_view_ship_action_button
+	activity_key = ag_action_button_title
+	tooltip = ag_fleetview_action_button_title
+	context_menu_name = ag_action_button_title
+	activity_key = ag_action_button_title
+	progress_activity_key = ag_action_button_title
+	on_click_sound = "interface"
+	wait = no
+	important = yes
+	slot = 1
+}
+
+ag_science_constructor_build_megastructure = {
+	user_scope = fleet
+	scope = self
+	button_visible = { hidden_trigger = { always = yes } }
+	button_clickable = { hidden_trigger = { always = yes } }
+	specific_behavior = scripted_build_megastructure_order
+	slot = 0
+}
+ag_system_selector_select_target_fleet = {
+	user_scope = fleet
+	scope = galactic_object
+	button_visible = { hidden_trigger = {
+			has_fleet_flag = ag_system_selector_fleet
+			owner = { has_country_flag = ag_system_selector_window_opened }
+		} }
+	button_clickable = { hidden_trigger = { owner = { check_variable = { which = ag_num_system_selector_selected_systems value < ag_max_selected_systems } } } }
+	on_started = ag_on_system_selector_selected_system
+	icon = GFX_ag_fleet_view_system_selector_select_target
+	icon_selected = GFX_ag_fleet_view_system_selector_select_target
+	activity_key = ag_system_selector_select_target
+	context_menu_name = ag_system_selector_select_target
+	progress_activity_key = ag_system_selector_select_target
+	on_click_sound = "interface"
+	wait = no
+	slot = 2
+}

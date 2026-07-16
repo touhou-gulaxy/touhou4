@@ -850,3 +850,99 @@ situation_touhou_shell_world_durability = {
         }
     }
 }
+
+situation_reverse_engine_makai_ftl_engine = {
+    picture = GFX_evt_yukari_1
+    complete_icon_frame = GFX_situation_outcome_frame_green
+    complete_icon = GFX_situation_outcome_challenge
+    on_progress_complete = {
+        owner = { country_event = { id = spth_precursor.64 } }
+        hidden_effect = { destroy_situation = this }
+    }
+    stages = {
+        stage_1 = {
+            icon = GFX_situation_stage_1
+            icon_background = GFX_situation_stage_frame_gray
+            end = 108
+        }
+    }
+    approach = {
+        name = "situation_lunar_capital_psionic_crisis_stage_0_approach"
+        icon = GFX_situation_approach_unity
+        icon_background = GFX_situation_approach_bg_yellow
+        default = yes
+        on_select = { custom_tooltip = "situation_lunar_capital_psionic_crisis_stage_0_approach_tooltip" }
+    }
+    monthly_progress = {
+        base = 0.1
+        modifier = {
+            add = 3.5
+            hidden_trigger = {
+                owner = { has_country_flag = situation_reverse_engine_makai_ftl_engine_research }
+            }
+            desc = "situation_reverse_engine_makai_ftl_engine_research"
+        }
+    }
+    abort_trigger = { always = no }
+}
+
+# ends in 8~12 years
+situation_lunar_capital_psionic_crisis_stage_0 = {
+    picture = GFX_evt_shroud_end_of_the_cycle
+    complete_icon_frame = GFX_situation_outcome_frame_red
+    complete_icon = GFX_situation_outcome_negative
+    on_progress_complete = {
+        custom_tooltip = the_lost_patron_before_activation_tt
+        hidden_effect = {
+            owner = {
+                if = {
+                    limit = { is_country_type = global_event }
+                    if = {
+                        limit = { exists = event_target:lunar_capital_psi_107_trigger_country }
+                        event_target:lunar_capital_psi_107_trigger_country = {
+                            country_event = { id = disappear_barrier.1026 }
+                        }
+                    }
+                    else_if = {
+                        limit = { any_country = { has_country_flag = lunar_capital_psi_107_trigger_country } }
+                        random_country = {
+                            limit = { has_country_flag = lunar_capital_psi_107_trigger_country }
+                            country_event = { id = disappear_barrier.1026 }
+                        }
+                    }
+                    else_if = {
+                        limit = { any_playable_country = { is_ai = no } }
+                        random_playable_country = {
+                            limit = { is_ai = no }
+                            country_event = { id = disappear_barrier.1026 }
+                        }
+                    }
+                    else = { random_country = { country_event = { id = disappear_barrier.1026 } } }
+                }
+            }
+        }
+    }
+    stages = {
+        stage_1 = {
+            icon = GFX_situation_stage_1
+            icon_background = GFX_situation_stage_frame_gray
+            end = 1024
+        }
+    }
+    approach = {
+        name = "situation_lunar_capital_psionic_crisis_stage_0_approach"
+        icon = GFX_situation_approach_unity
+        icon_background = GFX_situation_approach_bg_yellow
+        default = yes
+        on_select = { custom_tooltip = "situation_lunar_capital_psionic_crisis_stage_0_approach_tooltip" }
+    }
+    monthly_progress = {
+        base = 0
+        modifier = {
+            add = owner.situation_lunar_capital_psionic_crisis_stage_0_progress
+            desc = "situation_lunar_capital_psionic_crisis_stage_0_progress_desc"
+        }
+    }
+    on_monthly = { events = { lunar_capital_psi.201 } }
+    abort_trigger = { always = no }
+}

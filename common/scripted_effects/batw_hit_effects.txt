@@ -1,0 +1,114 @@
+# size: weapon size, e.g. extra_large, titanic.
+# type: weapon key.
+# base_damage: the base damage of AOE.
+# cooldown: internal cooldown of AOE, int, should not less than 2.
+# aoe_range: range, int.
+# fleet_effect_color: explosion effect color, should be one of red, white, blue, unless you add more ambient_objects.
+# fleet_effect_size: explosion effect size, should be one of small, medium, large, common, extra.
+# size_tag: size tag of weapon, such as t, x, s, m, l.
+# archaeotech: if the weapon is archaeotech_weapon, should be one of yes/no.
+# tag: weapon tag, such as weapon_type_energy
+# Document:
+# And if you want more tags, you should write another script_value like batw_aoe_hit_damage and
+# another effect like batw_weapon_fire_aoe_damage.
+# Also, you should add a static_modifier called "weapon_$type$_$size$_hull_damage", for example:
+# If you have a weapon called th_spark_1, and with size of titanic:
+# weapon_th_spark_1_titanic_hull_damage = {
+#     ship_hull_regen_add_static = -1
+# }
+batw_weapon_fire_aoe_damage = {
+    optimize_memory
+    if = {
+        limit = {
+            exists = from from = { NOT = { has_ship_flag = batw_aoe_damage_$size$_$type$ } }
+        }
+        from = { set_timed_ship_flag = { flag = batw_aoe_damage_$size$_$type$ days = $cooldown$ } }
+        set_variable = {
+            which = batw_aoe_damage_$size$_$type$_total_self
+            value = from.value:batw_aoe_hit_damage|base_damage|$base_damage$|tag|$tag$|archaeotech|$archaeotech$|size_tag|$size_tag$|
+        }
+        solar_system = {
+            every_ship_in_system = {
+                limit = {
+                    NOT = { has_ship_flag = batw_aoe_damage_$size$_$type$_lock }
+                    check_modifier_value = { modifier = ag_ship_aoe_damage_reduction value < 1.0 }
+                    check_modifier_value = { modifier = ship_aoe_damage_reduction_mult value < 1.0 }
+                    check_modifier_value = { modifier = touhou_ship_aoe_damage_reduction_mult value < 1.0 }
+                    exists = controller controller = { is_hostile = root.from.owner }
+                    distance = { same_solar_system = yes source = prevprev max_distance <= $aoe_range$ }
+                }
+                # i decide to not play explosion particle on every ship
+                # this may cause tons tons of lag.
+                set_timed_ship_flag = { flag = batw_aoe_damage_$size$_$type$_lock days = $cooldown$ }
+                set_variable = { which = batw_aoe_damage_$size$_$type$_total_temp value = value:batw_aoe_damage_final_value|batw_base|prevprev.batw_aoe_damage_$size$_$type$_total_self| }
+                # calc shield damage here
+                if = {
+                    limit = { has_shield_hp > 0 }
+                    set_variable = { which = batw_aoe_damage_$size$_$type$_shield_temp value = batw_aoe_damage_$size$_$type$_total_temp }
+                    multiply_variable = { which = batw_aoe_damage_$size$_$type$_shield_temp value = prevprev.value:batw_modifier_mult_multiplier|modifier|ship_shield_damage_mult| }
+                    if = {
+                        limit = { has_shield_hp >= batw_aoe_damage_$size$_$type$_shield_temp }
+                        reduce_shield = batw_aoe_damage_$size$_$type$_shield_temp
+                    }
+                    else = {
+                        set_variable = { which = batw_aoe_damage_$size$_$type$_shield_temp value = trigger:has_shield_hp }
+                        divide_variable = { which = batw_aoe_damage_$size$_$type$_shield_temp value = prevprev.value:batw_modifier_mult_multiplier|modifier|ship_shield_damage_mult| }
+                        reduce_shield = trigger:has_shield_hp
+                    }
+                    subtract_variable = { which = batw_aoe_damage_$size$_$type$_total_temp value = batw_aoe_damage_$size$_$type$_shield_temp }
+                    clear_variable = batw_aoe_damage_$size$_$type$_shield_temp
+                } else_if = { limit = { check_variable = { which = batw_aoe_damage_$size$_$type$_total_temp value <= 0 } } clear_variable = batw_aoe_damage_$size$_$type$_total_temp }
+                # calc armor damage here
+                if = {
+                    limit = { check_variable = { which = batw_aoe_damage_$size$_$type$_total_temp value > 0 } has_armor_percentage > 0 }
+                    set_variable = { which = batw_ship_current_armor value = trigger:has_max_armor_hp }
+                    multiply_variable = { which = batw_ship_current_armor value = trigger:has_armor_percentage }
+                    set_variable = { which = batw_aoe_damage_$size$_$type$_armor_temp value = batw_aoe_damage_$size$_$type$_total_temp }
+                    multiply_variable = { which = batw_aoe_damage_$size$_$type$_armor_temp value = prevprev.value:batw_modifier_mult_multiplier|modifier|ship_armor_damage_mult| }
+                    if = {
+                        limit = { check_variable = { which = batw_ship_current_armor value >= batw_aoe_damage_$size$_$type$_armor_temp } }
+                        multiply_variable = { which = batw_aoe_damage_$size$_$type$_armor_temp value = -1 }
+                        repair_armor_amount = batw_aoe_damage_$size$_$type$_armor_temp
+                    }
+                    else = {
+                        set_variable = { which = batw_aoe_damage_$size$_$type$_armor_temp value = batw_ship_current_armor }
+                        multiply_variable = { which = batw_aoe_damage_$size$_$type$_armor_temp value = -1 }
+                        repair_armor_amount = batw_aoe_damage_$size$_$type$_armor_temp
+                        set_variable = { which = batw_aoe_damage_$size$_$type$_armor_temp value = batw_ship_current_armor }
+                        divide_variable = { which = batw_aoe_damage_$size$_$type$_armor_temp value = prevprev.value:batw_modifier_mult_multiplier|modifier|ship_armor_damage_mult| }
+                        multiply_variable = { which = batw_aoe_damage_$size$_$type$_armor_temp value = -1 }
+                    }
+                    change_variable = { which = batw_aoe_damage_$size$_$type$_total_temp value = batw_aoe_damage_$size$_$type$_armor_temp }
+                    clear_variable = batw_ship_current_armor
+                    clear_variable = batw_aoe_damage_$size$_$type$_armor_temp
+                    clear_variable = batw_aoe_damage_$size$_$type$_armor_temp_alt
+                }
+                else_if = { limit = { check_variable = { which = batw_aoe_damage_$size$_$type$_total_temp value <= 0 } } clear_variable = batw_aoe_damage_$size$_$type$_total_temp }
+                # calc hull damage here
+                if = {
+                    limit = { check_variable = { which = batw_aoe_damage_$size$_$type$_total_temp value > 0 } }
+                    multiply_variable = { which = batw_aoe_damage_$size$_$type$_total_temp value = prevprev.value:batw_modifier_mult_multiplier|modifier|ship_hull_damage_mult| }
+                    if = { limit = { has_modifier = weapon_$type$_$size$_hull_damage } remove_modifier = weapon_$type$_$size$_hull_damage }
+                    add_modifier = { modifier = weapon_$type$_$size$_hull_damage days = 2 multiplier = batw_aoe_damage_$size$_$type$_total_temp }
+                }
+                clear_variable = batw_aoe_damage_$size$_$type$_total_temp
+            }
+        }
+        batw_spawn_explosion_effect = { color = $fleet_effect_color$ size = $fleet_effect_size$ }
+        clear_variable = batw_aoe_damage_$size$_$type$_total_self
+    }
+}
+batw_spawn_explosion_effect = {
+    optimize_memory
+    create_ambient_object = {
+        type = batw_explosion_$color$_$size$
+        location = this
+        duration = 10
+        use_3d_location = yes
+        entity_offset = { min = 0 max = 0 }
+        entity_offset_angle = { min = 0 max = 0 }
+        entity_offset_height = { min = $min_height|0$ max = $max_height|0$ }
+        entity_scale_to_size = yes
+        scale = 0.1
+    }
+}

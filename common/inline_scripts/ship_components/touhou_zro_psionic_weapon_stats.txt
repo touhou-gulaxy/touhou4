@@ -3,27 +3,24 @@ icon = GFX_ship_part_touhou_zro_psionic_lighting_$size_short$
 prerequisites = { $prerequisites$ }
 component_set = touhou_zro_psionic_lighting
 projectile_gfx = touhou_psionic_energy_lance_$size$
-tags = { weapon_type_kinetic weapon_type_lingli $size_short$_slot $extra_tags$ weapon_type_psionic }
+tags = { weapon_type_energy weapon_type_lingli $size_short$_slot $extra_tags$ weapon_type_psionic }
 ai_tags = { weapon_role_anti_armor }
 ai_tag_weight = 1000
 inline_script = { script = ship_components/spth_component_basic size = $size$ }
 inline_script = { script = ship_components/spth_component_attributes name = psionic tag = zro type = $size$ }
 inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = $size$ }
-inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+inline_script = { script = ship_components/spth_basic_ai_weight_psionic base = @touhou_components_basic_weight }
 target_focus = spread
 ship_modifier = {
     component_lifesteal_add = 0.10
 }
 on_hit = {
     custom_tooltip = touhou_psionic_advanced_weapon_hit_effect
-    hidden_effect = {
-        if = {
-            limit = { NOT = { has_ship_flag = touhou_psionic_advanced_weapon_hit_fired } }
-            set_timed_ship_flag = { flag = touhou_psionic_advanced_weapon_hit_fired days = 10 }
-            if = {
-                limit = { NOT = { has_modifier = touhou_psionic_advanced_weapon_modifier } }
-                add_modifier = { modifier = touhou_psionic_advanced_weapon_modifier days = 5 }
-            }
-        }
-    }
+		if = {
+			limit = { from? = { NOT = { has_ship_flag = touhou_psionic_advanced_weapon_fired } } }
+			from = { set_timed_ship_flag = { flag = touhou_psionic_advanced_weapon_fired days = 4 } }
+			touhou_damage_ship = { amount = value:touhou_ship_hp_value|hull|yes|armor|yes|divide|2|factor|0.005| source = from }
+		}
+    touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = $steal_modifier$ duration = 6.00 dynamic = yes threshold = 16 }
 }
+military_power_multiplier = @touhou_generic_scale_military_power_multiplier

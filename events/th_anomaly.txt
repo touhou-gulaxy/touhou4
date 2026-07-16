@@ -124,7 +124,7 @@ ship_event = {
 	custom_gui_option = spth_event_large_ui_option
 	picture_event_data = { room = spth_ship_travel_room }
 	trigger = {
-		
+
 	}
 	option = {
 		name = th_anomaly.4.aa
@@ -137,7 +137,7 @@ ship_event = {
 	}
 	option = {
 		name = th_anomaly.4.bb
-		owner = { 
+		owner = {
 			add_modifier = {
 				modifier = th_fxtz_game
 			}
@@ -598,5 +598,588 @@ country_event = {
             create_ship_design = { design = NAME_touhou_fe_union_titan }
             add_ship_design = last_created_design
         }
+    }
+}
+
+country_event = {
+    id = th_anomaly.22
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_technology = tech_touhou_fe_union_escort
+        NOT = { has_country_flag = touhou_fe_union_escort_design_given }
+    }
+    immediate = {
+        set_country_flag = touhou_fe_union_escort_design_given
+        create_ship_design = { design = NAME_touhou_fe_union_escort_player }
+        add_ship_design = last_created_design
+    }
+}
+country_event = {
+    id = th_anomaly.23
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        has_technology = tech_touhou_fe_union_battle_cruiser
+        NOT = { has_country_flag = touhou_fe_union_battle_cruiser_design_given }
+    }
+    immediate = {
+        set_country_flag = touhou_fe_union_battle_cruiser_design_given
+        create_ship_design = { design = NAME_touhou_fe_union_battle_cruiser_player }
+        add_ship_design = last_created_design
+    }
+}
+
+
+ship_event = {
+    id = th_anomaly.40
+    title = th_anomaly.40.name
+    desc = th_anomaly.40.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_planet_beam_violet_room }
+    show_sound = event_wind_ruins
+    location = root
+    is_triggered_only = yes
+    immediate = {
+        owner = {
+            set_country_flag = touhou_th175_oil_hell_fired
+        }
+        from = {
+            save_global_event_target_as = touhou_th175_oil_hell_planet_@root.owner
+        }
+    }
+    option = {
+        name = TH_ACKNOWLEDGED
+        begin_event_chain = {
+            event_chain = touhou_th175_oil_hell_chain
+            target = root.owner
+        }
+        enable_special_project = {
+            name = touhou_th175_oil_hell_chain_build_station
+            location = from
+            owner = root.owner
+        }
+    }
+}
+country_event = {
+    id = th_anomaly.41
+    title = th_anomaly.41.name
+    desc = th_anomaly.41.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mining_station_room }
+    show_sound = event_dyson_sphere_build_complete
+    location = event_target:touhou_th175_oil_hell_planet_@root
+    is_triggered_only = yes
+    trigger = {
+        has_country_flag = touhou_th175_oil_hell_fired
+        NOT = { has_country_flag = th_anomaly_41_fired }
+        exists = event_target:touhou_th175_oil_hell_planet_@root
+        event_target:touhou_th175_oil_hell_planet_@root = {
+            is_scope_type = planet
+            has_mining_station = yes
+        }
+    }
+    immediate = {
+        set_country_flag = th_anomaly_41_fired
+        event_target:touhou_th175_oil_hell_planet_@root = {
+            save_event_target_as = spth_temp_planet
+        }
+    }
+    option = {
+        name = TH_OK
+        complete_special_project = {
+            type = touhou_th175_oil_hell_chain_build_station
+            location = event_target:touhou_th175_oil_hell_planet_@root
+        }
+    }
+    after = {
+        hidden_effect = {
+            country_event = { id = th_anomaly.42 days = 120 random = 120 }
+        }
+    }
+}
+country_event = {
+    id = th_anomaly.42
+    title = th_anomaly.42.name
+    desc = th_anomaly.42.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_stairway_to_heavens_room }
+    show_sound = event_burning_city
+    location = event_target:touhou_th175_oil_hell_planet_@root
+    is_triggered_only = yes
+    immediate = {
+        event_target:touhou_th175_oil_hell_planet_@root = {
+            save_event_target_as = spth_temp_planet
+        }
+    }
+    option = {
+        name = TH_WORYING
+        tooltip = {
+            event_target:spth_temp_planet = {
+                mining_station = { dismantle = yes }
+            }
+        }
+        hidden_effect = {
+            event_target:spth_temp_planet = {
+                if = {
+                    limit = { exists = mining_station }
+                    mining_station = { dismantle = yes }
+                }
+            }
+        }
+        enable_special_project = {
+            name = touhou_th175_oil_hell_chain_research_oil
+            location = event_target:spth_temp_planet
+            owner = root
+        }
+    }
+}
+ship_event = {
+    id = th_anomaly.43
+    title = th_anomaly.43.name
+    desc = th_anomaly.43.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_mining_operations_room }
+    show_sound = research_scientist_missing
+    location = event_target:spth_temp_planet
+    is_triggered_only = yes
+    immediate = {
+        event_target:touhou_th175_oil_hell_planet_@root.controller = {
+            save_event_target_as = spth_temp_planet
+        }
+    }
+    option = {
+        name = TH_WHAT_HAPPENED
+        fleet = {
+            if = {
+                limit = { exists = leader }
+                unassign_leader = this
+            }
+            touhou_eat_fleet = { ret_day = 281990 }
+            save_global_event_target_as = th_anomaly_43_mia_fleet_@root.controller
+        }
+        enable_special_project = {
+            name = touhou_th175_oil_hell_chain_army_team
+            location = event_target:spth_temp_planet
+            owner = root.controller
+        }
+    }
+}
+ship_event = {
+    id = th_anomaly.44
+    title = th_anomaly.44.name
+    desc = th_anomaly.44.desc
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_the_last_stormshelter_room }
+    show_sound = notification_alert_breach
+    location = event_target:spth_temp_planet
+    is_triggered_only = yes
+    immediate = {
+        controller = {
+            set_country_flag = th_anomaly_44_fired
+        }
+        event_target:touhou_th175_oil_hell_planet_@root.controller = {
+            save_event_target_as = spth_temp_planet
+        }
+    }
+    option = {
+        name = TH_WTF
+        fleet = {
+            if = {
+                limit = { exists = leader }
+                unassign_leader = this
+            }
+            touhou_eat_fleet = { ret_day = 281990 }
+            save_global_event_target_as = th_anomaly_44_mia_fleet_@root.controller
+        }
+    }
+}
+
+country_event = {
+    id = th_anomaly.45
+    is_triggered_only = yes
+    hide_window = yes
+    trigger = {
+        has_country_flag = th_anomaly_44_fired
+        NOT = { has_country_flag = th_anomaly_45_fired }
+    }
+    immediate = {
+        if = {
+            limit = { NOT = { is_variable_set = th_anomaly_45_trigger_count } }
+            set_variable = { which = th_anomaly_45_trigger_count value = 0 }
+        }
+        reroll_random = yes
+        random_list = {
+            50 = {
+                modifier = {
+                    is_variable_set = th_anomaly_45_trigger_count
+                    subtract = th_anomaly_45_trigger_count
+                }
+                modifier = { min = 10 }
+                subtract_variable = { which = th_anomaly_45_trigger_count value = 10 }
+            }
+            50 = {
+                modifier = {
+                    is_variable_set = th_anomaly_45_trigger_count
+                    add = th_anomaly_45_trigger_count
+                }
+                modifier = { max = 90 }
+                change_variable = { which = th_anomaly_45_trigger_count value = 10 }
+                set_country_flag = th_anomaly_45_fired
+                clear_variable = th_anomaly_45_trigger_count
+                random_owned_colony = {
+                    limit = { is_colony = yes }
+                    carrier_event = {
+                        id = th_anomaly.46
+                        days = 30 random = 30
+                    }
+                }
+            }
+        }
+    }
+}
+carrier_event = {
+    id = th_anomaly.46
+    title = th_anomaly.46.name
+    desc = th_anomaly.46.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_arctic_planet_room }
+    show_sound = event_red_alert
+    location = this
+    immediate = {
+        owner = {
+            set_country_flag = th_anomaly_46_fired
+        }
+        set_carrier_flag = touhou_th175_oil_hell_chain_mdl_1
+        add_modifier = {
+            modifier = touhou_th175_oil_hell_chain_mdl_modifier_1
+            days = -1
+        }
+    }
+    option = {
+        name = th_anomaly.46.a
+        tooltip = {
+            add_modifier = {
+                modifier = touhou_th175_oil_hell_chain_mdl_modifier_1
+                days = -1
+            }
+        }
+    }
+    after = {
+        enable_special_project = {
+            name = touhou_th175_oil_hell_chain_mdl_1
+            location = this
+            owner = root.owner
+        }
+    }
+}
+carrier_event = {
+    id = th_anomaly.47
+    title = th_anomaly.47.name
+    desc = th_anomaly.47.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_arctic_planet_room }
+    show_sound = event_red_alert
+    location = this
+    immediate = {
+        set_carrier_flag = touhou_th175_oil_hell_chain_mdl_1
+        set_carrier_flag = touhou_th175_oil_hell_chain_mdl_1_solved
+        remove_modifier = touhou_th175_oil_hell_chain_mdl_modifier_1
+    }
+    option = {
+        name = TH_ACKNOWLEDGED
+        tooltip = {
+            remove_modifier = touhou_th175_oil_hell_chain_mdl_modifier_1
+        }
+    }
+    after = {
+        hidden_effect = {
+            owner = {
+                random_owned_colony = {
+                    limit = { is_colony = yes NOT = { is_same_value = prevprev } }
+                    save_event_target_as = spth_th175_temp_planet
+                    carrier_event = { id = th_anomaly.48 }
+                }
+                if = {
+                    limit = { NOT = { exists = event_target:spth_th175_temp_planet } }
+                    random_owned_colony = {
+                        limit = { is_colony = yes }
+                        carrier_event = { id = th_anomaly.48 }
+                    }
+                }
+                else = {
+                    event_target:spth_th175_temp_planet = {
+                        carrier_event = { id = th_anomaly.48 }
+                    }
+                }
+            }
+        }
+    }
+}
+carrier_event = {
+    id = th_anomaly.48
+    title = th_anomaly.48.name
+    desc = th_anomaly.48.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_arctic_planet_room }
+    show_sound = event_red_alert
+    location = this
+    immediate = {
+        owner = {
+            set_country_flag = th_anomaly_48_fired
+        }
+        set_carrier_flag = touhou_th175_oil_hell_chain_mdl_2
+        add_modifier = {
+            modifier = touhou_th175_oil_hell_chain_mdl_modifier_2
+            days = -1
+        }
+    }
+    option = {
+        name = th_anomaly.48.a
+        tooltip = {
+            add_modifier = {
+                modifier = touhou_th175_oil_hell_chain_mdl_modifier_2
+                days = -1
+            }
+        }
+    }
+    after = {
+        enable_special_project = {
+            name = touhou_th175_oil_hell_chain_mdl_2
+            location = this
+            owner = root.owner
+        }
+    }
+}
+carrier_event = {
+    id = th_anomaly.49
+    title = th_anomaly.49.name
+    desc = th_anomaly.49.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_arctic_planet_room }
+    show_sound = event_red_alert
+    location = this
+    immediate = {
+        set_carrier_flag = touhou_th175_oil_hell_chain_mdl_2
+        set_carrier_flag = touhou_th175_oil_hell_chain_mdl_2_solved
+        remove_modifier = touhou_th175_oil_hell_chain_mdl_modifier_2
+    }
+    option = {
+        name = TH_INTERESTRING
+        tooltip = {
+            remove_modifier = touhou_th175_oil_hell_chain_mdl_modifier_2
+        }
+    }
+    after = {
+        owner = {
+
+        }
+    }
+}
+country_event = {
+    id = th_anomaly.50
+    title = th_anomaly.50.name
+    desc = th_anomaly.50.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    diplomatic_title = BLANK_STRING
+    custom_gui = spth_special_diplomacy_window
+    custom_gui_option = spth_special_diplomacy_option
+    picture_event_data = { room = spth_arctic_planet_room }
+    force_open = yes
+    location = capital_scope
+    option = { name = th_anomaly.50.a response_text = th_anomaly.50.a.response is_dialog_only = yes }
+    option = { name = th_anomaly.50.b response_text = th_anomaly.50.b.response is_dialog_only = yes }
+    option = { name = th_anomaly.50.c response_text = th_anomaly.50.c.response is_dialog_only = yes }
+    option = { name = th_anomaly.50.d response_text = th_anomaly.50.d.response is_dialog_only = yes }
+    option = { name = th_anomaly.50.e response_text = th_anomaly.50.e.response is_dialog_only = yes }
+    option = { name = th_anomaly.50.f response_text = th_anomaly.50.f.response }
+    after = {
+    }
+}
+
+ship_event = {
+    id = th_anomaly.100
+    title = th_anomaly.100.name
+    desc = th_anomaly.100.desc
+    location = from #A scope to the object that is relevant to the event that player can move to. For example, the planet where event is happening
+    is_triggered_only = yes #The game will not consider this event for starting on its own. Event will need to be triggered by another event, or by some other effect. Most events will use this.
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_space_debris_room }
+    trigger = {
+    }
+    option = {
+        name = th_anomaly.100.a
+        ship_event = { id = th_anomaly.101 days = 30 random = 30 }
+    }
+    option = {
+        name = th_anomaly.100.b
+    }
+}
+ship_event = {
+    id = th_anomaly.101
+    title = th_anomaly.101.name
+    desc = th_anomaly.101.desc
+    location = from #A scope to the object that is relevant to the event that player can move to. For example, the planet where event is happening
+    is_triggered_only = yes #The game will not consider this event for starting on its own. Event will need to be triggered by another event, or by some other effect. Most events will use this.
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_wandering_star_room }
+    trigger = {
+    }
+    option = {
+        name = th_anomaly.101.a
+        owner = { add_monthly_resource_mult = { resource = engineering_research value = 12 min = 5000 max = 100000 } }
+    }
+    option = {
+        name = th_anomaly.101.b
+        owner = {
+            add_resource = {
+                alloys = 5000
+                sr_dark_matter = 500
+                sr_living_metal = 300
+                nanites = 300
+                sr_lingli = 1000
+            }
+        }
+    }
+}
+
+ship_event = {
+    id = th_anomaly.105
+    title = th_anomaly.105.name
+    desc = th_anomaly.105.desc
+    location = from #A scope to the object that is relevant to the event that player can move to. For example, the planet where event is happening
+    is_triggered_only = yes #The game will not consider this event for starting on its own. Event will need to be triggered by another event, or by some other effect. Most events will use this.
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ship_in_orbit_3_room }
+    trigger = {
+    }
+    option = {
+        name = th_anomaly.105.a
+        ship_event = { id = th_anomaly.106 days = 30 random = 30 }
+    }
+    option = {
+        name = th_anomaly.105.b
+    }
+}
+ship_event = {
+    id = th_anomaly.106
+    title = th_anomaly.106.name
+    desc = th_anomaly.106.desc
+    location = from #A scope to the object that is relevant to the event that player can move to. For example, the planet where event is happening
+    is_triggered_only = yes #The game will not consider this event for starting on its own. Event will need to be triggered by another event, or by some other effect. Most events will use this.
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_crystal_sphere_room }
+    trigger = {
+    }
+    option = {
+        name = th_anomaly.106.a
+        owner = { add_monthly_resource_mult = { resource = unity value = 3 min = 1000 max = 100000 } }
+    }
+}
+
+ship_event = {
+    id = th_anomaly.107
+    title = th_anomaly.107.name
+    desc = th_anomaly.107.desc
+    location = from #A scope to the object that is relevant to the event that player can move to. For example, the planet where event is happening
+    is_triggered_only = yes #The game will not consider this event for starting on its own. Event will need to be triggered by another event, or by some other effect. Most events will use this.
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_space_crystals_room }
+    trigger = {
+    }
+    option = {
+        name = th_anomaly.107.a
+        ship_event = { id = th_anomaly.108 days = 30 random = 30 }
+    }
+    option = {
+        name = th_anomaly.107.b
+    }
+}
+ship_event = {
+    id = th_anomaly.108
+    title = th_anomaly.108.name
+    desc = th_anomaly.108.desc
+    location = from #A scope to the object that is relevant to the event that player can move to. For example, the planet where event is happening
+    is_triggered_only = yes #The game will not consider this event for starting on its own. Event will need to be triggered by another event, or by some other effect. Most events will use this.
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_machine_space_battle_room }
+    trigger = {
+    }
+    option = {
+        name = th_anomaly.108.a
+        owner = { add_monthly_resource_mult = { resource = unity value = 3 min = 1000 max = 100000 } }
+    }
+}
+
+ship_event = {
+    id = th_anomaly.111
+    title = th_anomaly.111.name
+    desc = th_anomaly.111.desc
+    location = from #A scope to the object that is relevant to the event that player can move to. For example, the planet where event is happening
+    is_triggered_only = yes #The game will not consider this event for starting on its own. Event will need to be triggered by another event, or by some other effect. Most events will use this.
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_relic_world_building_room }
+    trigger = {
+    }
+    option = {
+        name = th_anomaly.111.a
+        ship_event = { id = th_anomaly.112 days = 30 random = 30 }
+    }
+    option = {
+        name = th_anomaly.111.b
+    }
+}
+ship_event = {
+    id = th_anomaly.112
+    title = th_anomaly.112.name
+    desc = th_anomaly.112.desc
+    location = from #A scope to the object that is relevant to the event that player can move to. For example, the planet where event is happening
+    is_triggered_only = yes #The game will not consider this event for starting on its own. Event will need to be triggered by another event, or by some other effect. Most events will use this.
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_machine_planet_room }
+    trigger = {
+    }
+    option = {
+        name = th_anomaly.112.a
+        owner = { add_monthly_resource_mult = { resource = unity value = 3 min = 1000 max = 100000 } }
     }
 }

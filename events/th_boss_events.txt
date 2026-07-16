@@ -93,6 +93,10 @@ country_event = {
 	picture = GFX_evt_th_wwj
 	show_sound = event_ship_thrusters
 	location = event_target:cultist_ship
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_fleet_evil_room }
 	is_triggered_only = yes
 	trigger = {
 		is_ai = no
@@ -114,6 +118,10 @@ country_event = {
 					}
 					save_event_target_as = hijacked_fleet_planet
 				}
+                every_system_ambient_object = {
+                    limit = { is_ambient_object_type = touhou_disabled_super_flagship }
+                    destroy_ambient_object = this
+                }
 			}
 		}
 		owner_species = {
@@ -132,14 +140,17 @@ country_event = {
 					location = root.capital_scope
 				}
 				create_leader = {
-					class = commander
+					class = scientist
 					species = owner_species
 					name = "NAME_lumiya"
 					skill = 10
 					traits = {
-						trait = leader_trait_lumiya
-						trait = random_trait
+						trait = leader_trait_lumiya_boss
+						trait = random_common
 					}
+                    effect = {
+                        change_leader_portrait = spth_por_lumiya
+                    }
 				}
 				create_fleet = {
 					name = "NAME_lumiya"
@@ -147,11 +158,11 @@ country_event = {
 						set_owner = prev
 						create_ship = {
 							name = "NAME_lumiya"
-							design = "NAME_th_boss_lumiya"
-							graphical_culture = npf_01
+							design = "NAME_th_boss_lumiya_new"
+							graphical_culture = strg_01
 							effect = {
 								set_ship_flag = th_boss_ship1
-								set_disable_at_health = 0.05
+								set_disable_at_health = 0.01
 								save_event_target_as = th_boss_ship1
 							}
 						}
@@ -189,42 +200,62 @@ country_event = {
 		text = th_boss.100.desc
 	}
 	picture = GFX_evt_th_wwj
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = touhou_lumiya_flagship_room }
 	show_sound = event_radio_chatter
 	location = capital_scope
 	is_triggered_only = yes
+    immediate = {
+        set_country_flag = th_boss_100_fired
+        create_ambient_object = {
+            type = touhou_disabled_super_flagship
+            location = capital_scope
+            use_3d_location = yes
+            entity_offset = { min = 10 max = 25 }
+        }
+    }
 	option = {
 		name = th_boss.100.a
-		capital_scope = {
-			enable_special_project = {
-				name = "HM_BOSS_1_PROJECT"
-				location = this
-				owner = root
-			}
-		}
+        capital_scope = {
+            enable_special_project = {
+                name = "HM_BOSS_1_PROJECT"
+                location = this
+                owner = root
+            }
+        }
 	}
+    option = {
+        name = th_boss.100.b
+    }
 }
 
-ship_event = {
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
 	id = th_boss.101
 	hide_window = yes
 	is_triggered_only = yes
 	trigger = {
-		has_ship_flag = th_boss_ship1
-		owner = {
-			has_country_flag = lumiya_boss_of@from.owner
-		}
+        fromfrom = {
+            has_ship_flag = th_boss_ship1
+            owner = {
+                has_country_flag = lumiya_boss_of@root.from
+            }
+        }
 	}
 	immediate = {
-		FROM = {
-			owner = {
-				country_event = {
-					id = th_boss.102
-				}
-			}
-		}
-		This = {
-			delete_ship = this
-		}
+        from = {
+            country_event = {
+                id = th_boss.102
+            }
+        }
+		# This = {
+		# 	delete_ship = this
+		# }
 	}
 }
 
@@ -235,11 +266,17 @@ country_event = {
 	desc = "th_boss.102.desc"
 	picture = GFX_evt_th_wwj
 	show_sound = event_space_battle
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_small_space_battle_room }
 	location = FROM
 	trackable = yes
 	is_triggered_only = yes
 	option = {
 		name = "th_boss.102.a"
+        hidden_effect = { set_country_flag = tech_touhou_super_flagship }
+        touhou_give_tech_option = { touhou_tech = tech_touhou_super_flagship research_point = yes }
 		capital_scope = {
 			enable_special_project = {
 				name = "TH_BOSS_SHIP1"
@@ -255,29 +292,33 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		give_technology = {
-			tech = "tech_th_flagship_1"
-		}
+        touhou_effect_init_lumiya_effect = yes
 	}
 }
 
 # Ship Disabled By Someone Else (HIDDEN)
-ship_event = {
+# This = owner of ship 1 (destroyed)
+# From = owner of ship 2 (combatant)
+# FromFrom = ship 1
+# FromFromFrom = ship 2
+country_event = {
 	id = th_boss.103
 	hide_window = yes
 	is_triggered_only = yes
 	trigger = {
-		has_ship_flag = th_boss_ship1
-		owner = {
-			NOT = {
-				has_country_flag = lumiya_boss_of@from.owner
-			}
-		}
+        fromfrom = {
+            has_ship_flag = th_boss_ship1
+            owner = {
+                NOT = {
+                    has_country_flag = lumiya_boss_of@root.from
+                }
+            }
+        }
 	}
 	immediate = {
 		random_playable_country = {
 			limit = {
-				root = {
+				fromfrom = {
 					owner = {
 						has_country_flag = lumiya_boss_of@prevprev
 					}
@@ -288,9 +329,9 @@ ship_event = {
 				id = th_boss.104
 			}
 		}
-		This = {
-			delete_ship = this
-		}
+		# This = {
+		# 	delete_ship = this
+		# }
 	}
 }
 
@@ -301,6 +342,10 @@ country_event = {
 	desc = "th_boss.104.desc"
 	picture = GFX_evt_th_wwj
 	show_sound = event_space_battle
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_small_space_battle_room }
 	location = FROM
 	trackable = yes
 	is_triggered_only = yes
@@ -311,6 +356,8 @@ country_event = {
 	}
 	option = {
 		name = "th_boss.102.a"
+        hidden_effect = { set_country_flag = tech_touhou_super_flagship }
+        touhou_give_tech_option = { touhou_tech = tech_touhou_super_flagship research_point = yes }
 		capital_scope = {
 			enable_special_project = {
 				name = "TH_BOSS_SHIP1"

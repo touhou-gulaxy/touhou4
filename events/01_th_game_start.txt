@@ -86,7 +86,7 @@ country_event = {
 					while = { count = 2 remove_district = district_generator }
 					while = { count = 4 add_district = district_spth_human_village }
 					while = { count = 3 add_district = district_spth_generic_factory }
-					while = { count = 2 add_district = district_spth_sp_produce }
+					while = { count = 2 add_district = district_spth_sp_produce_swap }
 					remove_building = building_commercial_zone
 					remove_building = building_research_lab_1
 					remove_building = building_foundry_1
@@ -130,7 +130,7 @@ country_event = {
 					while = { count = 2 remove_district = district_generator }
 					while = { count = 4 add_district = district_spth_human_village }
 					while = { count = 3 add_district = district_spth_generic_factory }
-					while = { count = 2 add_district = district_spth_sp_produce }
+					while = { count = 2 add_district = district_spth_sp_produce_swap }
 					add_building = building_spth_cloner
 					remove_building = building_commercial_zone
 					add_modifier = {
@@ -154,7 +154,7 @@ country_event = {
 					while = { count = 2 remove_district = district_generator }
 					while = { count = 4 add_district = district_spth_human_village }
 					while = { count = 3 add_district = district_spth_generic_factory }
-					while = { count = 2 add_district = district_spth_sp_produce }
+					while = { count = 2 add_district = district_spth_sp_produce_swap }
 					remove_building = building_commercial_zone
 					remove_building = building_research_lab_1
 					remove_building = building_foundry_1
@@ -177,7 +177,7 @@ country_event = {
 				}
 				capital_star.solar_system = {
 					random_system_planet = {
-						limit = { has_planet_flag = spth_hiff_sol_system_lunar }
+						limit = { has_carrier_flag = spth_hiff_sol_system_lunar }
 						start_colony = { owner = root species = root.owner_main_species }
 					}
 				}
@@ -230,15 +230,15 @@ country_event = {
                     add_deposit = d_touhou_shell_world_microscopic_life
                     add_deposit = d_touhou_shell_world_molten_planet
                     add_deposit = d_touhou_shell_world_temp
-                    set_planet_flag = has_shell_world_touhou_gensokyo_city
-                    set_planet_flag = ag_shell_world_no_city
+                    set_carrier_flag = has_shell_world_touhou_gensokyo_city
+                    set_carrier_flag = ag_shell_world_no_city
                     ag_reset_shell_world_planet_class = yes
                     spth_effect_establish_barrier = yes
                     while = { count = 3 remove_district = district_city }
                     while = { count = 3 remove_district = district_farming }
                     while = { count = 2 remove_district = district_mining }
                     while = { count = 2 remove_district = district_generator }
-                    while = { count = 2 add_district = district_spth_sp_produce }
+                    while = { count = 2 add_district = district_spth_sp_produce_swap }
                     add_district = district_gensokyo_jinja
                     add_district = district_gensokyo_jiqiao
                     add_district = district_gensokyo_tushu
@@ -249,7 +249,7 @@ country_event = {
                     add_deposit = d_false_heaven_shield
                     solar_system = {
                         random_system_planet = {
-                            limit = { has_planet_flag = touhou_new_shell_world_origin }
+                            limit = { has_carrier_flag = touhou_new_shell_world_origin }
                             add_deposit = d_touhou_shell_world_light
                             add_deposit = d_touhou_shell_world_power_station
                             add_deposit = d_touhou_shell_world_city_ruins
@@ -275,6 +275,41 @@ country_event = {
                     }
                 }
             }
+			origin_touhou_cosmogenesis_arkship = {
+				add_resource = {
+					sr_lingli = 3000
+					sr_fuka = 4000
+					alloys = 5000
+					consumer_goods = 2000
+					energy = 5000
+					minerals = 6000
+					food = 4000
+				}
+				add_tech_progress = { tech = tech_spth_spirit_power_beginning progress = 0.50 }
+				create_fleet = {
+					name = NAME_touhou_synaptic_lathe_arkship_ship
+					settings = { spawn_debris = no uses_naval_capacity = no }
+					effect = {
+						set_owner = root
+						create_ship = {
+							name = NAME_touhou_synaptic_lathe_arkship_ship
+							design = NAME_touhou_synaptic_lathe_arkship
+							prefix = yes
+							fleet_cache_recalc = no
+							effect = {
+								save_event_target_as = touhou_synaptic_lathe_arkship
+								set_colony_type = col_touhou_cosmogenesis_world
+							}
+						}
+						set_location = { target = root.capital_scope angle = random distance = -10 }
+					}
+				}
+				event_target:touhou_synaptic_lathe_arkship.planet = {
+					save_event_target_as = touhou_synaptic_lathe_arkship_planet
+					set_colony_type = col_touhou_cosmogenesis_world
+					add_building = building_touhou_lathe_capital
+				}
+			}
 			default = {
 				capital_scope = {
 					create_pop_group = { species = owner.founder_species size = 400 }
@@ -285,7 +320,7 @@ country_event = {
 					while = { count = 2 remove_district = district_generator }
 					while = { count = 4 add_district = district_spth_human_village }
 					while = { count = 3 add_district = district_spth_generic_factory }
-					while = { count = 2 add_district = district_spth_sp_produce }
+					while = { count = 2 add_district = district_spth_sp_produce_swap }
 					add_building = building_spth_cloner
 					remove_building = building_commercial_zone
 				}
@@ -305,7 +340,7 @@ country_event = {
 	}
 
 	immediate = {
-		random_owned_planet = {
+		random_owned_colony = {
 			limit = {
 				is_planet_class = pc_gensokyo_planet
 			}
@@ -320,6 +355,8 @@ country_event = {
 			add_district = district_gensokyo_kyuuto
 			add_district = district_gensokyo_genbu_ravine
 			add_district = district_gensokyo_misty_lake
+            add_building = building_touhou_altar
+            add_building = building_harukeikekkai
 			# add_deposit = d_spth_gp_military_command
 			# add_deposit = d_spth_gp_scout
 			# add_deposit = d_spth_gp_journalist
@@ -509,6 +546,18 @@ event = {
 			limit = { NOT = { has_global_flag = has_touhou_mod } }
 			set_global_flag = has_touhou_mod
 		}
+		if = {
+			limit = {
+				any_country = {
+					has_authority = auth_gensokyo
+					has_origin = origin_touhou_cosmogenesis_arkship
+				}
+			}
+			date_distortion = yes
+			event_target:global_event_country = {
+				country_event = { id = gensokyo_start.8 days = 60 }
+			}
+		}
     }
 }
 
@@ -532,6 +581,15 @@ country_event = {
 		hidden_effect = {
 			remove_global_flag = spth_allow_non_disappear_barrier_story
 		}
+	}
+}
+
+country_event = {
+	id = gensokyo_start.8
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		date_distortion = no
 	}
 }
 # 非起源主事件链触发
@@ -2218,7 +2276,7 @@ country_event = {
 			if = {
 				limit = { NOT = { exists = event_target:spth_story_lunar_capital_area_toyohime } }
 				set_global_flag = spth_story_lunar_capital_toyohime_spawned
-				random_system_within_border = {
+                random_rim_system = {
 					set_spawn_system_batch = begin
 					spawn_system = {
 						initializer = spth_story_lunar_capital_area_toyohime
@@ -2246,6 +2304,41 @@ country_event = {
 		}
 		country_event = { id = disappear_barrier.1026 }
 	}
+    option = {
+        name = gensokyo_start.1251.k.alt
+        allow = { NOT = { has_global_flag = spth_lunar_capital_psi_crisis_begin } }
+        hidden_effect = {
+            if = {
+                limit = { NOT = { exists = event_target:spth_story_lunar_capital_area_toyohime } }
+                set_global_flag = spth_story_lunar_capital_toyohime_spawned
+                random_rim_system = {
+                    set_spawn_system_batch = begin
+                    spawn_system = {
+                        initializer = spth_story_lunar_capital_area_toyohime
+                        hyperlane = no
+                    }
+                    set_spawn_system_batch = end
+                    random_system_planet = { save_event_target_as = spth_story_lunar_capital_aethon_planet_1 }
+                    spawn_megastructure = {
+                        type = spth_lunar_jumpdrive_gateway
+                        coords_from = event_target:spth_story_lunar_capital_aethon_planet_1
+                        owner = root
+                        orbit_distance = 0
+                        orbit_angle = 0
+                        graphical_culture = root
+                        init_effect = {
+                            set_megastructure_flag = is_spth_lunar_jumpdrive_gateway
+                            set_megastructure_flag = spth_lunar_jumpdrive_gateway_debug
+                        }
+                    }
+                    event_target:spth_story_lunar_capital_area_toyohime = {
+                        set_star_flag = spth_debug_spawn
+                    }
+                }
+            }
+        }
+        country_event = { id = lunar_capital_psi.107 }
+    }
 	option = {
 		name = gensokyo_start.1251.i
 		allow = { NOT = { has_global_flag = spth_kamikaushi_crisis_start } }
@@ -2436,4 +2529,196 @@ country_event = {
 	inline_script = { script = events/touhou_difficulty_extra_page type = lunar_psi page_id = 3 }
 	inline_script = { script = events/touhou_difficulty_extra_page_item type = lunar_psi page_id = 3 item_id = 4 }
 	inline_script = { script = events/touhou_difficulty_extra_page type = lunar_psi page_id = 4 }
+	inline_script = { script = events/touhou_difficulty_extra_page_item type = lunar_psi page_id = 4 item_id = 4 }
+}
+
+country_event = {
+    id = gensokyo_start.9961
+    is_triggered_only = yes
+    title = r_touhou_key_relic_event_title
+    desc = r_touhou_key_relic_event_desc
+    diplomatic = yes
+    custom_gui = spth_leader_function_ui
+    custom_gui_option = spth_leader_function_button
+    picture_event_data = { room = th_yukari_lake_room }
+    immediate = {
+        set_country_flag = touhou_key_relic_9961_opened
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_energy_firerate } } set_variable = { which = touhou_key_relic_event_option_energy_firerate value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_energy_damage } } set_variable = { which = touhou_key_relic_event_option_energy_damage value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_kinetic_firerate } } set_variable = { which = touhou_key_relic_event_option_kinetic_firerate value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_kinetic_damage } } set_variable = { which = touhou_key_relic_event_option_kinetic_damage value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_lingli_firerate } } set_variable = { which = touhou_key_relic_event_option_lingli_firerate value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_lingli_damage } } set_variable = { which = touhou_key_relic_event_option_lingli_damage value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_explosive_firerate } } set_variable = { which = touhou_key_relic_event_option_explosive_firerate value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_explosive_damage } } set_variable = { which = touhou_key_relic_event_option_explosive_damage value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_aircraft_firerate } } set_variable = { which = touhou_key_relic_event_option_aircraft_firerate value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_aircraft_damage } } set_variable = { which = touhou_key_relic_event_option_aircraft_damage value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_armor } } set_variable = { which = touhou_key_relic_event_option_armor value = 0 } }
+        if = { limit = { NOT = { is_variable_set = touhou_key_relic_event_option_shield } } set_variable = { which = touhou_key_relic_event_option_shield value = 0 } }
+    }
+    after = { remove_country_flag = touhou_key_relic_9961_opened }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_energy_firerate_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_energy_damage_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_kinetic_firerate_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_kinetic_damage_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_lingli_firerate_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_lingli_damage_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_explosive_firerate_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_explosive_damage_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_aircraft_firerate_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_aircraft_damage_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_armor_button
+    }
+    option = {
+        name = BUTTON_TEXT_NULL
+        custom_gui = touhou_key_relic_event_option_shield_button
+    }
+    option = {
+        name = r_touhou_key_relic_event_option_exit
+        default_hide_option = yes
+    }
+}
+
+# array variable:
+# result: touhou_helldiver_stratagem_code_res_seq_[idx]
+# input: touhou_helldiver_stratagem_code_ipt_seq_[idx]
+# location variable
+# current code: touhou_helldiver_stratagem_code_cur_pos
+#
+# code map
+# up: 1
+# down: 2
+# left: 3
+# right: 4
+# @touhou_helldiver_stratagem_code_up = 1
+# @touhou_helldiver_stratagem_code_down = 2
+# @touhou_helldiver_stratagem_code_left = 3
+# @touhou_helldiver_stratagem_code_right = 4
+country_event = {
+    id = gensokyo_start.3036
+    is_triggered_only = yes
+    trigger = { NOT = { has_country_flag = touhou_helldiver_stratagem_code_event_lock } }
+    title = r_touhou_key_relic_event_title
+    desc = r_touhou_key_relic_event_desc
+    diplomatic = yes
+    custom_gui = touhou_helldiver_stratagem_code_ui
+    custom_gui_option = touhou_helldiver_stratagem_code_ui_button
+    picture_event_data = { room = touhou_ext_lunar_capital_background_room }
+    immediate = {
+        set_variable = { which = touhou_helldiver_stratagem_code_ui_bg value = @touhou_helldiver_stratagem_code_ui_bg_lunar_capital }
+        set_country_flag = touhou_helldiver_stratagem_code_event_lock
+        # set stratagem code seq
+        set_variable = { which = touhou_helldiver_stratagem_code_cur_pos value = 0 }
+        set_variable = { which = touhou_helldiver_stratagem_code_res_seq_1 value = @touhou_helldiver_stratagem_code_up }
+        set_variable = { which = touhou_helldiver_stratagem_code_res_seq_2 value = @touhou_helldiver_stratagem_code_down }
+        set_variable = { which = touhou_helldiver_stratagem_code_res_seq_3 value = @touhou_helldiver_stratagem_code_down }
+        set_variable = { which = touhou_helldiver_stratagem_code_res_seq_4 value = @touhou_helldiver_stratagem_code_left }
+        set_variable = { which = touhou_helldiver_stratagem_code_res_seq_5 value = @touhou_helldiver_stratagem_code_right }
+        set_variable = { which = touhou_helldiver_stratagem_code_res_seq_6 value = @touhou_helldiver_stratagem_code_right }
+        set_variable = { which = touhou_helldiver_stratagem_code_res_seq_7 value = @touhou_helldiver_stratagem_code_left }
+        set_variable = { which = touhou_helldiver_stratagem_code_res_seq_8 value = @touhou_helldiver_stratagem_code_up }
+    }
+    abort_trigger = {
+        has_country_flag = touhou_helldiver_stratagem_code_input_success
+    }
+    abort_effect = {
+        # play_sound = touhou_hd2_orbital_barrage_incoming_effect
+        remove_country_flag = touhou_helldiver_stratagem_code_input_success
+        remove_country_flag = touhou_helldiver_stratagem_code_event_lock
+    }
+}
+country_event = {
+    id = gensokyo_start.3037
+    title = gensokyo_start.3037.name
+    desc = gensokyo_start.3037.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_cosmic_storms_preparation_room }
+    trigger = {
+        has_country_flag = touhou_helldiver_stratagem_code_repair_jammer_tower
+        NOT = { has_country_flag = gensokyo_start_3037_lock }
+    }
+    immediate = {
+        set_country_flag = gensokyo_start_3037_lock
+        play_sound = touhou_terminal_input_wrong_1_effect
+    }
+    option = {
+        name = gensokyo_start.3037.a
+    }
+    option = {
+        name = gensokyo_start.3037.b
+    }
+    after = {
+        hidden_effect = { remove_country_flag = gensokyo_start_3037_lock }
+    }
+}
+country_event = {
+    id = gensokyo_start.3038
+    title = gensokyo_start.3038.name
+    desc = gensokyo_start.3038.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_cosmic_storms_preparation_room }
+    trigger = {
+        has_country_flag = touhou_helldiver_stratagem_code_repair_jammer_tower
+    }
+    immediate = {
+        play_sound = {
+            sound = hd2_vox_engine_detect_effect
+            location = event_target:touhou_repair_jammer_tower_@root.solar_system.star
+        }
+        remove_country_flag = touhou_helldiver_stratagem_code_repair_jammer_tower
+        event_target:touhou_repair_jammer_tower_@root = {
+            solar_system = {
+                spawn_megastructure = {
+                    type = touhou_signal_jammer_tower
+                    coords_from = prev
+                    owner = root
+                }
+                remove_megastructure = prev
+            }
+        }
+    }
+    option = {
+        name = gensokyo_start.3038.a
+    }
+    option = {
+        name = gensokyo_start.3038.b
+    }
 }

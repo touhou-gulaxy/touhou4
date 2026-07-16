@@ -145,12 +145,12 @@ spth_investigate_torifune_arc = {
 	}
 
 	potential = {
-		has_planet_flag = spth_story_sol_system_torifune
-		has_planet_flag = can_unlock_torifune_arc
+		has_carrier_flag = spth_story_sol_system_torifune
+		has_carrier_flag = can_unlock_torifune_arc
 	}
 	effect = {
-		remove_planet_flag = can_unlock_torifune_arc
-		set_planet_flag = has_unlock_torifune_arc
+		remove_carrier_flag = can_unlock_torifune_arc
+		set_carrier_flag = has_unlock_torifune_arc
 		create_archaeological_site = site_torifune_arc
 	}
 }
@@ -170,15 +170,15 @@ spth_spiritual_power_habitat = {
 		tech_spth_spiritual_power_habitat
 	}
 	potential = {
-		NOT = { has_planet_flag = is_spth_megastructure_planet }
+		NOT = { has_carrier_flag = is_spth_megastructure_planet }
 		is_planet_class = pc_habitat
 	}
 	effect = {
 		fromfrom.solar_system = {
 			set_star_flag = has_habitat
 		}
-		set_planet_flag = habitat
-		set_planet_flag = habitat_level_10
+		set_carrier_flag = habitat
+		set_carrier_flag = habitat_level_10
 		change_pc = pc_spiritual_power_habitat
 		clear_blockers = yes
 	}
@@ -260,7 +260,7 @@ spth_advanced_plantary_shield = {
 			modifier = spth_has_advanced_plantary_shield
 		}
 		hidden_effect = {
-			set_planet_flag = enable_spth_plantary_shield
+			set_carrier_flag = enable_spth_plantary_shield
 		}
 	}
 	ai_weight = { weight = 0 }
@@ -278,13 +278,13 @@ spth_remove_lunar_capital_planet_effect = {
 	}
 
 	potential = {
-		has_planet_flag = spth_story_sol_system_lunar_capital
-		has_planet_flag = spth_fixed_lunar
+		has_carrier_flag = spth_story_sol_system_lunar_capital
+		has_carrier_flag = spth_fixed_lunar
 	}
 	effect = {
 		if = {
-			limit = { has_planet_flag = spth_fixed_lunar_no_effect }
-			remove_planet_flag = spth_fixed_lunar_no_effect
+			limit = { has_carrier_flag = spth_fixed_lunar_no_effect }
+			remove_carrier_flag = spth_fixed_lunar_no_effect
 			event_target:spth_story_sol_system_lunar_capital = {
 				create_ambient_object = {
 					type = "th_gensokyo_mofazhen_object"
@@ -296,13 +296,52 @@ spth_remove_lunar_capital_planet_effect = {
 				}
 			}
 		} else = {
-			set_planet_flag = spth_fixed_lunar_no_effect
+			set_carrier_flag = spth_fixed_lunar_no_effect
 			random_ambient_object = {
 				limit = { solar_system = { has_star_flag = spth_story_sol_system } is_ambient_object_type = th_gensokyo_mofazhen_object }
 				destroy_ambient_object = this
 			}
 		}
 	}
+}
+
+touhou_quick_reset_wrlv = {
+    owned_planets_only = yes
+    icon = decision_tidal_lock_planet
+    sound = event_administrative_work
+    # enactment_time = 30
+    resources = {
+        category = decisions
+        cost = {
+            influence = 50
+        }
+        cost = {
+            trigger = { is_variable_set = touhou_planet_wrlv_var }
+            unity = 2.5
+            energy = 5
+            sr_lingli = 2.5
+            mult = value:touhou_quick_reset_wrlv_cost
+        }
+    }
+    potential = {
+        from = { is_touhou_player_faction = yes }
+        uses_district_set = gensokyo_planet
+        is_variable_set = touhou_planet_wrlv_var
+    }
+    allow = {
+        custom_tooltip = {
+            fail_text = touhou_quick_reset_wrlv_allow
+            is_variable_set = touhou_planet_wrlv_var
+            check_variable = { which = touhou_planet_wrlv_var value > 50.00 }
+        }
+    }
+    effect = {
+        custom_tooltip = touhou_quick_reset_wrlv_desc
+        hidden_effect = {
+            set_variable = { which = touhou_planet_wrlv_var value = 50.00 }
+        }
+    }
+    ai_weight = { weight = 0 }
 }
 
 spth_shrine_mega_shipyard_remove = {
@@ -319,9 +358,9 @@ spth_shrine_mega_shipyard_remove = {
 	}
 	prerequisites = { tech_th_shrine_mega_2_control }
 	potential = {
-		has_planet_flag = is_spth_megastructure_planet
-		has_planet_flag = is_spth_th_shrine_mega_2
-		NOT = { has_planet_flag = spth_shrine_mega_shipyard_removed }
+		has_carrier_flag = is_spth_megastructure_planet
+		has_carrier_flag = is_spth_th_shrine_mega_2
+		NOT = { has_carrier_flag = spth_shrine_mega_shipyard_removed }
 	}
 	allow = {
 		solar_system = {
@@ -330,7 +369,7 @@ spth_shrine_mega_shipyard_remove = {
 	}
 	effect = {
 		hidden_effect = {
-			set_planet_flag = spth_shrine_mega_shipyard_removed
+			set_carrier_flag = spth_shrine_mega_shipyard_removed
 			solar_system = {
 				random_system_megastructure = {
 					limit = {
@@ -358,13 +397,13 @@ spth_shrine_mega_shipyard_create = {
 	}
 	prerequisites = { tech_th_shrine_mega_2_control }
 	potential = {
-		has_planet_flag = is_spth_megastructure_planet
-		has_planet_flag = is_spth_th_shrine_mega_2
-		has_planet_flag = spth_shrine_mega_shipyard_removed
+		has_carrier_flag = is_spth_megastructure_planet
+		has_carrier_flag = is_spth_th_shrine_mega_2
+		has_carrier_flag = spth_shrine_mega_shipyard_removed
 	}
 	effect = {
 		hidden_effect = {
-			remove_planet_flag = spth_shrine_mega_shipyard_removed
+			remove_carrier_flag = spth_shrine_mega_shipyard_removed
 			# adjust = rest = count - 6
 			set_variable = {
 				which = spth_torifune_shrine_shipyard_rest
@@ -406,10 +445,10 @@ spth_torifune_shrine_research_mode_adjust = {
 	}
 	prerequisites = { tech_th_shrine_mega_2_control }
 	potential = {
-		has_planet_flag = is_spth_megastructure_planet
-		has_planet_flag = is_spth_th_shrine_mega_2
+		has_carrier_flag = is_spth_megastructure_planet
+		has_carrier_flag = is_spth_th_shrine_mega_2
 	}
-	effect = { planet_event = { id = spth_colony.1000 } }
+	effect = { carrier_event = { id = spth_colony.1000 } }
 	ai_weight = { weight = 0 }
 }
 th_shrine_mega_shipyard_rebuild = {
@@ -426,9 +465,9 @@ th_shrine_mega_shipyard_rebuild = {
 	}
 	prerequisites = { tech_th_shrine_mega_2_control }
 	potential = {
-		has_planet_flag = is_spth_megastructure_planet
-		has_planet_flag = is_spth_th_shrine_mega_2
-		NOT = { has_planet_flag = spth_shrine_mega_shipyard_removed }
+		has_carrier_flag = is_spth_megastructure_planet
+		has_carrier_flag = is_spth_th_shrine_mega_2
+		NOT = { has_carrier_flag = spth_shrine_mega_shipyard_removed }
 	}
 	allow = {
 		custom_tooltip = {
@@ -536,8 +575,8 @@ decision_disappear_barrier_aethon_adjust_obelisk = {
 	}
 
 	potential = {
-		has_planet_flag = spth_story_lunar_capital_aethon_planet_1
-		has_planet_flag = decision_disappear_barrier_aethon_adjust_obelisk
+		has_carrier_flag = spth_story_lunar_capital_aethon_planet_1
+		has_carrier_flag = decision_disappear_barrier_aethon_adjust_obelisk
 		NOT = { has_global_flag = spth_story_lunar_capital_toyohime_spawned }
 	}
 	allow = {
@@ -569,21 +608,21 @@ touhou_shell_world_durability_spiritual_power_inject = {
         }
     }
     potential = {
-        NOT = { has_planet_flag = touhou_shell_world_fixed }
-        has_planet_flag = origin_touhou_shell_world_system_planet
+        NOT = { has_carrier_flag = touhou_shell_world_fixed }
+        has_carrier_flag = origin_touhou_shell_world_system_planet
         has_deposit = d_hakurei_barrier
         from = { has_authority = auth_gensokyo is_ai = no }
     }
     allow = {
         custom_tooltip = {
             fail_text = touhou_shell_world_durability_spiritual_power_inject_cooldown
-            NOT = { has_planet_flag = touhou_shell_world_durability_spiritual_power_inject_cooldown }
+            NOT = { has_carrier_flag = touhou_shell_world_durability_spiritual_power_inject_cooldown }
         }
     }
     effect = {
         custom_tooltip = touhou_shell_world_durability_spiritual_power_inject_effect
         hidden_effect = {
-            set_timed_planet_flag = { flag = touhou_shell_world_durability_spiritual_power_inject_cooldown days = 360 }
+            set_timed_carrier_flag = { flag = touhou_shell_world_durability_spiritual_power_inject_cooldown days = 360 }
             from = {
                 random_situation = {
                     limit = { is_situation_type = situation_touhou_shell_world_durability }

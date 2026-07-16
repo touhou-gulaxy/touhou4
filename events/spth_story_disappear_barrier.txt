@@ -21,7 +21,7 @@ country_event = {
             every_system_planet = {
                 if = {
                     limit = { is_colony = yes }
-                    destroy_colony = yes
+                    touhou_destroy_colony = yes
                     spth_planet_kill_all_pop = yes
                     change_pc = pc_shrouded
                     reroll_planet = yes
@@ -70,7 +70,7 @@ country_event = {
             while = { count = 2 remove_district = district_mining }
             while = { count = 2 remove_district = district_generator }
             while = { count = 3 add_district = district_spth_generic_factory }
-            while = { count = 2 add_district = district_spth_sp_produce }
+            while = { count = 2 add_district = district_spth_sp_produce_swap }
         }
         unlock_council_slots = 1
         give_technology = { tech = "tech_worker_0" message = no }
@@ -211,7 +211,7 @@ country_event = {
     }
     after = { begin_event_chain = { event_chain = spth_event_chain_past_legacy target = root } }
 }
-planet_event = {
+carrier_event = {
     id = disappear_barrier.12
     title = disappear_barrier.12
     desc = disappear_barrier.12.desc
@@ -223,7 +223,7 @@ planet_event = {
     picture_event_data = { room = spth_colony_settlement_room }
     trigger = {
         owner = { has_origin = origin_spth_story_gensokyo }
-        has_planet_flag = spth_story_sol_system_lunar_capital
+        has_carrier_flag = spth_story_sol_system_lunar_capital
     }
     immediate = {
     }
@@ -289,7 +289,7 @@ country_event = {
             # 地球化改造星球
             AND = {
                 has_country_flag = enable_spth_earth_transform
-                any_owned_planet = { has_planet_flag = has_spth_earth_transform }
+                any_owned_colony = { has_carrier_flag = has_spth_earth_transform }
             }
         }
     }
@@ -297,16 +297,16 @@ country_event = {
         if = {
             limit = { exists = event_target:spth_story_sol_system_earth }
             event_target:spth_story_sol_system_earth = {
-                planet_event = { id = disappear_barrier.201 }
+                carrier_event = { id = disappear_barrier.201 }
             }
         }
-        every_owned_planet = {
-            limit = { has_planet_flag = has_spth_earth_transform }
-            planet_event = { id = disappear_barrier.201 }
+        every_owned_colony = {
+            limit = { has_carrier_flag = has_spth_earth_transform }
+            carrier_event = { id = disappear_barrier.201 }
         }
     }
 }
-planet_event = {
+carrier_event = {
     id = disappear_barrier.201
     hide_window = yes
     is_triggered_only = yes
@@ -637,7 +637,7 @@ fleet_event = {
         }
         from = {
             random_system_planet = {
-                limit = { has_planet_flag = spth_story_lunar_capital_union_system_moon }
+                limit = { has_carrier_flag = spth_story_lunar_capital_union_system_moon }
                 save_event_target_as = target_1006
             }
         }
@@ -822,17 +822,17 @@ country_event = {
         default_hide_option = yes
     }
 }
-planet_event = {
+carrier_event = {
     id = disappear_barrier.1017
     title = disappear_barrier.1017.name
     desc = disappear_barrier.1017.desc
     is_triggered_only = yes
     trigger = {
         spth_check_gensokyo_auth = yes
-        has_planet_flag = spth_story_lunar_capital_aethon_planet_1
-        NOT = { has_planet_flag = disappear_barrier_1017_fired }
+        has_carrier_flag = spth_story_lunar_capital_aethon_planet_1
+        NOT = { has_carrier_flag = disappear_barrier_1017_fired }
     }
-    immediate = { set_planet_flag = disappear_barrier_1017_fired }
+    immediate = { set_carrier_flag = disappear_barrier_1017_fired }
     diplomatic = yes
     custom_gui = spth_event_large_window
     custom_gui_option = spth_event_large_ui_option
@@ -878,7 +878,7 @@ country_event = {
             }
             set_country_flag = spth_unlock_aethon_gate
             set_global_flag = spth_story_lunar_capital_toyohime_spawned
-            random_system_within_border = {
+            random_rim_system = {
                 set_spawn_system_batch = begin
                 spawn_system = {
                     initializer = spth_story_lunar_capital_area_toyohime
@@ -918,7 +918,7 @@ country_event = {
         default_hide_option = yes
         begin_event_chain = { event_chain = disappear_barrier_cluster34_psi_signal target = root }
         custom_tooltip = disappear_barrier_cluster34_psi_worlds_tt
-        owned_planet_list_tooltip = { limit = { has_planet_flag = disappear_barrier_cluster34_psi_mark } }
+        owned_planet_list_tooltip = { limit = { has_carrier_flag = disappear_barrier_cluster34_psi_mark } }
     }
 }
 
@@ -935,12 +935,16 @@ fleet_event = {
         }
     }
     immediate = {
-        owner = { set_country_flag = disappear_barrier_1021_fired }
+        owner = {
+            set_country_flag = disappear_barrier_1021_fired
+            # set_country_flag = triggered_tech_yuyuko_barrier_event
+            # country_event = { id = lunar_capital_psi.1001 days = 90 random = 90 }
+        }
         if = {
             limit = { NOT = { exists = event_target:lunar_toyohime_event_rw } }
             from = {
                 random_system_planet = {
-                    limit = { has_planet_flag = lunar_toyohime_event_rw }
+                    limit = { has_carrier_flag = lunar_toyohime_event_rw }
                     save_global_event_target_as = lunar_toyohime_event_rw
                 }
             }
@@ -981,6 +985,18 @@ country_event = {
     desc = disappear_barrier.1026.desc
     is_triggered_only = yes
     immediate = {
+        every_country = {
+            limit = { any_situation = { is_situation_type = situation_lunar_capital_psionic_crisis_stage_0 } }
+            random_situation = { limit = { is_situation_type = situation_lunar_capital_psionic_crisis_stage_0 } destroy_situation = this }
+        }
+        event_target:global_event_country = {
+            if = {
+                limit = { NOT = { is_variable_set = spth_lunar_capital_psi_sub_gate_destroyed } }
+                set_variable = { which = spth_lunar_capital_psi_sub_gate_destroyed value = 0 }
+            }
+        }
+        set_global_flag = spth_lunar_capital_psi_version_new
+        set_global_flag = spth_lunar_capital_psi_crisis_invade
         set_global_flag = touhou_shroud_excited
         spth_set_crisis_sound = { sound = lunar_capital_psi_crisis_stage_1 }
         every_country = {
@@ -998,6 +1014,10 @@ country_event = {
             star = { change_pc = pc_spiritual_power_star save_event_target_as = spth_lunar_spawnpoint }
             set_star_class = sc_spiritual_power_star
         }
+
+        event_target:global_event_country = {
+            country_event = { id = lunar_capital_psi.149 }
+        }
     }
     location = event_target:spth_story_lunar_capital_area_toyohime
     diplomatic = yes
@@ -1011,7 +1031,6 @@ country_event = {
             begin_event_chain = { event_chain = spth_lunar_capital_psi_invasion target = this }
             start_situation = { type = situation_spth_lunar_psi_crisis target = this }
         }
-        hidden_effect = { country_event = { id = lunar_capital_psi.149 days = 5 } }
     }
 }
 

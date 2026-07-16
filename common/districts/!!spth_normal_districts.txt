@@ -4,7 +4,7 @@
 district_spth_human_village = {
     base_buildtime = 360
     icon = district_gensokyo_renli
-    is_capped_by_modifier = no
+    # is_capped_by_modifier = no
     exempt_from_ai_planet_specialization = yes
     custom_gui = touhou_planet_district_entry_width_1
 
@@ -17,6 +17,7 @@ district_spth_human_village = {
         }
         OR = {
             uses_district_set = standard
+            uses_district_set = volcanic_world
             uses_district_set = shattered_ring_world
         }
     }
@@ -28,6 +29,7 @@ district_spth_human_village = {
         spth_check_gensokyo_auth = yes
         OR = {
             uses_district_set = standard
+            uses_district_set = volcanic_world
             uses_district_set = shattered_ring_world
         }
     }
@@ -200,7 +202,7 @@ district_spth_human_village = {
 district_spth_generic_factory = {
     base_buildtime = 360
     icon = district_gensokyo_gy_city
-    is_capped_by_modifier = no
+    # is_capped_by_modifier = no
     show_on_uncolonized = {
         exists = from
         from = {
@@ -209,6 +211,7 @@ district_spth_generic_factory = {
         }
         OR = {
             uses_district_set = standard
+            uses_district_set = volcanic_world
             uses_district_set = shattered_ring_world
         }
     }
@@ -222,6 +225,7 @@ district_spth_generic_factory = {
         spth_check_gensokyo_auth = yes
         OR = {
             uses_district_set = standard
+            uses_district_set = volcanic_world
             uses_district_set = shattered_ring_world
         }
     }
@@ -406,12 +410,14 @@ district_spth_generic_factory = {
 
 district_spth_sp_produce = {
     base_buildtime = 480
-    is_capped_by_modifier = no
+    # is_capped_by_modifier = no
     icon = district_gensokyo_shengong
+    custom_gui = touhou_planet_district_entry_sp_produce
     expansion_planner = yes
     show_on_uncolonized = {
         exists = from
         from = { has_authority = auth_gensokyo }
+        use_touhou_starting_district = yes
     }
 
     triggered_desc = {
@@ -430,10 +436,11 @@ district_spth_sp_produce = {
     }
     potential = {
         spth_check_gensokyo_auth = yes
-        OR = {
-            NOT = { uses_district_set = cosmogenesis_world }
-            has_planet_flag = has_shell_world_touhou_gensokyo_city
-        }
+        use_touhou_starting_district = yes
+        # OR = {
+        #     NOT = { uses_district_set = cosmogenesis_world }
+        #     has_carrier_flag = has_shell_world_touhou_gensokyo_city
+        # }
         # has_building_kuat_command_center_auto = no
         #         spth_check_gensokyo_auth = yes
         #         use_touhou_starting_district = no
@@ -485,7 +492,7 @@ district_spth_sp_produce = {
                     is_planet_class = pc_gensokyo_planet
                     is_planet_class = pc_gensokyo_city
                     is_planet_class = pc_ringworld_th
-                    has_planet_flag = has_shell_world_touhou_gensokyo_city
+                    has_carrier_flag = has_shell_world_touhou_gensokyo_city
                 }
             }
             sr_lingli = 1.5
@@ -495,7 +502,7 @@ district_spth_sp_produce = {
                 is_planet_class = pc_gensokyo_planet
                 has_designation = col_spth_gensokyo_planet
             }
-            sr_lingli = 2.85
+            sr_lingli = 10.75
             mult = value:gensokyo_planet_drp_mult|job|th_monk|districts|district_spth_sp_produce|buildings|building_spth_spellcard_workshop|category|spth_monk|
         }
         upkeep = {
@@ -602,11 +609,17 @@ district_spth_sp_produce = {
                 is_planet_class = pc_gensokyo_planet
                 is_planet_class = pc_gensokyo_city
                 is_planet_class = pc_ringworld_th
-                has_planet_flag = has_shell_world_touhou_gensokyo_city
+                has_carrier_flag = has_shell_world_touhou_gensokyo_city
             }
         }
         modifier = {
             job_th_monk_add = 100
+        }
+    }
+    triggered_planet_modifier = {
+        potential = { uses_district_set = gensokyo_planet }
+        modifier = {
+            touhou_gensokyo_planet_pollution_monthly_add = @touhou_gensokyo_planet_district_wrlv_base
         }
     }
     inline_script = { script = districts/spth_gensokyo_city_housing }
@@ -633,11 +646,14 @@ district_spth_sp_produce = {
 
 district_spth_sp_produce_swap = {
     base_buildtime = 480
-    is_capped_by_modifier = no
+    # is_capped_by_modifier = no
     expansion_planner = yes
+    custom_gui = touhou_planet_district_entry_sp_produce_1_width
     show_on_uncolonized = {
         exists = from
         from = { has_authority = auth_gensokyo }
+        use_touhou_starting_district = no
+        NOT = { uses_district_set = cosmogenesis_world }
     }
 
     triggered_desc = {
@@ -652,10 +668,14 @@ district_spth_sp_produce_swap = {
         slot_spth_sp_produce_common
     }
     potential = {
-        always = no
-        # spth_check_gensokyo_auth = yes
-        # use_touhou_starting_district = no
-        # NOT = { uses_district_set = cosmogenesis_world }
+        spth_check_gensokyo_auth = yes
+        use_touhou_starting_district = no
+        NOT = { 
+			OR = {
+				use_touhou_izakaya_district = yes
+				uses_district_set = cosmogenesis_world
+			}
+		}
         # if = {
         #     limit = { spth_has_kuat_mod = yes }
         #     has_building_kuat_command_center_auto = no
@@ -664,10 +684,6 @@ district_spth_sp_produce_swap = {
 
     conversion_ratio = 1
     convert_to = {
-        district_city
-        district_nexus
-        district_hive
-        district_arcology_housing
         district_spth_sp_produce
     }
 

@@ -9,7 +9,7 @@ ai_tag_weight = 1000
 inline_script = { script = ship_components/spth_component_basic size = $size$ }
 inline_script = { script = ship_components/spth_component_attributes name = anti_psionic tag = zro type = $size$ }
 inline_script = { script = ship_components/spth_psionic_component_resources class = common size = weapon type = $size$ }
-inline_script = { script = ship_components/spth_basic_ai_weight base = 1100 }
+inline_script = { script = ship_components/spth_basic_ai_weight_psionic base = @touhou_components_basic_weight }
 target_focus = spread
 ship_modifier = {
     component_lifesteal_add = 0.05
@@ -17,5 +17,18 @@ ship_modifier = {
 }
 on_hit = {
     custom_tooltip = touhou_psionic_inhibitor_weapon_hit_effect
-    touhou_psionic_inhibitor_weapon_hit_effect = yes
+    custom_tooltip_with_params = {
+        description = touhou_anti_psionic_weapon_hit_effect
+        description_parameters = {
+            TOUHOU_AMOUNT = $stack_modifier_alt$
+        }
+    }
+    touhou_psionic_inhibitor_weapon_hit_effect = { type = 1 }
+    hidden_effect = {
+        if = {
+            limit = { NOT = { has_ship_flag = ship_has_touhou_nimble_fabric_effect } }
+            touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = $stack_modifier$ duration = 6.00 threshold = 0.75 }
+        }
+    }
 }
+military_power_multiplier = @touhou_generic_scale_military_power_multiplier

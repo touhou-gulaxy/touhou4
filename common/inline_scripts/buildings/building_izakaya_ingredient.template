@@ -1,0 +1,74 @@
+building_izakaya_ingredient_$type$ = {
+	base_buildtime = 60
+	can_build = yes
+	category = government
+	building_sets = {
+		izakaya_foods
+	}
+	potential = {
+		spth_check_gensokyo_auth = yes
+		use_touhou_izakaya_district = yes
+	}
+	allow = {
+		custom_tooltip = {
+			fail_text = IZAKAYA_NO_ENOUGH_INGREDIENT
+			owner? = {
+				is_variable_set = izakaya_ingredient_$type$_val
+				check_variable = { which = izakaya_ingredient_$type$_val value > 0 }
+			}
+		}
+	}
+	resources = {
+		category = touhou_izakaya_ingredient
+		cost = {
+			trade = @[building_izakaya_ingredient_cost_base * building_izakaya_ingredient_cost_factor_t$tier$]
+			food = @[building_izakaya_ingredient_cost_base * 2 * building_izakaya_ingredient_cost_factor_t$tier$]
+		}
+		cost = {
+			trigger = {
+				owner = { is_ai = no }
+			}
+			sr_lingli = @[building_izakaya_ingredient_cost_base * building_izakaya_ingredient_cost_factor_t$tier$]
+		}
+		upkeep = {
+			energy = @[building_izakaya_ingredient_upkeep_base * building_izakaya_ingredient_upkeep_factor_t$tier$]
+		}
+		upkeep = {
+			trigger = { planet = { is_variable_set = planet_sp_upkeep_faith_pressure_modifier } }
+			sr_lingli = @[building_izakaya_ingredient_upkeep_base / 2 * building_izakaya_ingredient_upkeep_factor_t$tier$]
+			multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
+		}
+	}
+	planet_modifier = {
+		$pm$
+	}
+	triggered_desc = {
+		trigger = { always = yes }
+		text = building_izakaya_ingredient_display_t$tier$
+	}
+	triggered_desc = {
+		trigger = { always = $show_tooltip$ }
+		text = building_izakaya_ingredient_$type$_tt
+	}
+	additional_ai_weight = 2000
+	on_queued = {
+		owner? = {
+			if = {
+				limit = { is_variable_set = izakaya_ingredient_$type$_val }
+				change_variable = { which = izakaya_ingredient_$type$_val value = -1 }
+			} else = {
+				set_variable = { which = izakaya_ingredient_$type$_val value = 0 }
+			}
+		}
+	}
+	on_unqueued = {
+		owner? = {
+			if = {
+				limit = { is_variable_set = izakaya_ingredient_$type$_val }
+				change_variable = { which = izakaya_ingredient_$type$_val value = 1 }
+			} else = {
+				set_variable = { which = izakaya_ingredient_$type$_val value = 0 }
+			}
+		}
+	}
+}

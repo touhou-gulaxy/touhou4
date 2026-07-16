@@ -35,7 +35,7 @@ spth_super_carrier_init_system_self = {
             }
             # set_variable = { which = spth_super_carrier_inv_counter value = 0 }
             # set_variable = { which = spth_super_carrier_inv_max value = 10 }
-            ship_event = { id = spth_fleet.1001 days = 1 }
+            ship_event = { id = spth_fleet.1001 days = 2 }
         }
         # every_owned_ship = {
         #     limit = { has_hp < 4800000 }
@@ -202,90 +202,123 @@ spth_super_carrier_instant_jump = {
 # Scope = ship (target), from = ship (shooter)
 spth_super_carrier_on_hit_effect = {
     optimize_memory
+    # if = {
+    #     limit = { exists = from }
+    #     from = {
+    #         add_modifier = {
+    #             modifier = touhou_standard_correct_damage_spth_yuzhu
+    #             mult = value:touhou_spth_yuzhu_instant_kill_value|final_dmg|@touhou_instant_kill_weapon_target_damage|slot|giga|
+    #         }
+    #     }
+    # }
     th_spawn_explosion_particle = { color = blue size = large }
-    reduce_shield = 922337203
-    repair_armor_amount = -922337202
-    set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_instant_kill_target days = 2 }
-    create_ambient_object = {
-        type = th_invisible_object
-        location = this
-        duration = 20
-        entity_offset = 0
-        entity_offset_angle = 0
-        entity_offset_height = 0
-        use_3d_location = yes
-        effect = { save_event_target_as = target }
-    }
-    create_ambient_object = {
-        type = th_invisible_object
-        location = this
-        duration = 20
-        entity_offset = 80
-        entity_offset_angle = 0
-        entity_offset_height = 0
-        use_3d_location = yes
-        effect = { save_event_target_as = target_d_inner }
-    }
-    create_ambient_object = {
-        type = th_invisible_object
-        location = this
-        duration = 20
-        entity_offset = 200
-        entity_offset_angle = 0
-        entity_offset_height = 0
-        use_3d_location = yes
-        effect = { save_event_target_as = target_d_outer }
-    }
-    from = {
-        if = {
-            limit = { exists = owner owner = {
-                has_modifier = touhou_spellcard_41_cap
-            } }
-            prev.fleet = {
-                while = {
-                    count = value:touhou_spellcard_41_chain_amount
-                    random_owned_ship = {
-                        limit = { NOT = { has_ship_flag = touhou_spellcard_41_target } }
-                        set_timed_ship_flag = { flag = touhou_spellcard_41_target days = 1 }
-                        spth_reduce_armor_max = { percent = 0.10 }
-                        th_spawn_explosion_particle = { color = purple size = small }
-                    }
-                }
-            }
-        }
-        save_event_target_as = shooter
-        fleet = {
-            every_combatant_fleet = {
-                every_owned_ship = {
-                    if = {
-                        limit = {
-                            event_target:target = {
-                                compare_distance = {
-                                    closer_object = prev
-                                    further_object = event_target:target_d_inner
-                                }
-                            }
-                        }
-                        th_spawn_explosion_particle = { color = pink size = medium }
-                        set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_damage_target days = 3 }
-                    }
-                    if = {
-                        limit = {
-                            event_target:target = {
-                                compare_distance = {
-                                    closer_object = prev
-                                    further_object = event_target:target_d_outer
-                                }
-                            }
-                        }
-                        th_spawn_explosion_particle = { color = green size = medium }
-                        spth_reduce_shield = { factor = 0.2 percent = 0.2 }
-                        add_modifier = { modifier = spth_super_carrier_damage_modifier days = 8 }
-                    }
-                }
-            }
-        }
-    }
+	touhou_instant_kill_ship = { source = from }
+    # create_ambient_object = {
+    #     type = th_invisible_object
+    #     location = this
+    #     duration = 20
+    #     entity_offset = 0
+    #     entity_offset_angle = 0
+    #     entity_offset_height = 0
+    #     use_3d_location = yes
+    #     effect = { save_event_target_as = target }
+    # }
+    # create_ambient_object = {
+    #     type = th_invisible_object
+    #     location = this
+    #     duration = 20
+    #     entity_offset = 80
+    #     entity_offset_angle = 0
+    #     entity_offset_height = 0
+    #     use_3d_location = yes
+    #     effect = { save_event_target_as = target_d_inner }
+    # }
+    # create_ambient_object = {
+    #     type = th_invisible_object
+    #     location = this
+    #     duration = 20
+    #     entity_offset = 200
+    #     entity_offset_angle = 0
+    #     entity_offset_height = 0
+    #     use_3d_location = yes
+    #     effect = { save_event_target_as = target_d_outer }
+    # }
+    # solar_system = {
+    #     every_ship_in_system = {
+    #         limit = { controller = { is_hostile = from.controller } }
+    #         if = {
+    #             limit = {
+    #                 distance = {
+    #                     source = root
+    #                     max_distance <= 100
+    #                     same_solar_system = yes
+    #                 }
+    #             }
+    #             th_spawn_explosion_particle = { color = pink size = medium }
+    #             set_timed_ship_flag = { flag = th_weapon_yuzhu_ultra_damage_target days = 3 }
+    #         }
+    #         if = {
+    #             limit = {
+    #                 distance = {
+    #                     source = root
+    #                     max_distance <= 200
+    #                     same_solar_system = yes
+    #                 }
+    #             }
+    #             th_spawn_explosion_particle = { color = green size = medium }
+    #             spth_reduce_shield = { factor = 0.2 percent = 0.2 }
+    #             add_modifier = { modifier = spth_super_carrier_damage_modifier days = 8 }
+    #         }
+    #     }
+    # }
+    # from = {
+    #     if = {
+    #         limit = { exists = owner owner = {
+    #             has_modifier = touhou_spellcard_41_cap
+    #         } }
+    #         prev.fleet = {
+    #             while = {
+    #                 count = value:touhou_spellcard_41_chain_amount
+    #                 random_owned_ship = {
+    #                     limit = { NOT = { has_ship_flag = touhou_spellcard_41_target } }
+    #                     set_timed_ship_flag = { flag = touhou_spellcard_41_target days = 1 }
+    #                     spth_reduce_armor_max = { percent = 0.10 }
+    #                     th_spawn_explosion_particle = { color = purple size = small }
+    #                 }
+    #             }
+    #         }
+    #     }
+    #     # save_event_target_as = shooter
+    #     # fleet = {
+    #     #     every_combatant_fleet = {
+    #     #         every_owned_ship = {
+    #     #             if = {
+    #     #                 limit = {
+    #     #                     event_target:target = {
+    #     #                         compare_distance = {
+    #     #                             closer_object = prev
+    #     #                             further_object = event_target:target_d_inner
+    #     #                         }
+    #     #                     }
+    #     #                 }
+    #     #             }
+    #     #             if = {
+    #     #                 limit = {
+    #     #                     event_target:target = {
+    #     #                         compare_distance = {
+    #     #                             closer_object = prev
+    #     #                             further_object = event_target:target_d_outer
+    #     #                         }
+    #     #                     }
+    #     #                 }
+    #     #                 th_spawn_explosion_particle = { color = green size = medium }
+    #     #                 spth_reduce_shield = { factor = 0.2 percent = 0.2 }
+    #     #                 add_modifier = { modifier = spth_super_carrier_damage_modifier days = 8 }
+    #     #             }
+    #     #         }
+    #     #     }
+    #     # }
+    # }
     # solar_system = {
     #     create_fleet = {
     #         name = th_weapon_yuzhu_ultra_instant_kill_aura
@@ -351,10 +384,10 @@ spth_toyohime_instant_kill_on_hit = {
         from = {
             set_variable = { which = ship_toyohime_instant_kill_debug value = modifier:ship_toyohime_instant_kill }
             set_ship_flag = has_toyohime_instant_kill
-            add_modifier = {
-                modifier = th_toyohime_instant_kill_buff
-                mult = value:th_instant_kill_value|base_dmg|11000|final_dmg|720000000|size_damage_factor|0.25|
-            }
+            # add_modifier = {
+            #     modifier = th_toyohime_instant_kill_buff
+            #     mult = value:th_instant_kill_value|base_dmg|12500|final_dmg|@touhou_instant_kill_weapon_target_damage|size_damage_factor|0.25|tag3|lunar_capital|
+            # }
             create_ambient_object = {
                 type = touhou_lunar_superlaser_instant_kill_upgrade
                 location = this
@@ -367,8 +400,7 @@ spth_toyohime_instant_kill_on_hit = {
                 scale = 0.1
             }
         }
-        reduce_shield = 922337203
-        repair_armor_amount = -922337202
+        touhou_instant_kill_ship = { source = from }
         create_ambient_object = {
             type = lunar_capital_superlaser_instant_kill_hit_explosion
             location = this
@@ -380,14 +412,15 @@ spth_toyohime_instant_kill_on_hit = {
             entity_scale_to_size = no
             scale = 0.5
         }
-    } else = {
-        from = {
-            if = {
-                limit = { has_modifier = th_toyohime_instant_kill_buff }
-                remove_modifier = th_toyohime_instant_kill_buff
-            }
-        }
     }
+	# else = {
+    #     from = {
+    #         if = {
+    #             limit = { has_modifier = th_toyohime_instant_kill_buff }
+    #             remove_modifier = th_toyohime_instant_kill_buff
+    #         }
+    #     }
+    # }
 }
 touhou_fe_union_singularity_torpedo_instant_kill_on_hit = {
     optimize_memory
@@ -410,22 +443,22 @@ touhou_fe_union_singularity_torpedo_instant_kill_on_hit = {
         from = {
             set_variable = { which = ship_toyohime_instant_kill_debug value = modifier:ship_toyohime_instant_kill }
             set_ship_flag = has_toyohime_instant_kill
-            add_modifier = {
-                modifier = th_toyohime_instant_kill_buff
-                mult = value:th_instant_kill_value|base_dmg|2400|final_dmg|720000000|size_damage_factor|0.25|tag3|weapon_type_gravity|tag4|weapon_type_touhou_difficulty_player|tag5|weapon_archaeotech|
-            }
+            # add_modifier = {
+            #     modifier = th_toyohime_instant_kill_buff
+            #     mult = value:th_instant_kill_value|base_dmg|2400|final_dmg|@touhou_instant_kill_weapon_target_damage|size_damage_factor|0.25|tag3|weapon_type_gravity|tag4|weapon_type_touhou_difficulty_player|tag5|weapon_archaeotech|
+            # }
         }
-        reduce_shield = 922337203
-        repair_armor_amount = -922337202
+        touhou_instant_kill_ship = { source = from }
         th_spawn_explosion_particle = { color = pink size = medium }
-    } else = {
-        from = {
-            if = {
-                limit = { has_modifier = th_toyohime_instant_kill_buff }
-                remove_modifier = th_toyohime_instant_kill_buff
-            }
-        }
     }
+	# else = {
+    #     from = {
+    #         if = {
+    #             limit = { has_modifier = th_toyohime_instant_kill_buff }
+    #             remove_modifier = th_toyohime_instant_kill_buff
+    #         }
+    #     }
+    # }
 }
 touhou_fe_union_spiritual_power_torpedo_instant_kill_on_hit = {
     optimize_memory
@@ -448,22 +481,22 @@ touhou_fe_union_spiritual_power_torpedo_instant_kill_on_hit = {
         from = {
             set_variable = { which = ship_toyohime_instant_kill_debug value = modifier:ship_toyohime_instant_kill }
             set_ship_flag = has_toyohime_instant_kill
-            add_modifier = {
-                modifier = th_toyohime_instant_kill_buff
-                mult = value:th_instant_kill_value|base_dmg|1600|final_dmg|720000000|size_damage_factor|0.75|tag1|weapon_type_kinetic|tag3|weapon_type_gravity|tag4|weapon_type_touhou_difficulty_player|tag5|weapon_archaeotech|
-            }
+            # add_modifier = {
+            #     modifier = th_toyohime_instant_kill_buff
+            #     mult = value:th_instant_kill_value|base_dmg|1600|final_dmg|@touhou_instant_kill_weapon_target_damage|size_damage_factor|0.75|tag1|weapon_type_kinetic|tag3|weapon_type_gravity|tag4|weapon_type_touhou_difficulty_player|tag5|weapon_archaeotech|
+            # }
         }
-        reduce_shield = 922337203
-        repair_armor_amount = -922337202
+        touhou_instant_kill_ship = { source = from }
         th_spawn_explosion_particle = { color = pink size = medium }
-    } else = {
-        from = {
-            if = {
-                limit = { has_modifier = th_toyohime_instant_kill_buff }
-                remove_modifier = th_toyohime_instant_kill_buff
-            }
-        }
     }
+	# else = {
+    #     from = {
+    #         if = {
+    #             limit = { has_modifier = th_toyohime_instant_kill_buff }
+    #             remove_modifier = th_toyohime_instant_kill_buff
+    #         }
+    #     }
+    # }
 }
 th_toyohime_weapon_sp_hit_effect = {
     optimize_memory
@@ -506,7 +539,8 @@ touhou_superstarbase_test_spawn = {
                         }
                     }
                 }
-                set_location = { target = prev distance = 50 angle = 0 }
+                set_location = { target = prev distance = 50 angle = 0 }set_fleet_flag = touhou_standard_formation_scale_setted
+				set_formation_scale = @touhou_standard_formation_scale
             }
         }
     }
@@ -530,6 +564,8 @@ touhou_superstarbase_spawn = {
                 effect = { set_ship_flag = $ship_flag$ }
             }
             set_location = { target = prev distance = 50 angle = $angle$ }
+			set_fleet_flag = touhou_standard_formation_scale_setted
+			set_formation_scale = @touhou_standard_formation_scale
         }
     }
 }

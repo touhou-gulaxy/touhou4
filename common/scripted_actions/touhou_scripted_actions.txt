@@ -1,0 +1,740 @@
+# scripted_action_1 = {
+# 	user_scope = fleet/megastructure	# defines the type of the action user (therefore the scope of the button_visible/clickable triggers,
+# 										# as well as the from scope of the performed action or on_cancel action)
+#                                         # 必须要是第一个参数
+# 	scope = galactic_object/planet/fleet/self	# defines the target of the action (therefore the scope of the possible and finished triggers,
+# 											    # as well as the scope of the performed action or on_cancel action)
+#                                                 # 必须要是第二个参数
+# 	# the resulting scopes and behaviors are:
+# 	# For scope = fleet:
+# 	#	scope: target fleet (can be the triggering user if scope = self)
+# 	#	from: triggering user
+# 	#	starts immediately if scope = self, else when in range specified by fleet_action_range (otherwise moves beforehand)
+# 	# For scope = planet:
+# 	#	scope: target planet
+# 	#	from: triggering user
+# 	#	starts when in orbit of target planet (otherwise moves beforehand)
+# 	# For scope = galactic_object:
+# 	#	scope: target system
+# 	#	from: triggering user
+# 	#	starts when in orbit of target system's primary star (otherwise moves beforehand)
+# 	possible = {}	# trigger. evaluates if action is possible
+# 				  	# if not specified, action is always considered possible
+# 	finished = {}	# trigger. evaluates if action is finished
+# 				  	# if not specified, action is always considered finished as soon as it is started
+# 	hide_from_context_menu = {} 	# trigger. evaluates if action should be shown in the right-click context menu orders
+# 	 	 	 	 	 	 	 	 	# if not specified, action will always be shown if button is visible
+# 	button_clickable = {}	# trigger. scope: triggering fleet. evaluates if scripted action button is clickable
+# 	button_visible = {}		# trigger. scope: triggering fleet. evaluates if scripted action button is visible
+# 							# (also used for context menu options if hide_from_context_menu is not used)
+
+# 	on_completed = on_completed_action_name             # name of the on_action to perform when scripted action completes its progress
+#     on_queued = on_queued_action_name                   # name of the on_action to perform when scripted action is queued
+#                                                       # not supported by megastructure users
+#     on_started = on_started_action_name                 # name of the on_action to perform when scripted action starts
+#                                                       # this action will take place even if the user still needs to travel to the target
+#     on_progress_start = on_progress_start_action_name   # name of the on_action to perform when scripted action starts its progress
+#                                                       # not supported by megastructure users
+# 	on_cancelled = on_cancelled_action_name             # name of the on_action to perform when scripted action is cancelled
+
+# 	also_automate = { logistic_drop_off_stockpile }	# optional. when this action's automation is enabled, the listed actions are also
+# 													# included in the automation order even if they are not checked separately.
+# 													# useful for support actions (e.g. drop-off) that multiple automations depend on.
+# 	automation_priority = 1			# if set, the action will show up in the automation order settings (lower = higher priority)
+# 									# only affects UI ordering; actual target selection uses ai weights
+# 	automation_default_on = no		# whether the automation checkbox is checked by default. default = no
+
+#     # Note: the automation button icon can be customized per ship size via the automation_icon field
+#     # in the ship_sizes definition. If set, the automation button will use the specified GFX sprite
+#     # and its _selected variant (e.g. GFX_my_icon and GFX_my_icon_selected).
+#     # If not set, defaults to GFX_fleet_order_automate / GFX_fleet_order_automate_selected.
+#     # Example (in ship_sizes):
+#     #   automation_icon = GFX_fleet_order_auto_construct
+
+# 	context_menu_name = menu_loc_key	# loc key for option label in drop down menu
+# 	tooltip = tooltip_loc_key			# button tooltip
+# 	icon = "GFX_icon_1"					# button icon
+# 	on_click_sound = "sound_clip_1"				# sound clip to play when the button is clicked (or the target, if required)
+# 	on_execution_sound = "sound_clip_2"			# sound clip to play when the on_action specified by field "name" is executed
+# 	activity_key = activity_loc_key				# loc key for the activity string to show on fleet UI. "NAME" loc parameter gives target localized name
+# 	progress_activity_key = progress_loc_key	# loc key for the progress string to show on fleet UI. "PROGRESS" loc parameter gives current progress percentage
+# 	required_progress = 2.0		# required progress (number of ticks) to start performing scripted action. default = 0.0
+# 					  			# progress starts counting at 1.0, so the minimum value for required_progress to make the action not instant is 2.0
+# 								# accepts variable values, with scope this : target object and from : user object
+# 	required_progress_key		# Optional: Loc key for the required progress.
+# 	cooldown = 10				# number of days of cooldown before the action can be triggered again. default = 0
+# 								# accepts variable values, with scope this : target object and from : user object
+# 	cost = { energy = 5000 }	# resources needed to enable the action. will be deducted from controller country on action finish. default = no cost
+# 								# accepts triggered costs, with scope this : target object and from : user object
+# 	fleet_action_range = 10.0	# only used when scope = fleet. max range from the target fleet tolerated to perform the action
+# 					  			# if too far, the fleet will chase the target fleet until it's inside the desired range
+# 					   			# default = 1.0
+# 	wait = no					# If yes, waits for the ships in the fleet to be still before starting the scripted action
+# 								# default = yes
+# 								# For AI: always no
+# 	ai = {					# Info concerning AI using this particular scripted order
+# 		weight = {
+# 			base = 0
+# 			modifier = {
+# 				weight = 1
+# 				is_planet_class = pc_frozen
+# 			}
+# 		}
+# 		# if weight is 0 or lower AI will not perform the action, otherwise AI will prioritize actions with higher weight
+# 		# Weight modifier triggers support these scopes
+# 		# This - Target - Target Type depends on the action.
+# 		# From - Acting user (fleet or megastructure).
+
+# 		ai_minister = interior	# none/interior/military, default none.
+# 								# Determines whether it is the interior or military ai minister that is responsible for this action.
+# 								# Affects order prioritization during and outside of war.
+# 								# if set to none - AI ignores it.
+# 		war = yes				# Only checked by military minister. If yes, AI will be able to use during war. default = yes.
+# 		enemy = yes				# Only checked by military minister. Only applicable when scope = fleet. If yes, the targeted fleet will be pulled from hostile fleets (see below)
+# 								# default: yes
+# 		max_jumps = 10			# Checked by interior minister and player automation for scope = planet/galactic_object.
+# 								# Limits how far (in hyperlane jumps) the AI/automation will search for targets from the fleet's current system.
+# 								# Note: the interior minister always evaluates systems containing active points of interest regardless of max_jumps.
+# 								# Player automation does not consider points of interest automatically and applies max_jumps to all systems.
+# 								# default: -1 (unlimited - checks every system in the galaxy, which can be expensive!)
+# 		target_owned_starbases = yes	# If yes, only considers systems where the fleet's controller has a starbase.
+# 								# Replaces max_jumps filtering - no jump-distance computation needed.
+# 								# default: no
+# 		good_enough_weight = 5	# Checked by interior minister and player automation for scope = planet/galactic_object.
+# 								# If a target's weight reaches this threshold, the AI stops searching and picks it immediately.
+# 								# When set, targets are evaluated from closest to farthest (by hyperlane jumps from the fleet),
+# 								# so the AI naturally prefers nearby targets that meet the threshold.
+# 								# Useful for avoiding unnecessary iteration when a sufficiently good target has already been found.
+# 								# default: -1 (disabled - always evaluates all candidates within max_jumps range)
+# 		# Depending on the scripted action scope, the target candidates will be:
+# 		# scope = self # triggering fleet as usual
+# 		# scope = planet # planets in the fleet's current system when AI is deciding on the fleet's next mission
+# 		# scope = fleet AND enemy = yes # hostile fleets
+# 		# scope = fleet AND enemy = no # fleets own by the AI country
+# 		# In order for AI to decide on using a scripted action, all regular conditions apply: possible trigger, cost, cooldown
+# 		# Military AI minister will prioritize using scripted actions over regular orders when possible
+# 		# Interior AI minister will deprioritize uing scripted actions and only consider them when other actions are not available.
+# 	}
+# 	shortcut = "R"				# Keyboard shortcut for the scripted action button
+# 								# Usual combinations like "CTRL+R" are also accepted
+# 					  			# if the same shortcut is used for more than one simultaneously possible action on the same fleet,
+# 					  			# the shortcut will only work for one of them
+# 					  			# Same if the same shortcut is already used for any other already present button
+# 	slot = 1					# For hero ships (determined by ship size) UI
+# 					  			# If 0, the scripted action button will be located on the regular permanent orders bar
+# 					  			# If > 0, the scripted action button will be located on the custom orders bar, sorted by slot number
+# 					  			# Default: 0
+# 	begin_anim_state = "working"	# Trigger specific NON-LOOPING animation state on the user performing the order at the moment the order is started
+# 					  				# This overrides regular animation states
+# 					  				# Atm this is only used for megastructure users
+# 	progress_anim_state = "moving"	# Trigger specific animation state on the user performing the order while the order is in progress
+# 					  				# This overrides own weapon projectile induced animations, as well as regular animation states
+# 									# This is ignored if scope=self because the order is instant in that case (no progress)
+# 	finish_anim_state = "rage"		# Trigger specific NON-LOOPING animation state on the user performing the order at the moment the order is finished/executed
+# 					  				# This overrides own weapon projectile induced animations, as well as regular animation states
+#                                     # NOTE: Using too many scritpted actions with custom animations may cause performance issues.
+
+# 	specific_behavior = <behavior>	# Adds a special handling to that action, using code support
+# 									# If any effect of the on_action raised by on_completed = on_action_name somehow deletes the fleet order,
+# 									# any execution effect of the specific behavior may be lost
+# 									# Handled behaviors:
+# 										# scripted_catapult_order
+# 											# user_scope = fleet, scope = galactic_object
+# 											# This changes the behavior of the action to act like a quantum catapult
+# 											# This requires the on_ship_<action_key> and on_fleet_<action_key> on_actions
+# 											# The usual on_action raised by on_completed = on_action_name will happen but the target will be the original one,
+# 											# not the actual destination after spread
+# 										# scripted_survey_order
+# 											# user_scope = fleet, scope = planet
+# 											# This is an override of the survey order to allow more custom handling of the button's visibility and clickability
+# 											# Only the button is custom, then the rest of the behavior is the normal survey one
+# 											# ie no custom on_action will be raised
+# 										# scripted_build_megastructure_order
+# 											# user_scope = fleet, scope = self
+# 											# This is an override of the build megastructure order to allow more custom handling of the button's visibility and clickability
+# 											# Only the button is custom, then the rest of the behavior is the normal build one
+# 											# ie no custom on_action will be raised
+# 											# Note: the button is always clickable even if the country has no known megastructures.
+# 												# This could be improved with a new trigger to check that, but atm it doesn't exist
+# 	category = harvest_resources	# Arbitrary identifier grouping actions for category_limit purposes.
+# 									# If omitted, the action has no category and is never counted against any limit.
+# 	category_limit = 1				# Maximum number of concurrent actions of the same category that one country's
+# 									# fleets may perform on the same target simultaneously. Default: uncapped (omit field).
+# 									# Only counts fleets belonging to the same country — cross-country actions are unaffected.
+# 									# Both active (in-progress) and queued orders on other fleets are counted.
+# 									# Example: category = harvest_resources and category_limit = 1 on all harvest-type
+# 									# actions ensures at most one such action per target per country at a time.
+# 	important = no/yes	#Default no. If yes, UI will prevent accidental cancelation of this action
+# 	overrides_gained_resources = no/yes #Default no. If yes, then when targeting planets with this action
+# 								 UI displays the add_resource and add_resource_to_local_stockpile effect results instead of default deposit amounts.
+# 								 Useful to display the expected resources gained from the scripted action.
+# 								 When combined with completion_message_type, resource details are appended to the completion message automatically.
+# 								 Only immediate effect from events are checked. No support for "option" effects, or "after" effects.
+# 								 Does not support any effects that depend on random values (random_events, random_list).
+# 	completion_message_type = MESSAGE_TYPE_KEY	# If set, a message is sent to the acting unit's controller when the action
+# 								 completes (human players only).
+# 								 The following variables are set automatically:
+# 									user_scope = fleet:			FLEET			= acting fleet name
+# 									user_scope = megastructure:	MEGASTRUCTURE	= acting megastructure name
+# 									scope = planet:				TARGET_PLANET	= target planet name
+# 									scope = galactic_object:	TARGET_SYSTEM	= target system name
+# 									scope = fleet (not self):	TARGET_FLEET	= target fleet name
+# 								 If overrides_gained_resources = yes, gained resource details are also appended to the message.
+# 								 Note: resource details are only supported for user_scope = fleet with scope = planet. Other combinations
+# 								 produce the message without resource details.
+# 	completion_message_localization = LOC_KEY	# Localization key for the completion message body (required if completion_message_type is set).
+# 	completion_message_days = 60				# How many days the notification message stays visible. Default: NOTIFICATION_MESSAGE_DURATION_STANDARD.
+# 												# Note: this has no effect when completion_message_type is a toast. Toasts always use MINIMUM_TOAST_DURATION.
+
+#     uses_vfx_type = survey_effect/harvest_effect    # If specified, uses the specified vfx while performing the scripted action
+# }
+
+touhou_synaptic_lathe_mia = {
+	user_scope = fleet
+	scope = self
+
+	button_visible = { always = yes }
+	button_clickable = { always = yes }
+
+	cooldown = 3600
+	important = yes
+	on_completed = on_touhou_synaptic_lathe_mia_actived
+	tooltip = touhou_synaptic_lathe_mia_tooltip
+	icon = GFX_spth_fleet_view_ship_action_into_mia
+	icon_selected = "GFX_spth_fleet_view_ship_action_into_mia"
+	activity_key = touhou_synaptic_lathe_mia
+	context_menu_name = touhou_synaptic_lathe_mia
+	on_click_sound = "interface"
+	wait = no
+	slot = 2
+}
+touhou_space_shrine_mia = {
+	user_scope = fleet
+	scope = self
+
+	button_visible = { always = yes }
+	button_clickable = { always = yes }
+
+	cooldown = 2400
+	important = yes
+	on_completed = on_touhou_space_shrine_mia_actived
+	tooltip = touhou_space_shrine_mia_tooltip
+	icon = GFX_spth_fleet_view_ship_action_into_mia
+	icon_selected = "GFX_spth_fleet_view_ship_action_into_mia"
+	activity_key = touhou_space_shrine_mia
+	context_menu_name = touhou_space_shrine_mia
+	on_click_sound = "interface"
+	wait = no
+	slot = 2
+}
+touhou_synaptic_lathe_exouds = {
+	user_scope = fleet
+	scope = self
+
+	button_visible = { always = yes }
+	button_clickable = { always = yes }
+
+	cooldown = 360
+	important = yes
+	on_completed = on_touhou_synaptic_lathe_exouds
+	tooltip = touhou_synaptic_lathe_exouds_tooltip
+	icon = GFX_spth_fleet_view_ship_action_exodus
+	icon_selected = "GFX_spth_fleet_view_ship_action_exodus"
+	activity_key = touhou_synaptic_lathe_exouds
+	context_menu_name = touhou_synaptic_lathe_exouds
+	on_click_sound = "interface"
+	wait = no
+	slot = 2
+}
+touhou_ship_skill_reimu = {
+	user_scope = fleet
+	scope = galactic_object
+
+	on_queued = on_touhou_ship_skill_reimu_queued
+	on_completed = on_touhou_ship_skill_reimu
+	tooltip = touhou_ship_skill_reimu_tooltip
+	click_to_act_key = touhou_galaxy_target_system
+	icon = GFX_overclock_touhou_system_warper_system_jump_project_fleet
+	icon_selected = GFX_overclock_touhou_system_warper_system_jump_project_fleet
+
+	possible = {
+		# touhou_has_ship_action = yes
+	}
+
+	button_visible = {
+		always = no
+		any_owned_ship = {
+			check_modifier_value = { modifier = ship_spth_reimu_ruler_effect_2 value != 0 }
+			NOT = { check_modifier_value = { modifier = ship_is_touhou_station value != 0 } }
+		}
+	}
+
+	button_clickable = {
+		touhou_has_ship_action = yes
+		custom_tooltip = {
+			fail_text = touhou_requires_no_coldown
+			NOT = { has_fleet_flag = touhou_ship_action_leader_reimu_cooldown }
+		}
+	}
+
+	# This behaves as a Quantum Catapult, using the ship as the bypass.
+	specific_behavior = scripted_catapult_order
+
+	activity_key = touhou_ship_skill_reimu_activity_key
+	context_menu_name = touhou_ship_skill_reimu
+	required_progress = 5
+	progress_activity_key = touhou_ship_skill_reimu_progress_activity_key
+	required_progress_key = touhou_ship_skill_reimu_required_progress_key
+	cooldown = 360
+
+	cost = {
+		energy = 6400
+		sr_fuka = 3200
+		sr_lingli = 1600
+	}
+	wait = no
+	slot = 1
+}
+touhou_ship_skill_space_shrine_warp = {
+	user_scope = fleet
+	scope = galactic_object
+
+	on_completed = on_touhou_ship_skill_space_shrine_warp
+	tooltip = touhou_ship_skill_space_shrine_warp_tooltip
+	click_to_act_key = touhou_galaxy_target_system
+	icon = GFX_overclock_touhou_system_warper_system_jump_project_fleet
+	icon_selected = GFX_overclock_touhou_system_warper_system_jump_project_fleet
+
+	possible = {
+		from.starbase? = {
+			has_starbase_module = touhou_arkship_warp_module
+		}
+	}
+
+	button_visible = {
+		always = yes
+	}
+
+	button_clickable = {
+		always = yes
+	}
+
+	# This behaves as a Quantum Catapult, using the ship as the bypass.
+	specific_behavior = scripted_catapult_order
+
+	activity_key = touhou_ship_skill_space_shrine_warp_key
+	context_menu_name = touhou_ship_skill_space_shrine_warp
+	required_progress = 0
+	progress_activity_key = touhou_ship_skill_space_shrine_warp_activity_key
+	required_progress_key = touhou_ship_skill_space_shrine_warp_required_progress_key
+	cooldown = 120
+
+	cost = {
+		energy = 6400
+		sr_fuka = 3200
+		sr_lingli = 1600
+	}
+	wait = no
+	slot = 1
+}
+touhou_gunpower_turret_dismiss = {
+	user_scope = fleet
+	scope = self
+	possible = {
+		touhou_has_ship_action = yes
+	}
+	button_visible = { always = yes }
+	button_clickable = { hidden_trigger = { NOT = { has_fleet_flag = touhou_gunpower_turret_has_order } } }
+
+	important = yes
+	on_completed = on_touhou_gunpower_turret_dismiss
+	tooltip = touhou_gunpower_turret_dismiss_title
+	icon = GFX_touhou_fleet_view_ship_action_dismiss_button
+	icon_selected = "GFX_touhou_fleet_view_ship_action_dismiss_button"
+	activity_key = touhou_gunpower_turret_dismiss
+	context_menu_name = touhou_gunpower_turret_dismiss
+	on_click_sound = "interface"
+	wait = no
+	slot = 2
+}
+touhou_gunpower_turret_deploy = {
+	user_scope = fleet
+	scope = self
+	possible = {
+		touhou_has_ship_action = yes
+	}
+	button_visible = { always = yes }
+	button_clickable = { hidden_trigger = { NOT = { has_fleet_flag = touhou_gunpower_turret_has_order } } }
+
+	important = yes
+	on_completed = on_touhou_gunpower_turret_deploy
+	tooltip = touhou_gunpower_turret_deploy_title
+	icon = GFX_touhou_fleet_view_ship_action_deploy_button
+	icon_selected = "GFX_touhou_fleet_view_ship_action_deploy_button"
+	activity_key = touhou_gunpower_turret_deploy
+	context_menu_name = touhou_gunpower_turret_deploy
+	on_click_sound = "interface"
+	wait = no
+	progress_anim_state = "attacking"
+	finish_anim_state = "idle2"
+	slot = 2
+}
+touhou_gunpower_turret_deploy_alt = {
+	user_scope = fleet
+	scope = self
+	possible = {
+		touhou_has_ship_action = yes
+	}
+	button_visible = { always = yes }
+	button_clickable = { hidden_trigger = { NOT = { has_fleet_flag = touhou_gunpower_turret_has_order } } }
+
+	important = yes
+	on_completed = on_touhou_gunpower_turret_deploy_alt
+	tooltip = touhou_gunpower_turret_deploy_alt_title
+	icon = GFX_touhou_fleet_view_ship_action_deploy_alt_button
+	icon_selected = "GFX_touhou_fleet_view_ship_action_deploy_alt_button"
+	activity_key = touhou_gunpower_turret_deploy_alt
+	context_menu_name = touhou_gunpower_turret_deploy_alt
+	on_click_sound = "interface"
+	wait = no
+	progress_anim_state = "attacking"
+	finish_anim_state = "idle2"
+	slot = 3
+}
+touhou_super_flagship_science = {
+	user_scope = fleet
+	scope = planet
+
+	# This behaves as the Survey order from Science Ships
+	specific_behavior = scripted_survey_order
+
+	important = yes
+	automation = {
+		priority	= 1
+		default_on	= yes
+		tooltip		= AUTOMATION_EXPLORE_TT
+	}
+	slot = 1
+	icon = GFX_fleet_order_button_survey
+	icon_selected = GFX_fleet_order_button_survey_selected
+
+	hide_from_context_menu = {
+		is_surveyed = {
+			who = from.controller
+			status = yes
+		}
+	}
+
+	possible = {
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_leader_failed
+			success_text = touhou_super_flagship_science_requires_leader_success
+			exists = from.leader
+		}
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_sciencitist_fail
+			success_text = touhou_super_flagship_science_requires_sciencitist_success
+			from.leader = {
+				leader_class = scientist
+			}
+		}
+		is_surveyed = {
+			who = from.controller
+			status = no
+		}
+		NOT = {
+			is_being_surveyed = { who = from }
+		}
+	}
+
+	button_visible = {
+		check_modifier_value = {
+			modifier = ship_super_flagship_can_switch_to_science
+			value != 0
+		}
+	}
+
+	button_clickable = {
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_leader_failed
+			success_text = touhou_super_flagship_science_requires_leader_success
+			exists = leader
+		}
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_sciencitist_fail
+			success_text = touhou_super_flagship_science_requires_sciencitist_success
+			leader = {
+				leader_class = scientist
+			}
+		}
+	}
+
+	context_menu_name = touhou_super_flagship_science_explore
+}
+touhou_common_ship_science = {
+	user_scope = fleet
+	scope = planet
+
+	# This behaves as the Survey order from Science Ships
+	specific_behavior = scripted_survey_order
+
+	important = yes
+	automation = {
+		priority	= 1
+		default_on	= yes
+		tooltip		= AUTOMATION_EXPLORE_TT
+	}
+	slot = 1
+	icon = GFX_fleet_order_button_survey
+	icon_selected = GFX_fleet_order_button_survey_selected
+
+	hide_from_context_menu = {
+		is_surveyed = {
+			who = from.controller
+			status = yes
+		}
+	}
+
+	possible = {
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_leader_failed
+			success_text = touhou_super_flagship_science_requires_leader_success
+			exists = from.leader
+		}
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_sciencitist_fail
+			success_text = touhou_super_flagship_science_requires_sciencitist_success
+			from.leader = {
+				leader_class = scientist
+			}
+		}
+		is_surveyed = {
+			who = from.controller
+			status = no
+		}
+		NOT = {
+			is_being_surveyed = { who = from }
+		}
+	}
+
+	button_visible = {
+		OR = {
+			check_modifier_value = {
+				modifier = ship_touhou_allow_scientist_command_mil
+				value != 0
+			}
+			check_modifier_value = {
+				modifier = ship_touhou_allow_scientist_command_mil_alt
+				value != 0
+			}
+		}
+	}
+
+	button_clickable = {
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_leader_failed
+			success_text = touhou_super_flagship_science_requires_leader_success
+			exists = leader
+		}
+		custom_tooltip = {
+			fail_text = touhou_super_flagship_science_requires_sciencitist_fail
+			success_text = touhou_super_flagship_science_requires_sciencitist_success
+			leader = {
+				leader_class = scientist
+			}
+		}
+	}
+
+	context_menu_name = touhou_common_ship_science_explore
+}
+touhou_super_flagship_science_build_megastructure = {
+	user_scope = fleet
+	scope = self
+
+	# This behaves as the Build Megastructure order from Construction Ships.
+	specific_behavior = scripted_build_megastructure_order
+
+	slot = 0
+
+	button_visible = {
+		always = yes
+	}
+
+	button_clickable = {
+		hidden_trigger = { always = yes }
+	}
+}
+th_tenshi_aux_action = {
+	user_scope = fleet
+	scope = planet
+	button_visible = { always = yes }
+
+	important = yes
+	on_completed = spth_on_component_script_action
+	tooltip = th_tenshi_aux_action
+	icon = GFX_fleet_order_button_assist_research
+	icon_selected = "GFX_fleet_order_button_assist_research_selected"
+	context_menu_name = th_tenshi_aux_name
+	required_progress = 30
+    progress_activity_key = th_tenshi_aux_name_progress_activity_key
+}
+touhou_sensor_deep_scan = {
+	user_scope = fleet
+	scope = planet
+	button_visible = {
+		any_controlled_ship = {
+			check_modifier_value = {
+				modifier = ship_can_use_touhou_deep_scan
+				value > 0
+			}
+		}
+	}
+	button_clickable = {
+		 custom_tooltip = {
+			fail_text = "requires_touhou_leader"
+			leader? = { is_touhou_special_leader = yes }
+		}
+	}
+	possible = {
+		NOT = { is_being_surveyed = { who = from } }
+		has_anomaly = no
+		custom_tooltip = {
+			fail_text = touhou_deep_scan_planet_failed
+			NOT = { has_carrier_flag = colony_event }
+			touhou_is_colonizable_planet = no
+			is_artificial = no
+			is_ringworld = no
+			# ag_is_ancient_ringworld = no
+			NOR = {
+				is_planet_class = pc_shielded
+				is_planet_class = pc_ai
+				is_planet_class = pc_infested
+				is_planet_class = pc_shrouded
+				is_planet_class = pc_astral_scar
+				is_planet_class = pc_gray_goo
+				is_planet_class = pc_egg_cracked
+				is_planet_class = pc_habitat_shielded
+				is_planet_class = pc_ag_shrouded
+			}
+		}
+	}
+	on_completed = on_touhou_sensor_deep_scan
+	icon = GFX_fleet_order_button_touhou_ship_action_deep_scan
+	icon_selected = GFX_fleet_order_button_touhou_ship_action_deep_scan
+	context_menu_name = touhou_sensor_deep_scan
+	tooltip = touhou_sensor_deep_scan_tooltip
+	activity_key = touhou_sensor_deep_scan_action
+	required_progress = 120
+	required_progress_key = touhou_sensor_deep_scan_required_progress_tooltip
+	progress_activity_key = touhou_sensor_deep_scan_progress_activity
+	cost = { energy = 640 sr_lingli = 640 }
+	cooldown = 0
+	uses_vfx_type = survey_effect
+	slot = 1
+}
+touhou_ship_action = {
+	user_scope = fleet
+	scope = self
+
+	possible = {
+		touhou_has_ship_action = yes
+	}
+	button_visible = { always = yes }
+	button_clickable = { hidden_trigger = { owner = { NOT = { has_country_flag = touhou_ship_action_menu_opened } } } }
+
+	important = yes
+	on_completed = on_touhou_fleet_action_actived
+	tooltip = touhou_fleetview_action_button_title
+	icon = GFX_spth_fleet_view_ship_action_button
+	icon_selected = "GFX_spth_fleet_view_ship_action_button"
+	activity_key = touhou_ship_action_title
+	context_menu_name = touhou_ship_action_title
+	on_click_sound = "interface"
+	wait = no
+	slot = 1
+}
+
+touhou_megastructure_system_warper_attack = {
+	user_scope = megastructure
+	scope = galactic_object
+
+	possible = {
+		custom_tooltip = {
+			fail_text = "no_targeting_own_colonies"
+			solar_system = {
+				NOT = {
+					any_system_planet = {
+						is_colony = yes
+						is_owned_by = fromfrom
+					}
+				}
+			}
+		}
+		touhou_cannot_attack_system = no
+		fromfrom = {
+		    has_technology = tech_touhou_system_warper
+            custom_tooltip = {
+                fail_text = touhou_system_warper_cooldown
+                check_modifier_value = { modifier = country_touhou_system_warper_attack_cooldown value = 0 }
+            }
+            custom_tooltip = {
+                fail_text = touhou_system_warper_opened_function
+                NOT = { has_country_flag = touhou_system_warper_opened_function }
+            }
+		}
+	}
+
+	icon = GFX_ship_class_touhou_unused
+	icon_selected = GFX_ship_class_touhou_unused
+
+	on_completed = on_touhou_system_warper_action_system_attack
+	on_started = on_touhou_system_warper_action_system_attack_started
+	context_menu_name = "touhou_megastructure_system_warper_attack_action"
+	activity_key = "touhou_megastructure_system_warper_attack_activity_key"
+	tooltip = touhou_megastructure_system_warper_attack_tooltip
+	cooldown = 1
+	required_progress = 5
+
+	# begin_anim_state = "working"
+	# progress_anim_state = "working_looping"
+}
+touhou_megastructure_system_warper_proj_fleet = {
+	user_scope = megastructure
+	scope = galactic_object
+
+	possible = {
+		fromfrom.owner? = {
+			custom_tooltip = {
+				fail_text = can_touhou_system_warper_jump_with_fleet_fail
+				check_modifier_value = { modifier = can_touhou_system_warper_jump_with_fleet value > 0 }
+			}
+			custom_tooltip = {
+				fail_text = touhou_system_warper_opened_function
+				NOT = { has_country_flag = touhou_system_warper_opened_function }
+			}
+			custom_tooltip = {
+				fail_text = touhou_system_warper_cooldown
+				NOT = { has_country_flag = touhou_system_warper_jump_with_fleet_cooldown }
+			}
+		}
+	}
+	# button_clickable = {
+	# 	touhou_debug_print_scopes_trigger = yes
+	# }
+
+	icon = GFX_ship_class_touhou_unused
+	icon_selected = GFX_ship_class_touhou_unused
+
+	on_completed = on_touhou_megastructure_system_warper_proj_fleet
+	on_started = on_touhou_megastructure_system_warper_proj_fleet_started
+	context_menu_name = "touhou_megastructure_system_warper_proj_fleet_action"
+	activity_key = "touhou_megastructure_system_warper_proj_fleet_activity_key"
+	tooltip = touhou_megastructure_system_warper_proj_fleet_tooltip
+	cooldown = 360
+	required_progress = 1
+
+	cost = {
+		energy = 25000
+		sr_lingli = 25000
+	}
+}

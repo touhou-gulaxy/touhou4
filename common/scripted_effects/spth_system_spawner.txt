@@ -27,6 +27,8 @@ create_lunar_capital_fleet = {
                 }
             ]
             set_location = $location$
+			set_fleet_flag = touhou_standard_formation_scale_setted
+			set_formation_scale = @touhou_standard_formation_scale
         }
     }
 }
@@ -134,7 +136,7 @@ spth_story_lunar_outpost_system = {
 spth_story_lunar_outpost_home_fleets = {
     optimize_memory
     every_system_planet = {
-        limit = { has_planet_flag = spth_story_crisis_outpost_defence_fleet }
+        limit = { has_carrier_flag = spth_story_crisis_outpost_defence_fleet }
         spth_create_fleet = {
             NAME = NAME_spth_lunar_capital_home_fleet
             can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
@@ -266,11 +268,47 @@ spth_spawn_kamikakushi_fallen_empire = {
             to = event_target:spth_real_kamikakushi_capital
         }
         event_target:spth_real_kamikakushi_system_3 = {
+            spawn_megastructure = {
+                type = kamikakushi_gateway
+                coords_from = star
+                orbit_distance = 200
+                orbit_angle = 120
+                init_effect = {
+                    activate_gateway = this
+                }
+            }
             random_neighbor_system_euclidean = {
                 limit = { NOT = { has_star_flag = lcluster } }
                 add_hyperlane = {
                     from = this
                     to = event_target:spth_real_kamikakushi_system_3
+                }
+            }
+        }
+        while = {
+            count = 3
+            random_rim_system = {
+                limit = { NOT = { has_star_flag = spth_system } }
+                weights = {
+                    base = 1
+                    modifier = {
+                        set = 0
+                        has_star_flag = spth_real_kamikakushi_system_connect
+                    }
+                    modifier = {
+                        set = 0
+                        OR = { exists = owner exists = space_owner }
+                    }
+                }
+                set_star_flag = spth_real_kamikakushi_system_connect
+                spawn_megastructure = {
+                    type = kamikakushi_gateway
+                    coords_from = star
+                    orbit_distance = 200
+                    orbit_angle = 120
+                    init_effect = {
+                        activate_gateway = this
+                    }
                 }
             }
         }
@@ -316,11 +354,10 @@ spth_spawn_kamikakushi_fallen_empire_fleet = {
         module = "gun_battery"
         building = "toho_yards"
         building = "toho_yards"
-        building = "colossus_yards"
-        building = "titan_yards"
+        building = "capital_yards"
     }
     every_system_planet = {
-        limit = { has_planet_flag = kamikakushi_fallen_empire_spawnpoint }
+        limit = { has_carrier_flag = kamikakushi_fallen_empire_spawnpoint }
         save_event_target_as = spawnpoint
         spth_create_fleet = {
             NAME = NAME_kamikakushi_common_fleet
@@ -329,10 +366,10 @@ spth_spawn_kamikakushi_fallen_empire_fleet = {
             location = event_target:spawnpoint
             flag = spth_kamikakushi_fallen_empire_fleet
             spth_kamikakushi_invader_titan = 2
-            spth_kamikakushi_fallen_battle_cruiser_g = 15
-            spth_kamikakushi_fallen_battle_cruiser_sk = 10
-            spth_kamikakushi_fallen_battle_cruiser_se = 10
-            spth_kamikakushi_fallen_battle_cruiser_ac = 15
+            spth_kamikakushi_fallen_battle_cruiser_g = 8
+            spth_kamikakushi_fallen_battle_cruiser_sk = 6
+            spth_kamikakushi_fallen_battle_cruiser_se = 6
+            spth_kamikakushi_fallen_battle_cruiser_ac = 8
             spth_kamikakushi_cruiser_1 = 10
             kamikakushi_bonus = yes
         }
@@ -378,7 +415,7 @@ spth_make_kamikakushi_fallen_empire_awake = {
         country_event = { id = spth_precursor.204 days = 30 random = 30 }
     }
 }
-@kamikakushi_awaken_empire_fleets_max = 10
+@kamikakushi_awaken_empire_fleets_max = 6
 spth_refresh_kamikakushi_awaken_empire_fleets = {
     optimize_memory
     if = {
@@ -394,7 +431,7 @@ spth_refresh_kamikakushi_awaken_empire_fleets = {
         every_system_within_border = {
             limit = { has_star_flag = spth_real_kamikakushi_system }
             every_system_planet = {
-                limit = { has_planet_flag = kamikakushi_fallen_empire_spawnpoint }
+                limit = { has_carrier_flag = kamikakushi_fallen_empire_spawnpoint }
                 spth_create_fleet = {
                     NAME = NAME_kamikakushi_common_fleet
                     can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
@@ -402,10 +439,10 @@ spth_refresh_kamikakushi_awaken_empire_fleets = {
                     location = prev
                     flag = spth_kamikakushi_fallen_empire_fleet
                     spth_kamikakushi_invader_titan = 2
-                    spth_kamikakushi_fallen_battle_cruiser_g = 15
-                    spth_kamikakushi_fallen_battle_cruiser_sk = 10
-                    spth_kamikakushi_fallen_battle_cruiser_se = 10
-                    spth_kamikakushi_fallen_battle_cruiser_ac = 15
+                    spth_kamikakushi_fallen_battle_cruiser_g = 8
+                    spth_kamikakushi_fallen_battle_cruiser_sk = 6
+                    spth_kamikakushi_fallen_battle_cruiser_se = 6
+                    spth_kamikakushi_fallen_battle_cruiser_ac = 8
                     spth_kamikakushi_cruiser_1 = 10
                     kamikakushi_bonus = yes
                 }
@@ -416,7 +453,7 @@ spth_refresh_kamikakushi_awaken_empire_fleets = {
         limit = { NOT = { any_owned_fleet = { has_fleet_flag = spth_kamikakushi_fallen_empire_super_fleet } } }
         event_target:spth_real_kamikakushi_capital = {
             random_system_planet = {
-                limit = { has_planet_flag = kamikakushi_fallen_empire_spawnpoint_sp }
+                limit = { has_carrier_flag = kamikakushi_fallen_empire_spawnpoint_sp }
                 spth_create_fleet = {
                     NAME = NAME_kamikakushi_supercarrier_fleet
                     can_disband = no is_boss = no bombardment = spth_kamikakushi_crisis
@@ -425,11 +462,11 @@ spth_refresh_kamikakushi_awaken_empire_fleets = {
                     flag = spth_kamikakushi_fallen_empire_fleet
                     flag2 = spth_kamikakushi_fallen_empire_super_fleet
                     spth_kamikakushi_invader_titan = 2
-                    spth_kamikakushi_fallen_battle_cruiser_g = 12
-                    spth_kamikakushi_fallen_battle_cruiser_sk = 8
-                    spth_kamikakushi_fallen_battle_cruiser_se = 8
-                    spth_kamikakushi_fallen_battle_cruiser_ac = 12
-                    spth_kamikakushi_cruiser_1 = 15
+                    spth_kamikakushi_fallen_battle_cruiser_g = 6
+                    spth_kamikakushi_fallen_battle_cruiser_sk = 4
+                    spth_kamikakushi_fallen_battle_cruiser_se = 4
+                    spth_kamikakushi_fallen_battle_cruiser_ac = 6
+                    spth_kamikakushi_cruiser_1 = 10
                     spth_kamikakushi_super_carrier = 1
                     kamikakushi_bonus = yes
                 }

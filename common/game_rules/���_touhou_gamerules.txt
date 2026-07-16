@@ -23,6 +23,9 @@ should_count_towards_leader_cap = {
                 has_trait = leader_trait_ruler_hive_mind
             }
         }
+		has_trait = leader_trait_paladin
+		has_trait = leader_trait_nomadic_sage
+		has_leader_flag = temp_contestant_admiral
     }
 }
 should_pay_for_leader_upkeep = {
@@ -41,6 +44,7 @@ should_pay_for_leader_upkeep = {
     NOR = {
         has_leader_flag = marauder_merc_leader
         has_leader_flag = hired_admiral_merc_leader
+		has_trait = leader_trait_paladin
     }
 }
 
@@ -63,9 +67,117 @@ can_add_negative_traits_organic = {
         has_afkspace_specialmg_authority = yes
         has_str_genemodding_tech = yes	# 阿夸
         has_tradition = tr_objects_wv_integrated_physiology	# wv
-        has_authority = auth_gensokyo
         check_modifier_value = { modifier = can_add_negative_traits_organic value != 0 }
     }
     #	PF
     NOT = { has_country_flag = PF_flg_cntr_STOP_ai_species_mod }
+}
+
+can_leader_explore_astral_rift = {
+    custom_tooltip = {
+        fail_text = "CANNOT_EXPLORE_WITH_COUNCIL_LEADER"
+        is_councilor = no
+    }
+    custom_tooltip = {
+        fail_text = "CANNOT_EXPLORE_WITH_HEIR_LEADER"
+        is_heir = no
+    }
+    custom_tooltip = {
+        fail_text = CANNOT_EXPLORE_WITH_NOT_HIFF_CLUB
+        if = {
+            limit = { from = { has_astral_rift_flag = touhou_rendaino } }
+            is_touhou_special_leader = yes
+            OR = {
+                has_trait = leader_trait_renko
+                has_trait = leader_trait_maribel_hearn
+            }
+        }
+    }
+    custom_tooltip = {
+        fail_text = CANNOT_EXPLORE_WITHOUT_TOUHOU_LEADER
+        if = {
+            limit = { from = { has_astral_rift_flag = touhou_leader_astral_rift } }
+            is_touhou_special_leader = yes
+            NOT = { has_trait = leader_trait_cirno }
+        }
+    }
+}
+
+
+shroud_delve_cooldown_days = {
+    base = @breach_cooldown_days
+    subtract = modifier:shroud_delve_cooldown_base_add
+    mult = value:scripted_modifier_mult_capped|MODIFIER|shroud_delve_cooldown|CAP|0.1|
+    subtract = modifier:shroud_delve_cooldown_add
+    min = 1
+}
+
+###_[星球可移民]	EMB/ZOFE/EE/ev/PD/时空/modifier/touhou	###############################################################
+# This = planet
+# Checked before can_pop_auto_migrate to save performance
+can_colony_auto_migrate = {
+	hidden_trigger = {
+		is_colony = yes
+	}
+	custom_tooltip = {
+		fail_text = AUTO_MIGRATE_CULTURE_SHOCK
+		NOT = { has_modifier = planet_culture_shock }
+	}
+	custom_tooltip = {
+		fail_text = AUTO_MIGRATE_COLONY_TOO_NEW
+		OR = {
+			AND = {
+				is_under_colonization = no
+				colony_age > 60
+			}
+			is_capital = yes # Don't break Doomsday!
+			# EMB
+			pop_amount > 600
+			has_carrier_flag = void_dweller_habitat # Don't break Void Dwellers!
+			has_modifier = deteriorating_ecosystem
+			has_modifier = catastrophe_approach
+			has_modifier = apocalypse
+			has_modifier = ravenous_locusts
+			has_modifier = planet_active_worm
+			# PD
+			has_carrier_flag = pd_habitat_start_luna
+			has_carrier_flag = pd_habitat_start_mars
+		}
+	}
+	custom_tooltip = {
+		fail_text = AUTO_MIGRATE_ONLY_HAS_ONE_POP
+		sapient_pop_amount > 100
+	}
+	#	+ZOFE/EE/ev
+	hidden_trigger = {
+		exists = owner
+		owner = {
+			OR = {
+				is_country_type = default
+				is_country_type = awakened_fallen_empire
+				#	ZOFE
+				is_country_type = ascended_empire
+				is_country_type = lost_empire
+				is_country_type = awakened_original_empire
+				#	EE
+				is_country_type = eternal_empire
+				#	ev				
+				is_country_type = default_ev
+			}
+		}
+	}
+	hidden_trigger = {
+		owner? = { is_nomadic = no }
+	}
+
+	##	时空
+	TIME_RULE_trgr_Can_planet_auto_migrate = yes
+
+	custom_tooltip = {
+		fail_text = modifier_colony_cannot_auto_migrate_failed
+		check_modifier_value = {
+			modifier = colony_cannot_auto_migrate
+			value = 0
+		}
+	}
 }

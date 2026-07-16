@@ -1,3 +1,42 @@
+# councilor_gestalt_cognitive
+# councilor_research
+# councilor_research_nomadic
+# councilor_KZ_VOY_onimaru_heavy_machinery
+# councilor_KZ_VOY_daystrom_institute
+# councilor_KZ_VOY_shion_biotech
+# councilor_KZ_VOY_shenlong_republic
+# councilor_KZ_VOY_shenlong_republic_setup
+# ag_ancient_ai_councilor_sci
+# councilor_th_moon_science
+# councilor_th_river_child
+# councilor_spth_eirin
+# councilor_th_research_little_devil
+# councilor_youkai_mountain_researcher
+# councilor_akx_coils_god
+# councilor_direct_democratic_scientist
+# councilor_chief_executive
+is_head_of_research = {
+    OR = {
+        is_councilor_type = councilor_research
+        is_councilor_type = councilor_gestalt_cognitive
+		is_councilor_type = councilor_research_nomadic
+		is_councilor_type = councilor_KZ_VOY_onimaru_heavy_machinery
+		is_councilor_type = councilor_KZ_VOY_daystrom_institute
+		is_councilor_type = councilor_KZ_VOY_shion_biotech
+		is_councilor_type = councilor_KZ_VOY_shenlong_republic
+		is_councilor_type = councilor_KZ_VOY_shenlong_republic_setup
+		is_councilor_type = ag_ancient_ai_councilor_sci
+		is_councilor_type = councilor_th_moon_science
+		is_councilor_type = councilor_th_river_child
+		is_councilor_type = councilor_spth_eirin
+		is_councilor_type = councilor_th_research_little_devil
+		is_councilor_type = councilor_youkai_mountain_researcher
+		is_councilor_type = councilor_akx_coils_god
+		is_councilor_type = councilor_direct_democratic_scientist
+		is_councilor_type = councilor_chief_executive
+    }
+}
+
 is_capturable_space_critter_country_type = {
     optimize_memory
     OR = {
@@ -7,6 +46,8 @@ is_capturable_space_critter_country_type = {
         is_voidworms_country_type = yes
         is_cutholoids_country_type = yes
         is_country_type = kedama
+        has_country_flag = is_capturable_space_critter_country_type
+        check_modifier_value = { modifier = is_capturable_space_critter_country_type value > 0 }
     }
 }
 has_encountered_kedama = {
@@ -24,6 +65,8 @@ has_encountered_any_fauna = {
         has_encountered_voidworm = yes
         has_encountered_cutholoid = yes
         has_encountered_kedama = yes
+        has_country_flag = has_encountered_any_fauna
+        check_modifier_value = { modifier = has_encountered_any_fauna value > 0 }
     }
 }
 
@@ -32,7 +75,7 @@ check_aura_suppressors = {
     optimize_memory
     NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value != 0 } } }
     OR = {
-        any_system_colony = {
+        any_system_planet_colony = {
             OR = {
                 has_active_building = building_psionic_suppressor
                 has_active_building = building_ancient_ward_2
@@ -187,7 +230,7 @@ enforcer_is_telepath_trigger = {
             exists = planet.orbital_defence.starbase
             planet.orbital_defence.starbase = { has_starbase_building = ring_psi_corps }
         }
-        has_planet_flag = enforcer_is_telepath_trigger
+        has_carrier_flag = enforcer_is_telepath_trigger
         NOT = { check_modifier_value = { modifier = enforcer_is_telepath_trigger value = 0 } }
     } }
 }
@@ -201,7 +244,7 @@ politician_is_science_director = {
         has_building = building_vultaum_reality_computer
         has_building = building_fe_lab_1
         has_building = building_fe_lab_2
-        has_planet_flag = politician_is_science_director
+        has_carrier_flag = politician_is_science_director
         NOT = { check_modifier_value = { modifier = politician_is_science_director value = 0 } }
     }
 }
@@ -213,7 +256,7 @@ physicist_is_astral_researcher_trigger = {
             has_building = building_astral_siphon_1
             has_building = building_astral_siphon_2
             has_building = building_astral_siphon_3
-            has_planet_flag = physicist_is_astral_researcher_trigger
+            has_carrier_flag = physicist_is_astral_researcher_trigger
             NOT = { check_modifier_value = { modifier = physicist_is_astral_researcher_trigger value = 0 } }
         }
     }
@@ -228,4 +271,360 @@ is_memory_vault_empire = {
         has_valid_civic = civic_memory_vault_hive
         check_modifier_value = { modifier = unlock_memory_vault value != 0 }
     }
+}
+
+is_player_crisis = {
+    OR = {
+        has_ascension_perk = ap_become_the_crisis
+        has_ascension_perk = ap_cosmogenesis
+        has_ascension_perk = ap_behemoths
+        has_ascension_perk = ap_galactic_hyperthermia
+        has_country_flag = is_player_crisis # For modded crisis paths
+        check_modifier_value = { modifier = has_select_any_mod_crisis_path value != 0 }
+        check_modifier_value = { modifier = has_select_crisis_path_boundary_barrier value != 0 }
+    }
+}
+
+has_psionic_leader_trait = {
+    optimize_memory
+    OR = {
+        has_trait = leader_trait_psionic
+        has_trait = leader_trait_shroudwalker
+        has_trait = leader_trait_admiral_warform
+        has_chosen_one_leader_trait = yes
+        has_patron_chosen_one_leader_trait = yes
+
+        has_trait = leader_trait_touhou_psionic
+        has_trait = ag_dummy_leader_trait_chosen
+        has_trait = leader_trait_ag_psionic_ConstructorofDistanceStars
+    }
+}
+can_enter_system_by_jump_trigger = {
+	optimize_memory
+	custom_tooltip = {
+		# success_text = "debug: can jump"
+		fail_text = cannot_jump_to_system
+		OR = {
+			###	|绝对通行|	FW
+			$SCOPE$ = {
+				OR = {
+					has_country_flag = FW_flg_cntr_CHT_orrery_ON		# 璀璨星图
+					has_country_flag = FW_flg_cntr_CHT_beacon_ON		# 永恒星炬
+				}
+			}
+			##	|特殊通行|	+AAR/TAC/多彩
+			$SCOPE$ = {
+				#	|通行|
+				OR = {
+					has_country_flag = AAR_flg_cntr_WEBWAY_relic_ON		# |AAR|网道行者relic
+					has_country_flag = TAC_traveler						# |TAC|
+					has_country_flag = wtmnb_order						# |多彩|wtmnb
+				}
+				#	|限定|
+			}
+			##	特殊通行_Giga
+			AND = { has_star_flag = ehof_system_created_by_@$SCOPE$
+				cohesive_system = yes
+				$SCOPE$ = { is_eager_explorer_empire = yes }
+				#	|限定|
+				NOT = { has_star_flag = formless_system }
+				OR = {
+					NOT = { has_star_flag = sealed_system }
+					AND = {
+						$SCOPE$ = { has_country_flag = entered_sealed_system }
+						has_star_flag = sealed_system
+					}
+				}
+			}
+
+			###_|基础条件|
+			AND = {
+				##_Sealed system
+				OR = {
+					# vanilla
+					NOT = { has_star_flag = sealed_system }
+					AND = {
+						$SCOPE$ = { has_country_flag = entered_sealed_system }
+						has_star_flag = sealed_system
+					}
+				}
+
+				##_特殊禁入星系		+wsg/古代帝国/阿夸/SBTG/Giga/Ehof/seooc/多彩/TAC/莉莉
+				NOR = {
+					# vanilla
+					has_star_flag = lcluster
+
+					# wsg
+					AND = { has_global_flag = has_wsg_mod	# 舰r激活
+						OR = {
+							has_star_flag = wg_sealed_system
+							has_star_flag = wg_psionic_systems
+							AND = { exists = space_owner
+								space_owner = { is_country_type = monolith_crisis_country }
+							}
+						}
+					}
+					#	古代帝国
+					has_star_flag = ag_no_jump_in_system
+					#	阿夸
+					has_star_flag = kuat_initial_system
+					has_star_flag = Kuat_empire_system
+					has_star_flag = ag_kae_e_area_system
+					AND = {
+						has_global_flag = starkillerbase_not_passed
+						has_star_flag = starkiller_system
+					}
+					#	SBTG
+					has_star_flag = outercluster
+					#	Giga
+					has_star_flag = ehof_compound_system
+					has_star_flag = giga_core_03
+					cohesive_system = yes
+					urmazin_system = yes
+					everchanging_system = yes
+					katzen_jump_blocked_system = yes
+					has_star_flag = maginot_anti_jump_star	# Maginot World subspace disruption
+					has_star_flag = siegfried_anti_jump_star	# Katzen version
+					#	seooc
+					has_star_flag = nep_Krahen_cluster
+					has_star_flag = nep_Scrus_cluster
+					AND = {
+						has_global_flag = nep_not_pass_Aemethms
+						OR = {
+							has_star_flag = nep_dragon_system
+							has_star_flag = nep_heptagram_cluster
+						}
+					}
+					#	|多彩|
+					AND = { has_global_flag = love_between_us	# |安装|
+						OR = {
+							has_star_flag = ten_crisis_system
+							any_neighbor_system = { has_star_flag = ten_crisis_system }
+							AND = {
+								exists = event_target:holylight_god_heaven_empire
+								OR = {
+									has_star_flag = SUC_lustgod_ring_world_system
+									has_star_flag = init_sample_of_death
+									has_star_flag = init_sample_of_prosperity
+									has_star_flag = init_INN_holylight_god_system2
+								}
+							}
+						}
+					}
+					#	|精灵|
+					has_star_flag = ELF_Singularity_System
+					has_star_flag = wtmnb_star_11th		# wtmnb
+					#	莉莉
+					has_star_flag = al_huge_home_bed
+					#	驴岛
+					has_star_flag = ark_isolated
+					#	IFE
+					has_star_flag = formless_system
+					AND = { has_star_flag = scfe_shaded_colony_system		$SCOPE$ = { scfe_can_jump_in_shaded_system = no } }
+					#	spth
+					has_star_flag = spth_no_jump_in_system
+				}
+			}
+		}
+	}
+}
+
+titan_potential_construction = {
+	OR = {
+		is_scope_type = starbase
+		AND = {
+			is_scope_type = megastructure
+			OR = {
+				is_megastructure_type = mega_shipyard_3
+				is_megastructure_type = mega_shipyard_restored
+				check_modifier_value = { modifier = megastructure_can_build_titan value > 0 }
+			}
+		}
+	}
+}
+
+titan_possible_construction = {
+	if = {
+		limit = {
+			is_scope_type = megastructure
+		}
+		OR = {
+			is_megastructure_type = mega_shipyard_3
+			is_megastructure_type = mega_shipyard_restored
+			custom_tooltip = {
+				fail_text = modifier_can_build_ship_failed
+				check_modifier_value = { modifier = megastructure_can_build_titan value > 0 }
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			is_arkship_starbase = yes
+		}
+		custom_tooltip = {
+			fail_text = arkship_capital_shipyard_trigger
+			has_starbase_module = arkship_capital_shipyard
+		}
+	}
+	else = {
+		OR = {
+			custom_tooltip = {
+				fail_text = modifier_can_build_ship_failed
+				ship = { check_modifier_value = { modifier = starbase_can_build_titan value > 0 } }
+			}
+			AND = {
+				custom_tooltip = {
+					fail_text = starbase_citadel_trigger
+					is_scope_type = starbase
+					has_starbase_size >= starbase_citadel
+				}
+				OR = {
+					custom_tooltip = {
+						fail_text = modifier_can_build_ship_failed
+						ship = { check_modifier_value = { modifier = starbase_citadel_can_build_titan value > 0 } }
+					}
+					custom_tooltip = {
+						fail_text = starbase_capital_yards_trigger
+						is_scope_type = starbase
+						has_starbase_building = capital_yards
+					}
+				}
+			}
+		}
+	}
+}
+
+colossus_potential_construction = {
+	OR = {
+		is_scope_type = starbase
+		AND = {
+			is_scope_type = megastructure
+			OR = {
+				is_megastructure_type = mega_shipyard_3
+				is_megastructure_type = mega_shipyard_restored
+				check_modifier_value = { modifier = megastructure_can_build_colossus value > 0 }
+			}
+		}
+	}
+}
+
+colossus_possible_construction = {
+	if = {
+		limit = {
+			is_scope_type = megastructure
+		}
+		OR = {
+			is_megastructure_type = mega_shipyard_3
+			is_megastructure_type = mega_shipyard_restored
+			custom_tooltip = {
+				fail_text = modifier_can_build_ship_failed
+				check_modifier_value = { modifier = megastructure_can_build_colossus value > 0 }
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			is_arkship_starbase = yes
+		}
+		custom_tooltip = {
+			fail_text = arkship_capital_shipyard_trigger
+			has_starbase_module = arkship_capital_shipyard
+		}
+	}
+	else = {
+		OR = {
+			custom_tooltip = {
+				fail_text = modifier_can_build_ship_failed
+				ship = { check_modifier_value = { modifier = starbase_can_build_colossus value > 0 } }
+			}
+			AND = {
+				custom_tooltip = {
+					fail_text = starbase_citadel_trigger
+					is_scope_type = starbase
+					has_starbase_size >= starbase_citadel
+				}
+				OR = {
+					custom_tooltip = {
+						fail_text = modifier_can_build_ship_failed
+						ship = { check_modifier_value = { modifier = starbase_citadel_can_build_colossus value > 0 } }
+					}
+					custom_tooltip = {
+						fail_text = starbase_capital_yards_trigger
+						is_scope_type = starbase
+						has_starbase_building = capital_yards
+					}
+				}
+			}
+		}
+	}
+}
+
+juggernaut_potential_construction = {
+	OR = {
+		AND = {
+			is_scope_type = starbase
+			NOT = {
+				has_starbase_size = juggernaut
+			}
+		}
+		AND = {
+			is_scope_type = megastructure
+			OR = {
+				is_megastructure_type = mega_shipyard_3
+				is_megastructure_type = mega_shipyard_restored
+				check_modifier_value = { modifier = megastructure_can_build_juggernaut value > 0 }
+			}
+		}
+	}
+}
+
+juggernaut_possible_construction = {
+	if = {
+		limit = {
+			is_scope_type = megastructure
+		}
+		OR = {
+			is_megastructure_type = mega_shipyard_3
+			is_megastructure_type = mega_shipyard_restored
+			custom_tooltip = {
+				fail_text = modifier_can_build_ship_failed
+				check_modifier_value = { modifier = megastructure_can_build_juggernaut value > 0 }
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			is_arkship_starbase = yes
+		}
+		custom_tooltip = {
+			fail_text = arkship_capital_shipyard_trigger
+			has_starbase_module = arkship_capital_shipyard
+		}
+	}
+	else = {
+		OR = {
+			custom_tooltip = {
+				fail_text = modifier_can_build_ship_failed
+				ship = { check_modifier_value = { modifier = starbase_can_build_titan value > 0 } }
+			}
+			AND = {
+				custom_tooltip = {
+					fail_text = starbase_citadel_trigger
+					is_scope_type = starbase
+					has_starbase_size >= starbase_citadel
+				}
+				OR = {
+					custom_tooltip = {
+						fail_text = modifier_can_build_ship_failed
+						ship = { check_modifier_value = { modifier = starbase_citadel_can_build_titan value > 0 } }
+					}
+					custom_tooltip = {
+						fail_text = starbase_capital_yards_trigger
+						is_scope_type = starbase
+						has_starbase_building = capital_yards
+					}
+				}
+			}
+		}
+	}
 }

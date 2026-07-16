@@ -300,7 +300,7 @@ country_event = {
 # this = planet
 # root = planet
 # from = fleet
-planet_event = {
+carrier_event = {
     id = th_leader_sp.200
     hide_window = yes
     is_triggered_only = yes
@@ -509,11 +509,11 @@ system_event = {
                 trigger = planet_devastation
                 variable = th_leader_sp_devastation_storm_ori
             }
-            planet_event = { id = th_leader_sp.206 days = 30 }
+            carrier_event = { id = th_leader_sp.206 days = 30 }
         }
     }
 }
-planet_event = {
+carrier_event = {
     id = th_leader_sp.206
     hide_window = yes
     is_triggered_only = yes
@@ -539,14 +539,14 @@ planet_event = {
             }
             if = {
                 limit = { check_variable = { which = th_leader_sp_devastation_storm_cur value > 0 } }
-                set_planet_flag = spth_planet_damaged_in_storm
+                set_carrier_flag = spth_planet_damaged_in_storm
                 multiply_variable = { which = th_leader_sp_devastation_storm_cur value = -1 }
                 add_planet_devastation = th_leader_sp_devastation_storm_cur
             } else = { clear_variable = th_leader_sp_devastation_storm_cur }
-            planet_event = { id = th_leader_sp.206 days = 30 }
+            carrier_event = { id = th_leader_sp.206 days = 30 }
         } else = {
             clear_variable = th_leader_sp_devastation_storm_ori
-            remove_planet_flag = spth_planet_damaged_in_storm
+            remove_carrier_flag = spth_planet_damaged_in_storm
         }
     }
 }
@@ -558,7 +558,7 @@ planet_event = {
     is_triggered_only = yes
     trigger = {
         has_orbital_bombardment = yes NOT = { is_variable_set = planet_kaguya_protect_time }
-        NOT = { has_planet_flag = planet_kaguya_protect_cooldown }
+        NOT = { has_carrier_flag = planet_kaguya_protect_cooldown }
         check_modifier_value = { modifier = planet_kaguya_protect_duration value > 0 }
     }
     immediate = {
@@ -566,25 +566,25 @@ planet_event = {
         if = {
             limit = { check_modifier_value = { modifier = planet_kaguya_protect_duration value > 45 } }
             add_planet_devastation = -100
-            set_planet_flag = planet_kaguya_protect_90
-            set_planet_flag = planet_kaguya_protect_fired
-            planet_event = { id = th_leader_sp.208 days = 90 }
+            set_carrier_flag = planet_kaguya_protect_90
+            set_carrier_flag = planet_kaguya_protect_fired
+            carrier_event = { id = th_leader_sp.208 days = 90 }
         } else = {
             add_planet_devastation = -100
-            set_planet_flag = planet_kaguya_protect_45
-            set_planet_flag = planet_kaguya_protect_fired
-            planet_event = { id = th_leader_sp.208 days = 45 }
+            set_carrier_flag = planet_kaguya_protect_45
+            set_carrier_flag = planet_kaguya_protect_fired
+            carrier_event = { id = th_leader_sp.208 days = 45 }
         }
-        planet_event = { id =  th_leader_sp.209 days = 1 }
+        carrier_event = { id =  th_leader_sp.209 days = 1 }
     }
 }
-planet_event = {
+carrier_event = {
     id = th_leader_sp.208
     hide_window = yes
     is_triggered_only = yes
-    immediate = { set_timed_planet_flag = { flag = planet_kaguya_protect_cooldown days = 360 } }
+    immediate = { set_timed_carrier_flag = { flag = planet_kaguya_protect_cooldown days = 360 } }
 }
-planet_event = {
+carrier_event = {
     id = th_leader_sp.209
     hide_window = yes
     is_triggered_only = yes
@@ -593,7 +593,7 @@ planet_event = {
             limit = {
                 has_orbital_bombardment = yes
                 check_modifier_value = { modifier = planet_kaguya_protect_duration value > 0 }
-                NOT = { has_planet_flag = planet_kaguya_protect_cooldown }
+                NOT = { has_carrier_flag = planet_kaguya_protect_cooldown }
             }
             if = {
                 limit = {
@@ -601,17 +601,17 @@ planet_event = {
                     check_variable = { which = planet_kaguya_protect_time value >= 45 }
                 }
                 clear_variable = planet_kaguya_protect_time
-                remove_planet_flag = planet_kaguya_protect_90
-                remove_planet_flag = planet_kaguya_protect_45
-                remove_planet_flag = planet_kaguya_protect_fired
-            } else = { planet_event = { id =  th_leader_sp.209 days = 1 } }
+                remove_carrier_flag = planet_kaguya_protect_90
+                remove_carrier_flag = planet_kaguya_protect_45
+                remove_carrier_flag = planet_kaguya_protect_fired
+            } else = { carrier_event = { id =  th_leader_sp.209 days = 1 } }
             add_planet_devastation = -100
             change_variable = { which = planet_kaguya_protect_time value = 1 }
         } else = {
             clear_variable = planet_kaguya_protect_time
-            remove_planet_flag = planet_kaguya_protect_90
-            remove_planet_flag = planet_kaguya_protect_45
-            remove_planet_flag = planet_kaguya_protect_fired
+            remove_carrier_flag = planet_kaguya_protect_90
+            remove_carrier_flag = planet_kaguya_protect_45
+            remove_carrier_flag = planet_kaguya_protect_fired
         }
     }
 }
@@ -711,11 +711,135 @@ country_event = {
     is_triggered_only = yes
     trigger = {
         NOT = { has_country_flag = th_leader_sp_215_fired }
+        check_variable_arithmetic = { which = value:spth_current_month modulo = 4 value = 0 }
         check_modifier_value = { modifier = country_has_th_skill_historian value > 0 }
     }
     immediate = {
-        set_timed_country_flag = { flag = th_leader_sp_215_fired days = 30 }
+        set_timed_country_flag = { flag = th_leader_sp_215_fired days = 90 }
         progress_all_researches = 0.5
+    }
+}
+# scopes:
+# this = ship
+# from = ship, disabler
+ship_event = {
+    id = th_leader_sp.216
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        OR = {
+            check_modifier_value = { modifier = ship_th_has_lku value > 0 }
+            check_modifier_value = { modifier = ship_th_has_satsuki_rin value > 0 }
+        }
+        exists = from
+        from = {
+            exists = controller
+            controller = { NOT = { is_same_value = root.controller } }
+        }
+    }
+    immediate = {
+        if = {
+            limit = {
+                NOT = { has_ship_flag = th_leader_sp_216_lku_lock }
+                check_modifier_value = { modifier = ship_th_has_lku value > 0 }
+            }
+            set_timed_ship_flag = { flag = th_leader_sp_216_lku_lock days = 8 }
+            from = {
+                spth_reduce_armor_max = { percent = 0.01 }
+                reroll_random = yes
+                random = {
+                    chance = 19
+                    spth_reduce_shield_max = { percent = 0.01 }
+                }
+            }
+        }
+        if = {
+            limit = {
+                NOT = { has_ship_flag = th_leader_sp_216_satsuki_rin_lock }
+                check_modifier_value = { modifier = ship_th_has_satsuki_rin value > 0 }
+                exists = fleet
+            }
+            set_timed_ship_flag = { flag = th_leader_sp_216_satsuki_rin_lock days = 2 }
+            set_variable = { which = th_leader_sp_216_satsuki_rin_repair_val value = trigger:has_max_hp }
+            multiply_variable = { which = th_leader_sp_216_satsuki_rin_repair_val value = -0.005 }
+            if = {
+                limit = { check_variable = { which = th_leader_sp_216_satsuki_rin_repair_val value > 0 } }
+                multiply_variable = { which = th_leader_sp_216_satsuki_rin_repair_val value = -1 }
+            }
+            fleet = {
+                every_controlled_ship = {
+                    if = {
+                        limit = { has_shield_hp <= 100000000 }
+                        reduce_shield = prevprev.th_leader_sp_216_satsuki_rin_repair_val
+                    }
+                    if = {
+                        limit = { has_hp <= 100000000 }
+                        reduce_hp = prevprev.th_leader_sp_216_satsuki_rin_repair_val
+                    }
+                }
+            }
+            clear_variable = th_leader_sp_216_satsuki_rin_repair_val
+        }
+    }
+}
+
+# This = owner of fleet 1 (combatant)
+# From = owner of fleet 2 (destroyed)
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+country_event = {
+    id = th_leader_sp.217
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = touhou_mugetsu_combat_won_mutex }
+            check_modifier_value = {
+                modifier = fleet_th_has_mugetsu
+                value > 0
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_timed_fleet_flag = { flag = touhou_mugetsu_combat_won_mutex days = 1 }
+            if = {
+                limit = { NOT = { is_variable_set = touhou_mugetsu_combat_won_count } }
+                set_variable = { which = touhou_mugetsu_combat_won_count value = 0 }
+            }
+            change_variable = { which = touhou_mugetsu_combat_won_count value = 1 }
+            if = {
+                limit = { check_variable = { which = touhou_mugetsu_combat_won_count value > 4 } }
+                set_variable = { which = touhou_mugetsu_combat_won_count value = 0 }
+            }
+        }
+    }
+}
+# This = owner of fleet 1 (loser)
+# From = owner of fleet 2 (winner)
+# FromFrom = fleet 1
+# FromFromFrom = fleet 2
+# This fires whenever a fleet is finished with a combat through any means (emergency ftl, destroyed, disabled)
+country_event = {
+    id = th_leader_sp.218
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_touhou_country = yes
+        fromfrom = {
+            NOT = { has_fleet_flag = touhou_mugetsu_combat_lost_mutex }
+            check_modifier_value = {
+                modifier = fleet_th_has_mugetsu
+                value > 0
+            }
+        }
+    }
+    immediate = {
+        fromfrom = {
+            set_timed_fleet_flag = { flag = touhou_mugetsu_combat_lost_mutex days = 1 }
+            set_variable = { which = touhou_mugetsu_combat_won_count value = 0 }
+        }
     }
 }
 
@@ -833,19 +957,19 @@ event = {
 
 # 拥戴 俘获陆军 attacker
 # 开片了
-planet_event = {
+carrier_event = {
     id = th_leader_sp.900
     hide_window = yes
     is_triggered_only = yes
 
     immediate = {
         # 需要延迟一天检测
-        planet_event = { id = th_leader_sp.901 days = 1 }
+        carrier_event = { id = th_leader_sp.901 days = 1 }
     }
 }
 
 # 实际检测
-planet_event = {
+carrier_event = {
     id = th_leader_sp.901
     hide_window = yes
     is_triggered_only = yes
@@ -913,23 +1037,23 @@ country_event = {
                 if = {
                     limit = { leader = { has_trait = leader_trait_th_skill_support_2 } }
                     fromfrom = {
-                        set_planet_flag = TH_skill_support_t1
+                        set_carrier_flag = TH_skill_support_t1
                     }
                 } else = {
                     fromfrom = {
-                        set_planet_flag = TH_skill_support_t2
+                        set_carrier_flag = TH_skill_support_t2
                     }
                 }
             }
             if = {
                 limit = {
-                    fromfrom = { has_planet_flag = TH_skill_support_t1 }
+                    fromfrom = { has_carrier_flag = TH_skill_support_t1 }
                 }
                 TH_capture_defender_army = { mul = @skill_support_t1 OWNER = root TYPE = danmaku_army TARGET = fromfrom }
-                remove_planet_flag = TH_skill_support_t1
+                remove_carrier_flag = TH_skill_support_t1
             } else = {
                 TH_capture_defender_army = { mul = @skill_support_t2 OWNER = root TYPE = danmaku_army TARGET = fromfrom }
-                remove_planet_flag = TH_skill_support_t2
+                remove_carrier_flag = TH_skill_support_t2
             }
             clear_variable = TH_planet_defender_count
             clear_variable = TH_capture_mul
@@ -943,21 +1067,21 @@ country_event = {
 # on_ground_combat_started
 # This = planet
 # From = country attacking
-planet_event = {
+carrier_event = {
     id = th_leader_sp.903
     hide_window = yes
     is_triggered_only = yes
     immediate = {
-        planet_event = { id = th_leader_sp.904 days = 1 }
-        planet_event = { id = th_leader_sp.906 days = 1 }
+        carrier_event = { id = th_leader_sp.904 days = 1 }
+        carrier_event = { id = th_leader_sp.906 days = 1 }
     }
 }
-planet_event = {
+carrier_event = {
     id = th_leader_sp.904
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        NOT = { has_planet_flag = th_leader_sp_904_fired }
+        NOT = { has_carrier_flag = th_leader_sp_904_fired }
         has_ground_combat = yes
         any_ground_combat_attacker = {
             exists = leader
@@ -971,13 +1095,13 @@ planet_event = {
         }
     }
     immediate = {
-        set_planet_flag = th_leader_sp_904_fired
+        set_carrier_flag = th_leader_sp_904_fired
         touhou_leader_special_army_effect_init = { who = attacker }
-        planet_event = { id = th_leader_sp.905 }
+        carrier_event = { id = th_leader_sp.905 }
     }
 }
 # cycle
-planet_event = {
+carrier_event = {
     id = th_leader_sp.905
     hide_window = yes
     is_triggered_only = yes
@@ -985,13 +1109,13 @@ planet_event = {
         if = {
             limit = { has_ground_combat = yes }
             touhou_leader_special_army_effect_loop = { who = attacker opposite_who = defender }
-            planet_event = { id = th_leader_sp.905 days = 5 }
+            carrier_event = { id = th_leader_sp.905 days = 5 }
         } else = {
-            remove_planet_flag = th_leader_sp_904_fired
+            remove_carrier_flag = th_leader_sp_904_fired
         }
     }
 }
-planet_event = {
+carrier_event = {
     id = th_leader_sp.906
     hide_window = yes
     is_triggered_only = yes
@@ -1008,13 +1132,13 @@ planet_event = {
         }
     }
     immediate = {
-        set_planet_flag = th_leader_sp_906_fired
+        set_carrier_flag = th_leader_sp_906_fired
         touhou_leader_special_army_effect_init = { who = defender }
-        planet_event = { id = th_leader_sp.907 }
+        carrier_event = { id = th_leader_sp.907 }
     }
 }
 # cycle
-planet_event = {
+carrier_event = {
     id = th_leader_sp.907
     hide_window = yes
     is_triggered_only = yes
@@ -1022,9 +1146,9 @@ planet_event = {
         if = {
             limit = { has_ground_combat = yes }
             touhou_leader_special_army_effect_loop = { who = defender opposite_who = attacker }
-            planet_event = { id = th_leader_sp.907 days = 5 }
+            carrier_event = { id = th_leader_sp.907 days = 5 }
         } else = {
-            remove_planet_flag = th_leader_sp_906_fired
+            remove_carrier_flag = th_leader_sp_906_fired
         }
     }
 }
@@ -1187,7 +1311,7 @@ planet_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        NOT = { has_planet_flag = planet_touhou_hina_skill_fired }
+        NOT = { has_carrier_flag = planet_touhou_hina_skill_fired }
         has_orbital_bombardment = yes exists = leader
         leader = { spth_is_touhou_gensokyo_leader = yes has_trait = leader_trait_hina }
         OR = {
@@ -1197,7 +1321,7 @@ planet_event = {
         }
     }
     immediate = {
-        set_timed_planet_flag = { flag = planet_touhou_hina_skill_fired days = 30 }
+        set_timed_carrier_flag = { flag = planet_touhou_hina_skill_fired days = 30 }
         set_variable = { which = planet_touhou_hina_skill value = leader.trigger:has_base_skill }
         if = {
             limit = { check_variable = { which = planet_touhou_hina_skill value > 10 } }
@@ -1210,8 +1334,8 @@ planet_event = {
             set_variable = { which = touhou_hina_debuff_cap value = 0.01 }
         }
         if = {
-            limit = { NOT = { has_planet_flag = planet_touhou_hina_skill_4_cooldown } }
-            set_timed_planet_flag = { flag = planet_touhou_hina_skill_4_cooldown days = 180 }
+            limit = { NOT = { has_carrier_flag = planet_touhou_hina_skill_4_cooldown } }
+            set_timed_carrier_flag = { flag = planet_touhou_hina_skill_4_cooldown days = 180 }
             spth_create_fleet = {
                 NAME = leader_trait_hina_fleet
                 can_disband = no is_boss = yes
@@ -1272,13 +1396,13 @@ country_event = {
     trigger = {
         has_authority = auth_gensokyo is_touhou_common_country = yes
         fromfromfrom = {
-            exists = leader NOT = { has_planet_flag = planet_touhou_hina_army_skill_fired }
+            exists = leader NOT = { has_carrier_flag = planet_touhou_hina_army_skill_fired }
             leader = { spth_is_touhou_gensokyo_leader = yes has_trait = leader_trait_hina }
         }
     }
     immediate = {
         fromfromfrom = {
-            set_timed_planet_flag = { flag = planet_touhou_hina_army_skill_fired days = 5 }
+            set_timed_carrier_flag = { flag = planet_touhou_hina_army_skill_fired days = 5 }
             if = {
                 limit = {
                     any_ground_combat_defender = {

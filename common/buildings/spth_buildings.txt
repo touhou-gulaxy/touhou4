@@ -1,3 +1,5 @@
+@fe_sr_cost = 400
+
 building_spth_cloner = {
 	base_buildtime = 360
 	can_build = yes
@@ -438,6 +440,16 @@ building_spth_tavern = {
 			job_spth_bartender_add = 100
 		}
 	}
+
+    triggered_planet_modifier = {
+        potential = {
+            check_modifier_value = { modifier = planet_tavern_provide_extra_effect_1 value > 0 }
+        }
+        modifier = {
+            planet_jobs_upkeep_mult = 0.125
+            planet_jobs_produces_mult = 0.125
+        }
+    }
 }
 
 building_spth_barrier_manager = {
@@ -675,10 +687,10 @@ building_spth_torifune_shrine = {
 		spth_check_gensokyo_auth = yes
 	}
 	potential = {
-		has_planet_flag = spth_story_sol_system_torifune
+		has_carrier_flag = spth_story_sol_system_torifune
 		OR = {
-			has_planet_flag = can_unlock_torifune_arc
-			has_planet_flag = has_unlock_torifune_arc
+			has_carrier_flag = can_unlock_torifune_arc
+			has_carrier_flag = has_unlock_torifune_arc
 		}
 	}
 	building_sets = {
@@ -710,7 +722,7 @@ building_spth_torifune_shrine = {
 		ship_windup_mult = -0.2
 		ship_evasion_add = 1.5
 		# 发现遗址
-		potential = { has_planet_flag = has_unlock_torifune_arc }
+		potential = { has_carrier_flag = has_unlock_torifune_arc }
 	}
 	triggered_country_modifier = {
 		all_technology_research_speed = 0.15
@@ -764,7 +776,7 @@ building_lunar_aethon_archive = {
 		spth_check_gensokyo_auth = yes
 	}
 	potential = {
-		has_planet_flag = lunar_aethon_event_rw
+		has_carrier_flag = lunar_aethon_event_rw
 		exists = owner
 		owner = { has_country_flag = disappear_barrier_aethon_research_section_fired }
 	}
@@ -957,6 +969,155 @@ building_touhou_shinreibyo = {
 	prerequisites = { tech_spth_sub_capitals }
 }
 
+# 幻想星-幻想度建筑
+building_touhou_altar = {
+    base_buildtime = 480
+    can_build = yes
+    category = government
+    building_sets = {
+        government
+        urban
+    }
+    position_priority = 3
+    potential = {
+        spth_check_gensokyo_auth = yes
+        uses_district_set = gensokyo_planet
+    }
+    resources = {
+        category = planet_buildings
+        cost = {
+            minerals = 2500
+        }
+        cost = {
+            trigger = {
+                owner = { is_ai = no }
+            }
+            sr_lingli = 500
+            astral_threads = 50
+        }
+        upkeep = {
+            energy = 8
+            sr_lingli = 2
+            astral_threads = 0.5
+        }
+        upkeep = {
+            trigger = { planet = { is_variable_set = planet_sp_upkeep_faith_pressure_modifier } }
+            sr_lingli = 4
+            multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
+        }
+    }
+    planet_modifier = {
+        touhou_gensokyo_planet_pollution_monthly_minus = 10
+        job_th_monk_add = 400
+    }
+    country_modifier = {
+        country_resource_max_astral_threads_add = 50
+    }
+    triggered_country_modifier = {
+        potential = {
+            exists = owner
+            owner = {
+                is_ai = no
+                is_regular_empire = yes
+                has_authority = auth_gensokyo
+                has_touhou_ascension_tier_2 = yes
+            }
+        }
+        country_resource_max_astral_threads_add = 25
+    }
+    triggered_country_modifier = {
+        potential = {
+            exists = owner
+            owner = {
+                is_ai = no
+                is_regular_empire = yes
+                has_authority = auth_gensokyo
+                has_touhou_ascension_tier_3 = yes
+            }
+        }
+        country_resource_max_astral_threads_add = 25
+    }
+    triggered_country_modifier = {
+        potential = {
+            exists = owner
+            owner = {
+                is_ai = no
+                is_regular_empire = yes
+                has_authority = auth_gensokyo
+                has_touhou_ascension_tier_4 = yes
+            }
+        }
+        country_resource_max_astral_threads_add = 25
+    }
+    triggered_country_modifier = {
+        potential = {
+            exists = owner
+            owner = {
+                is_ai = no
+                is_regular_empire = yes
+                has_authority = auth_gensokyo
+                has_ascension_perk = ap_spth_gensokyo_planet
+            }
+        }
+        country_resource_max_astral_threads_add = 25
+    }
+    triggered_desc = {
+        trigger = { always = yes }
+        text = touhou_gensokyo_planet_pollution_building_tooltip
+    }
+    prerequisites = { tech_touhou_gensokyo_planet_buildings }
+}
+building_harukeikekkai = {
+    base_buildtime = 480
+    can_build = yes
+    category = government
+    building_sets = {
+        government
+        urban
+    }
+    position_priority = 3
+    potential = {
+        spth_check_gensokyo_auth = yes
+        uses_district_set = gensokyo_planet
+    }
+    resources = {
+        category = planet_buildings
+        cost = {
+            alloys = 2000
+        }
+        cost = {
+            trigger = {
+                owner = { is_ai = no }
+            }
+            sr_lingli = 500
+            astral_threads = 100
+        }
+        upkeep = {
+            energy = 8
+            sr_lingli = 2
+            astral_threads = 1
+        }
+        upkeep = {
+            trigger = { planet = { is_variable_set = planet_sp_upkeep_faith_pressure_modifier } }
+            sr_lingli = 4
+            multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
+        }
+    }
+    planet_modifier = {
+        job_genso_trader_add = 50
+        job_spth_human_trader_add = 100
+        touhou_gensokyo_planet_pollution_monthly_minus = 50
+        planet_building_harukeikekkai_count_add = 1
+    }
+    country_modifier = {
+        country_resource_max_add = 40000
+    }
+    triggered_desc = {
+        trigger = { always = yes }
+        text = touhou_gensokyo_planet_pollution_building_tooltip
+    }
+    prerequisites = { tech_touhou_gensokyo_planet_buildings }
+}
 
 building_touhou_sanctum = {
     base_buildtime = 720
@@ -1120,11 +1281,11 @@ building_touhou_shroud_void = {
             multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
         }
         produces = {
-            energy = 1
-            physics_research = 0.25
-            society_research = 0.25
-            engineering_research = 0.25
-            mult = trigger:num_pops
+            energy = 0.16
+            physics_research = 0.24
+            society_research = 0.24
+            engineering_research = 0.24
+            mult = trigger:count_owned_pop_amount
         }
     }
     planet_modifier = {
@@ -1134,6 +1295,59 @@ building_touhou_shroud_void = {
     country_modifier = {
         country_resource_max_add = 2500
     }
+}
+building_touhou_time_machine = {
+	base_buildtime = 720
+	can_build = yes
+	category = government
+	planet_limit = 1
+	empire_limit = 1
+	building_sets = {
+		government
+		urban
+	}
+	potential = {
+		spth_check_gensokyo_auth = yes
+		owner? = {
+			has_country_flag = unlock_building_touhou_time_machine
+		}
+	}
+	allow = { has_upgraded_capital = yes }
+	destroy_trigger = { always = no }
+	resources = {
+		category = planet_buildings
+		cost = {
+			alloys = 600
+			minerals = 1200
+		}
+		cost = {
+			trigger = {
+				owner = { is_ai = no }
+			}
+			sr_lingli = 1200
+		}
+		upkeep = {
+			energy = 10
+		}
+		upkeep = {
+			trigger = { planet = { is_variable_set = planet_sp_upkeep_faith_pressure_modifier } }
+			sr_lingli = 5
+			multiplier = planet.planet_sp_upkeep_faith_pressure_modifier
+		}
+		produces = {
+			physics_research = 400
+			society_research = 400
+			engineering_research = 400
+			minor_artifacts = 2.5
+		}
+	}
+	planet_modifier = {
+		planet_structures_upkeep_mult = -0.25
+		job_max_workforce_mult = 0.25
+	}
+	country_modifier = {
+		all_technology_research_speed = 0.05
+	}
 }
 
 # 首府建筑
@@ -1264,7 +1478,7 @@ building_spth_planet_shirne = {
 	can_be_ruined = no
 	can_be_disabled = no
 	position_priority = 0
-	capital_tier = 6
+	capital_tier = 42
 	icon = building_bl
 	category = government
 	building_sets = {
@@ -2037,6 +2251,335 @@ building_spth_cosmogenesis_world_modifier = {
 	}
 	prerequisites = { tech_cosmogenesis_world }
 	triggered_desc = { text = building_spth_cosmogenesis_world_modifier_tt }
+	ai_estimate_without_unemployment = yes
+	additional_ai_weight = 200
+	ai_weight_coefficient = 1.2
+}
+
+building_touhou_lathe_capital = {
+    icon = building_lathe_capital
+    capital = yes
+    can_build = no
+    can_demolish = no
+    can_be_ruined = no
+    can_be_disabled = no
+    position_priority = 0
+    building_sets = { touhou_cosmogenesis_world }
+    capital_tier = 2
+    category = government
+    potential = {
+        uses_district_set = touhou_cosmogenesis_world
+        exists = owner
+    }
+    resources = {
+        category = planet_buildings
+        upkeep = { energy = 8 alloys = 5 }
+    }
+    planet_modifier = {
+        planet_housing_add = 2000
+        planet_amenities_add = 1500
+        planet_stability_add = 10
+    }
+    triggered_planet_modifier = {
+        potential = { exists = owner owner = { has_technology = tech_capital_productivity_1 } }
+        modifier = { pop_bonus_workforce_mult = 0.1 }
+    }
+    upgrades = { "building_touhou_lathe_super_capital" }
+}
+building_touhou_lathe_super_capital = {
+	icon = building_lathe_super_capital
+	base_buildtime = @b3_time
+	capital = yes
+	can_build = no
+	can_demolish = no
+	can_be_ruined = no
+	can_be_disabled = no
+	position_priority = 0
+	building_sets = { touhou_cosmogenesis_world }
+	capital_tier = 42
+	category = government
+	potential = {
+		uses_district_set = touhou_cosmogenesis_world
+        exists = owner
+	}
+	resources = {
+		category = planet_buildings
+		cost = {
+			alloys = @fe_alloy_cost_1
+			sr_lingli = @b3_minerals
+		}
+		upkeep = {
+			energy = @b3_upkeep
+			sr_lingli = @b3_rare_upkeep
+		}
+	}
+	planet_modifier = {
+		job_miko_add = 100
+		touhou_pop_bonus_workforce_mult = 0.20
+		job_spth_story_researcher_per_pop = 0.02
+		planet_max_districts_add = 4
+		planet_housing_add = 10000
+		planet_amenities_add = 5000
+		planet_stability_add = 25
+	}
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = {
+				has_active_tradition = tr_domination_imperious_architecture
+			}
+		}
+		modifier = {
+			planet_housing_add = 100
+		}
+	}
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = { has_technology = tech_capital_productivity_1 }
+		}
+		modifier = {
+			pop_bonus_workforce_mult = 0.1
+		}
+	}
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = { has_technology = tech_capital_productivity_2 }
+		}
+		modifier = {
+			pop_bonus_workforce_mult = 0.1
+		}
+	}
+	triggered_planet_modifier = {
+		potential = {
+			exists = owner
+			owner = { has_technology = tech_capital_productivity_3 }
+		}
+		modifier = {
+			pop_bonus_workforce_mult = 0.1
+		}
+	}
+	ai_estimate_without_unemployment = yes
+	additional_ai_weight = 200
+	ai_weight_coefficient = 1.2
+}
+building_touhou_lathe_resonator = {
+	icon = building_lathe_resonator
+	base_buildtime = @b2_time
+	planet_limit = 2
+	building_sets = { touhou_cosmogenesis_world }
+	potential = {
+		is_planet_class = pc_touhou_cosmogenesis_arkship
+		spth_check_gensokyo_auth = yes
+	}
+	category = resource
+	resources = {
+		category = planet_buildings
+		cost = {
+			alloys = @fe_alloy_cost_1
+			sr_lingli = @b3_minerals
+		}
+		upkeep = {
+			energy = @b3_upkeep
+			sr_lingli = @b3_rare_upkeep
+		}
+	}
+	triggered_planet_modifier = {
+		planet_jobs_upkeep_mult = 0.50
+	}
+	triggered_planet_modifier = {
+		potential = {
+			always = yes
+		}
+		planet_jobs_produces_mult = 0.05
+		mult = value:spth_num_chip_slave_sqrt
+	}
+	ai_estimate_without_unemployment = yes
+	additional_ai_weight = 200
+	ai_weight_coefficient = 1.2
+}
+building_touhou_lathe_stabilisator = {
+	icon = building_lathe_stabilisator
+	base_buildtime = @b2_time
+	planet_limit = 2
+	building_sets = { touhou_cosmogenesis_world }
+	potential = {
+		is_planet_class = pc_touhou_cosmogenesis_arkship
+		spth_check_gensokyo_auth = yes
+	}
+	category = government
+	resources = {
+		category = planet_buildings
+		cost = {
+			alloys = @fe_alloy_cost_1
+			sr_lingli = @b3_minerals
+		}
+		upkeep = {
+			energy = @b3_upkeep
+			sr_lingli = @b3_rare_upkeep
+		}
+	}
+	triggered_planet_modifier = {
+		planet_stability_add = 20
+	}
+	ai_estimate_without_unemployment = yes
+	additional_ai_weight = 200
+	ai_weight_coefficient = 1.2
+}
+building_touhou_lathe_overclocker = {
+	icon = building_lathe_overclocker
+	base_buildtime = @b2_time
+	planet_limit = 2
+	building_sets = { touhou_cosmogenesis_world }
+	potential = {
+		is_planet_class = pc_touhou_cosmogenesis_arkship
+		spth_check_gensokyo_auth = yes
+	}
+	category = resource
+	resources = {
+		category = planet_buildings
+		cost = {
+			alloys = @fe_alloy_cost_1
+			sr_lingli = @b3_minerals
+		}
+		upkeep = {
+			energy = @b3_upkeep
+			sr_lingli = @b3_rare_upkeep
+		}
+	}
+	planet_modifier = {
+		planet_neural_chips_physics_research_produces_add = 1
+		planet_neural_chips_society_research_produces_add = 1
+		planet_neural_chips_engineering_research_produces_add = 1
+		planet_neural_chips_advanced_logic_produces_add = 0.5
+	}
+	ai_estimate_without_unemployment = yes
+	additional_ai_weight = 200
+	ai_weight_coefficient = 1.2
+}
+building_touhou_lathe_reactor = {
+	icon = building_lathe_reactor
+	base_buildtime = @b2_time
+	planet_limit = 2
+	building_sets = { touhou_cosmogenesis_world }
+	potential = {
+		is_planet_class = pc_touhou_cosmogenesis_arkship
+		spth_check_gensokyo_auth = yes
+	}
+	category = resource
+	resources = {
+		category = planet_buildings
+		cost = {
+			alloys = @fe_alloy_cost_1
+			sr_lingli = @b3_minerals
+		}
+		upkeep = {
+			energy = @b3_upkeep
+			sr_lingli = @b3_rare_upkeep
+		}
+	}
+	planet_modifier = {
+		planet_jobs_upkeep_mult = -0.15
+		planet_buildings_upkeep_mult = -0.15
+		planet_districts_energy_upkeep_mult = -0.15
+	}
+	ai_estimate_without_unemployment = yes
+	additional_ai_weight = 200
+	ai_weight_coefficient = 1.2
+}
+building_touhou_lathe_life_support = {
+	icon = building_lathe_life_support
+	base_buildtime = @b2_time
+	planet_limit = 2
+	building_sets = { touhou_cosmogenesis_world }
+	potential = {
+		is_planet_class = pc_touhou_cosmogenesis_arkship
+		spth_check_gensokyo_auth = yes
+	}
+	category = amenity
+	resources = {
+		category = planet_buildings
+		cost = {
+			alloys = @fe_alloy_cost_1
+			sr_lingli = @b3_minerals
+		}
+		upkeep = {
+			energy = @b3_upkeep
+			sr_lingli = @b3_rare_upkeep
+		}
+	}
+	planet_modifier = {
+		planet_housing_add = 10000
+		planet_amenities_add = 10000
+	}
+	ai_estimate_without_unemployment = yes
+	additional_ai_weight = 200
+	ai_weight_coefficient = 1.2
+}
+building_touhou_lathe_cogitator = {
+	icon = building_lathe_cogitator
+	base_buildtime = @b2_time
+	planet_limit = 2
+	building_sets = { touhou_cosmogenesis_world }
+	potential = {
+		is_planet_class = pc_touhou_cosmogenesis_arkship
+		spth_check_gensokyo_auth = yes
+	}
+	category = army
+	resources = {
+		category = planet_buildings
+		cost = {
+			alloys = @fe_alloy_cost_1
+			sr_lingli = @b3_minerals
+		}
+		upkeep = {
+			energy = @b3_upkeep
+			sr_lingli = @b3_rare_upkeep
+		}
+	}
+	planet_modifier = {
+		planet_amenities_add = -5000
+		planet_jobs_produces_mult = -0.25
+	}
+	triggered_country_modifier = {
+		country_naval_cap_mult = 0.01
+		ship_experience_gain_mult = 0.02
+		mult = value:spth_num_chip_slave_sqrt
+	}
+	ai_estimate_without_unemployment = yes
+	additional_ai_weight = 200
+	ai_weight_coefficient = 1.2
+}
+building_touhou_lathe_validator = {
+	icon = building_lathe_validator
+	base_buildtime = @b2_time
+	planet_limit = 2
+	building_sets = { touhou_cosmogenesis_world }
+	potential = {
+		is_planet_class = pc_touhou_cosmogenesis_arkship
+		spth_check_gensokyo_auth = yes
+	}
+	category = research
+	resources = {
+		category = planet_buildings
+		cost = {
+			alloys = @fe_alloy_cost_1
+			sr_lingli = @b3_minerals
+		}
+		upkeep = {
+			energy = @b3_upkeep
+			sr_lingli = @b3_rare_upkeep
+		}
+	}
+	planet_modifier = {
+		planet_stability_add = -10
+	}
+	triggered_country_modifier = {
+		category_spirit_power_research_speed_mult = 0.01
+		mult = value:spth_num_chip_slave_sqrt
+	}
+
 	ai_estimate_without_unemployment = yes
 	additional_ai_weight = 200
 	ai_weight_coefficient = 1.2

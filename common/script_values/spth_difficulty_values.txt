@@ -1,3 +1,12 @@
+touhou_difficulty = {
+    base = 0
+    modifier = {
+        add = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+        exists = event_target:global_event_country
+        event_target:global_event_country = { is_variable_set = spth_lunar_capital_crisis_difficulty }
+    }
+    min = 1
+}
 touhou_scaled_difficulty_nyto = {
     base = 0
     add = 1
@@ -30,7 +39,7 @@ touhou_difficulty_lunar_capital_titan_damage_recution = {
 }
 
 situation_spth_lunar_psi_crisis_add = {
-    base = 16
+    base = 24
     divide = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
     min = 1
 }
@@ -41,4 +50,39 @@ touhou_scaled_difficulty_ag_armor_or_shield = {
     modifier = { add = event_target:global_event_country.spth_lunar_capital_crisis_difficulty spth_has_ag_mod = no }
     multiply = modifier:$touhou_tag$
     min = 0
+}
+
+touhou_crisis_generic_damage_reduction_factor = {
+    base = 0
+    add = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+    modifier = {
+        mult = 2
+        has_global_flag = spth_lunar_capital_crisis_phantasm
+    }
+    mult = trigger:has_max_hp
+    min = 1
+}
+
+# B(r)=2*min(难度系数, sqrt(max(0.5, p-0.5)))
+touhou_lunar_psi_extra_42_factor_1 = {
+    base = 0
+    add = $touhou_base$
+    subtract = 1
+    min = 0.5
+}
+touhou_lunar_psi_extra_42_factor = {
+    base = 0
+    add = value:touhou_lunar_psi_extra_42_factor_1|touhou_base|$touhou_base$|
+    square_root = yes
+    max = value:touhou_difficulty
+    abs = yes
+}
+touhou_lunar_psi_extra_44_factor_max = {
+    base = 0
+    add = value:touhou_difficulty
+}
+touhou_lunar_psi_extra_44_factor = {
+    base = 0
+    add = trigger:count_combatant_fleet
+    max = value:touhou_lunar_psi_extra_44_factor_max
 }

@@ -18,13 +18,13 @@ spth_auto_ringworld_check_planet = {
         is_under_colonization = yes
         exists = archaeological_site
         colonizable_planet = yes
-        has_planet_flag = megastructure
-        has_planet_flag = has_megastructure
-        has_planet_flag = machine_world_1
-        has_planet_flag = machine_world_2
-        has_planet_flag = machine_world_3
-        has_planet_flag = machine_world_4
-        has_planet_flag = touhou_block_auto_ringworld
+        has_carrier_flag = megastructure
+        has_carrier_flag = has_megastructure
+        has_carrier_flag = machine_world_1
+        has_carrier_flag = machine_world_2
+        has_carrier_flag = machine_world_3
+        has_carrier_flag = machine_world_4
+        has_carrier_flag = touhou_block_auto_ringworld
         is_planet_class = pc_cosmogenesis_world
     }
 }
@@ -119,7 +119,7 @@ touhou_is_colonizable_planet = {
 spth_is_arc_planet = {
     optimize_memory
     is_colony = no
-    is_under_colonization = no
+    # is_under_colonization = no
     is_colonizable = no
     is_asteroid = no
     is_ringworld = no
@@ -284,9 +284,9 @@ spth_use_spth_sp_produce_6_bld_zone = {
 touhou_planet_under_protect = {
     optimize_memory
     OR = {
-        has_planet_flag = planet_kaguya_protect_fired
-        has_planet_flag = ag_ancient_fortress_actived
-        has_planet_flag = enable_kuat_shield
+        has_carrier_flag = planet_kaguya_protect_fired
+        has_carrier_flag = ag_ancient_fortress_actived
+        has_carrier_flag = enable_kuat_shield
         check_modifier_value = { modifier = touhou_leader_immune_to_special_bombardment value > 0 }
     }
 }
@@ -302,4 +302,55 @@ touhou_planet_has_activate_fortress = {
         has_active_building = building_spth_police_station
         has_active_building = ag_ancient_fortress
     }
+}
+
+touhou_is_no_blocker_planet = {
+    optimize_memory
+    OR = {
+        is_planet_class = pc_cosmogenesis_world
+        is_planet_class = pc_ag_cosmogenesis_world
+    }
+}
+touhou_has_corruptable_planet = {
+    optimize_memory
+    any_owned_colony = {
+        NOR = {
+            has_modifier = "touhou_lunar_capital_psi_crisis_marked"
+            has_carrier_flag = touhou_lunar_psi_random_planet_effect_fired
+        }
+        touhou_is_no_blocker_planet = no
+        has_ground_combat = no
+        is_occupied_flag = no
+    }
+}
+touhou_planet_has_lunar_rabbit = {
+    optimize_memory
+    OR = {
+        has_building = building_spth_eientei
+        any_owned_pop_group = { pop_group_has_trait = trait_spth_moon_rabbit }
+    }
+}
+touhou_planet_has_shrine = {
+    optimize_memory
+    OR = {
+        has_building = building_spth_hakurei_shrine
+        has_building = building_spth_moriya_shrine
+        has_deposit = d_hakurei_shrine
+    }
+}
+
+touhou_has_planet_shield = {
+    optimize_memory
+	OR = {
+		has_modifier = "touhou_planet_shield"
+		has_modifier = "ag_ancient_shield_modifier"
+	}
+}
+
+izakaya_has_ingredient = {
+	optimize_memory
+	OR = {
+		has_building = building_izakaya_ingredient_$type$
+		has_building_construction = building_izakaya_ingredient_$type$
+	}
 }

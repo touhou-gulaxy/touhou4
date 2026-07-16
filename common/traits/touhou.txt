@@ -6,22 +6,94 @@ trait_vampire_1 = {
 	species_potential_add = { always = no }
 
 	improves_leaders = no
+    immortal_leaders = yes
 	initial = no
 	randomized = no
 
 	allowed_archetypes = { TOUHOUGIRLS  }
 	modifier = {
-		logistic_growth_mult = 0.8
-		planet_jobs_engineering_research_produces_mult = 1
-		planet_jobs_physics_research_produces_mult = 1
-		planet_jobs_society_research_produces_mult = 1
-		planet_jobs_produces_mult = 3
-		planet_pops_upkeep_mult = 3
-		planet_jobs_upkeep_mult = 3
+		logistic_growth_mult = 0.25
+        pop_bonus_workforce_mult = 0.20
 	}
+    triggered_planet_growth_habitability_modifier = {
+        potential = { always = yes }
+        pop_environment_tolerance = 0.1
+    }
 	assembly_score = {
 		add = 2
 	}
+}
+# trait_super_girls = {
+# 	cost = 0
+# 	icon="gfx/interface/icons/traits/super_girl.dds"
+#
+# 	improves_leaders = no
+# 	initial = no
+# 	randomized = no
+#
+# 	prerequisites = { "tech_th_advanced_trait" }
+# 	allowed_archetypes = { TOUHOUGIRLS  }
+# 	modifier = {
+# 		#logistic_growth_mult = 1.5
+# 		planet_jobs_produces_mult = 5
+# 		planet_pops_upkeep_mult = 3
+# 		planet_jobs_upkeep_mult = 3
+# 	}
+# 	ai_weight = {
+# 		weight = 1000
+# 	}
+# }
+
+trait_touhou_lunar_crisis_shroud_whisper = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT
+    potential_crossbreeding_chance = 0.0
+    cost = 1
+    randomized = no
+    initial = no
+    allowed_archetypes = { TOUHOUGIRLS BIOLOGICAL PRESAPIENT LITHOID MACHINE ROBOT }
+    archetype_override = { hidden_trigger = { always = yes } }
+    species_potential_add = { always = no }
+    species_possible_remove = { always = yes }
+    species_possible_merge_add = { always = no }
+    species_possible_merge_remove = { always = yes }
+    modifier = {
+        pop_job_amenities_mult = -0.25
+        pop_amenities_usage_mult = 0.25
+        pop_workforce_mult = -0.10
+    }
+    resources = {
+        category = planet_pops
+        produces = {
+            sr_zro = 0.05
+        }
+    }
+    ai_weight = { weight = 0 }
+}
+
+trait_touhou_from_astral = {
+	custom_subtitle = TOUHOU_SPECIES_TRAIT
+	potential_crossbreeding_chance = 0.0
+	cost = 0
+	randomized = no
+	initial = no
+	allowed_archetypes = { TOUHOUGIRLS BIOLOGICAL PRESAPIENT LITHOID MACHINE ROBOT }
+	archetype_override = { hidden_trigger = { always = yes } }
+	species_potential_add = { always = no }
+	species_possible_remove = { always = no }
+	species_possible_merge_add = { always = no }
+	species_possible_merge_remove = { always = no }
+	modifier = {
+		pop_housing_usage_add = -0.25
+		pop_environment_tolerance = 0.25
+		pop_workforce_mult = -0.10
+	}
+	resources = {
+		category = planet_pops
+		produces = {
+			astral_threads = 0.025
+		}
+	}
+	ai_weight = { weight = 0 }
 }
 
 trait_pc_ringworld_th_preference = {
@@ -45,11 +117,18 @@ trait_pc_ringworld_th_preference = {
 }
 
 trait_touhou = {
-	cost = 0
+	cost = {
+        base = 0
+        modifier = {
+            add = -1
+            has_country_flag = touhou_trait_reflex_improved_trait_touhou
+        }
+    }
 	icon="gfx/interface/icons/governments/touhou.dds"
 	
 	species_possible_remove = { always = no }
 	species_potential_add = { always = no }
+    custom_subtitle = TOUHOU_SPECIES_TRAIT
 
 	improves_leaders = no
 	initial = yes
@@ -180,12 +259,13 @@ trait_touhou = {
     }
 	modifier = {
 		species_leader_exp_gain = 0.5
-		pc_gensokyo_city_habitability = 2
-		pop_demotion_time_mult = -10
+		pc_space_shrine_habitability = 0.25
+		# pop_demotion_time_mult = -10
 	}
 }
 
 trait_touhou_psionic = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_PSI
     potential_crossbreeding_chance = 0.0
     cost = 1
     randomized = no
@@ -216,6 +296,7 @@ trait_touhou_psionic = {
 }
 
 trait_spth_human = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_COMMON
 	icon = gfx/interface/icons/traits/spth_human.dds
 	cost = 1
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -228,6 +309,7 @@ trait_spth_human = {
 }
 
 trait_spth_fairy = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_COMMON
 	icon = gfx/interface/icons/traits/spth_fairy.dds
 	cost = 1
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -238,9 +320,34 @@ trait_spth_fairy = {
 		spth_food_bouns_workforce = 0.1
 		species_leader_exp_gain = -0.25
 	}
+    triggered_pop_group_modifier = {
+        potential = { always = yes }
+        key = mod_fairy_pop_workforce_mult
+        pop_workforce_mult = 1
+        multiplier = modifier:fairy_pop_workforce_mult
+    }
+    triggered_pop_group_modifier = {
+        potential = { always = yes }
+        key = mod_fairy_pop_bonus_workforce_mult
+        pop_bonus_workforce_mult = 1
+        multiplier = modifier:fairy_pop_bonus_workforce_mult
+    }
+    triggered_pop_group_modifier = {
+        potential = { always = yes }
+        key = mod_fairy_pop_happiness
+        pop_happiness = 1
+        multiplier = modifier:fairy_pop_happiness
+    }
+    triggered_pop_group_modifier = {
+        potential = { always = yes }
+        key = mod_fairy_pop_empire_size_mult
+        species_empire_size_mult = 1
+        multiplier = modifier:fairy_pop_empire_size_mult
+    }
 }
 
 trait_spth_monster_cat = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_COMMON
 	icon = gfx/interface/icons/traits/spth_monster_cat.dds
 	cost = 1
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -254,6 +361,7 @@ trait_spth_monster_cat = {
 }
 
 trait_spth_monster_rabbit = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_COMMON
 	icon = gfx/interface/icons/traits/spth_monster_rabbit.dds
 	cost = 1
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -267,6 +375,7 @@ trait_spth_monster_rabbit = {
 }
 
 trait_spth_white_wolf_tengu = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_COMMON
 	icon = gfx/interface/icons/traits/spth_white_wolf_tengu.dds
 	cost = 1
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -280,6 +389,7 @@ trait_spth_white_wolf_tengu = {
 }
 
 trait_spth_tengu = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_COMMON
 	icon = gfx/interface/icons/traits/spth_tengu.dds
 	cost = 2
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -292,6 +402,7 @@ trait_spth_tengu = {
 }
 
 trait_spth_kappa = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_COMMON
 	icon = gfx/interface/icons/traits/spth_kappa.dds
 	cost = 2
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -304,6 +415,7 @@ trait_spth_kappa = {
 }
 
 trait_spth_anmajaku = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_NEGATIVE
 	icon = gfx/interface/icons/traits/spth_anmajaku.dds
 	cost = -2
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -314,6 +426,7 @@ trait_spth_anmajaku = {
 }
 
 trait_spth_resistant_doll = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_NEGATIVE
 	icon = gfx/interface/icons/traits/spth_resistant_doll.dds
 	cost = -2
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -324,6 +437,7 @@ trait_spth_resistant_doll = {
 }
 
 trait_spth_parsee = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_NEGATIVE
 	icon = gfx/interface/icons/traits/spth_parsee.dds
 	cost = -2
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -335,6 +449,7 @@ trait_spth_parsee = {
 }
 
 trait_spth_taotie = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_NEGATIVE
 	icon = gfx/interface/icons/traits/spth_taotie.dds
 	cost = -2
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -346,6 +461,7 @@ trait_spth_taotie = {
 }
 
 trait_spth_poor = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_NEGATIVE
 	icon = gfx/interface/icons/traits/spth_poor.dds
 	cost = -2
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -357,6 +473,7 @@ trait_spth_poor = {
 }
 
 trait_spth_hibernation = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_NEGATIVE
 	icon = gfx/interface/icons/traits/spth_hibernation.dds
 	cost = -2
 	allowed_archetypes = { TOUHOUGIRLS }
@@ -379,6 +496,7 @@ trait_spth_hibernation = {
 ##########高级特质##########
 
 trait_spth_living_god = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_ADVANCE
 	icon = gfx/interface/icons/traits/spth_living_god.dds
 	cost = 2
 	initial = no
@@ -392,6 +510,7 @@ trait_spth_living_god = {
 }
 
 trait_spth_magician = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_ADVANCE
 	icon = gfx/interface/icons/traits/spth_magician.dds
 	cost = 3
 	initial = no
@@ -405,6 +524,7 @@ trait_spth_magician = {
 }
 
 trait_spth_oni = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_ADVANCE
 	icon = gfx/interface/icons/traits/spth_oni.dds
 	cost = 3
 	initial = no
@@ -420,6 +540,7 @@ trait_spth_oni = {
 }
 
 trait_spth_shikigami = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_ADVANCE
 	icon = gfx/interface/icons/traits/spth_shikigami.dds
 	cost = 3
 	initial = no
@@ -431,6 +552,7 @@ trait_spth_shikigami = {
 		pop_cat_specialist_happiness = -0.1
 	}
 	resources = {
+		category = planet_pops
 		upkeep = {
 			energy = 0.5
 		}
@@ -438,6 +560,7 @@ trait_spth_shikigami = {
 }
 
 trait_spth_moon_rabbit = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_ADVANCE
 	icon = gfx/interface/icons/traits/spth_moon_rabbit.dds
 	cost = 3
 	initial = no
@@ -453,6 +576,7 @@ trait_spth_moon_rabbit = {
 }
 
 trait_spth_inchling = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_ADVANCE
 	icon = gfx/interface/icons/traits/spth_inchling.dds
 	cost = 1
 	initial = no
@@ -465,6 +589,7 @@ trait_spth_inchling = {
 }
 
 trait_spth_hermit = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_ADVANCE
 	icon = gfx/interface/icons/traits/spth_hermit.dds
 	cost = 4
 	initial = no
@@ -479,6 +604,7 @@ trait_spth_hermit = {
 }
 
 trait_spth_moon_human = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_ADVANCE
 	icon = gfx/interface/icons/traits/spth_moon_human.dds
 	cost = 4
 	initial = no
@@ -493,6 +619,7 @@ trait_spth_moon_human = {
 }
 
 trait_spth_vampire = {
+    custom_subtitle = TOUHOU_SPECIES_TRAIT_ADVANCE
 	icon = gfx/interface/icons/traits/spth_vampire.dds
 	cost = 3
 	initial = no

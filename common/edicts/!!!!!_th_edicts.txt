@@ -6,7 +6,7 @@ spth_planet_dicisions_sp = {
 		has_authority = auth_gensokyo
 	}
 	effect = {
-		every_owned_planet = {
+		every_owned_colony = {
 			if = {
 				limit = { NOT = { has_deposit = d_hakurei_barrier } }
 				select_decision = {
@@ -25,7 +25,7 @@ spth_planet_dicisions_convert = {
 		has_country_flag = spth_pop_convert_enabled
 	}
 	effect = {
-		every_owned_planet = {
+		every_owned_colony = {
 			limit = { NOT = { has_modifier = spth_planet_pop_convert } }
 			select_decision = {
 				name = decision_gensokyo_pop_convert_activate
@@ -45,7 +45,7 @@ spth_planet_dicisions_convert_disable = {
 		NOT = { has_edict = spth_planet_dicisions_convert }
 	}
 	effect = {
-		every_owned_planet = {
+		every_owned_colony = {
 			limit = { has_modifier = spth_planet_pop_convert }
 			select_decision = {
 				name = decision_gensokyo_pop_convert_deactivate
@@ -62,7 +62,7 @@ spth_planet_dicisions_shrine = {
 	}
 	prerequisites = { tech_build_spth_capital_shirne }
 	effect = {
-		every_owned_planet = {
+		every_owned_colony = {
 			limit = {
 				is_colony = yes
 				OR = {
@@ -122,7 +122,7 @@ spth_planet_dicisions_th_deposits_build = {
 	}
 	prerequisites = { tech_th_deposits_uncover }
 	effect = {
-		every_owned_planet = {
+		every_owned_colony = {
 			limit = {
                 has_deposit = d_hakurei_barrier
                 NOT = { check_variable = { which = th_deposits_num value >= 7 } }
@@ -273,14 +273,11 @@ spth_specimen_focus = {
 		is_ai = no
 		has_authority = auth_gensokyo
 	}
-	# allow = {
-	# 	custom_tooltip = {
-	# 		fail_text = edict_spth_specimen_focus_allow
-	# 		check_modifier_value = { modifier = specimen_has_touhou_item value > 0 }
-	# 	}
-	# }
+	allow = {
+        has_touhou_specimen = yes
+	}
 	modifier = {
-		specimen_spth_extra_produce_mult = 0.15
+		specimen_spth_extra_produce_mult = 0.10
 	}
     ai_weight = { weight = 514 }
 }
@@ -341,8 +338,8 @@ spth_psionic = {
 			multiplier = value:edict_size_effect
 		}
 		upkeep = {
-			sr_zro = 10
-			sr_lingli = 25
+			sr_zro = 50
+			sr_lingli = 100
 			multiplier = value:edict_size_effect
 		}
 	}
@@ -350,9 +347,10 @@ spth_psionic = {
         unlock_touhou_ruler_psionic_effect = 1
 		unlock_touhou_miko_psionic_produce = 1
 		planet_barrier_produce_mult = 0.10
+        shroud_delve_cooldown_add = -15
 		ship_ftl_jumpdrive_range_mult = 0.5
 		ship_jumpdrive_cooldown_mult = -0.10
-		relay_bypass_ship_windup_mult = -0.4
+		relay_bypass_ship_windup_mult = 0.30
 	}
 	potential = {
 		has_authority = auth_gensokyo
@@ -413,6 +411,21 @@ touhou_magical_mallet = {
     effect = {
         set_country_flag = touhou_magical_mallet_opened
         country_event = { id = toho.16 }
+    }
+}
+barrier_power_harnessing = {
+    length = -1
+    icon = GFX_edict_type_touhou
+    potential = {
+        has_authority = auth_gensokyo
+        check_modifier_value = { modifier = unlock_edict_barrier_power_harnessing value != 0 }
+    }
+    modifier = {
+        ship_damage_reduction_add = 16
+        ship_shield_mult = 0.25
+        ship_shield_reduction = -0.25
+        ship_shield_hardening_add = 0.25
+        planet_barrier_district_add = 1
     }
 }
 
@@ -600,6 +613,8 @@ th_flagship_lumiya = {
 							distance = 45
 							angle = random
 						}
+						set_fleet_flag = touhou_standard_formation_scale_setted
+						set_formation_scale = @touhou_standard_formation_scale
 					}
 				}
 			}

@@ -8,18 +8,17 @@ weapon_component_template = {
     prio_projectile = yes
 
     min_range = 0.0
-    static_rotation = yes
-    use_ship_kill_target = yes
+    # use_ship_kill_target = yes
 
-    damage = { min = 4950 max = 4950 }
+    damage = { min = 6435 max = 6435 }
     windup = { min = 0 max = 0 }
     total_fire_time = 10
     range = 514.0
     accuracy = 1
     tracking = 1
     power = 114514
-    armor_penetration = 1
-    shield_penetration = 1
+    armor_penetration = 2
+    shield_penetration = 2
     size_damage_factor = 0.16
 
     hidden = yes
@@ -49,19 +48,19 @@ weapon_component_template = {
     prio_projectile = yes
 
     min_range = 0.0
-    static_rotation = yes
-    use_ship_kill_target = yes
+    # use_ship_kill_target = yes
 
-    damage = { min = 1514 max = 1514 }
+    damage = { min = 1968 max = 1968 }
     windup = { min = 0 max = 0 }
     total_fire_time = 3.0
     range = 514.0
     accuracy = 1
     tracking = 1
     power = 114514
-    armor_penetration = 1
-    shield_penetration = 4.2
-    armor_damage = 0.4
+    armor_penetration = 2
+    shield_penetration = 0
+    shield_damage = 4.0
+    armor_damage = 0.5
     hull_damage = 1.50
 
     hidden = yes
@@ -91,10 +90,9 @@ weapon_component_template = {
     prio_projectile = yes
 
     min_range = 0.0
-    static_rotation = yes
-    use_ship_kill_target = yes
+    # use_ship_kill_target = yes
 
-    damage = { min = 185 max = 203 }
+    damage = { min = 240 max = 265 }
     windup = { min = 0 max = 0 }
     total_fire_time = 10
     range = 514.0
@@ -171,9 +169,14 @@ utility_component_template = {
         ship_disengage_opportunities_add = 1
         ship_accuracy_add = 40
         ship_tracking_add = 40
+		ship_can_use_touhou_deep_scan = 1
+		ship_touhou_deep_scan_level_add = 50
     }
     sensor_range = 5
     hyperlane_range = 6
+	scripted_action = {
+		touhou_sensor_deep_scan
+	}
 
     potential = { ship_uses_touhou_supercarrier = yes }
     hidden = yes
@@ -208,7 +211,10 @@ utility_component_template = {
     hidden = yes
     prerequisites = { tech_spth_super_carrier_ship_parts }
     component_set = "power_core"
-    inline_script = { script = ship_components/touhou_ship_action_button }
+	scripted_action = {
+		touhou_ship_action
+		ag_mod_ship_action_menu
+	}
 
     ai_weight = { weight = 0 }
 }
@@ -237,17 +243,21 @@ utility_component_template = {
         ship_jumpdrive_cooldown_mult = -1
         ship_ftl_jumpdrive_range_mult = 2
         ship_spth_skill_super_carrier_eater = 1
+        ship_use_astral_jumpdrive = 1
+		ship_touhou_fast_return_from_mia = 1
     }
     friendly_aura = {
         name = spth_super_carrier_ftl
         stack_info = { id = spth_super_carrier_ftl priority = 114514 }
-        system_wide = yes
+        system_wide = no
+        apply_on = ships
         modifier = {
             ship_emergency_ftl_min_days_mult = -1
             ship_windup_mult = -1
-            ship_jumpdrive_cooldown_mult = -1
+            ship_jumpdrive_cooldown_mult = -0.5
             ship_ftl_jumpdrive_range_mult = 0.5
-            relay_bypass_ship_windup_mult = -1
+            relay_bypass_ship_windup_mult = 0.25
+            ship_use_astral_jumpdrive = 1
         }
     }
     potential = { ship_uses_touhou_supercarrier = yes }
@@ -282,7 +292,13 @@ utility_component_template = {
         ship_accuracy_add = 100
         ship_tracking_add = 100
         ship_weapon_damage = 1
+        ship_has_touhou_nimble_fabric_crisis = 1
     }
+    # triggered_ship_modifier = {
+    #     potential = { check_modifier_value = { modifier = ship_has_touhou_nimble_fabric_crisis_fired value < 0 } }
+    #     ship_damage_reduction_mult = @touhou_nimble_fabric_crisis_damage_reduction_mult
+    #     ship_has_touhou_nimble_fabric_crisis_fired = 1
+    # }
     ship_modifier = { ship_spth_bombardment_beacon = 1 }
     friendly_aura = {
         name = spth_super_carrier_boost
@@ -413,6 +429,7 @@ utility_component_template = {
         ship_armor_reduction = -1
         ship_spth_bombardment_beacon = 1
         ship_spth_yuyuko_fan_display = 1
+        ship_has_touhou_nimble_fabric_crisis = 1
     }
     triggered_ship_modifier = {
         custom_tooltip = spth_super_carrier_computer_reduce_tt
@@ -442,6 +459,11 @@ utility_component_template = {
         weapon_type_lingli_weapon_fire_rate_mult = 495
         weapon_type_lingli_weapon_damage_mult = 99.9
     }
+    # triggered_ship_modifier = {
+    #     potential = { check_modifier_value = { modifier = ship_has_touhou_nimble_fabric_crisis_fired value < 0 } }
+    #     ship_damage_reduction_mult = @touhou_nimble_fabric_crisis_damage_reduction_mult
+    #     ship_has_touhou_nimble_fabric_crisis_fired = 1
+    # }
     friendly_aura = {
         name = spth_super_carrier_boost_crisis
         system_wide = yes
@@ -594,9 +616,14 @@ utility_component_template = {
     }
     ship_modifier = {
         ship_spth_extra_life = 1
+		ship_can_use_touhou_deep_scan = 1
+		ship_touhou_deep_scan_level_add = 35
     }
     sensor_range = 8
     hyperlane_range = 10
+	scripted_action = {
+		touhou_sensor_deep_scan
+	}
 
     potential = { ship_uses_touhou_shrine = yes }
     hidden = yes
@@ -636,7 +663,7 @@ utility_component_template = {
         }
         modifier = {
             has_ship_part_aura_touhou_minefield_target = 1
-            touhou_minefield_size_factor = 0.01
+            touhou_minefield_size_factor = 0.05
             ship_damage_reduction_mult = -0.10
         }
         damage_per_day = {
@@ -647,7 +674,7 @@ utility_component_template = {
             shield_damage = 0.80
             armor_damage = 1.20
             hull_damage = 1.25
-            size_damage_factor = 1.0
+            size_damage_factor = 0.2
         }
         graphics = {
             area_effect = {
@@ -663,7 +690,10 @@ utility_component_template = {
     potential = { ship_uses_touhou_shrine = yes }
     hidden = yes
     component_set = "power_core"
-    inline_script = { script = ship_components/touhou_ship_action_button }
+	scripted_action = {
+		touhou_ship_action
+		ag_mod_ship_action_menu
+	}
 
     ai_weight = { weight = 0 }
 }
@@ -691,10 +721,11 @@ utility_component_template = {
         ship_windup_mult = -1
         ship_jumpdrive_cooldown_mult = 1.25
         ship_ftl_jumpdrive_range_mult = 10
-        relay_bypass_ship_windup_mult = -1
+        relay_bypass_ship_windup_mult = 1
         ship_spth_extra_life = 1
         ship_spth_skill_space_shrine_drive = 1
         ship_spth_skill_space_shrine_beacon = 1
+		ship_touhou_fast_return_from_mia = 1
     }
     potential = { ship_uses_touhou_shrine = yes }
     hidden = yes
@@ -767,7 +798,7 @@ utility_component_template = {
             }
         }
     }
-    ship_behavior = "spth_stationary_attack"
+    ship_behavior = "touhou_arkship"
 
     potential = { ship_uses_touhou_shrine = yes }
     component_set = "combat_computers"
@@ -943,12 +974,12 @@ utility_component_template = {
             priority = 1919
         }
         damage_per_day = {
-            damage = { min = 256 max = 512 }
-            accuracy = 1
-            armor_penetration = 0.75
-            shield_penetration = 0.75
-            armor_damage = 1.19
-            shield_damage = 1.19
+            damage = { min = 2048 max = 4096 }
+            accuracy = 1.9
+            armor_penetration = 1.9
+            shield_penetration = 1.9
+            armor_damage = 1.9
+            shield_damage = 1.9
             size_damage_factor = 1.9
         }
         modifier = {
@@ -978,8 +1009,7 @@ weapon_component_template = {
     prio_projectile = yes
 
     min_range = 0.0
-    static_rotation = yes
-    use_ship_kill_target = yes
+    # use_ship_kill_target = yes
 
     damage = { min = 128 max = 256 }
     windup = { min = 20 max = 40 }
@@ -1034,7 +1064,10 @@ utility_component_template = {
     # scripted_action_button_possible = {
     # }
 
-    inline_script = { script = ship_components/th_tenshi_aux_actions }
+    # inline_script = { script = ship_components/th_tenshi_aux_actions }
+	scripted_action = {
+		th_tenshi_aux_action
+	}
 
     hidden = yes
     component_set = ship_aura_components
@@ -1089,7 +1122,12 @@ utility_component_template = {
     }
     ship_modifier = {
         ship_damage_reduction_mult = 11
+        ship_spth_inv_status = 1
         strike_craft_cooldown_mult = 1
+    }
+    triggered_ship_modifier = {
+        ship_damage_reduction_mult = 1
+        mult = fleet.value:touhou_test_value_1
     }
     ship_behavior = "spth_flagship_attack"
 }
@@ -1118,8 +1156,8 @@ utility_component_template = {
         damage_per_day = {
             damage = { min = 128000000 max = 256000000 }
             accuracy = 10
-            shield_penetration = 100
-            armor_penetration = 100
+            shield_penetration = 9961
+            armor_penetration = 9961
             # size_damage_factor = 1
         }
 
@@ -1135,4 +1173,472 @@ utility_component_template = {
         }
     }
     ai_weight = { weight = 0 }
+}
+
+utility_component_template = {
+	key = "touhou_synaptic_lathe_arkship_aux_1"
+	icon = "GFX_ship_part_touhou_sky_control_ship_aux_armor"
+	size = aux
+	icon_frame = 1
+	power = -1000
+	inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+	custom_tooltip = touhou_sky_control_ship_aux_shield_tt
+	ship_modifier = {
+		inline_script = { script = ship_components/touhou_nimble_fabric_modifier_tooltip tier = 4 type = generic }
+		ship_has_touhou_nimble_fabric = 1
+	}
+	inline_script = { script = ship_components/touhou_nimble_fabric_effect tier = 4 }
+	hidden = yes
+	component_set = "touhou_synaptic_lathe_arkship_aux_1"
+	ai_weight = { weight = 0 }
+}
+utility_component_template = {
+	key = "touhou_synaptic_lathe_arkship_aux_2"
+	icon = "GFX_ship_part_touhou_sky_control_ship_aux_shield"
+	size = aux
+	icon_frame = 1
+	power = -1000
+	inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+	ship_modifier = {
+		ship_touhou_lunar_capital_duplicate_components = 1
+	}
+	hidden = yes
+	component_set = "touhou_synaptic_lathe_arkship_aux_2"
+	ai_weight = { weight = 0 }
+}
+utility_component_template = {
+	key = "touhou_synaptic_lathe_arkship_aux_3"
+	icon = "GFX_ship_part_aura_touhou_minefield_lunar"
+	size = aux
+	icon_frame = 1
+	power = -1000
+	inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+	ship_modifier = {
+		# custom_tooltip = ship_part_aura_touhou_minefield_tooltip
+		has_ship_part_aura_touhou_minefield = 1
+	}
+	custom_tooltip = ship_part_aura_touhou_minefield_lunar_tooltip
+	hostile_aura = {
+		name = "ship_part_aura_touhou_minefield_lunar_name"
+		system_wide = yes
+		stack_info = {			#A ship can only be affected by one aura of a certain id. If multiple auras have the same ID the one with the highest priority will be applied.
+			id = ship_part_aura_touhou_minefield_lunar_alt
+			priority = 1
+		}
+		modifier = {
+			touhou_minefield_size_factor = 0.05
+		}
+		damage_per_day = {
+			accuracy = 1.0
+			damage = { min = 880 max = 1760 }
+			shield_penetration = 0.75
+			armor_penetration = 0.75
+			shield_damage = 0.20
+			armor_damage = 0.10
+			hull_damage = 0.125
+			size_damage_factor = 0.2
+		}
+		graphics = {
+			area_effect = {
+				entity = "circle_area_entity"
+				dynamic_scale = yes
+			}
+			ship_effect = {
+				entity = "touhou_pink_minefield_entity"
+				dynamic_scale = no
+			}
+		}
+	}
+	hidden = yes
+	component_set = "touhou_synaptic_lathe_arkship_aux_3"
+	ai_weight = { weight = 0 }
+}
+utility_component_template = {
+	key = "touhou_synaptic_lathe_arkship_aux_4"
+	icon = "GFX_th_ship_part_extra_life"
+	size = aux
+	icon_frame = 1
+	power = -1000
+	inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+	ship_modifier = {
+		ship_spth_extra_life = 2
+		ship_spth_extra_life_dummy = 2
+	}
+	hidden = yes
+	component_set = "touhou_synaptic_lathe_arkship_aux_4"
+	ai_weight = { weight = 0 }
+}
+utility_component_template = {
+	key = "touhou_synaptic_lathe_arkship_aux_5"
+	icon = "GFX_ship_part_touhou_ship_build_stc"
+	size = aux
+	icon_frame = 1
+	power = -1000
+	inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+	ship_modifier = {
+		ship_armor_penetration_add = 1.00
+		ship_shield_penetration_add = 1.00
+	}
+	hidden = yes
+	component_set = "touhou_synaptic_lathe_arkship_aux_5"
+	ai_weight = { weight = 0 }
+}
+utility_component_template = {
+	key = "touhou_synaptic_lathe_arkship_aux_6"
+	icon = "GFX_ship_part_touhou_kamikakushi_supressor"
+	size = aux
+	icon_frame = 1
+	power = -1000
+	inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+	modifier = {
+		ship_evasion_add = 15
+		ship_speed_mult = 0.40
+		ship_reactor_power_mult = 0.50
+		ship_reactor_power_add = 100
+	}
+	hidden = yes
+	component_set = "touhou_synaptic_lathe_arkship_aux_6"
+	ai_weight = { weight = 0 }
+}
+# makai super ship
+utility_component_template = {
+    key = "touhou_sky_control_ship_aux_shield"
+    icon = "GFX_ship_part_touhou_sky_control_ship_aux_shield"
+    size = aux
+    icon_frame = 1
+    power = -1000
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+    custom_tooltip = touhou_sky_control_ship_aux_shield_tt
+    ship_modifier = {
+        ship_has_touhou_nimble_fabric = 1
+        ship_has_touhou_nimble_fabric_crisis = 1
+    }
+    inline_script = { script = ship_components/touhou_nimble_fabric_effect tier = 5 }
+    hidden = yes
+    prerequisites = { tech_touhou_sky_control_ship }
+    component_set = "touhou_sky_control_ship_aux_shield"
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
+    key = "touhou_sky_control_ship_aux_armor"
+    icon = "GFX_ship_part_touhou_sky_control_ship_aux_armor"
+    size = aux
+    icon_frame = 1
+    power = -1000
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+    modifier = {
+        ship_hull_mult = 0.25
+    }
+    ship_modifier = {
+        # touhou_ship_aoe_damage_reduction_mult = 0.99
+        # touhou_ship_aoe_damage_reduction_add = 1280
+        ship_spth_extra_life = 2
+        ship_spth_extra_life_dummy = 2
+    }
+    # triggered_ship_modifier = {
+    #     potential = { spth_has_ag_mod = yes }
+    #     ag_ship_aoe_damage_reduction = 1
+    # }
+    hidden = yes
+    prerequisites = { tech_touhou_sky_control_ship }
+    component_set = "touhou_sky_control_ship_aux_armor"
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
+    key = "touhou_sky_control_ship_aux_reapers"
+    icon = "GFX_ship_part_spth_komachi_sickle"
+    size = aux
+    icon_frame = 1
+    power = -1000
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+    custom_tooltip = touhou_sky_control_ship_aux_reapers_tt
+    ship_modifier = {
+        ship_armor_penetration_add = 1.00
+        ship_shield_penetration_add = 1.00
+    }
+    hidden = yes
+    prerequisites = { tech_touhou_sky_control_ship }
+    component_set = "touhou_sky_control_ship_aux_reapers"
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
+    key = "touhou_sky_control_ship_aux_wither"
+    icon = "GFX_ship_part_aura_touhou_minefield_lunar"
+    size = aux
+    icon_frame = 1
+    power = -1000
+    inline_script = { script = ship_components/spth_component_resources class = common size = utility type = ship_shrine }
+    ship_modifier = {
+        # custom_tooltip = ship_part_aura_touhou_minefield_tooltip
+        has_ship_part_aura_touhou_minefield = 1
+    }
+    hostile_aura = {
+        name = "touhou_sky_control_ship_aux_wither_aura"
+        system_wide = yes
+        stack_info = {			#A ship can only be affected by one aura of a certain id. If multiple auras have the same ID the one with the highest priority will be applied.
+            id = touhou_sky_control_ship_aux_wither_aura
+            priority = 1
+        }
+        modifier = {
+            has_ship_part_aura_touhou_minefield_target = 1
+            touhou_minefield_size_factor = 0.05
+        }
+        damage_per_day = {
+            accuracy = 1.0
+            damage = { min = 96 max = 128 }
+            shield_penetration = 0.5
+            armor_penetration = 0.5
+            shield_damage = 1.75
+            armor_damage = 0.75
+            hull_damage = 1.10
+            size_damage_factor = 0.2
+        }
+        graphics = {
+            area_effect = {
+                entity = "circle_area_entity"
+                dynamic_scale = yes
+            }
+            ship_effect = {
+                entity = "touhou_pink_minefield_entity"
+                dynamic_scale = no
+            }
+        }
+    }
+    hidden = yes
+    prerequisites = { tech_touhou_sky_control_ship }
+    component_set = "touhou_sky_control_ship_aux_wither"
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
+    key = "touhou_sky_control_ship_any_weapon"
+    icon = "GFX_th_ship_part_lumiya"
+    size = extra_large
+    icon_frame = 1
+    power = -10240
+    ship_modifier = {
+        ship_reapers_instant_kill = 0.5
+        touhou_sky_control_ship_target_max_add = 0.5
+    }
+    hidden = yes
+    prerequisites = { tech_touhou_sky_control_ship }
+    component_set = "touhou_sky_control_ship_any_weapon"
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
+    key = "touhou_sky_control_ship_shield"
+    size = large
+    icon = "GFX_th_shield_jiejie_psionic"
+    icon_frame = 1
+    power = -1000
+    modifier = {
+        ship_shield_add = @touhou_shield_component_shield_lvl_4_l
+        ship_shield_regen_add_static = @touhou_shield_component_shield_regen_lvl_4_l
+        ship_armor_add = @touhou_shield_component_armor_lvl_4_l
+        ship_armor_regen_add_static = @touhou_shield_component_armor_regen_lvl_4_l
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = @touhou_armor_damage_reduction_lvl_4_l
+        ship_shield_hardening_add = @touhou_defensive_comp_hardening_lvl_5
+    }
+    hidden = yes
+    prerequisites = { "tech_touhou_sky_control_ship" }
+    component_set = "touhou_sky_control_ship_shield"
+    ai_weight = { weight = 0 }
+}
+utility_component_template = {
+    key = "touhou_sky_control_ship_armor"
+    size = large
+    icon = "GFX_th_armor_psionic"
+    icon_frame = 1
+    power = -1000
+    modifier = {
+        ship_armor_add = @touhou_armor_component_armor_lvl_3_m
+        ship_armor_regen_add_static = @touhou_armor_component_armor_regen_lvl_3_m
+        ship_hull_add = @touhou_armor_component_hull_lvl_3_m
+        ship_hull_regen_add_static = @touhou_armor_component_hull_regen_lvl_3_m
+    }
+    ship_modifier = {
+        ship_damage_reduction_add = @touhou_armor_damage_reduction_lvl_4_l
+        ship_armor_hardening_add = @touhou_defensive_comp_hardening_lvl_5
+    }
+    hidden = yes
+    prerequisites = { "tech_touhou_sky_control_ship" }
+    component_set = "touhou_sky_control_ship_armor"
+    ai_weight = { weight = 0 }
+}
+weapon_component_template = {
+    key = "touhou_sky_control_ship_starkiller"
+    entity = touhou_sky_control_core_entity
+    icon = "GFX_ship_part_kamikakushi_reactor"
+    firing_arc = 30.0
+    should_ai_use = no
+    prerequisites = { "tech_touhou_sky_control_ship" }
+    component_set = "touhou_sky_control_ship_starkiller"
+    projectile_gfx = "th_gravity_cannon_t_sp_weapon_pink"
+    tags = { weapon_type_energy weapon_type_lingli weapon_archaeotech weapon_type_makai_instant_kill }
+    ai_tags = { weapon_role_anti_hull }
+    hidden = yes
+    ai_tag_weight = 0
+    inline_script = { script = ship_components/spth_component_all size = titanic type = instant }
+    inline_script = { script = ship_components/spth_component_attributes_no_scale name = instant_kill_makai tag = sky_control type = titanic }
+    inline_script = { script = ship_components/spth_component_resources class = instant_kill size = weapon type = titanic }
+    ship_modifier = {
+        custom_tooltip = touhou_sky_control_ship_starkiller_tt
+        show_only_custom_tooltip = no
+        ship_reapers_instant_kill = 2
+        touhou_sky_control_ship_attack_system = 1
+    }
+    on_hit = {
+        custom_tooltip = touhou_sky_control_ship_starkiller_on_hit
+        hidden_effect = { ship_reapers_instant_kill_on_hit = { base_dmg = 7680 } }
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    target_focus = spread
+}
+weapon_component_template = {
+    key = "touhou_sky_control_ship_starkiller_alt"
+    entity = touhou_sky_control_core_engage_weapon_entity
+    icon = "GFX_ship_part_kamikakushi_reactor"
+    firing_arc = 30.0
+    should_ai_use = no
+    prerequisites = { "tech_touhou_sky_control_ship" }
+    component_set = "touhou_sky_control_ship_starkiller"
+    projectile_gfx = "th_gravity_cannon_t_sp_weapon_pink"
+    tags = { weapon_type_energy weapon_type_lingli weapon_archaeotech weapon_type_makai_instant_kill }
+    ai_tags = { weapon_role_anti_hull }
+    hidden = yes
+    ai_tag_weight = 0
+    inline_script = { script = ship_components/spth_component_all size = titanic type = instant }
+    inline_script = { script = ship_components/spth_component_attributes_no_scale name = instant_kill_makai tag = sky_control type = titanic }
+    inline_script = { script = ship_components/spth_component_resources class = instant_kill size = weapon type = titanic }
+    ship_modifier = {
+        custom_tooltip = touhou_sky_control_ship_starkiller_tt
+        show_only_custom_tooltip = no
+        ship_reapers_instant_kill = 2
+        touhou_sky_control_ship_attack_system = 1
+    }
+    on_hit = {
+        custom_tooltip = touhou_sky_control_ship_starkiller_on_hit
+        hidden_effect = { ship_reapers_instant_kill_on_hit = { base_dmg = 7680 } }
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    target_focus = spread
+}
+weapon_component_template = {
+    key = "touhou_sky_control_ship_petascale"
+    icon = "GFX_ship_part_touhou_yuyuko_barrier"
+    firing_arc = 30.0
+    should_ai_use = no
+    prerequisites = { "tech_touhou_sky_control_ship" }
+    component_set = "touhou_sky_control_ship_petascale"
+    projectile_gfx = "spth_makai_superlaser_peta"
+    tags = { weapon_type_energy weapon_type_lingli peta_slot artillery weapon_archaeotech weapon_type_reimu }
+    ai_tags = { weapon_role_anti_hull }
+    hidden = yes
+    ai_tag_weight = 0
+    inline_script = { script = ship_components/spth_component_all size = titanic type = instant }
+    inline_script = { script = ship_components/spth_component_attributes name = petascale_makai tag = sky_control type = titanic }
+    inline_script = { script = ship_components/spth_component_resources class = instant_kill size = weapon type = titanic }
+    on_hit = {
+        # custom_tooltip = touhou_sky_control_ship_petascale_on_hit
+        custom_tooltip = touhou_sky_control_ship_petascale_aoe
+        hidden_effect = {
+            if = {
+                limit = { exists = from from = { NOT = { has_ship_flag = touhou_sky_control_ship_petascale_cooldown } } }
+                set_timed_ship_flag = { flag = touhou_sky_control_ship_petascale_cooldown days = 10 }
+                solar_system = {
+                    every_ship_in_system = {
+                        limit = {
+                            exists = controller controller = { is_hostile = root.from.owner }
+                            distance = { same_solar_system = yes source = prevprev max_distance <= 100 }
+                        }
+                        add_modifier = {
+                            modifier = touhou_sky_control_ship_petascale_aoe
+                            days = 4 mult = value:touhou_sky_control_ship_petascale_aoe_damage
+                        }
+                    }
+                }
+            }
+        }
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    target_focus = spread
+}
+weapon_component_template = {
+    key = "touhou_sky_control_ship_gigantic"
+    icon = "GFX_ship_part_common_bow"
+    firing_arc = 90.0
+    should_ai_use = no
+    prerequisites = { "tech_touhou_sky_control_ship" }
+    component_set = "touhou_makai_wedge_titan_gigantic"
+    projectile_gfx = "touhou_makai_superlaser"
+    tags = { weapon_type_energy weapon_type_lingli giga_slot artillery weapon_archaeotech weapon_type_reimu }
+    ai_tags = { weapon_role_anti_hull }
+    hidden = yes
+    ai_tag_weight = 0
+    inline_script = { script = ship_components/spth_component_all size = titanic type = instant }
+    inline_script = { script = ship_components/spth_component_attributes name = gigantic_makai tag = sky_control type = titanic }
+    inline_script = { script = ship_components/spth_component_resources class = instant_kill size = weapon type = titanic }
+    on_hit = {
+        custom_tooltip = touhou_random_neg_pos_weapon_hit_effect
+        custom_tooltip = touhou_sky_control_ship_gigantic_on_hit
+        hidden_effect = {
+            if = {
+                limit = {
+                    NOT = { has_ship_flag = touhou_sky_control_ship_gigantic_hit_cooldown }
+                }
+                set_timed_ship_flag = { flag = touhou_sky_control_ship_gigantic_hit_cooldown days = 10 }
+                add_modifier = { modifier = touhou_sky_control_ship_gigantic_on_hit days = 8 mult = modifier:ship_damage_reduction_add }
+                add_modifier = { modifier = touhou_sky_control_ship_gigantic_regen_static days = 8 mult = modifier:ship_armor_regen_add_static }
+            }
+        }
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = @touhou_components_basic_weight }
+    target_focus = spread
+    size_damage_factor = @spth_titanic_yuzhu_size_damage_factor
+}
+weapon_component_template = {
+    key = "touhou_makai_solg_ship_primary_weapon"
+    # entity = touhou_sky_control_core_entity
+    icon = "GFX_ship_part_kamikakushi_reactor"
+    firing_arc = 30.0
+    should_ai_use = no
+    prerequisites = { "tech_touhou_sky_control_ship" }
+    component_set = "touhou_makai_solg_ship_primary_weapon"
+    projectile_gfx = "th_gravity_cannon_t_sp_weapon_pink"
+    tags = { weapon_type_makai_solg }
+    ai_tags = { weapon_role_anti_hull }
+    hidden = yes
+    ai_tag_weight = 0
+    icon_frame = 1
+    prio_projectile = yes
+    size = titanic
+    type = instant
+    damage = { min = 0 max = 0 }
+    windup = { min = 4000 max = 12000 }
+    total_fire_time = 72000
+    min_range = 0
+    range = 1000
+    accuracy = 2
+    tracking = 2
+    shield_penetration = 9961.13
+    armor_penetration = 9961.13
+    shield_damage = 1
+    armor_damage = 1
+    hull_damage = 1
+    power = -768000
+    inline_script = { script = ship_components/spth_component_resources class = instant_kill size = weapon type = titanic }
+    hide_damage_values_from_tooltip = yes
+    ship_modifier = {
+        custom_tooltip = touhou_makai_solg_ship_primary_weapon_lore
+        show_only_custom_tooltip = no
+        # time / 1000 = 80, time = 80000
+        weapon_type_makai_solg_weapon_fire_rate_mult = 1000
+        # ship_has_touhou_engulf_weapon = 1
+    }
+    on_hit = {
+        custom_tooltip = touhou_makai_solg_ship_primary_weapon_on_hit
+    }
+    inline_script = { script = ship_components/spth_basic_ai_weight base = 0 }
+    target_focus = spread
 }

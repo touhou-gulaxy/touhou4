@@ -1,3 +1,14 @@
+touhou_always = {
+    optimize_memory
+    always = $always$
+}
+touhou_debug_print_scopes_trigger = {
+	optimize_memory
+	custom_tooltip = {
+		fail_text = TOUHOU_DEBUG_GET_SCOPES
+		always = no
+	}
+}
 touhou_has_food_upkeep = {
     optimize_memory
     is_archetype = TOUHOUGIRLS
@@ -220,6 +231,61 @@ touhou_is_lunar_capital_psi_active = {
     has_global_flag = spth_lunar_capital_psi_crisis_begin
     NOT = { has_global_flag = spth_lunar_capital_psi_crisis_ended }
 }
+touhou_is_crisis_spth_kamikaushi_crisis_active = {
+    optimize_memory
+    has_global_flag = spth_kamikaushi_crisis_start
+    NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
+}
+touhou_is_crisis_ai_invasion_active = {
+    optimize_memory
+    has_global_flag = ai_invasion_happened
+    NOT = { has_global_flag = ai_invasion_defeated }
+}
+touhou_is_crisis_extradimensional_invasion_active = {
+    optimize_memory
+    has_global_flag = extradimensional_invasion_happened
+    NOT = { has_global_flag = extradimensional_invasion_defeated }
+}
+touhou_is_crisis_prethoryn_invasion_active = {
+    optimize_memory
+    has_global_flag = prethoryn_invasion_happened
+    NOT = { has_global_flag = prethoryn_invasion_defeated }
+}
+touhou_is_crisis_synth_queen_active = {
+    optimize_memory
+    has_global_flag = synth_queen_happened
+    NOT = { has_global_flag = synth_queen_defeated }
+}
+touhou_is_crisis_ag_gamma_crisis_active = {
+    optimize_memory
+    has_global_flag = ag_gamma_crisis_began
+    NOT = { has_global_flag = ag_gamma_crisis_ended }
+}
+touhou_is_crisis_ag_zeta_crisis_stage_active = {
+    optimize_memory
+    has_global_flag = ag_zeta_crisis_stage_1
+    NOT = { has_global_flag = ag_zeta_crisis_stage_ended }
+}
+touhou_is_crisis_kuat_extramonster_active = {
+    optimize_memory
+    has_global_flag = kuat_extramonster_begin
+    NOT = { has_global_flag = kuat_extramonster_ended }
+}
+touhou_is_crisis_ag_kae_ge_invasion_active = {
+    optimize_memory
+    has_global_flag = ag_kae_ge_invasion_begin
+    NOT = { has_global_flag = ag_kae_ge_invasion_ended }
+}
+touhou_is_crisis_Kuat_Rakata_invasion_active = {
+    optimize_memory
+    has_global_flag = Kuat_Rakata_invasion_happened
+    NOT = { has_global_flag = Kuat_Rakata_invasion_ended }
+}
+touhou_is_crisis_exe_invasion_active = {
+    optimize_memory
+    has_global_flag = exe_invasion_begin
+    NOT = { has_global_flag = exe_invasion_ended }
+}
 touhou_is_shroud_inhibited = {
     optimize_memory
     OR = {
@@ -243,16 +309,34 @@ spth_trigger_planet_barrier_capacity_can_hold = {
 
 touhou_has_ship_action = {
     optimize_memory
-    spth_check_gensokyo_auth = yes
-    any_owned_ship = { check_modifier_value = { modifier = ship_has_touhou_action value > 0 } }
-    # any_owned_ship = { is_touhou_ship = yes }
+	custom_tooltip = {
+		fail_text = "cannot_use_touhou_ship_action"
+		success_text = "can_use_touhou_ship_action"
+		spth_check_gensokyo_auth = yes
+		any_owned_ship = {
+            OR = {
+                check_modifier_value = { modifier = "ship_has_touhou_action" value > 0 }
+                check_modifier_value = { modifier = "ag_allow_ship_action" value > 0 }
+                check_modifier_value = { modifier = "ag_triggered_allow_ship_action" value > 0 }
+            }
+        }
+		# any_owned_ship = { is_touhou_ship = yes }
+	}
 }
 
 spth_fleet_has_special_leader = {
     optimize_memory
     fromfrom = {
-        exists = leader
+        # exists = leader
         OR = {
+            any_controlled_ship = {
+                OR = {
+                    # check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 }
+                    check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 }
+                    check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 }
+                    check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 }
+                }
+            }
             AND = {
                 check_modifier_value = { modifier = fleet_th_has_tenshi value != 0 }
                 NOT = { has_fleet_flag = has_tenshi_aura_effect }
@@ -291,6 +375,15 @@ spth_fleet_has_special_leader = {
             check_modifier_value = { modifier = fleet_has_touhou_yuyuko_death value != 0 }
             check_modifier_value = { modifier = fleet_touhou_era_armor_duration value > 0 }
             check_modifier_value = { modifier = fleet_touhou_touhou_firepower_lvl value > 0 }
+            check_modifier_value = { modifier = fleet_has_touhou_shinki value > 0 }
+            check_modifier_value = { modifier = fleet_th_has_momiji value > 0 }
+            check_modifier_value = { modifier = fleet_th_has_satsuki_rin value > 0 }
+            check_modifier_value = { modifier = fleet_th_has_lku value > 0 }
+            check_modifier_value = { modifier = fleet_th_has_matara value > 0 }
+            check_modifier_value = { modifier = fleet_th_has_gengetsu_and_mugetsu value > 0 }
+            check_modifier_value = { modifier = fleet_th_has_mugetsu value > 0 }
+            check_modifier_value = { modifier = fleet_th_has_gengetsu value > 0 }
+            check_modifier_value = { modifier = fleet_convert_evasion_to_damage_reduction value > 0 }
         }
     }
 }
@@ -338,19 +431,22 @@ spth_has_lunar_capital_psi_crisis = {
 }
 spth_can_not_jump_in_system = {
     optimize_memory
-    OR = {
-        has_star_flag = lcluster
-        has_star_flag = wg_sealed_system
-        has_star_flag = ag_no_jump_in_system
-        has_star_flag = spth_no_jump_in_system
-        has_star_flag = Kuat_empire_system
-        has_star_flag = outercluster
-        has_star_flag = kuat_initial_system
-        has_star_flag = spth_enclave_system
-        has_star_flag = spth_precursor_capital_makai
-        has_star_flag = spth_system
-        has_star_flag = ag_ancient_system
-    }
+	custom_tooltip = {
+		fail_text = cannot_jump_to_system
+		OR = {
+			has_star_flag = lcluster
+			has_star_flag = wg_sealed_system
+			has_star_flag = ag_no_jump_in_system
+			has_star_flag = spth_no_jump_in_system
+			has_star_flag = Kuat_empire_system
+			has_star_flag = outercluster
+			has_star_flag = kuat_initial_system
+			has_star_flag = spth_enclave_system
+			has_star_flag = spth_precursor_capital_makai
+			has_star_flag = spth_system
+			has_star_flag = ag_ancient_system
+		}
+	}
 }
 spth_can_not_star_killer_hit_system = {
     optimize_memory
@@ -377,15 +473,24 @@ spth_can_not_star_killer_hit_system = {
         has_star_flag = ag_no_star_killer_target_system
         has_star_flag = kuat_cannot_be_hit_by_starkillerbase
         has_star_flag = cannot_be_hit_by_aow_starfall_spear
+		has_star_flag = spth_kamikaushi_crisis_gate_1
+        has_star_flag = spth_kamikaushi_crisis_gate_2
+        has_star_flag = spth_kamikaushi_crisis_gate_3
+		has_star_flag = spth_kamikaushi_system_special
+		has_star_flag = spth_story_lunar_capital_aethon
+        has_star_flag = spth_story_lunar_capital_union_system
+        has_star_flag = spth_story_lunar_capital_cluster34
+		has_star_flag = spth_story_lunar_capital_toyohime
+		has_star_flag = spth_lunar_capital_psi_sub_gate_in_system
     }
 }
 touhou_cannot_destroyed_by_end_of_the_cycle = {
     optimize_memory
     OR = {
-        has_star_flag = spth_system
-        has_star_flag = spth_story_lunar_capital_toyohime
-        has_star_flag = spth_lunar_capital_psi_sub_gate_in_system
-        ag_is_ancient_system = yes
+        ag_is_common_country = yes
+		is_touhou_crisis_faction = yes
+        is_touhou_other_faction = yes
+		has_country_flag = touhou_cannot_destroyed_by_end_of_the_cycle
     }
 }
 touhou_system_cannot_destroyed_by_crisis = {
@@ -452,9 +557,28 @@ touhou_is_known_crisis_faction = {
         is_country_type = awakened_marauders
         is_country_type = wg_crisis_country
         is_country_type = afk_crisis_country
+        is_country_type = spth_kamikakushi_country
+        is_country_type = spth_makai_defence_system_crisis
         is_country_type = spth_lunar_capital_psi_fleet
+        is_country_type = touhou_mirror_empire
+        is_country_type = touhou_dreamworld
         is_country_type = ag_zeta_crisis_country
         is_country_type = ag_ancient_gamma_guardian
+    }
+}
+touhou_is_known_crisis_about_to_happen = {
+    optimize_memory
+    OR = {
+        touhou_is_lunar_capital_psi_active = yes
+        touhou_is_crisis_ag_gamma_crisis_active = yes
+        touhou_is_crisis_ag_kae_ge_invasion_active = yes
+        touhou_is_crisis_ag_zeta_crisis_stage_active = yes
+        touhou_is_crisis_ai_invasion_active = yes
+        touhou_is_crisis_exe_invasion_active = yes
+        touhou_is_crisis_extradimensional_invasion_active = yes
+        touhou_is_crisis_prethoryn_invasion_active = yes
+        touhou_is_crisis_spth_kamikaushi_crisis_active = yes
+        touhou_is_crisis_synth_queen_active = yes
     }
 }
 
@@ -541,8 +665,39 @@ is_touhou_crisis_faction = {
         is_country_type = spth_lunar_capital_union_fleet
         is_country_type = spth_lunar_capital_psi_fleet
         is_country_type = touhou_fe_union_titan_hostile
+        is_country_type = touhou_fe_union_materialist_hostile
+        is_country_type = touhou_makai_netural
         is_country_type = touhou_mirror_empire
         is_country_type = touhou_dreamworld
+        is_country_type = touhou_boss_seija
+        is_country_type = touhou_hostile_faction_enable_move
+    }
+}
+is_touhou_lunar_crisis_faction = {
+    optimize_memory
+    OR = {
+        is_country_type = spth_fallen_empire
+        is_country_type = lunar_capital_remain_fleet
+        is_country_type = spth_lunar_capital_union_fleet
+        is_country_type = spth_lunar_capital_psi_fleet
+    }
+}
+is_touhou_known_crisis_faction = {
+    optimize_memory
+    OR = {
+        is_touhou_crisis_faction = yes
+        is_invisable_faction = yes
+        ag_is_ancient_country = yes
+    }
+}
+cannot_trigger_touhou_crisis_generic_damage_reduction = {
+    optimize_memory
+    OR = {
+        is_touhou_country = yes
+        AND = {
+            is_touhou_common_country = yes
+            check_modifier_value = { modifier = touhou_has_non_genso_spellcard_tech value != 0 }
+        }
     }
 }
 is_touhou_lunar_capital_aura_self_faction = {
@@ -585,6 +740,7 @@ has_touhou_disable = {
         }
         has_touhou_invincible = yes
         check_modifier_value = { modifier = ship_spth_extra_life value >= 0.01 }
+        # has_ship_flag = has_triggered_spth_extra_life
     }
 }
 has_touhou_invincible = {
@@ -702,8 +858,6 @@ spth_is_touhou_deposit = {
         is_deposit_type = d_gensokyo_ringworld
         is_deposit_type = d_gensokyo_ringworld_ruin
         is_deposit_type = d_gensokyo_ringworld_city
-        is_deposit_type = d_touhou_corrupted_jungle
-        is_deposit_type = d_touhou_corrupted_shroudstone
         is_deposit_type = d_touhou_living_metal_factory
         is_deposit_type = d_touhou_nanites_factory
         is_deposit_type = d_touhou_fallen_starship_lunar_capital
@@ -732,6 +886,41 @@ spth_is_touhou_deposit = {
         is_deposit_type = d_touhou_shell_world_power_station
         is_deposit_type = d_touhou_shell_world_base
         is_deposit_type = d_touhou_shell_world_ancient_city
+        is_deposit_type = d_touhou_corrupted_jungle
+        is_deposit_type = d_touhou_corrupted_swamp
+        is_deposit_type = d_touhou_corrupted_mountain
+        is_deposit_type = d_touhou_corrupted_volcano
+        is_deposit_type = d_touhou_corrupted_sinkhole
+        is_deposit_type = d_touhou_corrupted_quicksand
+        is_deposit_type = d_touhou_corrupted_glacier
+        is_deposit_type = d_touhou_corrupted_city_ruins
+        is_deposit_type = d_touhou_corrupted_corps
+        is_deposit_type = d_touhou_corrupted_moss
+        is_deposit_type = d_touhou_corrupted_wall
+        is_deposit_type = d_touhou_corrupted_fields
+        is_deposit_type = d_touhou_corrupted_statue
+        is_deposit_type = d_touhou_corrupted_pipe
+        is_deposit_type = d_touhou_corrupted_room
+        is_deposit_type = d_touhou_corrupted_kelp
+        is_deposit_type = d_touhou_corrupted_wildlives
+        is_deposit_type = d_touhou_corrupted_shroudstone
+        is_deposit_type = d_touhou_corrupted_aura_blocker
+        is_deposit_type = d_touhou_lunar_capital_fog
+        is_deposit_type = d_touhou_corrupted_jungle_swap
+        is_deposit_type = d_touhou_corrupted_swamp_swap
+        is_deposit_type = d_touhou_corrupted_mountain_swap
+        is_deposit_type = d_touhou_corrupted_volcano_swap
+        is_deposit_type = d_touhou_corrupted_sinkhole_swap
+        is_deposit_type = d_touhou_corrupted_quicksand_swap
+        is_deposit_type = d_touhou_corrupted_glacier_swap
+        is_deposit_type = d_touhou_corrupted_city_ruins_swap
+        is_deposit_type = d_touhou_corrupted_fields_swap
+        is_deposit_type = d_touhou_corrupted_kelp_swap
+        is_deposit_type = d_touhou_corrupted_wildlives_swap
+        is_deposit_type = d_touhou_corrupted_shroudstone_swap
+		is_deposit_type = d_ruins_of_eternal_space
+		is_deposit_type = d_buildings_eternal_space_relic
+		is_deposit_type = d_buildings_eternal_space
     }
 }
 spth_is_no_remove_deposit = {
@@ -948,10 +1137,7 @@ spth_subcapital_allow_pretrigger = {
     optimize_memory
     OR = {
         pop_amount >= 4000
-        has_building = building_spth_old_shirne
-        has_building = building_spth_planet_shirne
-        has_building = building_major_capital
-        has_building = building_system_capital
+        capital_tier >= 3
     }
 }
 
@@ -962,9 +1148,18 @@ use_touhou_starting_district = {
         is_planet_class = pc_gensokyo_planet
         is_planet_class = pc_spiritual_power_habitat
         is_planet_class = pc_ringworld_th
-        has_planet_flag = use_touhou_starting_district
-        has_planet_flag = has_shell_world_touhou_gensokyo_city
+		is_planet_class = pc_space_shrine
+		is_planet_class = pc_gensokyo_ringworld_arkship
+        has_carrier_flag = use_touhou_starting_district
+        has_carrier_flag = has_shell_world_touhou_gensokyo_city
     }
+}
+use_touhou_izakaya_district = {
+	optimize_memory
+	OR = {
+		is_planet_class = pc_izakaya_arkship
+		has_carrier_flag = use_touhou_izakaya_district
+	}
 }
 
 spth_is_regular_empire = {
@@ -1300,7 +1495,7 @@ touhou_never_set_terrify_ship = {
         ag_is_ancient_titan = yes
         ag_is_ancient_titan_alt = yes
         ag_is_zeta_crisis_ship = yes
-        ship_size_multiplier >= 64
+        # ship_size_multiplier >= 128
         kuat_ship_is_super_flagship = yes
         kuat_ship_is_standard_flagship = yes
         kuat_ship_is_sub_flagship = yes
@@ -1369,4 +1564,424 @@ has_touhou_mirror_empire_event_active = {
     optimize_memory
     has_global_flag = touhou_mirror_empire_crisis_begin
     NOT = { has_global_flag = touhou_mirror_empire_crisis_ended }
+}
+
+touhou_has_planetary_shield = {
+    optimize_memory
+    OR = {
+        has_building = building_planetary_shield_generator
+    }
+}
+
+has_touhou_specimen = {
+    optimize_memory
+    custom_tooltip = {
+        fail_text = edict_spth_specimen_focus_allow
+        check_modifier_value = { modifier = specimen_has_touhou_item value > 0 }
+    }
+}
+
+check_helldiver_seq_detail = {
+    optimize_memory
+    has_country_flag = helldiver_seq_$type$_$sub_type$_set
+    is_variable_set = helldiver_seq_$type$_$sub_type$_type
+    check_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_$idx$ }
+}
+
+# @touhou_helldiver_stratagem_code_up = 1
+# @touhou_helldiver_stratagem_code_down = 2
+# @touhou_helldiver_stratagem_code_left = 3
+# @touhou_helldiver_stratagem_code_right = 4
+touhou_helldiver_stratagem_code_check_confirmed = {
+    optimize_memory
+    OR = {
+        NOT = { is_variable_set = touhou_helldiver_stratagem_code_cur_pos }
+        check_variable = { which = touhou_helldiver_stratagem_code_cur_pos value $rel$ $idx$ }
+    }
+}
+touhou_helldiver_stratagem_code_check_direction = {
+    optimize_memory
+    is_variable_set = touhou_helldiver_stratagem_code_res_seq_$idx$
+    check_variable = {
+        which = touhou_helldiver_stratagem_code_res_seq_$idx$
+        value = @touhou_helldiver_stratagem_code_$dir$
+    }
+}
+
+touhou_sky_controll_stratagem_check_confirmed = {
+    optimize_memory
+    OR = {
+        NOT = { is_variable_set = touhou_sky_controll_stratagem_cur_pos }
+        check_variable = { which = touhou_sky_controll_stratagem_cur_pos value $rel$ $idx$ }
+    }
+}
+touhou_sky_controll_stratagem_check_direction = {
+    optimize_memory
+    is_variable_set = touhou_sky_controll_stratagem_res_seq_$idx$
+    check_variable = {
+        which = touhou_sky_controll_stratagem_res_seq_$idx$
+        value = @touhou_sky_controll_stratagem_$dir$
+    }
+}
+
+touhou_seija_boss_title_check = {
+    optimize_memory
+    exists = event_target:is_touhou_seija_boss
+    event_target:is_touhou_seija_boss = {
+        is_variable_set = touhou_seija_boss_stage
+        check_variable = { which = touhou_seija_boss_stage value = $stg$ }
+        is_variable_set = touhou_seija_boss_title
+        check_variable = { which = touhou_seija_boss_title value = $idx$ }
+    }
+}
+
+touhou_gensokyo_planet_district_converted = {
+    optimize_memory
+    check_modifier_value = { modifier = touhou_$district$_converted value != 0 }
+    [[type] check_modifier_value = { modifier = touhou_$district$_swap_$type$ value != 0 } ]
+}
+
+touhou_is_psionic_country = {
+    optimize_memory
+    OR = {
+        AND = {
+            is_scope_type = country
+            is_psionic = yes
+        }
+        AND = {
+            OR = {
+                is_scope_type = megastructure
+                is_scope_type = situation
+                is_scope_type = starbase
+                is_scope_type = leader
+                is_scope_type = planet
+                is_scope_type = fleet
+                is_scope_type = ship
+                is_scope_type = army
+                is_scope_type = pop
+            }
+            exists = owner
+            owner = { is_psionic = yes }
+        }
+    }
+}
+
+touhou_is_spaceborn_creature = {
+    optimize_memory
+    OR = {
+        is_ship_size = space_amoeba
+        is_ship_size = space_amoeba_mother
+        is_ship_size = space_amoeba_centenarian
+
+        is_ship_size = space_whale_1
+        is_ship_size = space_whale_2
+        is_ship_size = space_whale_3
+        is_ship_size = space_whale_4
+        is_ship_size = space_whale_5
+
+        is_ship_size = reanimated_space_amoeba
+        is_ship_size = reanimated_space_amoeba_mother
+        is_ship_size = reanimated_space_amoeba_centenarian
+
+        is_ship_size = reanimated_space_whale_1
+        is_ship_size = reanimated_space_whale_2
+        is_ship_size = reanimated_space_whale_3
+        is_ship_size = reanimated_space_whale_4
+
+        is_ship_size = crystal_ship_small_blue
+        is_ship_size = crystal_ship_medium_blue
+        is_ship_size = crystal_ship_large_blue
+        is_ship_size = crystal_ship_small_green
+        is_ship_size = crystal_ship_medium_green
+        is_ship_size = crystal_ship_large_green
+        is_ship_size = crystal_ship_small_yellow
+        is_ship_size = crystal_ship_medium_yellow
+        is_ship_size = crystal_ship_large_yellow
+        is_ship_size = crystal_ship_small_red
+        is_ship_size = crystal_ship_medium_red
+        is_ship_size = crystal_ship_large_red
+        is_ship_size = crystal_ship_small_blue_elite
+        is_ship_size = crystal_ship_medium_blue_elite
+        is_ship_size = crystal_ship_large_blue_elite
+        is_ship_size = crystal_ship_small_green_elite
+        is_ship_size = crystal_ship_medium_green_elite
+        is_ship_size = crystal_ship_large_green_elite
+        is_ship_size = crystal_ship_small_yellow_elite
+        is_ship_size = crystal_ship_medium_yellow_elite
+        is_ship_size = crystal_ship_large_yellow_elite
+        is_ship_size = crystal_ship_small_red_elite
+        is_ship_size = crystal_ship_medium_red_elite
+        is_ship_size = crystal_ship_large_red_elite
+        is_ship_size = crystal_station_large
+
+        is_ship_size = space_cloud
+        is_ship_size = lesser_space_cloud
+
+        is_ship_size = leviathan_01_elder_tiyanki
+        is_ship_size = reanimated_leviathan_01_elder_tiyanki
+        is_ship_size = space_dragon_red
+        is_ship_size = space_dragon_blue
+        is_ship_size = reanimated_space_dragon_red
+        is_ship_size = reanimated_space_dragon_blue
+        is_ship_size = space_dragon_baby
+        is_ship_size = space_dragon_origin
+        is_ship_size = reanimated_space_dragon_origin
+        is_ship_size = space_dragon_origin_baby
+        is_ship_size = leviathan_01_voidspawn
+        is_ship_size = reanimated_leviathan_01_voidspawn
+        is_ship_size = voidspawn_boss
+        is_ship_size = stellarite
+        is_ship_size = dimensional_horror
+
+        is_ship_size = voidworms_small
+        is_ship_size = voidworms_medium
+        is_ship_size = voidworms_large
+        is_ship_size = voidworms_titan
+        is_ship_size = voidworm_nest
+
+        is_ship_size = cutholoids_hatchling
+        is_ship_size = cutholoids_juvenile
+        is_ship_size = cutholoids
+
+        is_ship_size = reanimated_voidworms_small
+        is_ship_size = reanimated_voidworms_medium
+        is_ship_size = reanimated_voidworms_large
+        is_ship_size = reanimated_voidworms_titan
+
+        is_ship_size = reanimated_cutholoids_hatchling
+        is_ship_size = reanimated_cutholoids_juvenile
+        is_ship_size = reanimated_cutholoids
+
+        is_ship_size = psionic_avatar
+        is_ship_size = corrupted_avatar
+        is_ship_size = shroud_manifestation
+        is_ship_size = warped_consciousness
+
+        is_ship_size = spth_kedama_small
+    }
+}
+touhou_is_leviathan_creature = {
+    optimize_memory
+    OR = {
+        is_ship_size = leviathan_01_elder_tiyanki
+        is_ship_size = reanimated_leviathan_01_elder_tiyanki
+        is_ship_size = space_dragon_red
+        is_ship_size = space_dragon_blue
+        is_ship_size = reanimated_space_dragon_red
+        is_ship_size = reanimated_space_dragon_blue
+        is_ship_size = space_dragon_baby
+        is_ship_size = space_dragon_origin
+        is_ship_size = reanimated_space_dragon_origin
+        is_ship_size = space_dragon_origin_baby
+        is_ship_size = leviathan_01_voidspawn
+        is_ship_size = reanimated_leviathan_01_voidspawn
+        is_ship_size = stellarite
+        is_ship_size = dimensional_horror
+        is_ship_size = leviathan_01_scavenger_bot
+        is_ship_size = sphere
+        is_ship_size = npc_warship_01
+    }
+}
+is_lunar_capital_psi_corruptable_ship = {
+    optimize_memory
+    OR = {
+        touhou_is_leviathan_creature = yes
+        is_ship_size = large_ship_ed
+        is_ship_size = medium_ship_ed
+        is_ship_size = small_ship_ed
+        is_ship_size = psionic_avatar
+        is_ship_size = corrupted_avatar
+        is_ship_size = shroud_manifestation
+        is_ship_size = warped_consciousness
+        is_ship_size = spth_kedama_small
+    }
+}
+is_lunar_capital_faction = {
+    optimize_memory
+    OR = {
+		is_country_type = spth_fallen_empire
+        is_country_type = lunar_capital_remain_fleet
+        is_country_type = spth_crisis_lunar_outpost
+        is_country_type = spth_lunar_capital_psi_fleet
+        is_country_type = spth_lunar_capital_union_fleet
+        AND = {
+            is_country_type = touhou_hostile_faction_enable_move
+            has_country_flag = touhou_hostile_faction_type_lunar_capital_psi_before
+        }
+    }
+}
+is_kamikakushi_faction = {
+	optimize_memory
+	OR = {
+		is_country_type = spth_kamikakushi_invader
+		is_country_type = spth_kamikakushi_diplomacy
+		is_country_type = spth_kamikakushi_country
+		is_country_type = spth_fallen_empire_kamikakushi
+		is_country_type = spth_awaken_empire_kamikakushi
+	}
+}
+is_makai_faction = {
+	optimize_memory
+	OR = {
+		is_country_type = spth_makai_defence_system_crisis
+		is_country_type = touhou_makai_netural
+	}
+}
+
+touhou_is_ship_planet = {
+    optimize_memory
+	ship? = { exists = colony }
+}
+
+touhou_cannot_attack_system = {
+    optimize_memory
+	solar_system = {
+		OR = {
+			custom_tooltip = {
+				fail_text = spth_requires_no_jamming_system
+				has_star_flag = touhou_signal_jammer_tower_jamming_system
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_kamikakushi_system
+				OR = {
+					has_star_flag = spth_kamikaushi_system_special
+					has_star_flag = spth_kamikaushi_crisis_gate_1
+					has_star_flag = spth_kamikaushi_crisis_gate_2
+					has_star_flag = spth_kamikaushi_crisis_gate_3
+				}
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_lunar_system
+				OR = {
+					has_star_flag = spth_story_lunar_capital_aethon
+					has_star_flag = spth_story_lunar_capital_union_system
+					has_star_flag = spth_story_lunar_capital_cluster34
+					has_star_flag = spth_story_lunar_capital_toyohime
+					has_star_flag = spth_lunar_capital_psi_sub_gate_in_system
+				}
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_touhou_system
+				has_star_flag = spth_system
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_contingency_system
+				any_system_planet = {
+					is_planet_class = pc_ai
+					exists = owner
+					owner = { is_country_type = ai_empire }
+				}
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_exd_system
+				any_ship_in_system = { is_ship_size = dimensional_portal_ed }
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_zeta_crisis_system
+				any_ship_in_system = {
+					OR = {
+						is_ship_size = ag_zeta_crisis_portal
+						is_ship_size = ag_zeta_crisis_psionic_storm
+						is_ship_size = ag_zeta_crisis_psionic_singularity
+					}
+				}
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_ancient_system
+				ag_is_ancient_system = yes
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_roz_outland_system
+				has_star_flag = roz_outland_system
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_roz_abyss_system
+				has_star_flag = roz_abyss_fleet_outpost_system
+			}
+			custom_tooltip = {
+				fail_text = spth_requires_no_special_system
+				OR = {
+					has_star_flag = spth_no_star_killer_target_system
+					has_star_flag = ag_no_star_killer_target_system
+					has_star_flag = kuat_cannot_be_hit_by_starkillerbase
+					has_star_flag = cannot_be_hit_by_aow_starfall_spear
+				}
+			}
+		}
+	}
+}
+
+# is_country_type = spth_kamikakushi_invader
+# is_country_type = spth_kamikakushi_diplomacy
+# is_country_type = spth_kamikakushi_country
+# is_country_type = spth_makai_defence_system_crisis
+# is_country_type = spth_crisis_lunar_outpost
+# is_country_type = spth_fallen_empire
+# is_country_type = spth_fallen_empire_kamikakushi
+# is_country_type = spth_fallen_empire_hiffu
+# is_country_type = spth_awaken_empire_kamikakushi
+# is_country_type = lunar_capital_remain_fleet
+# is_country_type = spth_lunar_capital_union_fleet
+# is_country_type = spth_lunar_capital_psi_fleet
+# is_country_type = touhou_fe_union_titan_hostile
+# is_country_type = touhou_fe_union_materialist_hostile
+# is_country_type = touhou_makai_netural
+# is_country_type = touhou_mirror_empire
+# is_country_type = touhou_dreamworld
+# is_country_type = touhou_boss_seija
+# is_country_type = touhou_hostile_faction_enable_move
+touhou_is_dyson_gun_cannot_attack_system = {
+	optimize_memory
+	OR = {
+		has_star_flag = touhou_signal_jammer_tower_jamming_system
+		has_star_flag = spth_kamikaushi_system_special
+		has_star_flag = spth_kamikaushi_crisis_gate_1
+		has_star_flag = spth_kamikaushi_crisis_gate_2
+		has_star_flag = spth_kamikaushi_crisis_gate_3
+		has_star_flag = spth_story_lunar_capital_aethon
+		has_star_flag = spth_story_lunar_capital_union_system
+		has_star_flag = spth_story_lunar_capital_cluster34
+		has_star_flag = spth_story_lunar_capital_toyohime
+		has_star_flag = spth_lunar_capital_psi_sub_gate_in_system
+		has_star_flag = spth_makai_defence_system_home
+		has_star_flag = spth_system
+		touhou_is_dyson_gun_counterattack_system = yes
+	}
+}
+touhou_is_dyson_gun_counterattack_system = {
+	optimize_memory
+	OR = {
+        space_owner = {
+            OR = {
+                is_touhou_crisis_faction = yes
+                is_touhou_other_faction = yes
+            }
+        }
+		any_system_planet_colony = {
+			owner? = {
+                OR = {
+                    is_touhou_crisis_faction = yes
+                    is_touhou_other_faction = yes
+                }
+			}
+		}
+		any_ship_in_system = {
+			owner? = {
+                OR = {
+                    is_touhou_crisis_faction = yes
+                    is_touhou_other_faction = yes
+                }
+			}
+		}
+	}
+}
+
+touhou_has_enough_resources_list = {
+	optimize_memory
+	AND = {
+        resource_stockpile_compare = { resource = $resource_1$ value >= $value_1$ mult = value:touhou_megastructure_cost_factor }
+        [[resource_2] resource_stockpile_compare = { resource = $resource_2$ value >= $value_2$ mult = value:touhou_megastructure_cost_factor } ]
+        [[resource_3] resource_stockpile_compare = { resource = $resource_3$ value >= $value_3$ mult = value:touhou_megastructure_cost_factor } ]
+        [[resource_4] resource_stockpile_compare = { resource = $resource_4$ value >= $value_4$ mult = value:touhou_megastructure_cost_factor } ]
+	}
 }

@@ -1,0 +1,181 @@
+namespace = touhou_hostile_faction
+
+# 敌对势力通用寻路
+fleet_event = {
+    id = touhou_hostile_faction.12
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = { exists = this }
+    immediate = {
+        switch = {
+            trigger = has_fleet_flag
+            touhou_hostile_faction_type_lunar_capital_psi_before = {
+                spth_invasion_fleet_action = {
+                    ID = touhou_hostile_faction
+                    TYPE = touhou_hostile_faction_type_lunar_capital_psi_before
+                    OWNER = touhou_hostile_faction_type_lunar_capital_psi_before
+                }
+            }
+            default = {
+                spth_invasion_fleet_action = {
+                    ID = touhou_hostile_faction
+                    TYPE = touhou_hostile_faction
+                    OWNER = touhou_hostile_faction
+                }
+            }
+        }
+    }
+}
+
+# Invasion fleet action on orbit planet.
+country_event = {
+    id = touhou_hostile_faction.13
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_country_type = touhou_hostile_faction_enable_move
+        from = { has_fleet_flag = touhou_hostile_faction_enable_move }
+        fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
+    }
+    immediate = {
+        from = {
+            clear_orders = yes
+            clear_fleet_actions = this
+            fleet_event = { id = touhou_hostile_faction.12 days = 3 random = 2 }
+        }
+    }
+}
+# Invasion fleet action on win a space battle.
+country_event = {
+    id = touhou_hostile_faction.14
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        is_country_type = touhou_hostile_faction_enable_move
+        fromfrom = { fleet = { has_fleet_flag = touhou_hostile_faction_enable_move } }
+        fromfromfrom = {
+            OR = {
+                is_ship_class = shipclass_starbase
+                is_ship_class = shipclass_military
+            }
+        }
+    }
+    after = {
+        fromfrom = {
+            solar_system = {
+                every_fleet_in_system = {
+                    limit = {
+                        exists = owner
+                        owner = { is_country_type = touhou_hostile_faction_enable_move }
+                        has_fleet_flag = touhou_hostile_faction_enable_move
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = touhou_hostile_faction.12 days = 3 random = 2 }
+                }
+            }
+        }
+    }
+}
+# Check every month to prevent bugs.
+event = {
+    id = touhou_hostile_faction.15
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        OR = {
+            exists = event_target:touhou_hostile_faction
+            exists = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+        }
+    }
+    immediate = {
+        if = {
+            limit = {
+                exists = event_target:touhou_hostile_faction
+                event_target:touhou_hostile_faction = {
+                    any_owned_fleet = {
+                        exists = this
+                        is_fleet_idle = yes
+                        has_fleet_flag = touhou_hostile_faction_enable_move
+                        NAND = {
+                            exists = orbit
+                            orbit = {
+                                NOT = { is_star = yes }
+                                exists = owner
+                                owner = { is_hostile = event_target:touhou_hostile_faction }
+                                exists = controller
+                                controller = { is_hostile = event_target:touhou_hostile_faction }
+                            }
+                        }
+                    }
+                }
+            }
+            event_target:touhou_hostile_faction = {
+                every_owned_fleet = {
+                    limit = {
+                        exists = this
+                        is_fleet_idle = yes
+                        has_fleet_flag = touhou_hostile_faction_enable_move
+                        NAND = {
+                            exists = orbit
+                            orbit = {
+                                NOT = { is_star = yes }
+                                exists = owner
+                                owner = { is_hostile = event_target:touhou_hostile_faction }
+                                exists = controller
+                                controller = { is_hostile = event_target:touhou_hostile_faction }
+                            }
+                        }
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = touhou_hostile_faction.12 days = 3 random = 2 }
+                }
+            }
+        }
+        if = {
+            limit = {
+                exists = event_target:touhou_hostile_faction_type_lunar_capital_psi_before
+                event_target:touhou_hostile_faction_type_lunar_capital_psi_before = {
+                    any_owned_fleet = {
+                        exists = this
+                        is_fleet_idle = yes
+                        has_fleet_flag = touhou_hostile_faction_enable_move
+                        NAND = {
+                            exists = orbit
+                            orbit = {
+                                NOT = { is_star = yes }
+                                exists = owner
+                                owner = { is_hostile = event_target:touhou_hostile_faction_type_lunar_capital_psi_before }
+                                exists = controller
+                                controller = { is_hostile = event_target:touhou_hostile_faction_type_lunar_capital_psi_before }
+                            }
+                        }
+                    }
+                }
+            }
+            event_target:touhou_hostile_faction_type_lunar_capital_psi_before = {
+                every_owned_fleet = {
+                    limit = {
+                        exists = this
+                        is_fleet_idle = yes
+                        has_fleet_flag = touhou_hostile_faction_enable_move
+                        NAND = {
+                            exists = orbit
+                            orbit = {
+                                NOT = { is_star = yes }
+                                exists = owner
+                                owner = { is_hostile = event_target:touhou_hostile_faction_type_lunar_capital_psi_before }
+                                exists = controller
+                                controller = { is_hostile = event_target:touhou_hostile_faction_type_lunar_capital_psi_before }
+                            }
+                        }
+                    }
+                    clear_orders = yes
+                    clear_fleet_actions = this
+                    fleet_event = { id = touhou_hostile_faction.12 days = 3 random = 2 }
+                }
+            }
+        }
+    }
+}

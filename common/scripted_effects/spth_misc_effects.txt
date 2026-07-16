@@ -17,19 +17,19 @@ touhou_flower_incident_system = {
         add_event_chain_counter = {
             event_chain = touhou_flower_incident
             counter = touhou_flower_incident_our_ghost_affect_planet
-            amount = trigger:count_system_colony
+            amount = trigger:count_system_planet_colony
         }
     }
     remove_star_flag = touhou_flower_incident_stage_1
     remove_star_flag = touhou_flower_incident_stage_2
     remove_star_flag = touhou_flower_incident_stage_3
     set_star_flag = touhou_flower_incident_stage_$level$
-    every_system_colony = {
-        limit = { NOT = { has_planet_flag = touhou_flower_incident_stage_$level$ } }
-        remove_planet_flag = touhou_flower_incident_stage_1
-        remove_planet_flag = touhou_flower_incident_stage_2
-        remove_planet_flag = touhou_flower_incident_stage_3
-        set_planet_flag = touhou_flower_incident_stage_$level$
+    every_system_planet_colony = {
+        limit = { NOT = { has_carrier_flag = touhou_flower_incident_stage_$level$ } }
+        remove_carrier_flag = touhou_flower_incident_stage_1
+        remove_carrier_flag = touhou_flower_incident_stage_2
+        remove_carrier_flag = touhou_flower_incident_stage_3
+        set_carrier_flag = touhou_flower_incident_stage_$level$
         touhou_flower_incident_colony_modifier = { level = $level$ }
     }
 }
@@ -348,6 +348,8 @@ touhou_create_kedama_fleet_small = {
             set_aggro_range = 500
             set_fleet_flag = kedama
             set_fleet_flag = kedama_small
+			set_fleet_flag = touhou_standard_formation_scale_setted
+			set_formation_scale = @touhou_standard_formation_scale
         }
     }
 }
@@ -373,6 +375,8 @@ touhou_create_kedama_fleet_mid = {
             set_aggro_range = 500
             set_fleet_flag = kedama
             set_fleet_flag = kedama_mid
+			set_fleet_flag = touhou_standard_formation_scale_setted
+			set_formation_scale = @touhou_standard_formation_scale
         }
     }
 }
@@ -398,6 +402,8 @@ touhou_create_kedama_fleet_large = {
             set_aggro_range = 500
             set_fleet_flag = kedama
             set_fleet_flag = kedama_large
+			set_fleet_flag = touhou_standard_formation_scale_setted
+			set_formation_scale = @touhou_standard_formation_scale
         }
     }
 }
@@ -515,6 +521,154 @@ touhou_ac_keiki_spawn_leader_commander = {
         spth_add_trait_no_notify = { trait = leader_trait_th_skill_logistics_3 }
         set_leader_flag = touhou_ac_keiki
         save_global_event_target_as = touhou_ac_keiki_leader_@root
+    }
+}
+
+touhou_ac_dragon_god_spawn_country = {
+    optimize_memory
+    if = {
+        limit = { NOT = { exists = event_target:touhou_ac_keiki_country_@root } }
+        create_country = {
+            name = NAME_touhou_ac_dragon_god_country
+            type = touhou_ac_dragon_god_country
+            flag = root
+            species = root
+            effect = {
+                save_global_event_target_as = touhou_ac_dragon_god_country_@root
+                set_country_flag = touhou_ac_dragon_god_country
+                set_country_flag = touhou_ac_dragon_god_country_of_@root
+                set_country_flag = protected_from_queen_storm
+                set_country_flag = touhou_mod_country
+                add_modifier = { modifier = touhou_immune_from_terrify }
+            }
+        }
+        establish_communications_no_message = event_target:touhou_ac_dragon_god_country_@root
+    }
+}
+touhou_ac_satsuki_rin_remove_leader = {
+    optimize_memory
+    remove_country_flag = touhou_satsuki_rin_official_active
+    remove_country_flag = touhou_satsuki_rin_admiral_active
+    remove_country_flag = touhou_satsuki_rin_commander_active
+    if = {
+        limit = { exists = event_target:touhou_ac_satsuki_rin_leader_@root }
+        event_target:touhou_ac_satsuki_rin_leader_@root = {
+            unassign_leader = this
+            kill_leader = {
+                show_notification = no
+                fire = yes
+            }
+        }
+    } else = {
+        random_owned_leader = {
+            limit = { has_leader_flag = touhou_ac_satsuki_rin }
+            unassign_leader = this
+            kill_leader = {
+                show_notification = no
+                fire = yes
+            }
+        }
+    }
+}
+touhou_ac_lku_remove_leader = {
+    optimize_memory
+    remove_country_flag = touhou_lku_official_active
+    remove_country_flag = touhou_lku_admiral_active
+    remove_country_flag = touhou_lku_commander_active
+    if = {
+        limit = { exists = event_target:touhou_ac_lku_leader_@root }
+        event_target:touhou_ac_lku_leader_@root = {
+            unassign_leader = this
+            kill_leader = {
+                show_notification = no
+                fire = yes
+            }
+        }
+    } else = {
+        random_owned_leader = {
+            limit = { has_leader_flag = touhou_ac_lku }
+            unassign_leader = this
+            kill_leader = {
+                show_notification = no
+                fire = yes
+            }
+        }
+    }
+}
+touhou_ac_satsuki_rin_spawn_leader_official = {
+    optimize_memory
+    set_country_flag = touhou_satsuki_rin_official_active
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = satsuki_rin
+        CLASS = official
+    }
+    last_created_leader = {
+        if = {
+            limit = { NOT = { has_trait = leader_trait_touhou_psionic } }
+            spth_add_trait_no_notify = { trait = leader_trait_touhou_psionic }
+        }
+        spth_add_trait_no_notify = { trait = leader_trait_chosen }
+        spth_add_trait_no_notify = { trait = leader_trait_satsuki_rin_1 }
+        spth_add_trait_no_notify = { trait = leader_trait_touhou_from_sky }
+        set_leader_flag = touhou_ac_satsuki_rin
+        save_global_event_target_as = touhou_ac_satsuki_rin_leader_@root
+    }
+}
+touhou_ac_lku_spawn_leader_official = {
+    optimize_memory
+    set_country_flag = touhou_lku_official_active
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = lku
+        CLASS = official
+    }
+    last_created_leader = {
+        if = {
+            limit = { NOT = { has_trait = leader_trait_touhou_psionic } }
+            spth_add_trait_no_notify = { trait = leader_trait_touhou_psionic }
+        }
+        spth_add_trait_no_notify = { trait = leader_trait_th_dragon_god_3 }
+        spth_add_trait_no_notify = { trait = leader_trait_lku_1 }
+        spth_add_trait_no_notify = { trait = leader_trait_touhou_from_sky }
+        set_leader_flag = touhou_ac_lku
+        save_global_event_target_as = touhou_ac_lku_leader_@root
+    }
+}
+touhou_ac_satsuki_rin_spawn_leader_commander = {
+    optimize_memory
+    set_country_flag = touhou_satsuki_rin_official_active
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = satsuki_rin
+        CLASS = commander
+    }
+    last_created_leader = {
+        if = {
+            limit = { NOT = { has_trait = leader_trait_touhou_psionic } }
+            spth_add_trait_no_notify = { trait = leader_trait_touhou_psionic }
+        }
+        spth_add_trait_no_notify = { trait = leader_trait_chosen }
+        spth_add_trait_no_notify = { trait = leader_trait_satsuki_rin_1 }
+        spth_add_trait_no_notify = { trait = leader_trait_touhou_from_sky }
+        set_leader_flag = touhou_ac_satsuki_rin
+        save_global_event_target_as = touhou_ac_satsuki_rin_leader_@root
+    }
+}
+touhou_ac_lku_spawn_leader_commander = {
+    optimize_memory
+    set_country_flag = touhou_lku_official_active
+    spth_effect_leader_init_spawner_default_effect = {
+        ID = lku
+        CLASS = commander
+    }
+    last_created_leader = {
+        if = {
+            limit = { NOT = { has_trait = leader_trait_touhou_psionic } }
+            spth_add_trait_no_notify = { trait = leader_trait_touhou_psionic }
+        }
+        spth_add_trait_no_notify = { trait = leader_trait_th_dragon_god_3 }
+        spth_add_trait_no_notify = { trait = leader_trait_lku_1 }
+        spth_add_trait_no_notify = { trait = leader_trait_touhou_from_sky }
+        set_leader_flag = touhou_ac_lku
+        save_global_event_target_as = touhou_ac_lku_leader_@root
     }
 }
 
@@ -1102,6 +1256,23 @@ touhou_repair_ship_shield_overflow = {
         repair_shield_percentage = $perc$
     }
 }
+touhou_repair_ship_shield_overflow_static = {
+    optimize_memory
+    if = {
+        limit = { has_shield_hp <= 100000000 }
+        if = {
+            limit = {
+                check_variable_arithmetic = {
+                    which = value:spth_max_shield_value|percent|2.0|
+                    value > trigger:has_shield_hp
+                }
+            }
+            reduce_shield = value:touhou_repair_ship_shield_overflow_static|amount|$amount$|
+        }
+    } else = {
+        repair_shield_amount = $amount$
+    }
+}
 
 touhou_create_fe_ancient_ship = {
     optimize_memory
@@ -1125,24 +1296,26 @@ touhou_create_fe_ancient_ship = {
             while = { count = 20 create_ship = { random_existing_design = small_ship_fallen_empire } }
             set_fleet_flag = touhou_fe_union_ship
             set_fleet_flag = touhou_fe_union_ship_locked
+			set_fleet_flag = touhou_standard_formation_scale_setted
+			set_formation_scale = @touhou_standard_formation_scale
         }
     }
 }
 
 touhou_great_patron_dragon_accord_4_select_planet = {
     optimize_memory
-    random_owned_planet = {
+    random_owned_colony = {
         limit = {
             solar_system = {
                 has_psionic_aura = yes
                 aura_owner = { is_same_value = root }
             }
             has_deposit = d_hakurei_barrier
-            NOT = { has_planet_flag = touhou_great_patron_dragon_accord_4_planet_lock }
-            [[has_flag] has_planet_flag = touhou_great_patron_dragon_accord_4 ]
-            [[not_has_flag] NOT = { has_planet_flag = touhou_great_patron_dragon_accord_4 } ]
+            NOT = { has_carrier_flag = touhou_great_patron_dragon_accord_4_planet_lock }
+            [[has_flag] has_carrier_flag = touhou_great_patron_dragon_accord_4 ]
+            [[not_has_flag] NOT = { has_carrier_flag = touhou_great_patron_dragon_accord_4 } ]
         }
-        set_timed_planet_flag = { flag = touhou_great_patron_dragon_accord_4_planet_lock days = 1 }
+        set_timed_carrier_flag = { flag = touhou_great_patron_dragon_accord_4_planet_lock days = 1 }
         save_event_target_as = touhou_great_patron_dragon_accord_4_planet_$id$
     }
 }
@@ -1171,278 +1344,717 @@ touhou_gateway_master_node_flags_cleans_up_effect = {
     ]
 }
 
-# if = {
-#     limit = { exists = fleet fleet = { NOT = { has_fleet_flag = touhou_aoe_damage_extra_large_gungnir } } }
-#     fleet = { set_timed_fleet_flag = { flag = touhou_aoe_damage_extra_large_gungnir days = 10 } }
+touhou_damage_ship = {
+    optimize_memory
+	if = {
+		limit = { this? = { is_disabled = no } }
+		damage_ship = {
+			amount = $amount$
+			attacker = $source$
+		}
+	}
+}
+touhou_instant_kill_ship = {
+    optimize_memory
+	if = {
+		limit = { this? = { is_disabled = no } }
+		reduce_shield = @touhou_instant_kill_reduce_shield_amount
+		repair_armor_amount = @touhou_instant_kill_reduce_armor_amount
+		damage_ship = {
+			amount = @touhou_instant_kill_standard_damage
+			attacker = $source$
+		}
+	}
+}
+touhou_add_or_set_variable = {
+    optimize_memory
+	if = {
+		limit = { is_variable_set = $var$ }
+		change_variable = { which = $var$ value = $val$ }
+	} else = {
+		set_variable = { which = $var$ value = $val$ }
+	}
+}
+touhou_copy_to_debug_var = {
+    optimize_memory
+	if = {
+		limit = { has_global_flag = touhou_debug_mode is_variable_set = $var$ }
+		set_variable = { which = touhou_debug_$var$ value = $var$ }
+	}
+}
+
+# touhou_cruise_missile_fire_aoe_damage = {
+#     optimize_memory
 #     if = {
-#         limit = { exists = from }
+#         limit = { exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_touhou_cruise_missile_$type$ } } }
+#         from = { set_timed_ship_flag = { flag = touhou_aoe_damage_touhou_cruise_missile_$type$ days = 3 } }
 #         set_variable = {
-#             which = touhou_aoe_damage_extra_large_gungnir_hull
-#             value = from.value:touhou_aoe_hit_damage|size|extra_large|tag1|kinetic|tag2|gungnir|size_tag|x|layer|hull|
+#             which = touhou_aoe_damage_touhou_cruise_missile_$type$_damage
+#             value = from.value:touhou_cruise_missile_hit_damage|type|$type$|
 #         }
 #         set_variable = {
-#             which = touhou_aoe_damage_extra_large_gungnir_armor
-#             value = from.value:touhou_aoe_hit_damage|size|extra_large|tag1|kinetic|tag2|gungnir|size_tag|x|layer|armor|
+#             which = touhou_aoe_damage_touhou_cruise_missile_$type$_damage_neg
+#             value = touhou_aoe_damage_touhou_cruise_missile_$type$_damage
 #         }
-#         set_variable = { which = touhou_aoe_damage_extra_large_gungnir_armor_neg value = touhou_aoe_damage_extra_large_gungnir_armor }
-#         multiply_variable = { which = touhou_aoe_damage_extra_large_gungnir_armor_neg value = -1 }
-#         set_variable = {
-#             which = touhou_aoe_damage_extra_large_gungnir_shield
-#             value = from.value:touhou_aoe_hit_damage|size|extra_large|tag1|kinetic|tag2|gungnir|size_tag|x|layer|shield|
-#         }
-#         fleet = {
-#             every_owned_ship = {
-#                 set_timed_ship_flag = { flag = touhou_aoe_damage_extra_large_gungnir days = 10 }
+#         multiply_variable = { which = touhou_aoe_damage_touhou_cruise_missile_$type$_damage_neg value = -1 }
+#         solar_system = {
+#             every_ship_in_system = {
+#                 limit = { distance = { same_solar_system = yes source = prevprev max_distance <= $range$ } }
 #                 if = {
-#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_extra_large_gungnir_armor value <= prev.trigger:has_shield_hp } } }
-#                     reduce_shield = prevprev.touhou_aoe_damage_extra_large_gungnir_shield
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_touhou_cruise_missile_$type$_armor value <= prev.trigger:has_shield_hp } } }
+#                     reduce_shield = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_touhou_cruise_missile_$type$_damage|
 #                 } else_if = {
-#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_extra_large_gungnir_armor value <= prev.value:spth_armor_value } } }
-#                     repair_armor_amount = prevprev.touhou_aoe_damage_extra_large_gungnir_armor_neg
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_touhou_cruise_missile_$type$_armor value <= prev.value:spth_armor_value } } }
+#                     repair_armor_amount = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_touhou_cruise_missile_$type$_damage_neg|
 #                 } else = {
-#                     add_modifier = { modifier = weapon_gungnir_extra_large_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_extra_large_gungnir_hull }
+#                     add_modifier = { modifier = touhou_cruise_missile_hit_damage_modifier_$type$ days = 2 mult = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_touhou_cruise_missile_$type$_damage| }
 #                 }
 #             }
 #         }
-#         clear_variable = touhou_aoe_damage_extra_large_gungnir_armor_neg
-#     } else = {
-#         fleet = {
-#             every_owned_ship = {
-#                 set_timed_ship_flag = { flag = touhou_aoe_damage_extra_large_gungnir days = 10 }
-#                 if = {
-#                     limit = { has_shield_hp >= @touhou_aoe_damage_extra_large }
-#                     reduce_shield = @touhou_aoe_damage_extra_large
-#                 } else_if = {
-#                     limit = { check_variable_arithmetic = { which = value:spth_armor_value value >= @touhou_aoe_damage_extra_large } }
-#                     repair_armor_amount = @touhou_aoe_damage_extra_large_neg
-#                 } else = {
-#                     add_modifier = { modifier = weapon_gungnir_extra_large_hull_damage days = 2 mult = @touhou_aoe_damage_extra_large }
-#                 }
-#             }
-#         }
+#         clear_variable = touhou_aoe_damage_touhou_cruise_missile_$type$_damage
+#         clear_variable = touhou_aoe_damage_touhou_cruise_missile_$type$_damage_neg
 #     }
 # }
+# touhou_weapon_fire_aoe_damage = {
+#     optimize_memory
+#     if = {
+#         limit = { exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_$size$_$type$ } } }
+#         from = { set_timed_ship_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown } }
+#         set_variable = {
+#             which = touhou_aoe_damage_$size$_$type$_hull
+#             value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|hull|
+#         }
+#         set_variable = {
+#             which = touhou_aoe_damage_$size$_$type$_armor
+#             value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|armor|
+#         }
+#         set_variable = { which = touhou_aoe_damage_$size$_$type$_armor_neg value = touhou_aoe_damage_$size$_$type$_armor }
+#         multiply_variable = { which = touhou_aoe_damage_$size$_$type$_armor_neg value = -1 }
+#         set_variable = {
+#             which = touhou_aoe_damage_$size$_$type$_shield
+#             value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|shield|
+#         }
+#         th_spawn_explosion_particle = { color = $effect_color$ size = $effect_size$ }
+#         solar_system = {
+#             every_ship_in_system = {
+#                 limit = {
+#                     controller = { is_hostile = root.from.owner }
+#                     distance = { same_solar_system = yes source = prevprev max_distance <= $range$ }
+#                 }
+#                 set_timed_ship_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown }
+#                 if = {
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_$size$_$type$_armor value <= prev.trigger:has_shield_hp } } }
+#                     reduce_shield = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_$size$_$type$_shield|
+#                 } else_if = {
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_$size$_$type$_armor value <= prev.value:spth_armor_value } } }
+#                     repair_armor_amount = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_$size$_$type$_armor_neg|
+#                 } else = {
+#                     add_modifier = { modifier = weapon_$type$_$size$_hull_damage days = 2 mult = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_$size$_$type$_hull| }
+#                 }
+#             }
+#         }
+#         clear_variable = touhou_aoe_damage_$size$_$type$_hull
+#         clear_variable = touhou_aoe_damage_$size$_$type$_armor
+#         clear_variable = touhou_aoe_damage_$size$_$type$_shield
+#         clear_variable = touhou_aoe_damage_$size$_$type$_armor_neg
+#     }
+# }
+# touhou_weapon_fire_aoe_damage_lunar_capital = {
+#     optimize_memory
+#     if = {
+#         limit = {
+#             exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_lunar_$type$_$size$ } }
+#         }
+#         from = { set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown } }
+#         set_variable = {
+#             which = touhou_aoe_damage_lunar_$type$_$size$_hull
+#             value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
+#         }
+#         set_variable = {
+#             which = touhou_aoe_damage_lunar_$type$_$size$_armor
+#             value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
+#         }
+#         set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
+#         multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
+#         set_variable = {
+#             which = touhou_aoe_damage_lunar_$type$_$size$_shield
+#             value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
+#         }
+#         th_spawn_explosion_particle = { color = blue size = small }
+#         solar_system = {
+#             every_ship_in_system = {
+#                 limit = {
+#                     controller = { is_hostile = root.from.owner }
+#                     distance = { same_solar_system = yes source = prevprev max_distance <= $range$ }
+#                 }
+#                 set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown }
+#                 if = {
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
+#                     reduce_shield = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield|
+#                 } else_if = {
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
+#                     repair_armor_amount = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg|
+#                 } else = {
+#                     add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull| }
+#                 }
+#             }
+#         }
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_hull
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_shield
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
+#     }
+# }
+# touhou_weapon_fire_aoe_damage_lunar_gravity_cannon = {
+#     optimize_memory
+#     if = {
+#         limit = { exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_lunar_$type$_$size$ } } }
+#         from = { set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown } }
+#         set_variable = {
+#             which = touhou_aoe_damage_lunar_$type$_$size$_hull
+#             value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
+#         }
+#         set_variable = {
+#             which = touhou_aoe_damage_lunar_$type$_$size$_armor
+#             value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
+#         }
+#         set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
+#         multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
+#         set_variable = {
+#             which = touhou_aoe_damage_lunar_$type$_$size$_shield
+#             value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
+#         }
+#         th_spawn_explosion_particle = { color = pink size = small }
+#         solar_system = {
+#             every_ship_in_system = {
+#                 limit = {
+#                     controller = { is_hostile = root.from.owner }
+#                     distance = { same_solar_system = yes source = prevprev max_distance <= $range|120$ }
+#                 }
+#                 set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
+#                 if = {
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
+#                     reduce_shield = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield|
+#                 } else_if = {
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
+#                     repair_armor_amount = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg|
+#                 } else = {
+#                     add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull| }
+#                 }
+#             }
+#         }
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_hull
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_shield
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
+#     }
+# }
+# touhou_weapon_fire_aoe_damage_lunar_turret_weapon = {
+#     optimize_memory
+#     if = {
+#         limit = { exists = from from = { NOT = { has_ship_flag = touhou_aoe_damage_lunar_$type$_$size$ } } }
+#         from = { set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown } }
+#         set_variable = {
+#             which = touhou_aoe_damage_lunar_$type$_$size$_hull
+#             value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
+#         }
+#         set_variable = {
+#             which = touhou_aoe_damage_lunar_$type$_$size$_armor
+#             value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
+#         }
+#         set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
+#         multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
+#         set_variable = {
+#             which = touhou_aoe_damage_lunar_$type$_$size$_shield
+#             value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
+#         }
+#         th_spawn_explosion_particle = { color = pink size = small }
+#         solar_system = {
+#             every_ship_in_system = {
+#                 limit = {
+#                     controller = { is_hostile = root.from.owner }
+#                     distance = { same_solar_system = yes source = prevprev max_distance <= $range|120$ }
+#                 }
+#                 set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
+#                 if = {
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
+#                     reduce_shield = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield|
+#                 } else_if = {
+#                     limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
+#                     repair_armor_amount = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg|
+#                 } else = {
+#                     add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = value:touhou_actual_aoe_damage_value|base|prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull| }
+#                 }
+#             }
+#         }
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_hull
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_shield
+#         clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
+#     }
+# }
+touhou_cruise_missile_fire_aoe_damage = {
+    optimize_memory
+    inline_script = {
+        script = effect/touhou_weapon_fire_aoe_damage_template
+        base_damage = $damage$													# aoe basic damage
+        aoe_range = $range$                                                 # aoe damage range
+        bonus_factor = 1                                              # aoe damage bonus factor
+        cooldown = 2                                                 # aoe cooldown
+        hull_damage_modifier = touhou_cruise_missile_hit_damage_modifier_$type$     # modifier to deal hull damage
+        size = torpedo                                                # weapon size
+        size_tag = g                                                  # weapon size tag, such as t/x/l/m/s
+        type = $type$                                                  # weapon type
+        spawn_hit_effect = no                                        # if spawn hit effect, yes/no
+        effect_color = red                                            # hit effect color
+        effect_size = extra                                           # hit effect size
+        anti_psionic = no                                                # is this weapon has anti_psionic tag, yes/no
+        archaeotech = no                                                # is this weapon has archaeotech tag, yes/no
+        artillery = no                                                # is this weapon has artillery tag, yes/no
+        difficulty_scale = no                                            # is this weapon has difficulty_scale tag, yes/no
+        difficulty_scale_player = no                                    # is this weapon has difficulty_scale_player tag, yes/no
+        energy = yes                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+        explosive = yes                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+        gravity = no                                                    # is this weapon has gravity tag, yes/no
+        gungnir = no                                                    # is this weapon has gungnir tag, yes/no
+        kappa = no                                                    # is this weapon has kappa tag, yes/no
+        kinetic = no                                                    # is this weapon has kinetic tag, yes/no
+        knife = no                                                    # is this weapon has knife tag, yes/no
+        laevatain = no                                                # is this weapon has laevatain tag, yes/no
+        lingli = yes                                                    # is this weapon has lingli tag, yes/no
+        loukanken = no                                                # is this weapon has loukanken tag, yes/no
+        lunar_capital = no                                            # is this weapon has lunar_capital tag, yes/no
+        lunar_capital_2 = no                                            # is this weapon has lunar_capital_2 tag, yes/no
+        needle = no                                                    # is this weapon has needle tag, yes/no
+        point_defense = no                                            # is this weapon has point_defense tag, yes/no
+        psionic = no                                                    # is this weapon has psionic tag, yes/no
+        reimu = no                                                    # is this weapon has reimu tag, yes/no
+        resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+        resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+        sakuya_watch = no                                                # is this weapon has sakuya_watch tag, yes/no
+        sanae = no                                                    # is this weapon has sanae tag, yes/no
+        spark = no                                                    # is this weapon has spark tag, yes/no
+        touhou_difficulty_player = no                                    # is this weapon has touhou_difficulty_player tag, yes/no
+        touhou_dynamic_damage_ag = no                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+        xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+        xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+        yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
+    }
+}
+# artillery?: scalar
+# effect_color?
+# effect_size?
+# energy?: scalar
+# gungnir?: scalar
+# kinetic?: scalar
+# range?: int
+# size: scalar
+# size_tag?: scalar
+# spark?: scalar
+# type?: scalar
 touhou_weapon_fire_aoe_damage = {
     optimize_memory
-    if = {
-        limit = {
-            check_modifier_value = { modifier = has_ship_part_aura_touhou_minefield_target value != 0 }
-            exists = fleet fleet = { NOT = { has_fleet_flag = touhou_aoe_damage_$size$_$type$ } }
+    inline_script = {
+        script = effect/touhou_weapon_fire_aoe_damage_template
+        base_damage = @touhou_aoe_damage_$size$ # aoe basic damage
+        aoe_range = $range$                                                 # aoe damage range
+        bonus_factor = 0.75                                              # aoe damage bonus factor
+        cooldown = @touhou_aoe_damage_$size$_cooldown                                                 # aoe cooldown
+        hull_damage_modifier = weapon_$type$_$size$_hull_damage     # modifier to deal hull damage
+        size = $size$                                                # weapon size
+        size_tag = $size_tag$                                                  # weapon size tag, such as t/x/l/m/s
+        type = $type$                                                  # weapon type
+        spawn_hit_effect = yes                                        # if spawn hit effect, yes/no
+        effect_color = $effect_color$                                            # hit effect color
+        effect_size = $effect_size$                                           # hit effect size
+        anti_psionic = no                                                # is this weapon has anti_psionic tag, yes/no
+        archaeotech = no                                                # is this weapon has archaeotech tag, yes/no
+        artillery = $artillery|yes$                                                # is this weapon has artillery tag, yes/no
+        difficulty_scale = no                                            # is this weapon has difficulty_scale tag, yes/no
+        difficulty_scale_player = no                                    # is this weapon has difficulty_scale_player tag, yes/no
+        energy = $energy|no$                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+        explosive = no                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+        gravity = no                                                    # is this weapon has gravity tag, yes/no
+        gungnir = $gungnir|no$                                                    # is this weapon has gungnir tag, yes/no
+        kappa = no                                                    # is this weapon has kappa tag, yes/no
+        kinetic = $kinetic|no$                                                    # is this weapon has kinetic tag, yes/no
+        knife = no                                                    # is this weapon has knife tag, yes/no
+        laevatain = no                                                # is this weapon has laevatain tag, yes/no
+        lingli = yes                                                    # is this weapon has lingli tag, yes/no
+        loukanken = no                                                # is this weapon has loukanken tag, yes/no
+        lunar_capital = no                                            # is this weapon has lunar_capital tag, yes/no
+        lunar_capital_2 = no                                            # is this weapon has lunar_capital_2 tag, yes/no
+        needle = no                                                    # is this weapon has needle tag, yes/no
+        point_defense = no                                            # is this weapon has point_defense tag, yes/no
+        psionic = no                                                    # is this weapon has psionic tag, yes/no
+        reimu = no                                                    # is this weapon has reimu tag, yes/no
+        resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+        resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+        sakuya_watch = no                                                # is this weapon has sakuya_watch tag, yes/no
+        sanae = no                                                    # is this weapon has sanae tag, yes/no
+        spark = $spark|no$                                                    # is this weapon has spark tag, yes/no
+        touhou_difficulty_player = no                                    # is this weapon has touhou_difficulty_player tag, yes/no
+        touhou_dynamic_damage_ag = no                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+        xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+        xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+        yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
+    }
+}
+touhou_weapon_fire_aoe_damage_psionic = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = touhou_weapon_fire_aoe_damage_psionic_titanic_tt
+        description_parameters = {
+            TOUHOU_DAMAGE = @touhou_psionic_aoe_damage_$size$
+            TOUHOU_RANGE = $range$
         }
-        fleet = { set_timed_fleet_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown } }
-        if = {
-            limit = { exists = from }
-            set_variable = {
-                which = touhou_aoe_damage_$size$_$type$_hull
-                value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|hull|
-            }
-            set_variable = {
-                which = touhou_aoe_damage_$size$_$type$_armor
-                value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|armor|
-            }
-            set_variable = { which = touhou_aoe_damage_$size$_$type$_armor_neg value = touhou_aoe_damage_$size$_$type$_armor }
-            multiply_variable = { which = touhou_aoe_damage_$size$_$type$_armor_neg value = -1 }
-            set_variable = {
-                which = touhou_aoe_damage_$size$_$type$_shield
-                value = from.value:touhou_aoe_hit_damage|size|$size$|tag1|$tag$|tag2|$type$|size_tag|$size_tag$|layer|shield|
-            }
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown }
-                    if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_$size$_$type$_armor value <= prev.trigger:has_shield_hp } } }
-                        reduce_shield = prevprev.touhou_aoe_damage_$size$_$type$_shield
-                    } else_if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_$size$_$type$_armor value <= prev.value:spth_armor_value } } }
-                        repair_armor_amount = prevprev.touhou_aoe_damage_$size$_$type$_armor_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_$size$_$type$_hull }
-                    }
-                }
-            }
-            clear_variable = touhou_aoe_damage_$size$_$type$_armor_neg
-        } else = {
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_$size$_$type$ days = @touhou_aoe_damage_$size$_cooldown }
-                    if = {
-                        limit = { has_shield_hp >= @touhou_aoe_damage_$size$ }
-                        reduce_shield = @touhou_aoe_damage_$size$
-                    } else_if = {
-                        limit = { check_variable_arithmetic = { which = value:spth_armor_value value >= @touhou_aoe_damage_$size$ } }
-                        repair_armor_amount = @touhou_aoe_damage_$size$_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_$type$_$size$_hull_damage days = 2 mult = @touhou_aoe_damage_$size$ }
-                    }
-                }
-            }
+    }
+    hidden_effect = {
+        inline_script = {
+            script = effect/touhou_weapon_fire_aoe_damage_template
+            base_damage = @touhou_psionic_aoe_damage_$size$ # aoe basic damage
+            aoe_range = $range$                                                 # aoe damage range
+            bonus_factor = 0.75                                              # aoe damage bonus factor
+            cooldown = @touhou_aoe_damage_$size$_cooldown                                                 # aoe cooldown
+            hull_damage_modifier = weapon_psionic_th_$type$_$size$_hull_damage     # modifier to deal hull damage
+            size = $size$                                                # weapon size
+            size_tag = $size_tag$                                                  # weapon size tag, such as t/x/l/m/s
+            type = $type$                                                  # weapon type
+            spawn_hit_effect = yes                                        # if spawn hit effect, yes/no
+            effect_color = purple                                            # hit effect color
+            effect_size = medium                                           # hit effect size
+            anti_psionic = $anti_psionic|no$                                                # is this weapon has anti_psionic tag, yes/no
+            archaeotech = $archaeotech|no$                                                # is this weapon has archaeotech tag, yes/no
+            artillery = $artillery|yes$                                                # is this weapon has artillery tag, yes/no
+            difficulty_scale = $difficulty_scale|no$                                            # is this weapon has difficulty_scale tag, yes/no
+            difficulty_scale_player = $difficulty_scale|no$                                    # is this weapon has difficulty_scale_player tag, yes/no
+            energy = $energy|no$                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+            explosive = no                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+            gravity = no                                                    # is this weapon has gravity tag, yes/no
+            gungnir = $gungnir|no$                                                    # is this weapon has gungnir tag, yes/no
+            kappa = no                                                    # is this weapon has kappa tag, yes/no
+            kinetic = $kinetic|no$                                                    # is this weapon has kinetic tag, yes/no
+            knife = no                                                    # is this weapon has knife tag, yes/no
+            laevatain = no                                                # is this weapon has laevatain tag, yes/no
+            lingli = yes                                                    # is this weapon has lingli tag, yes/no
+            loukanken = no                                                # is this weapon has loukanken tag, yes/no
+            lunar_capital = no                                            # is this weapon has lunar_capital tag, yes/no
+            lunar_capital_2 = no                                            # is this weapon has lunar_capital_2 tag, yes/no
+            needle = no                                                    # is this weapon has needle tag, yes/no
+            point_defense = no                                            # is this weapon has point_defense tag, yes/no
+            psionic = $psionic|yes$                                                    # is this weapon has psionic tag, yes/no
+            reimu = no                                                    # is this weapon has reimu tag, yes/no
+            resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+            resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+            sakuya_watch = no                                                # is this weapon has sakuya_watch tag, yes/no
+            sanae = no                                                    # is this weapon has sanae tag, yes/no
+            spark = $spark|no$                                                    # is this weapon has spark tag, yes/no
+            touhou_difficulty_player = $difficulty_scale|no$                                    # is this weapon has touhou_difficulty_player tag, yes/no
+            touhou_dynamic_damage_ag = no                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+            xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+            xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+            yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
         }
     }
 }
 touhou_weapon_fire_aoe_damage_lunar_capital = {
     optimize_memory
-    if = {
-        limit = {
-            check_modifier_value = { modifier = has_ship_part_aura_touhou_minefield_target value != 0 }
-            exists = fleet fleet = { NOT = { has_fleet_flag = touhou_aoe_damage_lunar_$type$_$size$ } }
-        }
-        fleet = { set_timed_fleet_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown } }
-        if = {
-            limit = { exists = from }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_hull
-                value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
-            }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_armor
-                value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
-            }
-            set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
-            multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_shield
-                value = from.value:touhou_aoe_hit_damage_lunar_capital|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
-            }
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown }
-                    if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
-                        reduce_shield = prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield
-                    } else_if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
-                        repair_armor_amount = prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull }
-                    }
-                }
-            }
-            clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-        } else = {
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_capital_$size$_cooldown }
-                    if = {
-                        limit = { has_shield_hp >= @touhou_aoe_damage_lunar_$type$_$size$ }
-                        reduce_shield = @touhou_aoe_damage_lunar_$type$_$size$
-                    } else_if = {
-                        limit = { check_variable_arithmetic = { which = value:spth_armor_value value >= @touhou_aoe_damage_lunar_$type$_$size$ } }
-                        repair_armor_amount = @touhou_aoe_damage_lunar_$type$_$size$_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = @touhou_aoe_damage_lunar_$type$_$size$ }
-                    }
-                }
-            }
-        }
+    inline_script = {
+        script = effect/touhou_weapon_fire_aoe_damage_template
+        base_damage = @touhou_aoe_damage_lunar_$type$_$size$ # aoe basic damage
+        aoe_range = $range$                                                 # aoe damage range
+        bonus_factor = 1                                              # aoe damage bonus factor
+        cooldown = @touhou_aoe_damage_lunar_capital_$size$_cooldown                                                 # aoe cooldown
+        hull_damage_modifier = weapon_lunar_$type$_$size$_hull_damage     # modifier to deal hull damage
+        size = $size$                                                # weapon size
+        size_tag = $size_tag$                                                  # weapon size tag, such as t/x/l/m/s
+        type = $type$                                                  # weapon type
+        spawn_hit_effect = no                                        # if spawn hit effect, yes/no
+        effect_color = blue                                            # hit effect color
+        effect_size = medium                                           # hit effect size
+        anti_psionic = no                                                # is this weapon has anti_psionic tag, yes/no
+        archaeotech = yes                                                # is this weapon has archaeotech tag, yes/no
+        artillery = yes                                                # is this weapon has artillery tag, yes/no
+        difficulty_scale = no                                            # is this weapon has difficulty_scale tag, yes/no
+        difficulty_scale_player = no                                    # is this weapon has difficulty_scale_player tag, yes/no
+        energy = yes                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+        explosive = no                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+        gravity = no                                                    # is this weapon has gravity tag, yes/no
+        gungnir = no                                                    # is this weapon has gungnir tag, yes/no
+        kappa = no                                                    # is this weapon has kappa tag, yes/no
+        kinetic = no                                                    # is this weapon has kinetic tag, yes/no
+        knife = no                                                    # is this weapon has knife tag, yes/no
+        laevatain = no                                                # is this weapon has laevatain tag, yes/no
+        lingli = yes                                                    # is this weapon has lingli tag, yes/no
+        loukanken = no                                                # is this weapon has loukanken tag, yes/no
+        lunar_capital = yes                                            # is this weapon has lunar_capital tag, yes/no
+        lunar_capital_2 = yes                                            # is this weapon has lunar_capital_2 tag, yes/no
+        needle = no                                                    # is this weapon has needle tag, yes/no
+        point_defense = no                                            # is this weapon has point_defense tag, yes/no
+        psionic = no                                                    # is this weapon has psionic tag, yes/no
+        reimu = no                                                    # is this weapon has reimu tag, yes/no
+        resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+        resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+        sakuya_watch = no                                                # is this weapon has sakuya_watch tag, yes/no
+        sanae = no                                                    # is this weapon has sanae tag, yes/no
+        spark = no                                                    # is this weapon has spark tag, yes/no
+        touhou_difficulty_player = no                                    # is this weapon has touhou_difficulty_player tag, yes/no
+        touhou_dynamic_damage_ag = no                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+        xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+        xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+        yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
     }
 }
 touhou_weapon_fire_aoe_damage_lunar_gravity_cannon = {
     optimize_memory
-    if = {
-        limit = { exists = fleet fleet = { NOT = { has_fleet_flag = touhou_aoe_damage_lunar_$type$_$size$ } } }
-        fleet = { set_timed_fleet_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown } }
-        if = {
-            limit = { exists = from }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_hull
-                value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
-            }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_armor
-                value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
-            }
-            set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
-            multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_shield
-                value = from.value:touhou_aoe_hit_damage_gravity_cannon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
-            }
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
-                    if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
-                        reduce_shield = prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield
-                    } else_if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
-                        repair_armor_amount = prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull }
-                    }
-                }
-            }
-            clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-        } else = {
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
-                    if = {
-                        limit = { has_shield_hp >= @touhou_aoe_damage_lunar_$type$_$size$ }
-                        reduce_shield = @touhou_aoe_damage_lunar_$type$_$size$
-                    } else_if = {
-                        limit = { check_variable_arithmetic = { which = value:spth_armor_value value >= @touhou_aoe_damage_lunar_$type$_$size$ } }
-                        repair_armor_amount = @touhou_aoe_damage_lunar_$type$_$size$_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = @touhou_aoe_damage_lunar_$type$_$size$ }
-                    }
-                }
-            }
-        }
+    inline_script = {
+        script = effect/touhou_weapon_fire_aoe_damage_template
+        base_damage = @touhou_aoe_damage_lunar_$type$_$size$ # aoe basic damage
+        aoe_range = $range|120$                                                 # aoe damage range
+        bonus_factor = 1                                              # aoe damage bonus factor
+        cooldown = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown                                                 # aoe cooldown
+        hull_damage_modifier = weapon_lunar_$type$_$size$_hull_damage     # modifier to deal hull damage
+        size = $size$                                                # weapon size
+        size_tag = $size_tag$                                                  # weapon size tag, such as t/x/l/m/s
+        type = $type$                                                  # weapon type
+        spawn_hit_effect = no                                        # if spawn hit effect, yes/no
+        effect_color = pink                                            # hit effect color
+        effect_size = medium                                           # hit effect size
+        anti_psionic = no                                                # is this weapon has anti_psionic tag, yes/no
+        archaeotech = yes                                                # is this weapon has archaeotech tag, yes/no
+        artillery = yes                                                # is this weapon has artillery tag, yes/no
+        difficulty_scale = no                                            # is this weapon has difficulty_scale tag, yes/no
+        difficulty_scale_player = no                                    # is this weapon has difficulty_scale_player tag, yes/no
+        energy = no                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+        explosive = no                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+        gravity = no                                                    # is this weapon has gravity tag, yes/no
+        gungnir = no                                                    # is this weapon has gungnir tag, yes/no
+        kappa = no                                                    # is this weapon has kappa tag, yes/no
+        kinetic = yes                                                    # is this weapon has kinetic tag, yes/no
+        knife = no                                                    # is this weapon has knife tag, yes/no
+        laevatain = no                                                # is this weapon has laevatain tag, yes/no
+        lingli = yes                                                    # is this weapon has lingli tag, yes/no
+        loukanken = no                                                # is this weapon has loukanken tag, yes/no
+        lunar_capital = yes                                            # is this weapon has lunar_capital tag, yes/no
+        lunar_capital_2 = yes                                            # is this weapon has lunar_capital_2 tag, yes/no
+        needle = no                                                    # is this weapon has needle tag, yes/no
+        point_defense = no                                            # is this weapon has point_defense tag, yes/no
+        psionic = no                                                    # is this weapon has psionic tag, yes/no
+        reimu = no                                                    # is this weapon has reimu tag, yes/no
+        resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+        resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+        sakuya_watch = no                                                # is this weapon has sakuya_watch tag, yes/no
+        sanae = no                                                    # is this weapon has sanae tag, yes/no
+        spark = no                                                    # is this weapon has spark tag, yes/no
+        touhou_difficulty_player = no                                    # is this weapon has touhou_difficulty_player tag, yes/no
+        touhou_dynamic_damage_ag = no                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+        xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+        xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+        yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
     }
 }
 touhou_weapon_fire_aoe_damage_lunar_turret_weapon = {
     optimize_memory
-    if = {
-        limit = { exists = fleet fleet = { NOT = { has_fleet_flag = touhou_aoe_damage_lunar_$type$_$size$ } } }
-        fleet = { set_timed_fleet_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown } }
-        if = {
-            limit = { exists = from }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_hull
-                value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|hull|
-            }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_armor
-                value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|armor|
-            }
-            set_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = touhou_aoe_damage_lunar_$type$_$size$_armor }
-            multiply_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor_neg value = -1 }
-            set_variable = {
-                which = touhou_aoe_damage_lunar_$type$_$size$_shield
-                value = from.value:touhou_aoe_hit_damage_turret_weapon|size|$size$|tag1|lunar_capital|type|$type$|size_tag|$size_tag$|layer|shield|
-            }
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
-                    if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.trigger:has_shield_hp } } }
-                        reduce_shield = prevprev.touhou_aoe_damage_lunar_$type$_$size$_shield
-                    } else_if = {
-                        limit = { prevprev = { check_variable = { which = touhou_aoe_damage_lunar_$type$_$size$_armor value <= prev.value:spth_armor_value } } }
-                        repair_armor_amount = prevprev.touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = prevprev.touhou_aoe_damage_lunar_$type$_$size$_hull }
-                    }
-                }
-            }
-            clear_variable = touhou_aoe_damage_lunar_$type$_$size$_armor_neg
-        } else = {
-            fleet = {
-                every_owned_ship = {
-                    set_timed_ship_flag = { flag = touhou_aoe_damage_lunar_$type$_$size$ days = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown }
-                    if = {
-                        limit = { has_shield_hp >= @touhou_aoe_damage_lunar_$type$_$size$ }
-                        reduce_shield = @touhou_aoe_damage_lunar_$type$_$size$
-                    } else_if = {
-                        limit = { check_variable_arithmetic = { which = value:spth_armor_value value >= @touhou_aoe_damage_lunar_$type$_$size$ } }
-                        repair_armor_amount = @touhou_aoe_damage_lunar_$type$_$size$_neg
-                    } else = {
-                        add_modifier = { modifier = weapon_lunar_$type$_$size$_hull_damage days = 2 mult = @touhou_aoe_damage_lunar_$type$_$size$ }
-                    }
-                }
-            }
+    inline_script = {
+        script = effect/touhou_weapon_fire_aoe_damage_template
+        base_damage = @touhou_aoe_damage_lunar_$type$_$size$ # aoe basic damage
+        aoe_range = $range|120$                                                 # aoe damage range
+        bonus_factor = 1                                              # aoe damage bonus factor
+        cooldown = @touhou_aoe_damage_lunar_gravity_cannon_$size$_cooldown                                                 # aoe cooldown
+        hull_damage_modifier = weapon_lunar_$type$_$size$_hull_damage     # modifier to deal hull damage
+        size = $size$                                                # weapon size
+        size_tag = $size_tag$                                                  # weapon size tag, such as t/x/l/m/s
+        type = $type$                                                  # weapon type
+        spawn_hit_effect = no                                        # if spawn hit effect, yes/no
+        effect_color = pink                                            # hit effect color
+        effect_size = medium                                           # hit effect size
+        anti_psionic = no                                                # is this weapon has anti_psionic tag, yes/no
+        archaeotech = yes                                                # is this weapon has archaeotech tag, yes/no
+        artillery = yes                                                # is this weapon has artillery tag, yes/no
+        difficulty_scale = no                                            # is this weapon has difficulty_scale tag, yes/no
+        difficulty_scale_player = no                                    # is this weapon has difficulty_scale_player tag, yes/no
+        energy = no                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+        explosive = no                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+        gravity = no                                                    # is this weapon has gravity tag, yes/no
+        gungnir = no                                                    # is this weapon has gungnir tag, yes/no
+        kappa = no                                                    # is this weapon has kappa tag, yes/no
+        kinetic = yes                                                    # is this weapon has kinetic tag, yes/no
+        knife = no                                                    # is this weapon has knife tag, yes/no
+        laevatain = no                                                # is this weapon has laevatain tag, yes/no
+        lingli = yes                                                    # is this weapon has lingli tag, yes/no
+        loukanken = no                                                # is this weapon has loukanken tag, yes/no
+        lunar_capital = yes                                            # is this weapon has lunar_capital tag, yes/no
+        lunar_capital_2 = yes                                            # is this weapon has lunar_capital_2 tag, yes/no
+        needle = no                                                    # is this weapon has needle tag, yes/no
+        point_defense = no                                            # is this weapon has point_defense tag, yes/no
+        psionic = no                                                    # is this weapon has psionic tag, yes/no
+        reimu = no                                                    # is this weapon has reimu tag, yes/no
+        resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+        resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+        sakuya_watch = no                                                # is this weapon has sakuya_watch tag, yes/no
+        sanae = no                                                    # is this weapon has sanae tag, yes/no
+        spark = no                                                    # is this weapon has spark tag, yes/no
+        touhou_difficulty_player = no                                    # is this weapon has touhou_difficulty_player tag, yes/no
+        touhou_dynamic_damage_ag = no                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+        xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+        xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+        yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
+    }
+}
+touhou_weapon_fire_aoe_damage_fe_union_lunar_gravity_cannon = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = fe_union_lunar_gravity_cannon_aoe_tt
+        description_parameters = {
+            TOUHOU_DAMAGE = $base_damage$
+            TOUHOU_RANGE = $range$
         }
     }
+    hidden_effect = {
+        inline_script = {
+            script = effect/touhou_weapon_fire_aoe_damage_template
+            base_damage = $base_damage$                             # aoe basic damage
+            aoe_range = $range$                                                 # aoe damage range
+            bonus_factor = 1                                              # aoe damage bonus factor
+            cooldown = 8                                                 # aoe cooldown
+            hull_damage_modifier = weapon_gravity_cannon_$type$_$size$_hull_damage     # modifier to deal hull damage
+            size = $size$                                                # weapon size
+            size_tag = $size_tag$                                                  # weapon size tag, such as t/x/l/m/s
+            type = $type$                                                  # weapon type
+            spawn_hit_effect = no                                        # if spawn hit effect, yes/no
+            effect_color = blue                                            # hit effect color
+            effect_size = medium                                           # hit effect size
+            anti_psionic = no                                                # is this weapon has anti_psionic tag, yes/no
+            archaeotech = yes                                                # is this weapon has archaeotech tag, yes/no
+            artillery = yes                                                # is this weapon has artillery tag, yes/no
+            difficulty_scale = yes                                            # is this weapon has difficulty_scale tag, yes/no
+            difficulty_scale_player = yes                                    # is this weapon has difficulty_scale_player tag, yes/no
+            energy = yes                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+            explosive = no                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+            gravity = yes                                                    # is this weapon has gravity tag, yes/no
+            gungnir = no                                                    # is this weapon has gungnir tag, yes/no
+            kappa = no                                                    # is this weapon has kappa tag, yes/no
+            kinetic = no                                                    # is this weapon has kinetic tag, yes/no
+            knife = no                                                    # is this weapon has knife tag, yes/no
+            laevatain = no                                                # is this weapon has laevatain tag, yes/no
+            lingli = yes                                                    # is this weapon has lingli tag, yes/no
+            loukanken = no                                                # is this weapon has loukanken tag, yes/no
+            lunar_capital = yes                                            # is this weapon has lunar_capital tag, yes/no
+            lunar_capital_2 = yes                                            # is this weapon has lunar_capital_2 tag, yes/no
+            needle = no                                                    # is this weapon has needle tag, yes/no
+            point_defense = no                                            # is this weapon has point_defense tag, yes/no
+            psionic = no                                                    # is this weapon has psionic tag, yes/no
+            reimu = no                                                    # is this weapon has reimu tag, yes/no
+            resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+            resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+            sakuya_watch = no                                                # is this weapon has sakuya_watch tag, yes/no
+            sanae = no                                                    # is this weapon has sanae tag, yes/no
+            spark = no                                                    # is this weapon has spark tag, yes/no
+            touhou_difficulty_player = yes                                    # is this weapon has touhou_difficulty_player tag, yes/no
+            touhou_dynamic_damage_ag = yes                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+            xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+            xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+            yuzhu = no                                                    # is this weapon has yuzhu tag, yes/no
+        }
+    }
+}
+touhou_weapon_fire_aoe_damage_mega_weapon = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = touhou_weapon_fire_aoe_damage_mega_weapon_tt
+        description_parameters = {
+            TOUHOU_DAMAGE = $base_damage$
+            TOUHOU_RANGE = $range$
+        }
+    }
+    hidden_effect = {
+        inline_script = {
+            script = effect/touhou_weapon_fire_aoe_damage_template
+            base_damage = $base_damage$                             # aoe basic damage
+            aoe_range = $range$                                                 # aoe damage range
+            bonus_factor = 2                                              # aoe damage bonus factor
+            cooldown = 4                                                 # aoe cooldown
+            hull_damage_modifier = touhou_mega_weapon_$type$_$size$_hull_damage     # modifier to deal hull damage
+            size = $size$                                                # weapon size
+            size_tag = $size_tag$                                                  # weapon size tag, such as peta/giga/t/x/l/m/s
+            type = $type$                                                  # weapon type
+            spawn_hit_effect = yes                                        # if spawn hit effect, yes/no
+            effect_color = $hit_color|blue$                                            # hit effect color
+            effect_size = large                                           # hit effect size
+            anti_psionic = no                                                # is this weapon has anti_psionic tag, yes/no
+            archaeotech = $archaeotech|no$                                                # is this weapon has archaeotech tag, yes/no
+            artillery = $artillery|no$                                                # is this weapon has artillery tag, yes/no
+            difficulty_scale = $difficulty_scale|no$                                            # is this weapon has difficulty_scale tag, yes/no
+            difficulty_scale_player = $difficulty_scale|no$                                    # is this weapon has difficulty_scale_player tag, yes/no
+            energy = $energy$                                                    # is this weapon has energy tag, yes/no													# is this weapon has energy tag, yes/no
+            explosive = $explosive$                                                # is this weapon has explosive tag, yes/no													# is this weapon has explosive tag, yes/no
+            gravity = $gravity|no$                                                    # is this weapon has gravity tag, yes/no
+            gungnir = $gungnir|no$                                                    # is this weapon has gungnir tag, yes/no
+            kappa = no                                                    # is this weapon has kappa tag, yes/no
+            kinetic = $kinetic$                                                    # is this weapon has kinetic tag, yes/no
+            knife = no                                                    # is this weapon has knife tag, yes/no
+            laevatain = no                                                # is this weapon has laevatain tag, yes/no
+            lingli = yes                                                    # is this weapon has lingli tag, yes/no
+            loukanken = no                                                # is this weapon has loukanken tag, yes/no
+            lunar_capital = $lunar_capital|no$                                            # is this weapon has lunar_capital tag, yes/no
+            lunar_capital_2 = $lunar_capital|no$                                            # is this weapon has lunar_capital_2 tag, yes/no
+            needle = no                                                    # is this weapon has needle tag, yes/no
+            point_defense = no                                            # is this weapon has point_defense tag, yes/no
+            psionic = no                                                    # is this weapon has psionic tag, yes/no
+            reimu = $reimu|no$                                                    # is this weapon has reimu tag, yes/no
+            resurrection_butterfly = no                                    # is this weapon has resurrection_butterfly tag, yes/no
+            resurrection_butterfly_sp = no                                # is this weapon has resurrection_butterfly_sp tag, yes/no
+            sakuya_watch = $sakuya_watch|no$                                                # is this weapon has sakuya_watch tag, yes/no
+            sanae = no                                                    # is this weapon has sanae tag, yes/no
+            spark = $spark|no$                                                    # is this weapon has spark tag, yes/no
+            touhou_difficulty_player = $difficulty_scale|no$                                    # is this weapon has touhou_difficulty_player tag, yes/no
+            touhou_dynamic_damage_ag = $difficulty_scale|no$                                    # is this weapon has touhou_dynamic_damage_ag tag, yes/no
+            xianzhe = no                                                    # is this weapon has xianzhe tag, yes/no
+            xieshi = no                                                    # is this weapon has xieshi tag, yes/no
+            yuzhu = $yuzhu|no$                                                    # is this weapon has yuzhu tag, yes/no
+        }
+    }
+}
+
+touhou_stack_modifier_effect = {
+    optimize_memory
+    if = {
+        limit = { check_modifier_value = { modifier = $modifier$ value < $threshold|1$ } }
+        set_variable = { which = touhou_stack_modifier_$modifier$_temp value = $value$ }
+        change_variable = { which = touhou_stack_modifier_$modifier$_temp value = modifier:touhou_stackable_$modifier$ }
+        add_modifier = { modifier = touhou_stackable_modifier_$modifier$ multiplier = touhou_stack_modifier_$modifier$_temp days = $duration$ }
+        clear_variable = touhou_stack_modifier_$modifier$_temp
+    }
+}
+touhou_steal_modifier_effect = {
+    optimize_memory
+    set_variable = { which = touhou_steal_modifier_$modifier$_temp value = $value$ }
+    change_variable = { which = touhou_steal_modifier_$modifier$_temp value = modifier:touhou_steal_scripted_$modifier$ }
+    add_modifier = { modifier = touhou_steal_modifier_$modifier$ multiplier = touhou_steal_modifier_$modifier$_temp days = $duration$ }
+    clear_variable = touhou_steal_modifier_$modifier$_temp
+}
+touhou_steal_modifier_on_hit = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = touhou_steal_modifier_$modifier$_tooltip
+        description_parameters = {
+            "TOUHOU_VALUE" = $value$
+            "TOUHOU_DURATION" = $duration$
+        }
+    }
+    inline_script = {
+        script = events/touhou_steal_modifier_effect_dynamic_$dynamic|no$
+        modifier = $modifier$
+        threshold = $threshold|0$
+        duration = $duration$
+        value = $value$
+    }
+    # inline_script = {
+    #     script = events/touhou_steal_modifier_effect_dynamic_yes
+    # }
+    # inline_script = {
+    #     script = events/touhou_steal_modifier_effect_dynamic_no
+    # }
 }
 
 touhou_weapon_emp_charge_module_effect = {
@@ -1473,10 +2085,108 @@ touhou_weapon_emp_charge_module_effect = {
             save_event_target_as = touhou_terrify_root
             reroll_random = yes
             random_list = {
-                25 = { touhou_set_terrify = { days = 1 } }
-                50 = { touhou_set_terrify = { days = 2 } }
-                25 = { touhou_set_terrify = { days = 3 } }
+                25 = { touhou_set_terrify = { days = 2 } }
+                50 = { touhou_set_terrify = { days = 3 } }
+                25 = { touhou_set_terrify = { days = 4 } }
             }
+        }
+    }
+}
+
+touhou_weapon_yuzhu_hit_effect = {
+    optimize_memory
+    hidden_effect = {
+        if = {
+            limit = {
+                exists = from from = {
+                    NOT = { has_ship_flag = touhou_weapon_yuzhu_hit_$size$_cooldown }
+                }
+            }
+            from = {
+                set_timed_ship_flag = { flag = touhou_weapon_yuzhu_hit_$size$_cooldown days = $TH_COOLDOWN$ }
+            }
+            reroll_random = yes
+            inline_script = {
+                script = effect/touhou_weapon_yuzhu_hit_effect_random_list
+                TH_EXTRA_DMG_CHANCE = $TH_EXTRA_DMG_CHANCE$
+                TH_VULNERABLE_CHANCE = $TH_VULNERABLE_CHANCE$
+                TH_EXTRA_DMG_PERC = $TH_EXTRA_DMG_PERC$
+                size = $size$
+                TH_VULNERABLE_DURATION = $TH_VULNERABLE_DURATION$
+                TH_VULNERABLE_VALUE = $TH_VULNERABLE_VALUE$
+            }
+            # random_list = {
+            #     $TH_EXTRA_DMG_CHANCE$ = {
+            #         spth_reduce_armor_max = { percent = @[$TH_EXTRA_DMG_PERC$ / 100] }
+            #     }
+            #     $TH_VULNERABLE_CHANCE$ = {
+            #         add_modifier = {
+            #             modifier = touhou_weapon_yuzhu_hit_effect_$size$
+            #             days = $TH_VULNERABLE_DURATION$ mult = $TH_VULNERABLE_VALUE$
+            #         }
+            #     }
+            # }
+            th_spawn_explosion_particle = { color = white size = small }
+        }
+    }
+    custom_tooltip_with_params = {
+        description = touhou_weapon_yuzhu_hit_effect
+        description_parameters = {
+            TH_EXTRA_DMG_CHANCE = $TH_EXTRA_DMG_CHANCE$
+            TH_EXTRA_DMG_PERC = $TH_EXTRA_DMG_PERC$
+            TH_VULNERABLE_CHANCE = $TH_VULNERABLE_CHANCE$
+            TH_VULNERABLE_VALUE = $TH_VULNERABLE_VALUE$
+            TH_VULNERABLE_DURATION = $TH_VULNERABLE_DURATION$
+            TH_COOLDOWN = $TH_COOLDOWN$
+        }
+    }
+}
+
+touhou_psionic_lighting_hit_effect = {
+    optimize_memory
+    hidden_effect = {
+        if = {
+            limit = { exists = from from = { NOT = { has_ship_flag = touhou_psionic_lighting_$size$_chain_cooldown } } }
+            from = { set_timed_ship_flag = { flag = touhou_psionic_lighting_$size$_chain_cooldown days = $TH_COOLDOWN$ } }
+            reroll_random = yes
+            random_list = {
+                $TH_CHAIN_CHANCE$ = {
+                    # fleet = {
+                    #     random_owned_ship = {
+                    #         limit = { NOT = { is_same_value = prev } }
+                    #         repair_armor_amount = value:touhou_psionic_lighting_hit_damage|ag_tag|$ag_tag$|ag_weapon|$ag_weapon$|size|$size$|size_short|$size_short$|
+                    #     }
+                    # }
+                }
+                $TH_NOT_CHAIN_CHANCE$ = {
+                    # do nothing here.
+                }
+            }
+            fleet = {
+                random_owned_ship = {
+                    limit = { NOT = { is_same_value = prev } }
+                    repair_armor_amount = value:touhou_psionic_lighting_hit_damage|ag_tag|$ag_tag$|ag_weapon|$ag_weapon$|size|$size$|size_short|$size_short$|
+                }
+            }
+        }
+    }
+    custom_tooltip_with_params = {
+        description = touhou_psionic_lighting_hit_effect
+        description_parameters = {
+            TH_CHAIN_CHANCE = $TH_CHAIN_CHANCE$
+            TH_COOLDOWN = $TH_COOLDOWN$
+        }
+    }
+}
+
+touhou_psionic_singularity_hit_effect = {
+    optimize_memory
+    custom_tooltip_with_params = {
+        description = touhou_psionic_singularity_hit_effect
+        description_parameters = {
+            TH_VULNERABLE_VALUE = $TH_VULNERABLE_VALUE$
+            TH_COOLDOWN = $TH_COOLDOWN$
+            TH_DURATION = $TH_DURATION$
         }
     }
 }
@@ -1485,12 +2195,12 @@ touhou_remove_planet = {
     optimize_memory
     if = { limit = { is_star = yes } change_pc = pc_spth_void }
     else = { change_pc = pc_spth_void_planet }
-    planet_event = { id = toho.4020 days = 1 }
+    carrier_event = { id = toho.4020 days = 1 }
 }
 # planet scope
 touhou_create_shell_world_layer = {
     optimize_memory
-    set_planet_flag = has_megastructure
+    set_carrier_flag = has_megastructure
     save_event_target_as = ag_shell_world_prev_layer
     set_planet_entity = { entity = "ag_void_entity" }
     if = {
@@ -1534,16 +2244,16 @@ touhou_create_shell_world_layer = {
                 set_all_comms_surveyed = yes
                 clear_blockers = yes
                 clear_planet_modifiers = yes
-                set_planet_flag = megastructure
-                set_planet_flag = is_megastructure
+                set_carrier_flag = megastructure
+                set_carrier_flag = is_megastructure
                 set_planet_size = prevprev.trigger:planet_size
                 change_planet_size = 1
                 set_variable = { which = ag_shell_world_layer value = prevprev.ag_shell_world_layer }
                 change_variable = { which = ag_shell_world_layer value = 1 }
                 save_event_target_as = ag_shell_world_new_layer
                 save_global_event_target_as = ag_shell_world_next_layer_@event_target:ag_shell_world_prev_layer
-                set_planet_flag = ag_shell_world_surface_layer
-                [[flag] set_planet_flag = $flag$ ]
+                set_carrier_flag = ag_shell_world_surface_layer
+                [[flag] set_carrier_flag = $flag$ ]
                 set_owner = prevprev.owner
                 set_controller = prevprev.owner
                 create_pop_group = { species = prevprev.owner.species size = 100 }
@@ -1553,7 +2263,7 @@ touhou_create_shell_world_layer = {
         }
     }
     save_global_event_target_as = ag_shell_world_prev_layer_@event_target:ag_shell_world_new_layer
-    if = { limit = { has_planet_flag = ag_shell_world_surface_layer } remove_planet_flag = ag_shell_world_surface_layer }
+    if = { limit = { has_carrier_flag = ag_shell_world_surface_layer } remove_carrier_flag = ag_shell_world_surface_layer }
     if = { limit = { is_planet_class = pc_ag_shell_world_surface } ag_change_pc = { ag_planet_class = pc_ag_shell_world } }
     event_target:ag_shell_world_base_layer_temp = {
         save_global_event_target_as = ag_shell_world_base_layer_@event_target:ag_shell_world_new_layer
@@ -1603,8 +2313,8 @@ touhou_create_damaged_shell_world_layer = {
             10 = { last_created_ambient_object = { set_location = { target = prev distance = 15 angle = random } } }
         }
     }
-    set_planet_flag = $prev_layer_type$
-    set_planet_flag = has_megastructure
+    set_carrier_flag = $prev_layer_type$
+    set_carrier_flag = has_megastructure
     if = {
         limit = { NOT = { is_variable_set = ag_shell_world_layer } }
         set_variable = { which = ag_shell_world_layer value = $init_layer$ }
@@ -1622,8 +2332,8 @@ touhou_create_damaged_shell_world_layer = {
                 set_name = "touhou_megastructure_shell_world_damaged"
                 clear_blockers = yes
                 clear_planet_modifiers = yes
-                set_planet_flag = megastructure
-                set_planet_flag = is_megastructuree
+                set_carrier_flag = megastructure
+                set_carrier_flag = is_megastructuree
                 set_variable = { which = ag_shell_world_layer value = 1 }
                 save_global_event_target_as = ag_shell_world_next_layer_@prevprev
                 save_global_event_target_as = ag_shell_world_surface_layer_@prevprev
@@ -1670,6 +2380,14 @@ touhou_set_terrify = {
         limit = { touhou_never_set_terrify_ship = no }
         set_terrified_by = event_target:touhou_terrify_root
         ship_event = { id = spth_fleet.2012 days = $days$ }
+    }
+}
+touhou_eat_fleet = {
+    optimize_memory
+    if = {
+        limit = { can_go_mia = yes }
+        set_mia = mia_fleet_eaten
+        [[ret_day] set_mia_return_delay = $ret_day$ ]
     }
 }
 
@@ -1846,18 +2564,23 @@ touhou_set_black_hole_class = {
 touhou_psionic_inhibitor_weapon_hit_effect = {
     optimize_memory
     hidden_effect = {
+		if = {
+			limit = { from? = { NOT = { has_ship_flag = touhou_psionic_inhibitor_weapon_$type$_fired } } }
+			from = { set_timed_ship_flag = { flag = touhou_psionic_inhibitor_weapon_$type$_fired days = 4 } }
+			touhou_damage_ship = { amount = value:touhou_ship_hp_value|hull_max|yes|factor|0.005| source = from }
+		}
         if = {
             limit = {
                 NOT = { has_ship_flag = touhou_psionic_inhibitor_weapon_hit_fired }
                 exists = from touhou_is_psionic_ship = yes
             }
-            set_timed_ship_flag = { flag = touhou_psionic_inhibitor_weapon_hit_fired days = 10 }
-            if = {
-                limit = { NOT = { has_modifier = touhou_psionic_inhibitor_weapon_modifier_1 } }
-                add_modifier = { modifier = touhou_psionic_inhibitor_weapon_modifier_1 days = 3 }
-            }
+            set_timed_ship_flag = { flag = touhou_psionic_inhibitor_weapon_hit_fired days = 4 }
+            # if = {
+            #     limit = { NOT = { has_modifier = touhou_psionic_inhibitor_weapon_modifier_1 } }
+            #     add_modifier = { modifier = touhou_psionic_inhibitor_weapon_modifier_1 days = 4 }
+            # }
             add_modifier = {
-                modifier = touhou_psionic_inhibitor_weapon_modifier_2 days = 3
+                modifier = touhou_psionic_inhibitor_weapon_modifier_2 days = 4
                 mult = value:touhou_min_capped_modifier|modifier|weapon_type_lingli_weapon_damage_mult|factor|1|
             }
         }
@@ -1900,8 +2623,960 @@ touhou_spawn_event_drones = {
                         }
                     }
                 }
+				set_fleet_flag = touhou_standard_formation_scale_setted
+				set_formation_scale = @touhou_standard_formation_scale
                 fleet_event = { id = spth_fleet.2000 days = $days$ }
             }
         }
     }
+}
+
+touhou_country_resource_max_effect = {
+    optimize_memory
+    if = {
+        limit = { NOT = { is_variable_set = touhou_country_resource_max_$touhou_resource$_add } }
+        export_modifier_to_variable = { modifier = country_resource_max_$touhou_resource$_add variable = touhou_country_resource_max_$touhou_resource$_add }
+        change_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = @touhou_country_resource_max_$touhou_resource$ }
+        if = { limit = { NOT = { always = $special_max_amount$ } } change_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = modifier:country_resource_max_add } }
+        set_variable = { which = touhou_country_resource_max_$touhou_resource$_add_factor value = modifier:country_resource_max_$touhou_resource$_mult }
+        if = { limit = { NOT = { always = $special_max_amount$ } } change_variable = { which = touhou_country_resource_max_$touhou_resource$_add_factor value = modifier:country_resource_max_mult } }
+        multiply_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = touhou_country_resource_max_$touhou_resource$_add_factor }
+        if = {
+            limit = { NOT = { check_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = 0 } } }
+            add_modifier = { modifier = touhou_country_resource_max_$touhou_resource$_mult_modifier days = -1 multiplier = touhou_country_resource_max_$touhou_resource$_add }
+        }
+        clear_variable = touhou_country_resource_max_$touhou_resource$_add_factor
+    }
+    else = {
+        set_variable = { which = touhou_country_resource_max_$touhou_resource$_add_bak value = touhou_country_resource_max_$touhou_resource$_add }
+        export_modifier_to_variable = { modifier = country_resource_max_$touhou_resource$_add variable = touhou_country_resource_max_$touhou_resource$_add }
+        change_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = @touhou_country_resource_max_$touhou_resource$ }
+        if = { limit = { NOT = { always = $special_max_amount$ } } change_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = modifier:country_resource_max_add } }
+        subtract_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = touhou_country_resource_max_$touhou_resource$_add_bak }
+        set_variable = { which = touhou_country_resource_max_$touhou_resource$_add_factor value = modifier:country_resource_max_$touhou_resource$_mult }
+        if = { limit = { NOT = { always = $special_max_amount$ } } change_variable = { which = touhou_country_resource_max_$touhou_resource$_add_factor value = modifier:country_resource_max_mult } }
+        multiply_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = touhou_country_resource_max_$touhou_resource$_add_factor }
+        if = {
+            limit = { NOT = { check_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = touhou_country_resource_max_$touhou_resource$_add_bak } } }
+            if = {
+                limit = { has_modifier = touhou_country_resource_max_$touhou_resource$_mult_modifier }
+                remove_modifier = touhou_country_resource_max_$touhou_resource$_mult_modifier
+            }
+            if = {
+                limit = { NOT = { check_variable = { which = touhou_country_resource_max_$touhou_resource$_add value = 0 } } }
+                add_modifier = { modifier = touhou_country_resource_max_$touhou_resource$_mult_modifier days = -1 multiplier = touhou_country_resource_max_$touhou_resource$_add }
+            }
+        }
+        clear_variable = touhou_country_resource_max_$touhou_resource$_add_bak
+        clear_variable = touhou_country_resource_max_$touhou_resource$_add_factor
+    }
+}
+
+touhou_makai_empire_titan_1_chain_stage_2_roll_poi = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_event_chain = touhou_makai_empire_titan_1_chain_stage_2 } }
+        begin_event_chain = { event_chain = touhou_makai_empire_titan_1_chain_stage_2 target = this }
+    }
+    touhou_roll_helldiver_seq = { type = makai_titan_1 sub_type = poi_$idx$ cnt = 5 }
+    create_point_of_interest = {
+        event_chain = touhou_makai_empire_titan_1_chain_stage_2
+        id = touhou_makai_empire_titan_1_chain_stage_2_poi_$idx$
+        name = touhou_makai_empire_titan_1_chain_stage_2_poi_$idx$
+        desc = touhou_makai_empire_titan_1_chain_stage_2_poi_$idx$_desc
+        picture = GFX_evt_cosmic_storms_broadcast_hacking
+    }
+}
+# cnt: should be one of 3, 4, 5.
+touhou_roll_helldiver_seq = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_country_flag = helldiver_seq_$type$_$sub_type$_set } }
+        set_country_flag = helldiver_seq_$type$_$sub_type$_set
+        touhou_roll_helldiver_seq_$cnt$_items = { type = $type$ sub_type = $sub_type$ }
+    }
+}
+touhou_roll_helldiver_seq_3_items = {
+    optimize_memory
+    reroll_random = yes
+    random_list = {
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_1 } }
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_2 } }
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_3 } }
+    }
+}
+touhou_roll_helldiver_seq_4_items = {
+    optimize_memory
+    reroll_random = yes
+    random_list = {
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_1 } }
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_2 } }
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_3 } }
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_4 } }
+    }
+}
+touhou_roll_helldiver_seq_5_items = {
+    optimize_memory
+    reroll_random = yes
+    random_list = {
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_1 } }
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_2 } }
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_3 } }
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_4 } }
+        1 = { set_variable = { which = helldiver_seq_$type$_$sub_type$_type value = @helldiver_seq_$type$_$sub_type$_type_5 } }
+    }
+}
+
+spth_precursor_lunar_capital_jammer_tower_system_spawn = {
+    optimize_memory
+    random_system_within_border = {
+        set_spawn_system_batch = begin
+        spawn_system = {
+            initializer = spth_precursor_lunar_capital_jammer_tower_system
+            hyperlane = no
+        }
+        set_spawn_system_batch = end
+    }
+}
+touhou_signal_jammer_tower_init = {
+    optimize_memory
+    every_system = {
+        limit = {
+            distance = {
+                source = prev
+                type = hyperlane
+                min_jumps = 1
+                max_jumps = $dis$
+            }
+        }
+        touhou_signal_jammer_tower_set_flag = yes
+    }
+    touhou_signal_jammer_tower_set_flag = yes
+}
+touhou_signal_jammer_tower_destruct = {
+    optimize_memory
+    every_system = {
+        limit = {
+            distance = {
+                source = prev
+                type = hyperlane
+                min_jumps = 1
+                max_jumps = $dis$
+            }
+        }
+        touhou_signal_jammer_tower_remove_flag = yes
+    }
+    touhou_signal_jammer_tower_remove_flag = yes
+}
+touhou_signal_jammer_tower_set_flag = {
+    optimize_memory
+    if = {
+        limit = { has_star_flag = touhou_signal_jammer_tower_jamming_system }
+        set_star_flag = touhou_before_touhou_signal_jammer_tower_jamming_system
+    } else = {
+        set_star_flag = touhou_signal_jammer_tower_jamming_system
+    }
+    if = {
+        limit = { has_star_flag = kuat_cannot_be_hit_by_starkillerbase }
+        set_star_flag = touhou_before_has_kuat_cannot_be_hit_by_starkillerbase
+    } else = {
+        set_star_flag = kuat_cannot_be_hit_by_starkillerbase
+    }
+    if = {
+        limit = { has_star_flag = fgosw_rule_system_protected }
+        set_star_flag = touhou_before_has_fgosw_rule_system_protected
+    } else = {
+        set_star_flag = fgosw_rule_system_protected
+    }
+    if = {
+        limit = { has_star_flag = ag_no_star_killer_target_system }
+        set_star_flag = touhou_before_has_ag_no_star_killer_target_system
+    } else = {
+        set_star_flag = ag_no_star_killer_target_system
+    }
+    if = {
+        limit = { has_star_flag = spth_no_star_killer_target_system }
+        set_star_flag = touhou_before_has_spth_no_star_killer_target_system
+    } else = {
+        set_star_flag = spth_no_star_killer_target_system
+    }
+    if = {
+        limit = { has_star_flag = cannot_be_hit_by_aow_starfall_spear }
+        set_star_flag = touhou_before_has_cannot_be_hit_by_aow_starfall_spear
+    } else = {
+        set_star_flag = cannot_be_hit_by_aow_starfall_spear
+    }
+}
+touhou_signal_jammer_tower_remove_flag = {
+    optimize_memory
+    if = {
+        limit = { has_star_flag = touhou_signal_jammer_tower_jamming_system }
+        remove_star_flag = touhou_before_touhou_signal_jammer_tower_jamming_system
+    } else = {
+        remove_star_flag = touhou_signal_jammer_tower_jamming_system
+    }
+    if = {
+        limit = { has_star_flag = touhou_before_has_kuat_cannot_be_hit_by_starkillerbase }
+        remove_star_flag = touhou_before_has_kuat_cannot_be_hit_by_starkillerbase
+    } else = {
+        remove_star_flag = kuat_cannot_be_hit_by_starkillerbase
+    }
+    if = {
+        limit = { has_star_flag = touhou_before_has_fgosw_rule_system_protected }
+        remove_star_flag = touhou_before_has_fgosw_rule_system_protected
+    } else = {
+        remove_star_flag = fgosw_rule_system_protected
+    }
+    if = {
+        limit = { has_star_flag = touhou_before_has_ag_no_star_killer_target_system }
+        remove_star_flag = touhou_before_has_ag_no_star_killer_target_system
+    } else = {
+        remove_star_flag = ag_no_star_killer_target_system
+    }
+    if = {
+        limit = { has_star_flag = touhou_before_has_spth_no_star_killer_target_system }
+        remove_star_flag = touhou_before_has_spth_no_star_killer_target_system
+    } else = {
+        remove_star_flag = spth_no_star_killer_target_system
+    }
+    if = {
+        limit = { has_star_flag = touhou_before_has_cannot_be_hit_by_aow_starfall_spear }
+        remove_star_flag = touhou_before_has_cannot_be_hit_by_aow_starfall_spear
+    } else = {
+        remove_star_flag = cannot_be_hit_by_aow_starfall_spear
+    }
+}
+
+touhou_spawned_system_effect = {
+    optimize_memory
+    [[ag_spawn]
+        if = {
+            limit = { spth_has_ag_mod = yes }
+            add_event_chain_counter = {
+                event_chain = "ag_hidden_system_chain"
+                counter = "ag_ancient_system"
+                amount = 1
+            }
+        } else = {
+            add_event_chain_counter = {
+                event_chain = "touhou_ag_hidden_system_chain"
+                counter = "touhou_ag_ancient_system"
+                amount = 1
+            }
+        }
+    ]
+    country_event = { id = toho.1012 }
+    every_country = {
+        limit = { NOT = { is_same_value = event_target:touhou_system_discover_country } }
+        country_event = { id = toho.1013 }
+    }
+}
+
+
+ship_reapers_instant_kill_on_hit = {
+    optimize_memory
+    from = {
+        if = {
+            limit = { NOT = { is_variable_set = ship_reapers_instant_kill_used } }
+            set_variable = { which = ship_reapers_instant_kill_used value = 0 }
+        }
+    }
+    if = {
+        limit = {
+            from = {
+                check_variable_arithmetic = {
+                    which = modifier:ship_reapers_instant_kill
+                    subtract = ship_reapers_instant_kill_used
+                    value > 0
+                }
+            }
+        }
+        from = {
+            set_variable = { which = ship_reapers_instant_kill_debug value = modifier:ship_reapers_instant_kill }
+            set_ship_flag = has_ship_reapers_instant_kill
+            add_modifier = {
+                modifier = weapon_type_makai_instant_kill_damage_modifier
+                mult = value:th_instant_kill_value|base_dmg|$base_dmg$|final_dmg|@touhou_instant_kill_weapon_target_damage|size_damage_factor|0|
+            }
+            create_ambient_object = {
+                type = touhou_lunar_superlaser_instant_kill_upgrade
+                location = this
+                duration = 10
+                use_3d_location = yes
+                entity_offset = { min = 0 max = 0 }
+                entity_offset_angle = { min = 0 max = 0 }
+                entity_offset_height = { min = $min_height|0$ max = $max_height|0$ }
+                entity_scale_to_size = no
+                scale = 0.1
+            }
+        }
+        reduce_shield = @touhou_instant_kill_reduce_shield_amount
+        repair_armor_amount = @touhou_instant_kill_reduce_armor_amount
+        create_ambient_object = {
+            type = lunar_capital_superlaser_instant_kill_hit_explosion
+            location = this
+            duration = 10
+            use_3d_location = yes
+            entity_offset = { min = 0 max = 0 }
+            entity_offset_angle = { min = 0 max = 0 }
+            entity_offset_height = { min = $min_height|0$ max = $max_height|0$ }
+            entity_scale_to_size = no
+            scale = 0.5
+        }
+    } else = {
+        from = {
+            if = {
+                limit = { has_modifier = weapon_type_makai_instant_kill_damage_modifier }
+                remove_modifier = weapon_type_makai_instant_kill_damage_modifier
+            }
+        }
+    }
+}
+touhou_sky_control_ship_aux_reapers_damage_bonus = {
+    optimize_memory
+    if = {
+        limit = { check_modifier_value = { modifier = $modifier$ value > 0 } }
+        add_modifier = {
+            modifier = touhou_sky_control_ship_aux_reapers_$modifier$
+            mult = value:touhou_sky_control_ship_aux_reapers_value|factor|3|
+            days = 90
+        }
+    }
+}
+
+touhou_sky_control_ship_target_cleanup_flags = {
+    optimize_memory
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_1_sel } remove_fleet_flag = touhou_sky_control_ship_target_1_sel }
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_2_sel } remove_fleet_flag = touhou_sky_control_ship_target_2_sel }
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_3_sel } remove_fleet_flag = touhou_sky_control_ship_target_3_sel }
+}
+touhou_sky_control_ship_target_setup_flags = {
+    optimize_memory
+    touhou_sky_control_ship_target_cleanup_flags = yes
+    set_fleet_flag = touhou_sky_control_ship_target_$slot$_sel
+}
+touhou_sky_control_ship_target_set = {
+    optimize_memory
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_1_sel } fromfrom = { save_global_event_target_as = touhou_sky_control_ship_target_1 } }
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_2_sel } fromfrom = { save_global_event_target_as = touhou_sky_control_ship_target_2 } }
+    if = { limit = { has_fleet_flag = touhou_sky_control_ship_target_3_sel } fromfrom = { save_global_event_target_as = touhou_sky_control_ship_target_3 } }
+}
+touhou_sky_control_ship_target_clear = {
+    optimize_memory
+    clear_global_event_target = touhou_sky_control_ship_target_1
+    clear_global_event_target = touhou_sky_control_ship_target_2
+    clear_global_event_target = touhou_sky_control_ship_target_3
+}
+
+touhou_sky_control_ship_set_cooldown = {
+    optimize_memory
+}
+touhou_sky_control_ship_destroy_system_prepare = {
+    optimize_memory
+    if = {
+        limit = { exists = event_target:touhou_sky_control_ship_target_$slot$ }
+        event_target:touhou_sky_control_ship_target_$slot$ = {
+            star = {
+                create_ambient_object = {
+                    type = spth_star_killer_star_windup_in_range
+                    location = this
+                    duration = -1
+                    use_3d_location = yes
+                    entity_offset = { min = 0 max = 0 }
+                    entity_offset_angle = { min = 0 max = 0 }
+                    entity_offset_height = { min = 0 max = 0 }
+                    entity_scale_to_size = yes
+                    scale = 0.25
+                }
+                last_created_ambient_object = {
+                    set_ambient_object_flag = touhou_sky_control_ship_destroy_system_windup
+                }
+            }
+        }
+    }
+}
+touhou_sky_control_ship_destroy_system = {
+    optimize_memory
+    if = {
+        limit = { exists = event_target:touhou_sky_control_ship_target_$slot$ }
+        event_target:touhou_sky_control_ship_target_$slot$ = {
+            every_system_ambient_object = {
+                limit = { has_ambient_object_flag = touhou_sky_control_ship_destroy_system_windup }
+                destroy_ambient_object = this
+            }
+            random_system_planet = {
+                limit = { is_primary_star = yes }
+                carrier_event = {
+                    id = touhou_ship_actions.102
+                    scopes = {
+                        from = root
+                    }
+                }
+                root.owner = {
+                    country_event = {
+                        id = touhou_ship_actions.101
+                        scopes = { from = event_target:touhou_sky_control_ship_temp fromfrom = root }
+                    }
+                }
+            }
+            if = {
+                limit = {
+                    exists = space_owner
+                    space_owner = {
+                        exists = this
+                        is_touhou_common_country = yes
+                        NOR = {
+                            is_same_value = root.owner
+                            is_hostile = root.owner
+                        }
+                    }
+                }
+                space_owner = {
+                    if = { limit = { NOT = { has_communications = root.owner } } establish_communications_no_message = root.owner }
+                    if = { limit = { is_in_federation_with = root.owner } leave_alliance = { override_requirements = yes apply_opinion_penalty = no } }
+                    country_event = { id = touhou_ship_actions.100 scopes = { from = root.owner } }
+                    if = {
+                        limit = { NOT = { is_at_war_with = root.owner } }
+                        root.owner = { declare_war = { target = prev attacker_war_goal = "wg_spth_assimilation" } }
+                    }
+                }
+            }
+        }
+    }
+}
+
+touhou_system_warper_target_cleanup_flags = {
+    optimize_memory
+    if = { limit = { has_country_flag = touhou_system_warper_target_1_sel } remove_country_flag = touhou_system_warper_target_1_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_2_sel } remove_country_flag = touhou_system_warper_target_2_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_3_sel } remove_country_flag = touhou_system_warper_target_3_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_4_sel } remove_country_flag = touhou_system_warper_target_4_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_5_sel } remove_country_flag = touhou_system_warper_target_5_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_6_sel } remove_country_flag = touhou_system_warper_target_6_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_7_sel } remove_country_flag = touhou_system_warper_target_7_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_8_sel } remove_country_flag = touhou_system_warper_target_8_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_9_sel } remove_country_flag = touhou_system_warper_target_9_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_10_sel } remove_country_flag = touhou_system_warper_target_10_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_11_sel } remove_country_flag = touhou_system_warper_target_11_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_12_sel } remove_country_flag = touhou_system_warper_target_12_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_13_sel } remove_country_flag = touhou_system_warper_target_13_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_14_sel } remove_country_flag = touhou_system_warper_target_14_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_15_sel } remove_country_flag = touhou_system_warper_target_15_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_16_sel } remove_country_flag = touhou_system_warper_target_16_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_17_sel } remove_country_flag = touhou_system_warper_target_17_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_18_sel } remove_country_flag = touhou_system_warper_target_18_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_19_sel } remove_country_flag = touhou_system_warper_target_19_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_20_sel } remove_country_flag = touhou_system_warper_target_20_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_21_sel } remove_country_flag = touhou_system_warper_target_21_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_22_sel } remove_country_flag = touhou_system_warper_target_22_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_23_sel } remove_country_flag = touhou_system_warper_target_23_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_24_sel } remove_country_flag = touhou_system_warper_target_24_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_25_sel } remove_country_flag = touhou_system_warper_target_25_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_26_sel } remove_country_flag = touhou_system_warper_target_26_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_27_sel } remove_country_flag = touhou_system_warper_target_27_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_28_sel } remove_country_flag = touhou_system_warper_target_28_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_29_sel } remove_country_flag = touhou_system_warper_target_29_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_30_sel } remove_country_flag = touhou_system_warper_target_30_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_31_sel } remove_country_flag = touhou_system_warper_target_31_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_32_sel } remove_country_flag = touhou_system_warper_target_32_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_33_sel } remove_country_flag = touhou_system_warper_target_33_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_34_sel } remove_country_flag = touhou_system_warper_target_34_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_35_sel } remove_country_flag = touhou_system_warper_target_35_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_36_sel } remove_country_flag = touhou_system_warper_target_36_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_37_sel } remove_country_flag = touhou_system_warper_target_37_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_38_sel } remove_country_flag = touhou_system_warper_target_38_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_39_sel } remove_country_flag = touhou_system_warper_target_39_sel }
+    if = { limit = { has_country_flag = touhou_system_warper_target_40_sel } remove_country_flag = touhou_system_warper_target_40_sel }
+}
+touhou_system_warper_target_setup_flags = {
+    optimize_memory
+    touhou_system_warper_target_cleanup_flags = yes
+    set_country_flag = touhou_system_warper_target_$slot$_sel
+}
+touhou_system_warper_target_set = {
+    optimize_memory
+    if = { limit = { has_country_flag = touhou_system_warper_target_1_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_1 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_2_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_2 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_3_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_3 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_4_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_4 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_5_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_5 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_6_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_6 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_7_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_7 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_8_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_8 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_9_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_9 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_10_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_10 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_11_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_11 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_12_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_12 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_13_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_13 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_14_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_14 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_15_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_15 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_16_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_16 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_17_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_17 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_18_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_18 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_19_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_19 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_20_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_20 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_21_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_21 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_22_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_22 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_23_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_23 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_24_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_24 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_25_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_25 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_26_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_26 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_27_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_27 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_28_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_28 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_29_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_29 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_30_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_30 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_31_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_31 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_32_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_32 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_33_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_33 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_34_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_34 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_35_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_35 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_36_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_36 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_37_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_37 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_38_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_38 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_39_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_39 } }
+    if = { limit = { has_country_flag = touhou_system_warper_target_40_sel } fromfrom = { save_global_event_target_as = touhou_system_warper_target_40 } }
+}
+touhou_system_warper_target_clear = {
+    optimize_memory
+    clear_global_event_target = touhou_system_warper_target_1
+    clear_global_event_target = touhou_system_warper_target_2
+    clear_global_event_target = touhou_system_warper_target_3
+    clear_global_event_target = touhou_system_warper_target_4
+    clear_global_event_target = touhou_system_warper_target_5
+    clear_global_event_target = touhou_system_warper_target_6
+    clear_global_event_target = touhou_system_warper_target_7
+    clear_global_event_target = touhou_system_warper_target_8
+    clear_global_event_target = touhou_system_warper_target_9
+    clear_global_event_target = touhou_system_warper_target_10
+    clear_global_event_target = touhou_system_warper_target_11
+    clear_global_event_target = touhou_system_warper_target_12
+    clear_global_event_target = touhou_system_warper_target_13
+    clear_global_event_target = touhou_system_warper_target_14
+    clear_global_event_target = touhou_system_warper_target_15
+    clear_global_event_target = touhou_system_warper_target_16
+    clear_global_event_target = touhou_system_warper_target_17
+    clear_global_event_target = touhou_system_warper_target_18
+    clear_global_event_target = touhou_system_warper_target_19
+    clear_global_event_target = touhou_system_warper_target_20
+    clear_global_event_target = touhou_system_warper_target_21
+    clear_global_event_target = touhou_system_warper_target_22
+    clear_global_event_target = touhou_system_warper_target_23
+    clear_global_event_target = touhou_system_warper_target_24
+    clear_global_event_target = touhou_system_warper_target_25
+    clear_global_event_target = touhou_system_warper_target_26
+    clear_global_event_target = touhou_system_warper_target_27
+    clear_global_event_target = touhou_system_warper_target_28
+    clear_global_event_target = touhou_system_warper_target_29
+    clear_global_event_target = touhou_system_warper_target_30
+    clear_global_event_target = touhou_system_warper_target_31
+    clear_global_event_target = touhou_system_warper_target_32
+    clear_global_event_target = touhou_system_warper_target_33
+    clear_global_event_target = touhou_system_warper_target_34
+    clear_global_event_target = touhou_system_warper_target_35
+    clear_global_event_target = touhou_system_warper_target_36
+    clear_global_event_target = touhou_system_warper_target_37
+    clear_global_event_target = touhou_system_warper_target_38
+    clear_global_event_target = touhou_system_warper_target_39
+    clear_global_event_target = touhou_system_warper_target_40
+}
+
+touhou_spawn_seija_boss = {
+    optimize_memory
+    if = {
+        limit = { NOT = { exists = event_target:touhou_boss_seija } }
+        create_country = {
+            name = "touhou_seija_entity"
+            type = touhou_boss_seija
+            flag = {
+                icon = {
+                    category = "pirate"
+                    file = "flag_pirate_1.dds"
+                }
+                background= {
+                    category = "backgrounds"
+                    file = "00_solid.dds"
+                }
+                colors={
+                    "pink"
+                    "pink"
+                    "null"
+                    "null"
+                }
+            }
+        }
+        last_created_country = {
+            set_country_flag = touhou_boss_seija
+            save_global_event_target_as = touhou_boss_seija
+        }
+    }
+    event_target:touhou_boss_seija = { create_fleet = {
+        name = "touhou_seija_entity"
+        settings = { spawn_debris = no }
+        effect = {
+            set_owner = event_target:touhou_boss_seija
+            save_global_event_target_as = touhou_seija_entity_fleet
+            set_fleet_flag = touhou_seija_entity_fleet
+            create_ship = {
+                name = "NAME_touhou_kedama_the_grand_archive_ship"
+                design = "touhou_seija_entity"
+                effect = {
+                    set_ship_flag = touhou_seija_entity
+                    touhou_difficulty_bonus_ship = { lunar_capital = yes }
+                }
+            }
+            set_location = { target = root.capital_star distance = 10 angle = random }
+            set_fleet_stance = aggressive
+            set_aggro_range_measure_from = self
+            set_aggro_range = 50
+        }
+    } }
+    set_global_flag = touhou_seija_crisis_sound_begin
+    spth_set_stage_crisis_sound = yes
+}
+
+# randomize(x, scale)
+#  x -= scale
+#  x = x 随机加减 {0, 0.01, 0.02, 0.03, 0.04, 0.05}
+#  x = x 随机加减 {0, 0.001, 0.002, 0.003, 0.004, 0.005}
+#  x *= scale
+#  return x
+touhou_randomize_variable = {
+    optimize_memory
+    [[scale] change_variable = { which = $which$ value = $scale$ } ]
+    reroll_random = yes
+    random_list = {
+        10 = { }
+        10 = { change_variable = { which = $which$ value = 0.05 } }
+        10 = { change_variable = { which = $which$ value = 0.04 } }
+        10 = { change_variable = { which = $which$ value = 0.03 } }
+        10 = { change_variable = { which = $which$ value = 0.02 } }
+        10 = { change_variable = { which = $which$ value = 0.01 } }
+        10 = { subtract_variable = { which = $which$ value = 0.05 } }
+        10 = { subtract_variable = { which = $which$ value = 0.04 } }
+        10 = { subtract_variable = { which = $which$ value = 0.03 } }
+        10 = { subtract_variable = { which = $which$ value = 0.02 } }
+        10 = { subtract_variable = { which = $which$ value = 0.01 } }
+    }
+    reroll_random = yes
+    random_list = {
+        10 = { }
+        10 = { change_variable = { which = $which$ value = 0.005 } }
+        10 = { change_variable = { which = $which$ value = 0.004 } }
+        10 = { change_variable = { which = $which$ value = 0.003 } }
+        10 = { change_variable = { which = $which$ value = 0.002 } }
+        10 = { change_variable = { which = $which$ value = 0.001 } }
+        10 = { subtract_variable = { which = $which$ value = 0.005 } }
+        10 = { subtract_variable = { which = $which$ value = 0.004 } }
+        10 = { subtract_variable = { which = $which$ value = 0.003 } }
+        10 = { subtract_variable = { which = $which$ value = 0.002 } }
+        10 = { subtract_variable = { which = $which$ value = 0.001 } }
+    }
+    reroll_random = yes
+    [[scale] multiply_variable = { which = $which$ value = $scale$ } ]
+}
+touhou_randomize_variable_range = {
+	optimize_memory
+	reroll_random = yes
+	set_variable_to_random_value = {
+		which = $which$
+		rounded = yes min = $min$ max = 1145141919
+	}
+	modulo_variable = { which = $which$ value = $max$ }
+	[[rounded] round_variable = $which$ ]
+}
+
+touhou_instant_finish_tech_setup = {
+    optimize_memory
+    if = {
+        limit = { NOT = { has_country_flag = touhou_instant_finish_tech_setup } }
+        set_timed_country_flag = { flag = touhou_instant_finish_tech_setup days = 1 }
+        set_variable = { which = touhou_research_cost_mult value = modifier:physics_tech_cost_mult }
+        change_variable = { which = touhou_research_cost_mult value = 1 }
+        add_modifier = { modifier = r_touhou_fragments_of_the_world_modifier_2 multiplier = touhou_research_cost_mult }
+        set_variable = { which = touhou_research_cost_mult value = modifier:society_tech_cost_mult }
+        change_variable = { which = touhou_research_cost_mult value = 1 }
+        add_modifier = { modifier = r_touhou_fragments_of_the_world_modifier_3 multiplier = touhou_research_cost_mult }
+        set_variable = { which = touhou_research_cost_mult value = modifier:engineering_tech_cost_mult }
+        change_variable = { which = touhou_research_cost_mult value = 1 }
+        add_modifier = { modifier = r_touhou_fragments_of_the_world_modifier_4 multiplier = touhou_research_cost_mult }
+        clear_variable = touhou_research_cost_mult
+    }
+}
+touhou_instant_finish_tech_cleanup = {
+    optimize_memory
+    remove_modifier = r_touhou_fragments_of_the_world_modifier_2
+    remove_modifier = r_touhou_fragments_of_the_world_modifier_3
+    remove_modifier = r_touhou_fragments_of_the_world_modifier_4
+}
+touhou_allow_instant_finish_tech = {
+    optimize_memory
+    set_country_flag = touhou_allow_instant_finish_tech
+    add_modifier = { modifier = r_touhou_fragments_of_the_world_modifier_5 }
+}
+touhou_disallow_instant_finish_tech = {
+    optimize_memory
+    remove_country_flag = touhou_allow_instant_finish_tech
+    remove_modifier = r_touhou_fragments_of_the_world_modifier_5
+}
+
+# prevent destroy ship-planet
+touhou_destroy_colony = {
+	optimize_memory
+	if = {
+		limit = { touhou_is_ship_planet = no }
+		destroy_colony = yes
+	} else = {
+		touhou_add_planet_devastation = { amount = 100 }
+	}
+}
+# prevent destory ship-planet via add_planet_devastation
+touhou_add_planet_devastation = {
+	optimize_memory
+	if = {
+		limit = { touhou_is_ship_planet = no }
+		add_planet_devastation = $amount$
+	} else = {
+		limit = { exists = ship }
+		custom_tooltip_with_params = {
+			description = touhou_add_planet_devastation_tooltip
+			description_parameters = { TOUHOU_AMOUNT = $amount$ }
+		}
+		hidden_effect = {
+			if = {
+				limit = { NOT = { is_variable_set = touhou_added_planet_devastation_var } }
+				set_variable = { which = touhou_added_planet_devastation_var value = 0 }
+			}
+			change_variable = { which = touhou_added_planet_devastation_var value = $amount$ }
+			if = {
+				limit = { check_variable = { which = touhou_added_planet_devastation_var value > 100 } }
+				set_variable = { which = touhou_added_planet_devastation_var value = 100 }
+			}
+			if = {
+				limit = { has_modifier = touhou_added_planet_devastation }
+				remove_modifier = touhou_added_planet_devastation
+			}
+			add_modifier = {
+				modifier = touhou_added_planet_devastation
+				mult = touhou_added_planet_devastation_var
+				days = 1 time_multiplier = touhou_added_planet_devastation_var
+			}
+			carrier = { carrier_event = { id = spth_colony.1001 days = 1 } }
+		}
+	}
+}
+
+touhou_add_monthly_resource_mult_if_produced = {
+	optimize_memory
+	if = {
+		limit = {
+			has_monthly_income = { resource = $RESOURCE$ value > 0 }
+		}
+		add_monthly_resource_mult = {
+			resource = $RESOURCE$
+			value = $VALUE$
+		}
+	}
+}
+
+touhou_pay_for_megastructure_costs = {
+	optimize_memory
+	add_resource = { $resource_1$ = $value_1$ mult = value:touhou_megastructure_cost_factor|factor|-1| }
+	[[resource_2] add_resource = { $resource_2$ = $value_2$ mult = value:touhou_megastructure_cost_factor|factor|-1| } ]
+	[[resource_3] add_resource = { $resource_3$ = $value_3$ mult = value:touhou_megastructure_cost_factor|factor|-1| } ]
+	[[resource_4] add_resource = { $resource_4$ = $value_4$ mult = value:touhou_megastructure_cost_factor|factor|-1| } ]
+}
+
+touhou_dummy_effect = {
+	create_fleet = {
+		name = NAME_izakaya_arkship_1
+		settings = { spawn_debris = no uses_naval_capacity = no }
+		effect = {
+			set_owner = root
+			create_ship = {
+				design = NAME_izakaya_arkship_1
+				prefix = yes
+				fleet_cache_recalc = no
+				effect = {
+				}
+			}
+			set_location = { target = root.capital_scope angle = random distance = -10 }
+		}
+	}
+}
+
+touhou_ship_system_scan_mining = {
+	optimize_memory
+	reroll_random = yes
+	random_list = {
+		30 = {
+			modifier = { factor = 0.667 is_star = yes }
+			reroll_random = yes
+			random_list = {
+				50 = { add_deposit = d_sr_lingli_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_sr_lingli_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_sr_lingli_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				50 = { add_deposit = d_minerals_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				40 = { add_deposit = d_minerals_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				30 = { add_deposit = d_minerals_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				20 = { add_deposit = d_minerals_4 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_minerals_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_minerals_6 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_minerals_7 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				4 = { add_deposit = d_minerals_8 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				2 = { add_deposit = d_minerals_9 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				1 = { add_deposit = d_minerals_10 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		20 = {
+			reroll_random = yes
+			random_list = {
+				50 = { add_deposit = d_energy_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				40 = { add_deposit = d_energy_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				30 = { add_deposit = d_energy_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				20 = { add_deposit = d_energy_4 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_energy_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		10 = {
+			modifier = { factor = 0 OR = { is_star = yes is_planet_class = pc_gas_giant } }
+			reroll_random = yes
+			random_list = {
+				50 = { add_deposit = d_alloys_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				40 = { add_deposit = d_alloys_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				30 = { add_deposit = d_alloys_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				20 = { add_deposit = d_alloys_4 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_alloys_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		10 = {
+			modifier = { factor = 0 is_star = yes }
+			modifier = {
+				factor = 1.5
+				OR = {
+					is_planet_class = pc_toxic
+					is_planet_class = pc_gas_giant
+				}
+			}
+			reroll_random = yes
+			random_list = {
+				16 = { add_deposit = d_exotic_gases_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				8 = { add_deposit = d_exotic_gases_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				4 = { add_deposit = d_exotic_gases_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				2 = { add_deposit = d_exotic_gases_4 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				1 = { add_deposit = d_exotic_gases_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		10 = {
+			modifier = { factor = 0 OR = { is_star = yes is_planet_class = pc_gas_giant } }
+			modifier = {
+				factor = 2
+				OR = {
+					is_planet_class = pc_crystal_asteroid
+					is_planet_class = pc_ag_crystalized_asteroid_red
+					is_planet_class = pc_ag_crystalized_asteroid_violet
+				}
+			}
+			reroll_random = yes
+			random_list = {
+				16 = { add_deposit = d_rare_crystals_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				8 = { add_deposit = d_rare_crystals_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				4 = { add_deposit = d_rare_crystals_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				2 = { add_deposit = d_rare_crystals_4 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				1 = { add_deposit = d_rare_crystals_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		10 = {
+			modifier = { factor = 0 is_star = yes }
+			reroll_random = yes
+			random_list = {
+				16 = { add_deposit = d_volatile_motes_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				8 = { add_deposit = d_volatile_motes_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				4 = { add_deposit = d_volatile_motes_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				2 = { add_deposit = d_volatile_motes_4 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				1 = { add_deposit = d_volatile_motes_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		5 = {
+			modifier = { factor = 0 is_star = yes }
+			reroll_random = yes
+			random_list = {
+				45 = { add_deposit = d_touhou_living_metal_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_touhou_living_metal_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_touhou_living_metal_10 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		5 = {
+			modifier = { factor = 0 is_star = yes }
+			reroll_random = yes
+			random_list = {
+				45 = { add_deposit = d_touhou_nanites_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_touhou_nanites_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_touhou_nanites_10 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+	}
+}
+touhou_ship_system_scan_research = {
+	optimize_memory
+	reroll_random = yes
+	random_list = {
+		10 = {
+			modifier = { factor = 2 is_planet_class = pc_black_hole }
+			reroll_random = yes
+			random_list = {
+				50 = { add_deposit = d_physics_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				40 = { add_deposit = d_physics_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				30 = { add_deposit = d_physics_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				20 = { add_deposit = d_physics_4 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_physics_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_physics_6 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_physics_7 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		10 = {
+			modifier = { factor = 0 is_star = yes }
+			reroll_random = yes
+			random_list = {
+				50 = { add_deposit = d_society_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				40 = { add_deposit = d_society_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				30 = { add_deposit = d_society_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				20 = { add_deposit = d_society_4 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_society_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_society_6 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_society_7 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		10 = {
+			modifier = { factor = 0 is_star = yes }
+			reroll_random = yes
+			random_list = {
+				50 = { add_deposit = d_engineering_1 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				40 = { add_deposit = d_engineering_2 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				30 = { add_deposit = d_engineering_3 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				20 = { add_deposit = d_engineering_4 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_engineering_5 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_engineering_6 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				5 = { add_deposit = d_engineering_7 $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+		5 = {
+			modifier = { factor = 0 is_star = yes }
+			modifier = {
+				factor = 2
+				OR = {
+					is_planet_class = pc_ag_crystalized_asteroid_violet
+					is_planet_class = pc_shrouded
+					is_planet_class = pc_ag_shrouded
+					is_planet_class = pc_ag_shrouded_gas_giant
+				}
+				NOR = { has_deposit = d_touhou_lunar_zro_1_research has_deposit = d_touhou_lunar_zro_2_research has_deposit = d_touhou_lunar_zro_3_research }
+			}
+			reroll_random = yes
+			random_list = {
+				30 = { add_deposit = d_touhou_lunar_zro_1_research $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				20 = { add_deposit = d_touhou_lunar_zro_2_research $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+				10 = { add_deposit = d_touhou_lunar_zro_3_research $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+	}
 }

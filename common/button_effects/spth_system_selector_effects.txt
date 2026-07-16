@@ -140,7 +140,7 @@ spth_system_selector_confirm_super_carrier_eater = {
                                     entity_scale_to_size = yes
                                     scale = 0.2
                                     play_animation_once = yes
-                                    duration = 10
+                                    duration = 25
                                 }
                             }
                             fleet_event = { id = touhou_ship_actions.7 days = 10 random = 5 }
@@ -217,6 +217,8 @@ spth_system_selector_confirm_fleet_project = {
                                         set_fleet_stance = aggressive
                                         set_aggro_range = 500
                                         set_aggro_range_measure_from = self
+										set_fleet_flag = touhou_standard_formation_scale_setted
+										set_formation_scale = @touhou_standard_formation_scale
                                         fleet_event = { id = spth_fleet.2000 days = 45 }
                                     }
                                 }
@@ -293,6 +295,62 @@ spth_system_selector_confirm_spawn_dreamworld_gateway = {
         }
     }
 }
+spth_system_selector_confirm_sky_control_select_system = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            if = {
+                limit = { is_scope_type = galactic_object }
+                save_event_target_as = spth_system_selector_target
+            } else_if = {
+                limit = { exists = solar_system }
+                solar_system = {
+                    save_event_target_as = spth_system_selector_target
+                }
+            } else = {
+                event_target:touhou_sky_control_ship_select_system_@from = {
+                    set_fleet_flag = spth_reason_super_carrier_eater_fleet
+                    fleet_event = { id = touhou_ship_actions.16 }
+                    fleet_event = { id = touhou_ship_actions.5 }
+                }
+            }
+            if = {
+                limit = { exists = event_target:spth_system_selector_target }
+                event_target:spth_system_selector_target = {
+                    log = "选中了星系[This.GetName]QAQ"
+                    if = {
+                        limit = {
+                            OR = {
+                                AND = {
+                                    exists = space_owner
+                                    space_owner = { is_same_value = root.from }
+                                }
+                                spth_can_not_star_killer_hit_system = yes
+                            }
+                        }
+                        event_target:touhou_sky_control_ship_select_system_@from = {
+                            set_fleet_flag = spth_reason_super_carrier_eater_fleet
+                            fleet_event = { id = touhou_ship_actions.16 }
+                            fleet_event = { id = touhou_ship_actions.5 }
+                        }
+                    } else = {
+                        event_target:touhou_sky_control_ship_select_system_@from = {
+                            fire_on_action = {
+                                on_action = on_touhou_sky_controll_select_system_confirm
+                                scopes = {
+                                    from = root.from
+                                    fromfrom = prev
+                                }
+                            }
+                            clear_global_event_target = touhou_sky_control_ship_select_system_@root.from
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 spth_system_selector_confirm_touhou_system_warper_attack = {
     potential = { always = yes }
@@ -358,6 +416,61 @@ spth_system_selector_confirm_touhou_system_warper_attack = {
                         }
                         system_event = { id = toho.4202 days = 15 random = 15 }
                         clear_global_event_target = touhou_system_warper_@from
+                    }
+                }
+            }
+        }
+    }
+}
+spth_system_selector_confirm_touhou_system_warper_attack_multiple_target = {
+    potential = { always = yes }
+    allow = { always = yes }
+    effect = {
+        hidden_effect = {
+            if = {
+                limit = { is_scope_type = galactic_object }
+                save_event_target_as = spth_system_selector_target
+            } else_if = {
+                limit = { exists = solar_system }
+                solar_system = {
+                    save_event_target_as = spth_system_selector_target
+                }
+            } else = {
+                from = {
+                    country_event = { id = toho.4230 }
+                    country_event = { id = toho.4201 }
+                }
+            }
+            if = {
+                limit = { exists = event_target:spth_system_selector_target }
+                event_target:spth_system_selector_target = {
+                    log = "选中了星系[This.GetName]QAQ"
+                    if = {
+                        limit = {
+                            OR = {
+                                AND = {
+                                    exists = space_owner
+                                    space_owner = { is_same_value = root.from }
+                                }
+                                spth_can_not_star_killer_hit_system = yes
+                            }
+                        }
+                        from = {
+                            country_event = { id = toho.4230 }
+                            country_event = { id = toho.4201 }
+                        }
+                    } else = {
+                        event_target:spth_system_selector_target = {
+                            root.from = {
+                                fire_on_action = {
+                                    on_action = on_touhou_system_warper_select_system_confirm
+                                    scopes = {
+                                        from = prev
+                                        fromfrom = prev
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
