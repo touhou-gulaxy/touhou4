@@ -30,6 +30,13 @@ spth_armor_damage_debuff_value = {
 	add = modifier:ship_armor_damage_mult
 	add = spth_armor_damage_debuff
 }
+touhou_capped_capital_tier = {
+	base = 0
+	add = trigger:capital_tier
+	[[add] add = $add$ ]
+	min = $min|1$
+	max = $max|42$
+}
 spth_months_passed = {
 	base = 0
 	add = trigger:days_passed
@@ -1171,6 +1178,12 @@ izakaya_ingredient_gain_chance = {
 	round = yes
 	max = 90
 }
+izakaya_ingredient_gain_chance_display = {
+	base = 20
+	mult = value:country_izakaya_ingredient_produce_chance
+	round = yes
+	max = 90
+}
 izakaya_ingredient_collect_max_count_factor = {
 	base = 1
 	add = modifier:country_izakaya_ingredient_produce_mult
@@ -1182,6 +1195,7 @@ izakaya_ingredient_collect_max_count = {
 	add = modifier:country_izakaya_ingredient_produce_add
 	add = modifier:country_izakaya_ingredient_t$tier$_produce_add
 	mult = value:izakaya_ingredient_collect_max_count_factor|tier|$tier$|
+	[[round] round = $round$ ]
 	max = 514
 }
 izakaya_ingredient_collect_min_count = {
@@ -1190,5 +1204,125 @@ izakaya_ingredient_collect_min_count = {
 	add = modifier:country_izakaya_ingredient_t$tier$_produce_add
 	mult = value:izakaya_ingredient_collect_max_count_factor|tier|$tier$|
 	divide = 2
+	[[round] round = $round$ ]
 	min = 1
+}
+
+izakaya_food_effect_duration_factor = {
+	base = 1
+	add = modifier:country_izakaya_food_result_mult
+	min = 0.1
+}
+izakaya_food_effect_duration_display_add = {
+	base = 0
+	add = modifier:country_izakaya_food_duration_add
+	abs = yes
+}
+izakaya_food_effect_duration_tier_factor = {
+	base = 0.20
+	mult = @izakaya_food_tier_$food$
+	add = 0.6
+	max = 1.5
+}
+izakaya_food_effect_duration = {
+	base = @izakaya_food_effect_duration_base
+	add = modifier:country_izakaya_food_duration_add
+	mult = value:touhou_min_capped_modifier|modifier|country_izakaya_food_duration_mult|
+	mult = value:izakaya_food_effect_duration_tier_factor|food|$food$|
+}
+izakaya_food_effect_factor = {
+	base = 1
+	add = modifier:country_izakaya_food_result_add
+	mult = value:touhou_min_capped_modifier|modifier|country_izakaya_food_result_mult|
+}
+country_izakaya_food_storage = {
+	base = 4
+	add = modifier:country_izakaya_food_storage_max_add
+	mult = value:touhou_min_capped_modifier|modifier|country_izakaya_food_storage_max_mult|
+}
+
+# this: should be the planet/ship.
+# from: country
+# the success chance of making food.
+# the higher the tier, the lower the chance of success.
+# also releated to the quantity of ingredients used, the more ingredients, the lower the chance of success.
+# and higher the capital tier, the higher the chance of success.
+# P = 1% * (K * capital_tier^1.5) / (K * capital_tier^1.5 + quantity^1.2 + tier^2), with K = 20
+# worst chance is P(1, 5, 4) = 100% * (20 * 1^1.5) / (20 * 1^1.5 + 5^1.2 + 4^2)
+# 							 = 100% * (20) / (20 + 6.898 + 16) = 46.62%.
+# ingredient count scripted_variable is @izakaya_food_ingredient_count_{food_key},
+# the food tier is @izakaya_food_tier_{food_key}.
+country_izakaya_food_success_chance_cooker_tier = {
+	base = 0
+	add = value:touhou_capped_capital_tier|max|5|add|-1|
+	pow = 1.5
+	min = 1
+}
+country_izakaya_food_success_chance_quantity = {
+	base = @izakaya_food_ingredient_count_$food$
+	pow = 1.2
+	min = 1
+}
+country_izakaya_food_success_chance_food_tier = {
+	base = @izakaya_food_tier_$food$
+	mult = @izakaya_food_tier_$food$
+}
+country_izakaya_food_success_chance_divisor = {
+	base = 20
+	mult = value:country_izakaya_food_success_chance_cooker_tier
+	add = value:country_izakaya_food_success_chance_quantity|food|$food$|
+	add = value:country_izakaya_food_success_chance_food_tier|food|$food$|
+	min = 20
+}
+country_izakaya_food_success_chance = {
+	base = @izakaya_food_success_chance_base
+	mult = value:country_izakaya_food_success_chance_cooker_tier
+	divide = value:country_izakaya_food_success_chance_divisor|food|$food$|
+	mult = 100
+	round = yes
+	max = 100
+}
+
+country_izakaya_food_making_time_extra = {
+	base = @izakaya_food_make_duration_ingredient_factor
+	mult = @izakaya_food_ingredient_count_$food$
+	min = @izakaya_food_make_duration_ingredient_factor
+}
+country_izakaya_food_making_time_factor = {
+	base = @izakaya_food_make_duration_base_t$tier$_factor
+	min = 1.0
+}
+country_izakaya_food_making_time = {
+	base = @izakaya_food_make_duration_base
+	mult = value:country_izakaya_food_making_time_factor|tier|1|
+	add = country_izakaya_food_making_time_extra|food|$food$|
+}
+izakaya_make_food_progress = {
+	base = 0
+	add = value:izakaya_make_food_progress_max
+	complex_trigger_modifier = {
+		potential = { has_country_flag = block_izakaya_food_cook }
+		trigger = timed_flag_days_left
+		parameters = { flag = block_izakaya_food_cook }
+		mode = subtract
+	}
+	min = 0
+}
+izakaya_make_food_progress_max = {
+	base = 0
+	modifier = {
+		add = izakaya_make_food_progress_max
+		is_variable_set = izakaya_make_food_progress_max
+		has_country_flag = block_izakaya_food_cook
+	}
+	min = $min|0$
+}
+izakaya_make_food_progress_percent = {
+	base = 0
+	add = value:izakaya_make_food_progress
+	divide = value:izakaya_make_food_progress_max|min|1|
+	mult = 10000
+	round = yes
+	divide = 100
+	min = 0
 }
