@@ -6,3 +6,6 @@ chmod +x ./process_recipe
 ./process_recipe
 # valgrind --leak-check=full --show-leak-kinds=all ./process_recipe
 rm ./process_recipe
+cp ./izakaya_machine_trans.map ./izakaya_machine_trans.map.md
+pandoc ./izakaya_machine_trans.map.md --pdf-engine=xelatex -V mainfontoptions="Path=../../gfx/fonts/" -V mainfont="spth_ui_fonts.ttf" -o ../../../izakaya_machine_trans.map.pdf # -V CJKmainfont="FZCuYuan-M03"
+rm ./izakaya_machine_trans.map.md

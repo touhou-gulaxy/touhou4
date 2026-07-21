@@ -2,6 +2,7 @@
 #include <cstring>
 #include <fstream>
 #include <iterator>
+#include <string_view>
 #include <vector>
 #include <array>
 #include <cstdint>
@@ -9,6 +10,91 @@
 #include <format>
 
 #define SPECIAL_TIER_REISEN 72
+
+#ifdef __GNUC__
+#    ifndef __clang__
+#        define ALWAYS_INLINE __attribute__((always_inline)) inline
+#    else
+#        define ALWAYS_INLINE [[gnu::always_inline]] inline
+#    endif
+#elif defined _MSC_VER
+#    define ALWAYS_INLINE __forceinline
+#else
+#    define ALWAYS_INLINE inline
+#endif
+
+
+// localizations.
+//  building_izakaya_ingredient_tofu: "£izakaya_ingredients_item_tofu£豆腐"
+//  building_izakaya_ingredient_tofu_desc: ""
+//  building_izakaya_ingredient_tofu_tt: "\n食材数量：§Y[owner.izakaya_ingredient_tofu_val]/[get_izakaya_ingredient_max_val]§!"
+static constexpr auto ingredient_loc_base = " izakaya_item_ingredient_{:s}: \"{:s}\"\n izakaya_item_ingredient_{:s}_desc: \"{:s}\"\n";
+static constexpr auto food_loc_base = " izakaya_item_food_{:s}: \"{:s}\"\n izakaya_item_food_{:s}_desc: \"{:s}\"\n";
+static constexpr auto building_loc_name = " building_izakaya_ingredient_{:s}: \"£izakaya_ingredients_item_{:s}£$IZAKAYA_TIER_{:d}_COLOR_PREFIX$$izakaya_item_ingredient_{:s}$$IZAKAYA_TIER_COLOR_ENDFIX$\"\n";
+static constexpr auto building_loc_desc = " building_izakaya_ingredient_{:s}_desc: \"$izakaya_item_ingredient_{:s}_desc$\"\n";
+static constexpr auto building_loc_tooltip_reisen = " building_izakaya_ingredient_{:s}_tt: \"不可用于合成，适合拍照（？）";
+static constexpr auto building_loc_tooltip_prefix = " building_izakaya_ingredient_{:s}_tt: \"关联料理：";
+static constexpr auto building_loc_tooltip_endfix = "\\n食材数量：§Y[owner.izakaya_ingredient_{:s}_val]/[get_izakaya_ingredient_max_val]§!\"\n";
+//  izakaya_food_tsukimi_mochi: "£izakaya_result_foods_item_tsukimi_mochi£月见饼"
+//  izakaya_food_tsukimi_mochi_desc: ""
+static constexpr auto concept_loc_name = " izakaya_food_{:s}: \"£izakaya_result_foods_item_{:s}£$izakaya_item_food_{:s}$\"\n";
+static constexpr auto concept_loc_desc_prefix = " izakaya_food_{:s}_desc: \"需求：§Y烧烤架§!\\n料理品质：$izakaya_food_tier_{:d}$\\n原材料：";
+static constexpr auto concept_loc_desc_endfix = "\\n$izakaya_item_food_{:s}_desc$\"\n";
+// district_izakaya_barbecue_result_fantasy_craze: "制作料理：['izakaya_food_fantasy_craze']"
+static constexpr auto district_loc_result = " district_izakaya_barbecue_result_{:s}: \"制作料理：['izakaya_food_{:s}']\"\n";
+static constexpr auto event_loc_recipe_book_item = " izakaya_recipe_book_{:s}_response_text: \"$izakaya_recipe.1000.desc.prefix$$izakaya_food_{:s}$\\n$izakaya_food_{:s}_desc$\\n预计有§Y[from.get_izakaya_recipe_{:s}_success_chance].00%§!概率制作成功，制作时间为[from.get_izakaya_recipe_{:s}_complete_time]£time£。\"\n";
+static constexpr auto loc_recipe_success_chance = " izakaya_recipe_{:s}_success_chance: \"\\n预期制作的料理为['izakaya_food_{:s}']，有§Y[from.get_izakaya_recipe_{:s}_success_chance].00%§!概率制作成功。\"\n";
+static constexpr auto loc_recipe_complete_time = " izakaya_recipe_{:s}_complete_time: \"预期制作花费时间：$TOUHOU_TIME|Y$§Y.00§!£time£\"\n";
+// english localizations.
+static constexpr auto building_loc_name_en = " building_izakaya_ingredient_{:s}: \"£izakaya_ingredients_item_{:s}£$IZAKAYA_TIER_{:d}_COLOR_PREFIX$$izakaya_item_ingredient_{:s}$$IZAKAYA_TIER_COLOR_ENDFIX$\"\n";
+static constexpr auto building_loc_desc_en = " building_izakaya_ingredient_{:s}_desc: \"$izakaya_item_ingredient_{:s}_desc$\"\n";
+static constexpr auto building_loc_tooltip_reisen_en = " building_izakaya_ingredient_{:s}_tt: \"Unavailable for Cooking, but is suited for taking a photo?";
+static constexpr auto building_loc_tooltip_prefix_en = " building_izakaya_ingredient_{:s}_tt: \"Related Food: ";
+static constexpr auto building_loc_tooltip_endfix_en = "\\nIngredient Stockpile：§Y[owner.izakaya_ingredient_{:s}_val]/[get_izakaya_ingredient_max_val]§!\"\n";
+static constexpr auto concept_loc_name_en = " izakaya_food_{:s}: \"£izakaya_result_foods_item_{:s}£$izakaya_item_food_{:s}$\"\n";
+static constexpr auto concept_loc_desc_prefix_en = " izakaya_food_{:s}_desc: \"Requirement: §YBarbecue Grill§!\\nFood Quality: $izakaya_food_tier_{:d}$\\nIngredients: ";
+static constexpr auto concept_loc_desc_endfix_en = "\\n$izakaya_item_food_{:s}$\"\n";
+static constexpr auto district_loc_result_en = " district_izakaya_barbecue_result_{:s}: \"Cook Result: ['izakaya_food_{:s}']\"\n";
+static constexpr auto event_loc_recipe_book_item_en = " izakaya_recipe_book_{:s}_response_text: \"$izakaya_recipe.1000.desc.prefix$$izakaya_food_{:s}$\\n$izakaya_food_{:s}_desc$\\nThe probability of success is estimated to be §Y[from.get_izakaya_recipe_{:s}_success_chance].00%§!, and it will take approximately [from.get_izakaya_recipe_{:s}_complete_time]£time£。\"\n";
+static constexpr auto loc_recipe_success_chance_en = " izakaya_recipe_{:s}_success_chance: \"\\nThe dish to be prepared is ['izakaya_food_{:s}']. With a §Y[from.get_izakaya_recipe_{:s}_success_chance].00%§! chance of success.\"\n";
+static constexpr auto loc_recipe_complete_time_en = " izakaya_recipe_{:s}_complete_time: \"Estimated production time: $TOUHOU_TIME|Y$§Y.00§!£time£\"\n";
+static constexpr auto static_modifier_result_loc_en = " izakaya_cook_result_{:s}: \"$izakaya_food_{:s}$\"\n izakaya_cook_result_{:s}_tooltip: \"Source Food: ['izakaya_food_{:s}']\"\n izakaya_cook_result_{:s}_desc: \"$izakaya_food_{:s}_desc$\"\n";
+// inlines.
+// inline_script = {
+//     script = recipes/izakaya_barbecue_triggered_name recipe_result = fantasy_craze
+//     slot_1 = potatoes slot_2 = honey slot_3 = null slot_4 = null slot_5 = null
+//  }
+static constexpr auto inline_district_names = "inline_script = {{ script = recipes/izakaya_barbecue_triggered_name slot_1 = {:s} slot_2 = {:s} slot_3 = {:s} slot_4 = {:s} slot_5 = {:s} recipe_result = {:s} }}\n";
+static constexpr auto inline_init_map = "set_variable = {{ which = izakaya_array_foods_count_{:s} value = 0 }}\n";
+static constexpr auto inline_finish_cook = "inline_script = {{ script = recipes/izakaya_finish_cook_food type = {:s} }}\n";
+// izakaya_cook_result_ = {
+// 	icon = "gfx/interface/izakaya/recipe/text/beef_yuanyang_hot_pot.dds"
+// 	custom_tooltip = izakaya_cook_result__tooltip show_only_custom_tooltip = no
+// }
+static constexpr auto static_modifier_result = "izakaya_cook_result_{:s} = {{\n    icon = \"gfx/interface/izakaya/recipe/text/{:s}.dds\" custom_tooltip = izakaya_cook_result_{:s}_tooltip show_only_custom_tooltip = no\n\n}}\n";
+static constexpr auto static_modifier_result_loc = " izakaya_cook_result_{:s}: \"$izakaya_food_{:s}$\"\n izakaya_cook_result_{:s}_tooltip: \"来源料理：['izakaya_food_{:s}']\"\n izakaya_cook_result_{:s}_desc: \"$izakaya_food_{:s}_desc$\"\n";
+static constexpr auto scripted_variable_food_tiers = "@izakaya_food_tier_{:s} = {:d}\n";
+// @izakaya_food_ingredient_count_{food_key} = %d(numbers of ingredients used to make the food)
+static constexpr auto scripted_variable_food_ingredient_count = "@izakaya_food_ingredient_count_{:s} = {:d}\n";
+// @izakaya_recipe_detail_item_eggs = "izakaya_has_ingredient = { type = eggs }"
+static constexpr auto scripted_variable_recipe_detail = "@izakaya_recipe_detail_item_{:s} = \"izakaya_has_ingredient = {{ type = {:s} }}\"\n";
+// @izakaya_recipe_detail_has_item_eggs = "izakaya_has_built_ingredient = { type = eggs }"
+static constexpr auto scripted_variable_recipe_detail_has = "@izakaya_recipe_detail_has_item_{:s} = \"izakaya_has_built_ingredient = {{ type = {:s} }}\"\n";
+static constexpr auto effect_recipe_detail_apply = "set_country_flag = izakaya_ingredient_display_recipe_show_{:s} ";
+// if/else_if = { inline_script = { script = recipes/izakaya_init_cook_food_item slot_1 = {:s} slot_2 = {:s} slot_3 = {:s} slot_4 = {:s} slot_5 = {:s} food = {:s} } }
+static constexpr auto inline_init_cook_food_item = "{:s} = {{ inline_script = {{ script = recipes/izakaya_init_cook_food_item slot_1 = {:<23} slot_2 = {:<23} slot_3 = {:<23} slot_4 = {:<23} slot_5 = {:<23} food = {:s} }} }}\n";
+// country_event = {
+// 	id = izakaya_recipe.{:d} hide_window = yes is_triggered_only = yes
+// 	immediate = {
+// 		if = { limit = { check_variable = { which = block_izakaya_ingredient_allow_mutex value = 0 } } remove_country_flag = block_izakaya_ingredient_allow }
+// 		inline_script = { script = recipes/izakaya_finish_cook_food type = {:s} }
+// 	}
+// }
+static constexpr auto event_finish_cook_food = "country_event = {{ id = izakaya_recipe.{:d} hide_window = yes is_triggered_only = yes immediate = {{ change_variable = {{ which = block_izakaya_ingredient_allow_mutex value = -1 }} if = {{ limit = {{ check_variable = {{ which = block_izakaya_ingredient_allow_mutex value = 0 }} }} remove_country_flag = block_izakaya_ingredient_allow }} inline_script = {{ script = recipes/izakaya_finish_cook_food food = {:s} }} }} }}\n";
+static constexpr auto event_finish_cook_food_failed = "country_event = {{ id = izakaya_recipe.{:d} hide_window = yes is_triggered_only = yes immediate = {{ change_variable = {{ which = block_izakaya_ingredient_allow_mutex value = -1 }} if = {{ limit = {{ check_variable = {{ which = block_izakaya_ingredient_allow_mutex value = 0 }} }} remove_country_flag = block_izakaya_ingredient_allow }} inline_script = {{ script = recipes/izakaya_finish_cook_food_failed food = {:s} }} }} }}\n";
+static constexpr auto event_recipe_book_option = "	option = {{\n		name = izakaya_food_{:s}\n		custom_tooltip = izakaya_food_{:s}_desc\n		trigger = {{ check_variable = {{ which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_{:s} }}{:s} }}\n		response_text = izakaya_recipe_book_{:s}_response_text\n		is_dialog_only = yes\n		hidden_effect = {{ inline_script = {{ script = recipes/izakaya_set_recipe_book_select food = {:s} }} }}\n	}}\n";
+static constexpr auto sloc_recipe_success_chance = "define_text = {{ name = get_izakaya_recipe_{:s}_success_chance value = value:country_izakaya_food_success_chance|food|{:s}| }}\n";
+static constexpr auto sloc_recipe_complete_time = "define_text = {{ name = get_izakaya_recipe_{:s}_complete_time value = value:country_izakaya_food_making_time|food|{:s}| }}\n";
 
 std::vector<std::string> ingredients_keys;
 std::vector<std::string> ingredients_names;
@@ -18,7 +104,7 @@ std::vector<std::string> results_names;
 std::vector<std::string> foods_descs;
 
 template<typename T>
-const char* get_name(T idx, std::vector<std::string> map);
+ALWAYS_INLINE const char* get_name(T idx, std::vector<std::string> map);
 
 struct recipe
 {
@@ -98,7 +184,7 @@ struct food
 };
 
 template<typename T>
-T find_matches(const char* name, std::vector<std::string> names)
+ALWAYS_INLINE T find_matches(const char* name, std::vector<std::string> names)
 {
     for (T i = static_cast<T>(0); i < names.size(); ++i)
     {
@@ -109,14 +195,14 @@ T find_matches(const char* name, std::vector<std::string> names)
 }
 
 template<typename T>
-const char* get_name(T idx, std::vector<std::string> map)
+ALWAYS_INLINE const char* get_name(T idx, std::vector<std::string> map)
 {
     if (idx >= static_cast<T>(0) && idx < static_cast<T>(map.size()))
         return map[idx].c_str();
     return "unknown";
 }
 
-void build_maps(const char* key_file, const char* map_file, bool ingredients = true)
+ALWAYS_INLINE void build_maps(const char* key_file, const char* map_file, bool ingredients = true)
 {
     std::ifstream ifs;
     if (ingredients)
@@ -173,7 +259,7 @@ void build_maps(const char* key_file, const char* map_file, bool ingredients = t
               {
 
 template<bool ingredients = true>
-std::vector<std::variant<ingredient, food>> build_izakaya_items(const char* desc_file)
+ALWAYS_INLINE std::vector<std::variant<ingredient, food>> build_izakaya_items(const char* desc_file)
 {
     using item_type = std::variant<ingredient, food>;
     std::vector<std::variant<ingredient, food>> items;
@@ -229,7 +315,7 @@ std::vector<std::variant<ingredient, food>> build_izakaya_items(const char* desc
 #undef _END_IF
 #undef _ELSE
 
-std::vector<recipe> build_recipes(const char* recipe_file)
+ALWAYS_INLINE std::vector<recipe> build_recipes(const char* recipe_file)
 {
     std::vector<recipe> recipes;
     std::ifstream ifs;
@@ -251,6 +337,8 @@ std::vector<recipe> build_recipes(const char* recipe_file)
                 if (ch == ' ')
                 {
                     auto slot = find_matches<int_fast8_t>(tmp.c_str(), ingredients_names);
+                    if (slot < 0)
+                        printf("WARNING: failed to find valid index from ingredient token: %s\n", tmp.c_str());
                     if (slt_idx < 5)
                         item.slots[slt_idx++] = slot;
                     //printf("find ingredient token: %s, id=%d, key=%s\n", tmp.c_str(), slot,  get_name(slot, ingredients_keys));
@@ -261,6 +349,8 @@ std::vector<recipe> build_recipes(const char* recipe_file)
                 else if (ch == '>')
                 {
                     auto slot = find_matches<int_fast8_t>(tmp.c_str(), ingredients_names);
+                    if (slot < 0)
+                        printf("WARNING: failed to find valid index from ingredient token: %s\n", tmp.c_str());
                     if (slt_idx < 5)
                         item.slots[slt_idx++] = slot;
                     // printf("find ingredient token: %s, id=%d, key=%s\n", tmp.c_str(), slot, get_name(slot, ingredients_keys));
@@ -274,7 +364,8 @@ std::vector<recipe> build_recipes(const char* recipe_file)
                     tmp += ch;
             }
             auto res_idx = find_matches<int16_t>(tmp.c_str(), results_names);
-            // printf("find result token: %s, id=%d, key=%s\n", tmp.c_str(), res_idx, get_name(res_idx, results_keys));
+            if (res_idx < 0)
+                printf("WARNING: failed to find valid index from food token: %s\n", tmp.c_str());
             item.result = res_idx;
             recipes.emplace_back(item);
         }
@@ -404,70 +495,39 @@ int main()
 				max_tier = std::max(max_tier, std::get<ingredient>(*iter).tier);
 			}
 		}
-		return max_tier;
+		if (max_tier > 4)
+			printf("max tier should smaller than 4.");
+		return max_tier > 4 ? 4 : max_tier;
 	};
 
-    std::ofstream loc_file("./izakaya_locs.yml");
+    std::ofstream loc_file("./izakaya_locs.yml"), en_loc_file("./izakaya_locs_l_english.yml"), machine_trans_map("./izakaya_machine_trans.map");
     std::format_to(std::ostreambuf_iterator<char>(loc_file), "l_simp_chinese:\n # This file is auto generated by process.cpp, do not edit manually.\n # tier 72 is special for reisen.\n");
+    std::format_to(std::ostreambuf_iterator<char>(en_loc_file), "l_english:\n # This file is auto generated by process.cpp, do not edit manually.\n # tier 72 is special for reisen.\n");
 	for (auto color_pair : tier_colors)
 	{
 		std::format_to(std::ostreambuf_iterator<char>(loc_file), " IZAKAYA_TIER_{:d}_COLOR_PREFIX: \"§{:c}\"\n", color_pair.first, color_pair.second);
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), " IZAKAYA_TIER_{:d}_COLOR_PREFIX: \"§{:c}\"\n", color_pair.first, color_pair.second);
 		++elapsed_count;
 	}
-    std::format_to(std::ostreambuf_iterator<char>(loc_file), " IZAKAYA_TIER_COLOR_ENDFIX: \"§!\"\n\n");
-    //  building_izakaya_ingredient_tofu: "£izakaya_ingredients_item_tofu£豆腐"
-    //  building_izakaya_ingredient_tofu_desc: ""
-    //  building_izakaya_ingredient_tofu_tt: "\n食材数量：§Y[owner.izakaya_ingredient_tofu_val]/[get_izakaya_ingredient_max_val]§!"
-    static constexpr auto building_loc_name = " building_izakaya_ingredient_{:s}: \"£izakaya_ingredients_item_{:s}£$IZAKAYA_TIER_{:d}_COLOR_PREFIX${:s}$IZAKAYA_TIER_COLOR_ENDFIX$\"\n";
-    static constexpr auto building_loc_desc = " building_izakaya_ingredient_{:s}_desc: \"{:s}\"\n";
-    static constexpr auto building_loc_tooltip_reisen = " building_izakaya_ingredient_{:s}_tt: \"不可用于合成，适合拍照（？）";
-    static constexpr auto building_loc_tooltip_prefix = " building_izakaya_ingredient_{:s}_tt: \"关联料理：";
-    static constexpr auto building_loc_tooltip_endfix = "\\n食材数量：§Y[owner.izakaya_ingredient_{:s}_val]/[get_izakaya_ingredient_max_val]§!\"\n";
-    //  izakaya_food_tsukimi_mochi: "£izakaya_result_foods_item_tsukimi_mochi£月见饼"
-    //  izakaya_food_tsukimi_mochi_desc: ""
-    static constexpr auto concept_loc_name = " izakaya_food_{:s}: \"£izakaya_result_foods_item_{:s}£{:s}\"\n";
-    static constexpr auto concept_loc_desc_prefix = " izakaya_food_{:s}_desc: \"需求：§Y烧烤架§!\\n原材料：";
-    static constexpr auto concept_loc_desc_endfix = "\\n{:s}\"\n";
-	// district_izakaya_barbecue_result_fantasy_craze: "制作料理：['izakaya_food_fantasy_craze']"
-	static constexpr auto district_loc_result = " district_izakaya_barbecue_result_{:s}: \"制作料理：['izakaya_food_{:s}']\"\n";
-	static constexpr auto event_loc_recipe_book_item = " izakaya_recipe_book_{:s}_response_text: \"$izakaya_recipe.1000.desc.prefix$$izakaya_food_{:s}$\\n$izakaya_food_{:s}_desc$\\n预计有§Y[get_izakaya_recipe_{:s}_success_chance].00%§!概率制作成功，制作时间为[from.get_izakaya_recipe_{:s}_complete_time]£time£。\"\n";
-    // inline_script = {
-	//     script = recipes/izakaya_barbecue_triggered_name recipe_result = fantasy_craze
-	//     slot_1 = potatoes slot_2 = honey slot_3 = null slot_4 = null slot_5 = null
-    //  }
-    static constexpr auto inline_district_names = "inline_script = {{ script = recipes/izakaya_barbecue_triggered_name slot_1 = {:s} slot_2 = {:s} slot_3 = {:s} slot_4 = {:s} slot_5 = {:s} recipe_result = {:s} }}\n";
-    static constexpr auto inline_init_map = "set_variable = {{ which = izakaya_array_foods_count_{:s} value = 0 }}\n";
-	static constexpr auto inline_finish_cook = "inline_script = {{ script = recipes/izakaya_finish_cook_food type = {:s} }}\n";
-	// izakaya_cook_result_ = {
-	// 	icon = "gfx/interface/izakaya/recipe/text/beef_yuanyang_hot_pot.dds"
-	// 	custom_tooltip = izakaya_cook_result__tooltip show_only_custom_tooltip = no
-	// }
-	static constexpr auto static_modifier_result = "izakaya_cook_result_{:s} = {{\n    icon = \"gfx/interface/izakaya/recipe/text/{:s}.dds\" custom_tooltip = izakaya_cook_result_{:s}_tooltip show_only_custom_tooltip = no\n\n}}\n";
-	static constexpr auto static_modifier_result_loc = " izakaya_cook_result_{:s}: \"$izakaya_food_{:s}$\"\n izakaya_cook_result_{:s}_tooltip: \"来源料理：['izakaya_food_{:s}']\"\n izakaya_cook_result_{:s}_desc: \"$izakaya_food_{:s}_desc$\"\n";
-	static constexpr auto scripted_variable_food_tiers = "@izakaya_food_tier_{:s} = {:d}\n";
-	// @izakaya_food_ingredient_count_{food_key} = %d(numbers of ingredients used to make the food)
-	static constexpr auto scripted_variable_food_ingredient_count = "@izakaya_food_ingredient_count_{:s} = {:d}\n";
-	// @izakaya_recipe_detail_item_eggs = "izakaya_has_ingredient = { type = eggs }"
-	static constexpr auto scripted_variable_recipe_detail = "@izakaya_recipe_detail_item_{:s} = \"izakaya_has_ingredient = {{ type = {:s} }}\"\n";
-	// @izakaya_recipe_detail_has_item_eggs = "izakaya_has_built_ingredient = { type = eggs }"
-	static constexpr auto scripted_variable_recipe_detail_has = "@izakaya_recipe_detail_has_item_{:s} = \"izakaya_has_built_ingredient = {{ type = {:s} }}\"\n";
-	static constexpr auto effect_recipe_detail_apply = "set_country_flag = izakaya_ingredient_display_recipe_show_{:s} ";
-	// if/else_if = { inline_script = { script = recipes/izakaya_init_cook_food_item slot_1 = {:s} slot_2 = {:s} slot_3 = {:s} slot_4 = {:s} slot_5 = {:s} food = {:s} } }
-	static constexpr auto inline_init_cook_food_item = "{:s} = {{ inline_script = {{ script = recipes/izakaya_init_cook_food_item slot_1 = {:<23} slot_2 = {:<23} slot_3 = {:<23} slot_4 = {:<23} slot_5 = {:<23} food = {:s} }} }}\n";
-	// country_event = {
-	// 	id = izakaya_recipe.{:d} hide_window = yes is_triggered_only = yes
-	// 	immediate = {
-	// 		if = { limit = { check_variable = { which = block_izakaya_ingredient_allow_mutex value = 0 } } remove_country_flag = block_izakaya_ingredient_allow }
-	// 		inline_script = { script = recipes/izakaya_finish_cook_food type = {:s} }
-	// 	}
-	// }
-	static constexpr auto event_finish_cook_food = "country_event = {{ id = izakaya_recipe.{:d} hide_window = yes is_triggered_only = yes immediate = {{ change_variable = {{ which = block_izakaya_ingredient_allow_mutex value = -1 }} if = {{ limit = {{ check_variable = {{ which = block_izakaya_ingredient_allow_mutex value = 0 }} }} remove_country_flag = block_izakaya_ingredient_allow }} inline_script = {{ script = recipes/izakaya_finish_cook_food food = {:s} }} }} }}\n";
-	static constexpr auto event_finish_cook_food_failed = "country_event = {{ id = izakaya_recipe.{:d} hide_window = yes is_triggered_only = yes immediate = {{ change_variable = {{ which = block_izakaya_ingredient_allow_mutex value = -1 }} if = {{ limit = {{ check_variable = {{ which = block_izakaya_ingredient_allow_mutex value = 0 }} }} remove_country_flag = block_izakaya_ingredient_allow }} inline_script = {{ script = recipes/izakaya_finish_cook_food_failed food = {:s} }} }} }}\n";
-	static constexpr auto event_recipe_book_option = "	option = {{\n		name = izakaya_food_{:s}\n		custom_tooltip = izakaya_food_{:s}_desc\n		trigger = {{ check_variable = {{ which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_{:s} }}{:s} }}\n		response_text = izakaya_recipe_book_{:s}_response_text\n		is_dialog_only = yes\n		hidden_effect = {{ inline_script = {{ script = recipes/izakaya_set_recipe_book_select food = {:s} }} }}\n	}}\n";
-	static constexpr auto sloc_recipe_success_chance = "define_text = {{ name = get_izakaya_recipe_{:s}_success_chance value = value:country_izakaya_food_success_chance|food|{:s}| }}\n";
-	static constexpr auto sloc_recipe_complete_time = "define_text = {{ name = get_izakaya_recipe_{:s}_complete_time value = value:country_izakaya_food_making_time|food|{:s}| }}\n";
-    static constexpr auto loc_recipe_success_chance = " izakaya_recipe_{:s}_success_chance: \"\\n预期制作的料理为['izakaya_food_{:s}']，有§Y[get_izakaya_recipe_{:s}_success_chance].00%§!概率制作成功。\"\n";
-    static constexpr auto loc_recipe_complete_time = " izakaya_recipe_{:s}_complete_time: \"预期制作花费时间：$TOUHOU_TIME|Y$§Y.00§!£time£\"\n";
+    std::format_to(std::ostreambuf_iterator<char>(loc_file), " IZAKAYA_TIER_COLOR_ENDFIX: \"§!\"\n\n # next part is locs which is used for reference, and only them are needed to be translated.\n");
+    std::format_to(std::ostreambuf_iterator<char>(en_loc_file), " IZAKAYA_TIER_COLOR_ENDFIX: \"§!\"\n\n # next part is locs which is used for reference, and only them are needed to be translated.\n");
+
+    for (auto& item : ingredients)
+    {
+        ++elapsed_count;
+        auto ingr = std::get<ingredient>(item);
+        std::format_to(std::ostreambuf_iterator<char>(loc_file), ingredient_loc_base, ingr.key(), ingr.name(), ingr.key(), ingr.desc());
+        std::format_to(std::ostreambuf_iterator<char>(machine_trans_map), "- {:s}: {:s}\n", ingr.name(), ingr.desc());
+    }
+    for (auto& item : foods)
+    {
+        ++elapsed_count;
+        auto ingr = std::get<food>(item);
+        std::format_to(std::ostreambuf_iterator<char>(loc_file), food_loc_base, ingr.key(), ingr.name(), ingr.key(), ingr.desc());
+        std::format_to(std::ostreambuf_iterator<char>(machine_trans_map), "- {:s}: {:s}\n", ingr.name(), ingr.desc());
+    }
+    std::format_to(std::ostreambuf_iterator<char>(loc_file), " # End of the reference map.\n\n");
+    machine_trans_map.close();
 
 	// find ingredient with name "铃仙", and print special tooltip for it.
 	auto reisen_iter = std::find_if(ingredients.begin(), ingredients.end(), [](std::variant<ingredient, food>& item) {
@@ -477,40 +537,53 @@ int main()
 	bool reisen_found = reisen_iter != ingredients.end();
     for (auto& item : ingredients)
     {
-		++elapsed_count;
+		elapsed_count += 6;
         auto item_ingr = std::get<ingredient>(item);
-        std::format_to(std::ostreambuf_iterator<char>(loc_file), building_loc_name, item_ingr.key(), item_ingr.key(), item_ingr.tier, item_ingr.name());
-        std::format_to(std::ostreambuf_iterator<char>(loc_file), building_loc_desc, item_ingr.key(), item_ingr.desc());
+        std::format_to(std::ostreambuf_iterator<char>(loc_file), building_loc_name, item_ingr.key(), item_ingr.key(), item_ingr.tier, item_ingr.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), building_loc_name_en, item_ingr.key(), item_ingr.key(), item_ingr.tier, item_ingr.key());
+        std::format_to(std::ostreambuf_iterator<char>(loc_file), building_loc_desc, item_ingr.key(), item_ingr.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), building_loc_desc_en, item_ingr.key(), item_ingr.key());
 		if (reisen_found && item_ingr.id == std::get<ingredient>(*reisen_iter).id)
 		{
 			std::format_to(std::ostreambuf_iterator<char>(loc_file), building_loc_tooltip_reisen, item_ingr.key());
+            std::format_to(std::ostreambuf_iterator<char>(en_loc_file), building_loc_tooltip_reisen_en, item_ingr.key());
         	std::format_to(std::ostreambuf_iterator<char>(loc_file), building_loc_tooltip_endfix, item_ingr.key());
+            std::format_to(std::ostreambuf_iterator<char>(en_loc_file), building_loc_tooltip_endfix_en, item_ingr.key());
 			continue;
 		}
 		else
         	std::format_to(std::ostreambuf_iterator<char>(loc_file), building_loc_tooltip_prefix, item_ingr.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), building_loc_tooltip_prefix_en, item_ingr.key());
 		auto item_food_ref_count = 0;
         for (size_t i = 0; i < item_ingr.results.size(); ++i)
         {
-			++elapsed_count;
+			elapsed_count += 2;
             auto result = item_ingr.results[i];
             std::format_to(std::ostreambuf_iterator<char>(loc_file), "['izakaya_food_{:s}']", get_name(result, results_keys));
+            std::format_to(std::ostreambuf_iterator<char>(en_loc_file), "['izakaya_food_{:s}']", get_name(result, results_keys));
             if (i + 1 >= item_ingr.results.size())
                 break;
 			++item_food_ref_count;
             std::format_to(std::ostreambuf_iterator<char>(loc_file), "、");
+            std::format_to(std::ostreambuf_iterator<char>(en_loc_file), ", ");
         }
 		if (item_food_ref_count == 0)
+        {
 			std::format_to(std::ostreambuf_iterator<char>(loc_file), "无");
+			std::format_to(std::ostreambuf_iterator<char>(en_loc_file), "None");
+        }
         std::format_to(std::ostreambuf_iterator<char>(loc_file), building_loc_tooltip_endfix, item_ingr.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), building_loc_tooltip_endfix_en, item_ingr.key());
     }
 
     for (auto& item : foods)
     {
-		++elapsed_count;
+		elapsed_count += 6;
         auto item_food = std::get<food>(item);
-        std::format_to(std::ostreambuf_iterator<char>(loc_file), concept_loc_name, item_food.key(), item_food.key(), item_food.name());
-        std::format_to(std::ostreambuf_iterator<char>(loc_file), concept_loc_desc_prefix, item_food.key());
+        std::format_to(std::ostreambuf_iterator<char>(loc_file), concept_loc_name, item_food.key(), item_food.key(), item_food.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), concept_loc_name_en, item_food.key(), item_food.key(), item_food.key());
+        std::format_to(std::ostreambuf_iterator<char>(loc_file), concept_loc_desc_prefix, item_food.key(), calc_food_tier(item_food));
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), concept_loc_desc_prefix_en, item_food.key(), calc_food_tier(item_food));
         for (size_t i = 0; i < item_food.results.size(); ++i)
         {
 			++elapsed_count;
@@ -518,24 +591,35 @@ int main()
             if (res_idx < 0)
                 break;
             std::format_to(std::ostreambuf_iterator<char>(loc_file), "$building_izakaya_ingredient_{:s}$", ingredients_keys[res_idx].c_str());
+            std::format_to(std::ostreambuf_iterator<char>(en_loc_file), "$building_izakaya_ingredient_{:s}$", ingredients_keys[res_idx].c_str());
             if (i + 1 < item_food.results.size() && item_food.results[i + 1] >= 0)
+            {
                 std::format_to(std::ostreambuf_iterator<char>(loc_file), "、");
+                std::format_to(std::ostreambuf_iterator<char>(en_loc_file), ", ");
+            }
         }
-        std::format_to(std::ostreambuf_iterator<char>(loc_file), concept_loc_desc_endfix, item_food.desc());
+        std::format_to(std::ostreambuf_iterator<char>(loc_file), concept_loc_desc_endfix, item_food.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), concept_loc_desc_endfix_en, item_food.key());
 		std::format_to(std::ostreambuf_iterator<char>(loc_file), district_loc_result, item_food.key(), item_food.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), district_loc_result_en, item_food.key(), item_food.key());
 		std::format_to(std::ostreambuf_iterator<char>(loc_file), event_loc_recipe_book_item, item_food.key(), item_food.key(), item_food.key(), item_food.key(), item_food.key(), item_food.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), event_loc_recipe_book_item_en, item_food.key(), item_food.key(), item_food.key(), item_food.key(), item_food.key(), item_food.key());
 		// now also generate the static modifier localization for the food result.
 		// the tooltip is empty for now, but it can be filled in later if needed.
 		std::format_to(std::ostreambuf_iterator<char>(loc_file), static_modifier_result_loc, item_food.key(), item_food.key(), item_food.key(), item_food.key(), item_food.key(), item_food.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), static_modifier_result_loc_en, item_food.key(), item_food.key(), item_food.key(), item_food.key(), item_food.key(), item_food.key());
     }
 
 	for (auto& item : recipes)
 	{
-		++elapsed_count;
+		elapsed_count += 4;
         std::format_to(std::ostreambuf_iterator<char>(loc_file), loc_recipe_success_chance, item.key(), item.key(), item.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), loc_recipe_success_chance_en, item.key(), item.key(), item.key());
 		std::format_to(std::ostreambuf_iterator<char>(loc_file), loc_recipe_complete_time, item.key());
+		std::format_to(std::ostreambuf_iterator<char>(en_loc_file), loc_recipe_complete_time_en, item.key());
 	}
     loc_file.close();
+	en_loc_file.close();
 
     std::ofstream inline_file("./izakaya_barbecue_triggered_names.txt");
     for (auto recipe : recipes)
@@ -568,6 +652,14 @@ int main()
 		std::format_to(std::ostreambuf_iterator<char>(inline_file), "if = {{ limit = {{ has_country_flag = izakaya_recipe_book_selected_{:s} }} remove_country_flag = izakaya_recipe_book_selected_{:s} }}\n", f.key(), f.key());
 	}
 	std::format_to(std::ostreambuf_iterator<char>(inline_file), "set_country_flag = izakaya_recipe_book_selected_$food$\n");
+	inline_file.close();
+	inline_file.open("./event/izakaya_reset_recipe_book_select.txt");
+	for (auto item : foods)
+	{
+		++elapsed_count;
+		auto f = std::get<food>(item);
+		std::format_to(std::ostreambuf_iterator<char>(inline_file), "if = {{ limit = {{ has_country_flag = izakaya_recipe_book_selected_{:s} }} remove_country_flag = izakaya_recipe_book_selected_{:s} }}\n", f.key(), f.key());
+	}
 	inline_file.close();
 
 	std::ofstream static_mod_file("./izakaya_static_modifiers.txt");
