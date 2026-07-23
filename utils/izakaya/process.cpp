@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iterator>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 #include <array>
 #include <cstdint>
@@ -42,7 +43,7 @@ static constexpr auto concept_loc_desc_prefix = " izakaya_food_{:s}_desc: \"需�
 static constexpr auto concept_loc_desc_endfix = "\\n$izakaya_item_food_{:s}_desc$\"\n";
 // district_izakaya_barbecue_result_fantasy_craze: "制作料理：['izakaya_food_fantasy_craze']"
 static constexpr auto district_loc_result = " district_izakaya_barbecue_result_{:s}: \"制作料理：['izakaya_food_{:s}']\"\n";
-static constexpr auto event_loc_recipe_book_item = " izakaya_recipe_book_{:s}_response_text: \"$izakaya_recipe.1000.desc.prefix$$izakaya_food_{:s}$\\n$izakaya_food_{:s}_desc$\\n预计有§Y[from.get_izakaya_recipe_{:s}_success_chance].00%§!概率制作成功，制作时间为[from.get_izakaya_recipe_{:s}_complete_time]£time£。\"\n";
+static constexpr auto event_loc_recipe_book_item = " izakaya_recipe_book_{:s}_response_text: \"$izakaya_recipe.1000.desc.prefix$$izakaya_food_{:s}$\\n$izakaya_food_{:s}_desc$\\n预计有§Y[from.get_izakaya_recipe_{:s}_success_chance].00%§!概率制作成功，制作时间为[from.get_izakaya_recipe_{:s}_complete_time]£time£。\\n<将鼠标放置在这里以显示料理效果。>\"\n";
 static constexpr auto loc_recipe_success_chance = " izakaya_recipe_{:s}_success_chance: \"\\n预期制作的料理为['izakaya_food_{:s}']，有§Y[from.get_izakaya_recipe_{:s}_success_chance].00%§!概率制作成功。\"\n";
 static constexpr auto loc_recipe_complete_time = " izakaya_recipe_{:s}_complete_time: \"预期制作花费时间：$TOUHOU_TIME|Y$§Y.00§!£time£\"\n";
 // english localizations.
@@ -55,7 +56,7 @@ static constexpr auto concept_loc_name_en = " izakaya_food_{:s}: \"£izakaya_res
 static constexpr auto concept_loc_desc_prefix_en = " izakaya_food_{:s}_desc: \"Requirement: §YBarbecue Grill§!\\nFood Quality: $izakaya_food_tier_{:d}$\\nIngredients: ";
 static constexpr auto concept_loc_desc_endfix_en = "\\n$izakaya_item_food_{:s}$\"\n";
 static constexpr auto district_loc_result_en = " district_izakaya_barbecue_result_{:s}: \"Cook Result: ['izakaya_food_{:s}']\"\n";
-static constexpr auto event_loc_recipe_book_item_en = " izakaya_recipe_book_{:s}_response_text: \"$izakaya_recipe.1000.desc.prefix$$izakaya_food_{:s}$\\n$izakaya_food_{:s}_desc$\\nThe probability of success is estimated to be §Y[from.get_izakaya_recipe_{:s}_success_chance].00%§!, and it will take approximately [from.get_izakaya_recipe_{:s}_complete_time]£time£。\"\n";
+static constexpr auto event_loc_recipe_book_item_en = " izakaya_recipe_book_{:s}_response_text: \"$izakaya_recipe.1000.desc.prefix$$izakaya_food_{:s}$\\n$izakaya_food_{:s}_desc$\\nThe probability of success is estimated to be §Y[from.get_izakaya_recipe_{:s}_success_chance].00%§!, and it will take approximately [from.get_izakaya_recipe_{:s}_complete_time]£time£。\\n<Hover the mouse here to show the food's effects.>\"\n";
 static constexpr auto loc_recipe_success_chance_en = " izakaya_recipe_{:s}_success_chance: \"\\nThe dish to be prepared is ['izakaya_food_{:s}']. With a §Y[from.get_izakaya_recipe_{:s}_success_chance].00%§! chance of success.\"\n";
 static constexpr auto loc_recipe_complete_time_en = " izakaya_recipe_{:s}_complete_time: \"Estimated production time: $TOUHOU_TIME|Y$§Y.00§!£time£\"\n";
 static constexpr auto static_modifier_result_loc_en = " izakaya_cook_result_{:s}: \"$izakaya_food_{:s}$\"\n izakaya_cook_result_{:s}_tooltip: \"Source Food: ['izakaya_food_{:s}']\"\n izakaya_cook_result_{:s}_desc: \"$izakaya_food_{:s}_desc$\"\n";
@@ -90,9 +91,9 @@ static constexpr auto inline_init_cook_food_item = "{:s} = {{ inline_script = {{
 // 		inline_script = { script = recipes/izakaya_finish_cook_food type = {:s} }
 // 	}
 // }
-static constexpr auto event_finish_cook_food = "country_event = {{ id = izakaya_recipe.{:d} hide_window = yes is_triggered_only = yes immediate = {{ change_variable = {{ which = block_izakaya_ingredient_allow_mutex value = -1 }} if = {{ limit = {{ check_variable = {{ which = block_izakaya_ingredient_allow_mutex value = 0 }} }} remove_country_flag = block_izakaya_ingredient_allow }} inline_script = {{ script = recipes/izakaya_finish_cook_food food = {:s} }} }} }}\n";
-static constexpr auto event_finish_cook_food_failed = "country_event = {{ id = izakaya_recipe.{:d} hide_window = yes is_triggered_only = yes immediate = {{ change_variable = {{ which = block_izakaya_ingredient_allow_mutex value = -1 }} if = {{ limit = {{ check_variable = {{ which = block_izakaya_ingredient_allow_mutex value = 0 }} }} remove_country_flag = block_izakaya_ingredient_allow }} inline_script = {{ script = recipes/izakaya_finish_cook_food_failed food = {:s} }} }} }}\n";
-static constexpr auto event_recipe_book_option = "	option = {{\n		name = izakaya_food_{:s}\n		custom_tooltip = izakaya_food_{:s}_desc\n		trigger = {{ check_variable = {{ which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_{:s} }}{:s} }}\n		response_text = izakaya_recipe_book_{:s}_response_text\n		is_dialog_only = yes\n		hidden_effect = {{ inline_script = {{ script = recipes/izakaya_set_recipe_book_select food = {:s} }} }}\n	}}\n";
+static constexpr auto event_finish_cook_food = "country_event = {{\n\tid = izakaya_recipe.{:d}\n\thide_window = yes\n\tis_triggered_only = yes\n\timmediate = {{\n\t\tchange_variable = {{ which = block_izakaya_ingredient_allow_mutex value = -1 }}\n\t\tif = {{\n\t\t\tlimit = {{ check_variable = {{ which = block_izakaya_ingredient_allow_mutex value = 0 }} }}\n\t\t\tremove_country_flag = block_izakaya_ingredient_allow\n\t\t}}\n\t\tinline_script = {{ script = recipes/izakaya_finish_cook_food food = {:s} }}\n\t}}\n}}\n";
+static constexpr auto event_finish_cook_food_failed = "country_event = {{\n\tid = izakaya_recipe.{:d}\n\thide_window = yes\n\tis_triggered_only = yes\n\timmediate = {{\n\t\tchange_variable = {{ which = block_izakaya_ingredient_allow_mutex value = -1 }}\n\t\tif = {{\n\t\t\tlimit = {{ check_variable = {{ which = block_izakaya_ingredient_allow_mutex value = 0 }} }}\n\t\t\tremove_country_flag = block_izakaya_ingredient_allow\n\t\t}}\n\t\tinline_script = {{ script = recipes/izakaya_finish_cook_food_failed food = {:s} }}\n\t}}\n}}\n";
+static constexpr auto event_recipe_book_option = "	option = {{\n		name = izakaya_food_{:s}\n		custom_tooltip = izakaya_food_{:s}_desc\n		trigger = {{\n\t\t\tcheck_variable = {{ which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_{:s} }}{:s}\n\t\t}}\n		response_text = izakaya_recipe_book_{:s}_response_text\n		is_dialog_only = yes\n		hidden_effect = {{ inline_script = {{ script = recipes/izakaya_set_recipe_book_select food = {:s} }} }}\n	}}\n";
 static constexpr auto sloc_recipe_success_chance = "define_text = {{ name = get_izakaya_recipe_{:s}_success_chance value = value:country_izakaya_food_success_chance|food|{:s}| }}\n";
 static constexpr auto sloc_recipe_complete_time = "define_text = {{ name = get_izakaya_recipe_{:s}_complete_time value = value:country_izakaya_food_making_time|food|{:s}| }}\n";
 
@@ -111,17 +112,17 @@ struct recipe
     std::array<int_fast8_t, 5> slots = {-1, -1, -1, -1, -1};
     int16_t result = -1;
 
-    const char* result_name()
+    ALWAYS_INLINE const char* result_name()
     {
         return results_names[result].c_str();
     }
 
-    const char* key()
+    ALWAYS_INLINE const char* key()
     {
         return results_keys[result].c_str();
     }
 
-    const char* slot_key(int_fast8_t idx)
+    ALWAYS_INLINE const char* slot_key(int_fast8_t idx)
     {
         if (idx < 0 || idx >= 5)
             return "null";
@@ -139,17 +140,17 @@ struct ingredient
     int_fast8_t id;
 	int_fast8_t tier = 1;
 
-    const char* name()
+    ALWAYS_INLINE const char* name()
     {
         return ingredients_names[id].c_str();
     }
 
-    const char* desc()
+    ALWAYS_INLINE const char* desc()
     {
         return ingredients_descs[id].c_str();
     }
 
-    const char* key()
+    ALWAYS_INLINE const char* key()
     {
         return ingredients_keys[id].c_str();
     }
@@ -161,22 +162,22 @@ struct food
     int16_t desc_index = -1;
     int16_t id;
 
-    const char* name() const
+    ALWAYS_INLINE const char* name() const
     {
         return results_names[id].c_str();
     }
 
-    const char* desc()
+    ALWAYS_INLINE const char* desc()
     {
         return foods_descs[id].c_str();
     }
 
-    const char* key()
+    ALWAYS_INLINE const char* key()
     {
         return results_keys[id].c_str();
     }
 	
-	int ingredient_count() const
+	ALWAYS_INLINE int ingredient_count() const
 	{
 		// the results vector contains the index = -1 which indicates null ingredient, so we need to count the number of valid ingredients.
 		return std::count_if(results.begin(), results.end(), [](int_fast8_t idx) { return idx >= 0; });
@@ -372,6 +373,13 @@ ALWAYS_INLINE std::vector<recipe> build_recipes(const char* recipe_file)
     }
     ifs.close();
     return recipes;
+}
+
+template<typename Item>
+ALWAYS_INLINE const int32_t gen_id(Item item)
+{
+    constexpr int32_t id_offset = static_cast<int32_t>(std::is_same_v<Item, food>) << 0X14;
+    return item.id + id_offset;
 }
 
 int main()
@@ -670,6 +678,9 @@ int main()
 	}
 	static_mod_file.close();
 
+    static int32_t id_offset_ingredient = static_cast<int64_t>(std::chrono::duration<double, std::nano>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()) & 0XFFFFF;
+    static int32_t id_offset_food = (static_cast<int64_t>(std::chrono::duration<double, std::nano>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()) + ingredients.size()) & 0XFFFFF;
+
 	std::ofstream scripted_var_file("./izakaya_scripted_variables.txt");
 	std::format_to(std::ostreambuf_iterator<char>(scripted_var_file), "# This file is auto generated by process.cpp, do not edit manually.\n@izakaya_food_tier_constant_t1 = 1\n@izakaya_food_tier_constant_t2 = 2\n@izakaya_food_tier_constant_t3 = 3\n@izakaya_food_tier_constant_t4 = 4\n@izakaya_food_tier_constant_t72 = 72\n\n");
 	for (auto item : foods)
@@ -743,7 +754,7 @@ int main()
 	std::ofstream sloc_file("./event/izakaya_recipe_locs.txt");
 	std::format_to(std::ostreambuf_iterator<char>(scripted_var_file), "\n");
 	std::format_to(std::ostreambuf_iterator<char>(event_file), "namespace = izakaya_recipe\n# This file is auto generated by process.cpp, do not edit manually.\n");
-	std::format_to(std::ostreambuf_iterator<char>(event_file), "# izakaya_recipe.{:d} - izakaya_recipe.{:d}: finish recipe events.\n\n", event_id, 1 + recipes.size());
+	std::format_to(std::ostreambuf_iterator<char>(event_file), "# izakaya_recipe.{:d} - izakaya_recipe.{:d}: finish recipe events.\n", event_id, 1 + recipes.size());
 	std::format_to(std::ostreambuf_iterator<char>(event_file), "# izakaya_recipe.{:d} - izakaya_recipe.{:d}: finish recipe but failed events.\n\n", event_id + recipes.size() + 1, event_id + 1 + recipes.size() * 2);
 	std::format_to(std::ostreambuf_iterator<char>(sloc_file), "# This file is auto generated by process.cpp, do not edit manually.\n\n");
 	for (auto item : recipes)
@@ -760,6 +771,17 @@ int main()
 		std::format_to(std::ostreambuf_iterator<char>(event_file), event_finish_cook_food_failed, event_id, item.key());
 		std::format_to(std::ostreambuf_iterator<char>(scripted_var_file), "@izakaya_food_{:s}_finish_failed_event_call = \"izakaya_recipe.{:d}\"\n", item.key(), event_id++);
 	}
+    std::format_to(std::ostreambuf_iterator<char>(scripted_var_file), "\n");
+	for (auto item : ingredients)
+    {
+        auto ingr = std::get<ingredient>(item);
+        std::format_to(std::ostreambuf_iterator<char>(scripted_var_file), "@izakaya_item_{:s}_short_uuid = {:d}\n", ingr.key(), gen_id(ingr));
+    }
+	for (auto item : foods)
+    {
+        auto ingr = std::get<food>(item);
+        std::format_to(std::ostreambuf_iterator<char>(scripted_var_file), "@izakaya_item_{:s}_short_uuid = {:d}\n", ingr.key(), gen_id(ingr));
+    }
 	std::format_to(std::ostreambuf_iterator<char>(event_file), "\n\ncountry_event = {{\n");
 	std::format_to(std::ostreambuf_iterator<char>(event_file), "	inline_script = {{ script = recipes/izakaya_recipe_book_start id = 1000 }}\n");
 	std::format_to(std::ostreambuf_iterator<char>(event_file), "	trigger = {{ NOT = {{ has_country_flag = izakaya_recipe_book_1000_open }} }}\n");
@@ -768,15 +790,17 @@ int main()
 	for (auto item : recipes)
 	{
 		elapsed_count += 5;
-		std::string allow_cond = "", disallow_cond = "";
+		std::string allow_cond = "", disallow_cond = "", have_made_cond = "", not_have_made_cond = "";
 		for (int_fast8_t i = 0; i < 5; ++i)
 		{
 			elapsed_count += 2;
 			if (item.slots[i] < 0)
 				break;
-			allow_cond += std::format(" check_variable = {{ which = izakaya_ingredient_{:s}_val value > 0 }}", item.slot_key(i));
-			disallow_cond += std::format(" check_variable = {{ which = izakaya_ingredient_{:s}_val value <= 0 }}", item.slot_key(i));
+			allow_cond += std::format("\n\t\t\tcheck_variable = {{ which = izakaya_ingredient_{:s}_val value > 0 }}", item.slot_key(i));
+			disallow_cond += std::format("\n\t\t\tcheck_variable = {{ which = izakaya_ingredient_{:s}_val value <= 0 }}", item.slot_key(i));
 		}
+		have_made_cond += std::format("\n\t\t\thas_country_flag = izakaya_have_made_food_{:s}", item.key());
+		not_have_made_cond += std::format("\n\t\t\tNOT = {{ has_country_flag = izakaya_have_made_food_{:s} }}", item.key());
 		auto tier = calc_food_tier(std::get<food>(foods[item.result]));
 		std::format_to(std::ostreambuf_iterator<char>(event_file), event_recipe_book_option, item.key(), item.key(), "all", "", item.key(), item.key());
 		std::format_to(std::ostreambuf_iterator<char>(event_file), event_recipe_book_option, item.key(), item.key(), "allow", allow_cond.c_str(), item.key(), item.key());
@@ -796,6 +820,8 @@ int main()
 			std::format_to(std::ostreambuf_iterator<char>(event_file), event_recipe_book_option, item.key(), item.key(), "t4", "", item.key(), item.key());
 			break;
 		}
+		std::format_to(std::ostreambuf_iterator<char>(event_file), event_recipe_book_option, item.key(), item.key(), "have_made", have_made_cond.c_str(), item.key(), item.key());
+		std::format_to(std::ostreambuf_iterator<char>(event_file), event_recipe_book_option, item.key(), item.key(), "not_have_made", not_have_made_cond.c_str(), item.key(), item.key());
 	}
 	std::format_to(std::ostreambuf_iterator<char>(event_file), "}}\n");
 	event_file.close();

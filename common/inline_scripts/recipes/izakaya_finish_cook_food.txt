@@ -5,6 +5,15 @@ every_owned_colony = {
 	validate_planet_buildings_and_districts = yes
 }
 remove_country_flag = izakaya_remove_all_ingredients
+if = {
+	limit = { NOT = { has_country_flag = izakaya_have_made_food_$food$ } }
+	set_country_flag = izakaya_have_made_food_$food$
+	if = {
+		limit = { NOT = { is_variable_set = izakaya_have_made_food_counter } }
+		set_variable = { which = izakaya_have_made_food_counter value = 0 }
+	}
+	change_variable = { which = izakaya_have_made_food_counter value = 1 }
+}
 if = { limit = { has_country_flag = izakaya_cook_result_$food$_display } remove_country_flag = izakaya_cook_result_$food$_display }
 if = {
 	limit = { has_country_flag = izakaya_food_use_after_cooked }
@@ -21,4 +30,11 @@ create_message = {
 	target = this
 	recipient = this
 	variable = { type = key value = izakaya_food_$food$ localization = TOUHOU_FOOD }
+}
+set_variable = { which = local_izakaya_recipe_food_id value = @izakaya_item_$food$_short_uuid }
+fire_on_action = {
+	on_action = on_izakaya_complete_recipe
+}
+fire_on_action = {
+	on_action = on_izakaya_finish_recipe
 }
