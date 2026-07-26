@@ -1787,6 +1787,7 @@ country_event = {
                 flag_sagume = { root = { spth_effect_init_sagume_effect = yes } }
                 flag_shinki = { root = { spth_effect_init_shinki_effect = yes } }
 				flag_mystia = { root = { spth_effect_init_mystia_effect = yes } }
+				flag_kyouko = { root = { spth_effect_init_kyouko_effect = yes } }
                 flag_seija = { root = { spth_effect_init_seija_effect = yes } }
                 flag_lumiya = { touhou_effect_init_lumiya_effect = yes }
 				flag_remilia = {
@@ -3677,6 +3678,351 @@ country_event = {
         spth_effect_init_hina_effect = yes
     }
     after = { give_specimen = { key = touhou_hina_doll origin = leader_trait_hina } }
+}
+
+# 5 year check, if have ap3, more than 25 years, has relic, has chen and reimu.
+country_event = {
+    id = toho.8124
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        NOT = { has_country_flag = toho_8124_fired }
+        years_passed >= 25
+        has_country_flag = th_chen_get
+        has_country_flag = th_reimu_get
+        has_touhou_ascension_tier_3 = yes
+        has_relic = r_th_latency
+        count_owned_colony = { count >= 4 limit = { carrier_is_type = planet } }
+    }
+    immediate = {
+        set_country_flag = toho_8124_fired
+        country_event = { id = toho.8125 days = 30 random = 120 }
+    }
+}
+country_event = {
+    id = toho.8125
+    title = toho.8125.name
+    desc = toho.8125.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    location = event_target:touhou_target_planet
+    picture_event_data = { room = spth_arena_room }
+    option = { name = toho.8125.a }
+	option = { name = toho.8125.b }
+	immediate = {
+        random_owned_colony = {
+            limit = { carrier_is_type = planet }
+            carrier = {
+                set_carrier_flag = mystia_event_planet
+                save_event_target_as = touhou_target_planet
+            }
+        }
+	}
+	after = {
+        hidden_effect = { country_event = { id = toho.8126 days = 90 random = 30 } }
+        begin_event_chain = { event_chain = mystia_event_chain }
+        create_point_of_interest = {
+            id = mystia_event_chain.poi.1
+            name = mystia_event_chain.poi.1
+            desc = mystia_event_chain.poi.1.desc
+            event_chain = mystia_event_chain
+            location = event_target:touhou_target_planet
+        }
+	}
+}
+country_event = {
+    id = toho.8126
+    title = toho.8126.name
+    desc = toho.8126.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    location = event_target:touhou_target_planet
+    picture_event_data = { room = spth_city_planet_room }
+	immediate = {
+		random_owned_colony = {
+			limit = { carrier = { has_carrier_flag = mystia_event_planet } }
+			carrier = {
+				save_event_target_as = touhou_target_planet
+			}
+		}
+	}
+    option = { name = toho.8126.a }
+	option = { name = toho.8126.b }
+	after = {
+        hidden_effect = { country_event = { id = toho.8127 days = 180 random = 180 } }
+	}
+}
+country_event = {
+    id = toho.8127
+    title = toho.8127.name
+    desc = toho.8127.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    location = event_target:touhou_target_planet
+    picture_event_data = { room = spth_marisa_in_forest_room }
+	immediate = {
+		random_owned_colony = {
+			limit = { carrier = { has_carrier_flag = mystia_event_planet } }
+			carrier = {
+				save_event_target_as = touhou_target_planet
+			}
+		}
+	}
+    option = { name = toho.8127.a }
+	option = { name = toho.8127.b }
+	after = {
+        hidden_effect = { country_event = { id = toho.8128 days = 120 random = 60 } }
+		create_point_of_interest = {
+			id = mystia_event_chain.poi.2
+			name = mystia_event_chain.poi.2
+			desc = mystia_event_chain.poi.2.desc
+			event_chain = mystia_event_chain
+			location = event_target:touhou_target_planet
+		}
+	}
+}
+country_event = {
+    id = toho.8128
+    title = toho.8128.name
+    desc = toho.8128.desc
+    is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    location = event_target:touhou_target_planet
+    picture_event_data = { room = spth_izakaya_small_room }
+	immediate = {
+		random_owned_colony = {
+			limit = { carrier = { has_carrier_flag = mystia_event_planet } }
+			carrier = {
+				save_event_target_as = touhou_target_planet
+			}
+		}
+	}
+    option = { name = toho.8128.a }
+	option = { name = toho.8128.b }
+	after = {
+        hidden_effect = {
+			event_target:touhou_target_planet = {
+				enable_special_project = {
+					name = mystia_izakaya_mail_discover
+					owner = root
+					location = this
+				}
+			}
+		}
+		create_point_of_interest = {
+			id = mystia_event_chain.poi.3
+			name = mystia_event_chain.poi.3
+			desc = mystia_event_chain.poi.3.desc
+			event_chain = mystia_event_chain
+			location = event_target:touhou_target_planet
+		}
+	}
+}
+country_event = {
+	id = toho.8129
+	title = toho.8129.name
+	desc = toho.8129.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_mystia_run_off_room }
+	option = { name = toho.8129.a }
+	option = { name = toho.8129.b }
+	after = {
+		hidden_effect = { country_event = { id = toho.8130 days = 30 random = 30 } }
+		create_point_of_interest = {
+			id = mystia_event_chain.poi.4
+			name = mystia_event_chain.poi.4
+			desc = mystia_event_chain.poi.4.desc
+			event_chain = mystia_event_chain
+			location = capital_scope
+		}
+	}
+}
+country_event = {
+	id = toho.8130
+	title = toho.8130.name
+	desc = toho.8130.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_sad_chen_room }
+	option = { name = toho.8130.a }
+	after = {
+		hidden_effect = { country_event = { id = toho.8131 days = 60 random = 60 } }
+		create_point_of_interest = {
+			id = mystia_event_chain.poi.5
+			name = mystia_event_chain.poi.5
+			desc = mystia_event_chain.poi.5.desc
+			event_chain = mystia_event_chain
+			location = capital_scope
+		}
+	}
+}
+country_event = {
+	id = toho.8131
+	title = toho.8131.name
+	desc = toho.8131.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_star_chart_room }
+	option = { name = toho.8131.a }
+	after = {
+		hidden_effect = { country_event = { id = toho.8132 days = 30 random = 30 } }
+	}
+}
+country_event = {
+	id = toho.8132
+	title = toho.8132.name
+	desc = toho.8132.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_unknown_ships_room }
+	option = { name = toho.8132.a }
+	option = { name = toho.8132.b }
+	after = {
+		hidden_effect = { country_event = { id = toho.8133 } }
+	}
+}
+country_event = {
+	id = toho.8133
+	title = toho.8133.name
+	desc = toho.8133.desc
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	picture_event_data = { room = spth_mystia_izakaya_welcome_room }
+	is_triggered_only = yes
+	option = {
+		name = toho.8133.a
+		is_dialog_only = yes
+		response_text = toho.8133.a.response
+	}
+	option = {
+		name = toho.8133.b
+		is_dialog_only = yes
+		response_text = toho.8133.b.response
+	}
+	option = {
+		name = toho.8133.c
+		is_dialog_only = yes
+		response_text = toho.8133.c.response
+	}
+	option = {
+		name = toho.8133.d
+		is_dialog_only = yes
+		response_text = toho.8133.d.response
+	}
+	option = {
+		name = toho.8133.e
+		is_dialog_only = yes
+		response_text = toho.8133.e.response
+	}
+	option = {
+		name = toho.8133.f
+		response_text = toho.8133.f.response
+		custom_tooltip = toho.8133.f.tt
+		hidden_effect = {
+			spth_init_izakaya_arkship = yes
+			spth_effect_init_mystia_effect = yes
+			spth_effect_init_kyouko_effect = yes
+			country_event = { id = toho.8134 days = 180 }
+			country_event = { id = toho.8135 days = 30 random = 30 }
+		}
+	}
+}
+country_event = {
+	id = toho.8134
+	title = toho.8134.name
+	desc = toho.8134.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_mystia_sing_song_room }
+	option = { name = toho.8134.a }
+	option = { name = toho.8134.b }
+	after = {
+        custom_tooltip = toho.8134.effect
+		hidden_effect = { set_country_flag = unlock_mystia_song_decision }
+	}
+}
+country_event = {
+	id = toho.8135
+	title = toho.8135.name
+	desc = toho.8135.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_physics_research_room }
+	option = { name = toho.8135.a }
+	option = { name = toho.8135.b }
+	after = {
+		country_event = { id = toho.8136 days = 90 random = 90 }
+	}
+}
+# tech_reverse_engine_izakaya_arkship
+country_event = {
+	id = toho.8136
+	title = toho.8136.name
+	desc = toho.8136.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_izakaya_small_room }
+	option = { name = toho.8136.a }
+	option = { name = toho.8136.b }
+	after = {
+        custom_tooltip = toho.8136.effect
+        give_technology = { tech = tech_reverse_engine_izakaya_arkship message = yes }
+		hidden_effect = {
+            if = {
+                limit = { NOT = { has_existing_ship_design = izakaya_arkship_1 } }
+                create_ship_design = { design = NAME_izakaya_arkship_1 }
+                add_ship_design = last_created_design
+            }
+		}
+	}
+}
+country_event = {
+	id = toho.8137
+	title = toho.8137.name
+	desc = toho.8137.desc
+	is_triggered_only = yes
+	trigger = {
+        NOT = { has_country_flag = toho_8137_fired }
+        is_variable_set = izakaya_have_made_food_counter
+        check_variable = { which = izakaya_have_made_food_counter value >= 127 }
+	}
+	immediate = {
+        set_country_flag = toho_8137_fired
+	}
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_izakaya_small_room }
+	option = { name = toho.8137.a }
+	after = {
+        add_relic = r_fantasy_mystia_drink
+	}
 }
 
 # 幻想乡小超主

@@ -2495,15 +2495,52 @@ country_event = {
         fromfrom = {
             if = {
                 limit = {
+                    NOT = { has_fleet_flag = kyouko_mystia_conn_effect_cooldown }
+                    root = { has_country_flag = can_active_kyouko_mystia_conn_effect }
+                }
+                set_timed_fleet_flag = { flag = kyouko_mystia_conn_effect_cooldown days = 180 }
+				set_timed_fleet_flag = { flag = kyouko_mystia_conn_effect_repair days = 15 }
+				fleet_event = { id = spth_fleet.3003 }
+            }
+            if = {
+                limit = {
                     NOT = { has_fleet_flag = touhou_extra_repair_percent_fired }
-                    OR = {
+                    any_controlled_ship = { OR = {
                         check_modifier_value = { modifier = touhou_hull_repair_percent value != 0 }
                         check_modifier_value = { modifier = touhou_armor_repair_percent value != 0 }
                         check_modifier_value = { modifier = touhou_shield_repair_percent value != 0 }
-                    }
+                    } }
                 }
                 set_fleet_flag = touhou_extra_repair_percent_fired
                 fleet_event = { id = spth_fleet.2018 }
+            }
+            if = {
+                limit = {
+                    NOT = { has_fleet_flag = leader_trait_mystia_1_skill_cooldown }
+                    any_controlled_ship = { colony? = { check_modifier_value = { modifier = colony_has_mystia value != 0 } } }
+                }
+                set_timed_fleet_flag = { flag = leader_trait_mystia_1_skill_cooldown days = 360 }
+                every_controlled_ship = {
+					if = {
+						limit = { is_touhou_ship = no }
+						touhou_set_terrify_self = { days = 30 }
+					}
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_weapon_range_mult value > 0 } }
+                        add_modifier = { modifier = leader_trait_mystia_1_skill days = 30 mult = modifier:ship_weapon_range_mult }
+                    }
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_accuracy_mult value > 0 } }
+                        add_modifier = { modifier = leader_trait_mystia_1_skill_1 days = 30 mult = modifier:ship_accuracy_mult }
+                    }
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_tracking_mult value > 0 } }
+                        add_modifier = { modifier = leader_trait_mystia_1_skill_2 days = 30 mult = modifier:ship_tracking_mult }
+                    }
+                    add_modifier = { modifier = leader_trait_mystia_1_skill_alt days = 30 }
+                    add_modifier = { modifier = leader_trait_mystia_1_skill_1_alt days = 30 }
+                    add_modifier = { modifier = leader_trait_mystia_1_skill_2_alt days = 30 }
+                }
             }
             if = {
                 limit = { exists = leader }
@@ -6087,6 +6124,26 @@ country_event = {
 		every_owned_ship = {
 			limit = { check_modifier_value = { modifier = ship_target_weight_mult value < -0.99 } }
 			touhou_standardize_clear_ship_modifier = { modifier = ship_target_weight_mult change = 0.99 DAYS = 30 }
+		}
+	}
+}
+
+fleet_event = {
+	id = spth_fleet.3003
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_fleet_flag = kyouko_mystia_conn_effect_repair
+	}
+	immediate = {
+		if = {
+			limit = { is_in_combat = yes }
+			every_controlled_ship = {
+				spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 sh_perc = 1.0 }
+			}
+			fleet_event = { id = spth_fleet.3003 days = 1 }
+		} else = {
+			remove_fleet_flag = kyouko_mystia_conn_effect_repair
 		}
 	}
 }
