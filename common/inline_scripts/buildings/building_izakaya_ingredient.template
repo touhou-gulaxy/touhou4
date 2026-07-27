@@ -2,12 +2,20 @@ building_izakaya_ingredient_$type$ = {
 	base_buildtime = 60
 	can_build = yes
 	category = government
+    planet_limit = 1
 	building_sets = {
 		izakaya_foods
 	}
 	potential = {
 		spth_check_gensokyo_auth = yes
 		use_touhou_izakaya_district = yes
+		owner? = {
+			if = {
+				limit = { has_country_flag = izakaya_ingredient_display_recipe }
+				has_country_flag = izakaya_ingredient_display_recipe_show_$type$
+			}
+			NOT = { has_country_flag = izakaya_remove_all_ingredients }
+		}
 	}
 	allow = {
 		custom_tooltip = {
@@ -16,6 +24,9 @@ building_izakaya_ingredient_$type$ = {
 				is_variable_set = izakaya_ingredient_$type$_val
 				check_variable = { which = izakaya_ingredient_$type$_val value > 0 }
 			}
+		}
+		hidden_trigger = {
+			owner? = { NOT = { has_country_flag = block_izakaya_ingredient_allow } }
 		}
 	}
 	resources = {

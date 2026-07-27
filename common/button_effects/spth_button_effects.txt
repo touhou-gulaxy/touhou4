@@ -8,12 +8,267 @@ spth_always_btn = {
     allow = { always = yes }
     effect = {}
 }
-izayaky_barbecue_t1_button = {
+izayakya_cook_food_button = {
     potential = { always = yes }
-    allow = { always = yes }
+    allow = {
+		custom_tooltip = {
+			fail_text = IZAKAYA_IS_MAKING_FOOD
+			from = { NOT = { has_country_flag = block_izakaya_food_cook } }
+		}
+	 }
     effect = {
+		hidden_effect = {
+			if = {
+				limit = { from = { NOT = { is_variable_set = izakaya_array_foods_size } } }
+				from = { set_variable = { which = izakaya_array_foods_size value = 0 } }
+			}
+		}
         custom_tooltip = IZAKAYA_COOKER_MAKE_TOOLTIP
+		inline_script = { script = recipes/izakaya_init_cook_food }
     }
+}
+# this check box manage flag izakaya_food_use_after_cooked.
+izakaya_cook_and_storage = {
+	potential = { always = yes }
+	allow = { from = { has_country_flag = izakaya_food_use_after_cooked } }
+	effect = {
+		custom_tooltip = izakaya_cook_and_storage
+		hidden_effect = {
+			from = {
+				remove_country_flag = izakaya_food_use_after_cooked
+			}
+		}
+	}
+}
+izakaya_cook_and_use = {
+	potential = { always = yes }
+	allow = { from = { NOT = { has_country_flag = izakaya_food_use_after_cooked } } }
+	effect = {
+		custom_tooltip = izakaya_cook_and_use
+		hidden_effect = {
+			from = {
+				set_country_flag = izakaya_food_use_after_cooked
+			}
+		}
+	}
+}
+district_izakaya_control_btn_recipe = {
+	potential = { always = yes }
+	allow = { always = yes }
+	effect = {
+		custom_tooltip = district_izakaya_control_btn_recipe_tooltip
+		hidden_effect = {
+			from = { country_event = { id = izakaya_recipe.1000 } }
+		}
+	}
+}
+touhou_izakaya_recipe_book_close = {
+	potential = { always = yes }
+	allow = { always = yes }
+	effect = {
+        custom_tooltip = izakaya_recipe.1000.exit.tooltip
+		# 这啥？
+		from = {
+            log = "touhou_izakaya_recipe_book_close"
+            remove_country_flag = izakaya_recipe_book_1000_open
+            if = {
+                limit = { has_country_flag = recent_changed_izakaya_recipe_book_display_mode }
+                remove_country_flag = recent_changed_izakaya_recipe_book_display_mode
+                country_event = { id = izakaya_recipe.1000 }
+            }
+            inline_script = { script = recipes/izakaya_reset_recipe_book_select }
+		}
+	}
+}
+touhou_izakaya_recipe_book_confirm = {
+	potential = { always = yes }
+	allow = { always = yes }
+	effect = {
+		from = {
+            log = "touhou_izakaya_recipe_book_confirm"
+            remove_country_flag = izakaya_recipe_book_1000_open
+			set_country_flag = izakaya_ingredient_display_recipe
+            if = {
+                limit = { has_country_flag = recent_changed_izakaya_recipe_book_display_mode }
+                remove_country_flag = recent_changed_izakaya_recipe_book_display_mode
+            }
+			switch = {
+				trigger = has_country_flag
+				inline_script = { script = recipes/izakaya_recipe_apply_item }
+				default = { remove_country_flag = izakaya_ingredient_display_recipe }
+			}
+		}
+		# 这啥？
+		from = {
+            inline_script = { script = recipes/izakaya_reset_recipe_book_select }
+		}
+	}
+}
+touhou_izakaya_recipe_book_clear = {
+	potential = { always = yes }
+	allow = { hidden_trigger = { from = { has_country_flag = izakaya_ingredient_display_recipe } } }
+	effect = {
+		hidden_effect = {
+			from = {
+				remove_country_flag = izakaya_ingredient_display_recipe
+                inline_script = { script = recipes/izakaya_reset_recipe_book_select }
+				inline_script = { script = recipes/izakaya_recipe_book_clear_display }
+			}
+		}
+	}
+}
+touhou_izakaya_recipe_book_select_all = {
+	potential = { always = yes }
+	allow = {
+		hidden_trigger = { from = {
+			OR = {
+				NOT = { is_variable_set = izakaya_recipe_book_1000_mode }
+				check_variable = { which = izakaya_recipe_book_1000_mode value != @izakaya_recipe_book_display_mode_all }
+			}
+		} }
+	}
+	effect = {
+		hidden_effect = { from = {
+            set_country_flag = recent_changed_izakaya_recipe_book_display_mode
+			set_variable = { which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_all }
+		} }
+	}
+}
+touhou_izakaya_recipe_book_select_allow = {
+	potential = { always = yes }
+	allow = {
+		hidden_trigger = { from = {
+			OR = {
+				NOT = { is_variable_set = izakaya_recipe_book_1000_mode }
+				check_variable = { which = izakaya_recipe_book_1000_mode value != @izakaya_recipe_book_display_mode_allow }
+			}
+		} }
+	}
+	effect = {
+		hidden_effect = { from = {
+            set_country_flag = recent_changed_izakaya_recipe_book_display_mode
+			set_variable = { which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_allow }
+		} }
+	}
+}
+touhou_izakaya_recipe_book_select_disallow = {
+	potential = { always = yes }
+	allow = {
+		hidden_trigger = { from = {
+			OR = {
+				NOT = { is_variable_set = izakaya_recipe_book_1000_mode }
+				check_variable = { which = izakaya_recipe_book_1000_mode value != @izakaya_recipe_book_display_mode_disallow }
+			}
+		} }
+	}
+	effect = {
+		hidden_effect = { from = {
+            set_country_flag = recent_changed_izakaya_recipe_book_display_mode
+			set_variable = { which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_disallow }
+		} }
+	}
+}
+touhou_izakaya_recipe_book_select_t1 = {
+	potential = { always = yes }
+	allow = {
+		hidden_trigger = { from = {
+			OR = {
+				NOT = { is_variable_set = izakaya_recipe_book_1000_mode }
+				check_variable = { which = izakaya_recipe_book_1000_mode value != @izakaya_recipe_book_display_mode_t1 }
+			}
+		} }
+	}
+	effect = {
+		hidden_effect = { from = {
+            set_country_flag = recent_changed_izakaya_recipe_book_display_mode
+			set_variable = { which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_t1 }
+		} }
+	}
+}
+touhou_izakaya_recipe_book_select_t2 = {
+	potential = { always = yes }
+	allow = {
+		hidden_trigger = { from = {
+			OR = {
+				NOT = { is_variable_set = izakaya_recipe_book_1000_mode }
+				check_variable = { which = izakaya_recipe_book_1000_mode value != @izakaya_recipe_book_display_mode_t2 }
+			}
+		} }
+	}
+	effect = {
+		hidden_effect = { from = {
+            set_country_flag = recent_changed_izakaya_recipe_book_display_mode
+			set_variable = { which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_t2 }
+		} }
+	}
+}
+touhou_izakaya_recipe_book_select_t3 = {
+	potential = { always = yes }
+	allow = {
+		hidden_trigger = { from = {
+			OR = {
+				NOT = { is_variable_set = izakaya_recipe_book_1000_mode }
+				check_variable = { which = izakaya_recipe_book_1000_mode value != @izakaya_recipe_book_display_mode_t3 }
+			}
+		} }
+	}
+	effect = {
+		hidden_effect = { from = {
+            set_country_flag = recent_changed_izakaya_recipe_book_display_mode
+			set_variable = { which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_t3 }
+		} }
+	}
+}
+touhou_izakaya_recipe_book_select_t4 = {
+	potential = { always = yes }
+	allow = {
+		hidden_trigger = { from = {
+			OR = {
+				NOT = { is_variable_set = izakaya_recipe_book_1000_mode }
+				check_variable = { which = izakaya_recipe_book_1000_mode value != @izakaya_recipe_book_display_mode_t4 }
+			}
+		} }
+	}
+	effect = {
+		hidden_effect = { from = {
+            set_country_flag = recent_changed_izakaya_recipe_book_display_mode
+			set_variable = { which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_t4 }
+		} }
+	}
+}
+touhou_izakaya_recipe_book_select_have_made = {
+	potential = { always = yes }
+	allow = {
+		hidden_trigger = { from = {
+			OR = {
+				NOT = { is_variable_set = izakaya_recipe_book_1000_mode }
+				check_variable = { which = izakaya_recipe_book_1000_mode value != @izakaya_recipe_book_display_mode_have_made }
+			}
+		} }
+	}
+	effect = {
+		hidden_effect = { from = {
+			set_country_flag = recent_changed_izakaya_recipe_book_display_mode
+			set_variable = { which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_have_made }
+		} }
+	}
+}
+touhou_izakaya_recipe_book_not_have_made = {
+	potential = { always = yes }
+	allow = {
+		hidden_trigger = { from = {
+			OR = {
+				NOT = { is_variable_set = izakaya_recipe_book_1000_mode }
+				check_variable = { which = izakaya_recipe_book_1000_mode value != @izakaya_recipe_book_display_mode_not_have_made }
+			}
+		} }
+	}
+	effect = {
+		hidden_effect = { from = {
+			set_country_flag = recent_changed_izakaya_recipe_book_display_mode
+			set_variable = { which = izakaya_recipe_book_1000_mode value = @izakaya_recipe_book_display_mode_not_have_made }
+		} }
+	}
 }
 
 spth_settings_always_on_leader_fuction_effect = {

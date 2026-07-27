@@ -1,0 +1,58 @@
+limit = {
+	inline_script = { script = touhou_constant_ref scripted_variable = @izakaya_recipe_detail_has_item_$slot_1$ }
+	inline_script = { script = touhou_constant_ref scripted_variable = @izakaya_recipe_detail_has_item_$slot_2$ }
+	inline_script = { script = touhou_constant_ref scripted_variable = @izakaya_recipe_detail_has_item_$slot_3$ }
+	inline_script = { script = touhou_constant_ref scripted_variable = @izakaya_recipe_detail_has_item_$slot_4$ }
+	inline_script = { script = touhou_constant_ref scripted_variable = @izakaya_recipe_detail_has_item_$slot_5$ }
+}
+if = {
+	limit = {
+		from = {
+			has_country_flag = izakaya_food_use_after_cooked
+			check_variable = { which = izakaya_array_foods_size value >= value:country_izakaya_food_storage }
+		}
+	}
+	custom_tooltip = IZAKAYA_FOOD_STORAGE_IS_FULL
+	hidden_effect = { log = "IZAKAYA_FOOD_STORAGE_IS_FULL" }
+} else = {
+	custom_tooltip = izakaya_recipe_$food$_success_chance
+	custom_tooltip_with_params = {
+		description = izakaya_recipe_$food$_complete_time
+		description_parameters = {
+			TOUHOU_TIME = @[izakaya_food_make_duration_base * 0.2 * (4 + izakaya_food_tier_$food$) + izakaya_food_make_duration_ingredient_factor * izakaya_food_ingredient_count_$food$]
+		}
+	}
+	hidden_effect = {
+		log = "execute make food $food$ init."
+		from = {
+			# setup mutex, and when this is 0, means we can remove country flag.
+			if = {
+				limit = { NOT = { is_variable_set = block_izakaya_ingredient_allow_mutex } }
+				set_variable = { which = block_izakaya_ingredient_allow_mutex value = 0 }
+			}
+			change_variable = { which = block_izakaya_ingredient_allow_mutex value = 1 }
+			set_variable = { which = izakaya_make_food_progress_max value = @[izakaya_food_make_duration_base * 0.2 * (4 + izakaya_food_tier_$food$) + izakaya_food_make_duration_ingredient_factor * izakaya_food_ingredient_count_$food$] }
+			set_timed_country_flag = { flag = block_izakaya_food_cook days = @[izakaya_food_make_duration_base * 0.2 * (4 + izakaya_food_tier_$food$) + izakaya_food_make_duration_ingredient_factor * izakaya_food_ingredient_count_$food$] }
+			set_timed_country_flag = { flag = block_izakaya_ingredient_allow days = @[izakaya_food_make_duration_base * 0.2 * (4 + izakaya_food_tier_$food$) + izakaya_food_make_duration_ingredient_factor * izakaya_food_ingredient_count_$food$] }
+		}
+		reroll_random = yes
+		random = {
+			chance = value:country_izakaya_food_success_chance|food|$food$|
+			from = {
+				log = "fire event @izakaya_food_$food$_finish_event_call later."
+				set_country_flag = izakaya_cook_result_$food$
+				set_country_flag = izakaya_cook_success_fired
+				set_timed_country_flag = { flag = izakaya_cook_result_$food$_display days = @[izakaya_food_make_duration_base * 0.2 * (4 + izakaya_food_tier_$food$) + izakaya_food_make_duration_ingredient_factor * izakaya_food_ingredient_count_$food$] }
+				country_event = { id = @izakaya_food_$food$_finish_event_call days = @[izakaya_food_make_duration_base * 0.2 * (4 + izakaya_food_tier_$food$) + izakaya_food_make_duration_ingredient_factor * izakaya_food_ingredient_count_$food$] }
+			}
+		}
+		from = {
+			if = {
+				limit = { NOT = { has_country_flag = izakaya_cook_success_fired } }
+				country_event = { id = @izakaya_food_$food$_finish_failed_event_call days = @[izakaya_food_make_duration_base * 0.2 * (4 + izakaya_food_tier_$food$) + izakaya_food_make_duration_ingredient_factor * izakaya_food_ingredient_count_$food$] }
+			} else = {
+				remove_country_flag = izakaya_cook_success_fired
+			}
+		}
+	}
+}

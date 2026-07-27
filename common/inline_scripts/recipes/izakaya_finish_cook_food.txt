@@ -1,11 +1,40 @@
-			izakaya_cook_result_$type$ = {
-				remove_country_flag = izakaya_cook_result_$food$
-				if = { limit = { has_country_flag = izakaya_cook_result_$food$_display } remove_country_flag = izakaya_cook_result_$food$_display }
-				if = {
-					limit = { has_country_flag = izakaya_food_use_after_cooked }
-					add_modifier = { modifier = izakaya_cook_result_$food$ days = value:izakaya_food_effect_duration mult = value:izakaya_food_effect_factor }
-				} else = {
-					inline_script = { script = recipes/izakaya_init_variable_array.txt }
-					inline_script = { script = recipes/izakaya_change_variable_array.txt food = $food$ count = 1 }
-				}
-			}
+remove_country_flag = izakaya_cook_result_$food$
+set_country_flag = izakaya_remove_all_ingredients
+every_owned_colony = {
+	limit = { use_touhou_izakaya_district = yes }
+	validate_planet_buildings_and_districts = yes
+}
+remove_country_flag = izakaya_remove_all_ingredients
+if = {
+	limit = { NOT = { has_country_flag = izakaya_have_made_food_$food$ } }
+	set_country_flag = izakaya_have_made_food_$food$
+	if = {
+		limit = { NOT = { is_variable_set = izakaya_have_made_food_counter } }
+		set_variable = { which = izakaya_have_made_food_counter value = 0 }
+	}
+	change_variable = { which = izakaya_have_made_food_counter value = 1 }
+}
+if = { limit = { has_country_flag = izakaya_cook_result_$food$_display } remove_country_flag = izakaya_cook_result_$food$_display }
+if = {
+	limit = { has_country_flag = izakaya_food_use_after_cooked }
+	add_modifier = { modifier = izakaya_cook_result_$food$ days = 1 time_multiplier = value:izakaya_food_effect_duration|food|$food$| mult = value:izakaya_food_effect_factor }
+} else = {
+	inline_script = { script = recipes/izakaya_init_variable_array }
+	inline_script = { script = recipes/izakaya_change_variable_array food = $food$ count = 1 }
+}
+log = "execute cook food $food$."
+create_message = {
+	type = izakaya_finish_food_success
+	localization = izakaya_finish_food_success_desc
+	days = 30
+	target = this
+	recipient = this
+	variable = { type = key value = izakaya_food_$food$ localization = TOUHOU_FOOD }
+}
+set_variable = { which = local_izakaya_recipe_food_id value = @izakaya_item_$food$_short_uuid }
+fire_on_action = {
+	on_action = on_izakaya_complete_recipe
+}
+fire_on_action = {
+	on_action = on_izakaya_finish_recipe
+}
