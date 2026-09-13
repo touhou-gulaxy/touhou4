@@ -309,6 +309,94 @@ r_touhou_fragments_of_the_world = {
     }
 }
 
+r_touhou_inf_food_box = {
+	can_be_stolen = no
+	activation_duration = @th_triumph_duration
+	portrait = "GFX_relic_r_touhou_inf_food_box"
+	sound = "relic_activation_celestial_chart"
+	resources = {
+		category = touhou_inf_food_box
+		produces = {
+			physics_research = 100
+			society_research = 100
+			engineering_research = 100
+		}
+		produces = {
+			trigger = {
+				has_country_flag = touhou_inf_food_box_fired
+			}
+			food = 1
+			mult = touhou_inf_food_box_factor_non_robot
+		}
+		produces = {
+			trigger = {
+				has_country_flag = touhou_inf_food_box_fired
+			}
+			energy = 1
+			mult = touhou_inf_food_box_factor_robot
+		}
+		produces = {
+			trigger = {
+				has_country_flag = touhou_inf_food_box_fired
+			}
+			sr_zro = 0.05
+			mult = touhou_inf_food_box_factor_psionic
+		}
+		# Activation cost
+		cost = {
+			influence = 200
+		}
+		cost = {
+			unity = 0.1
+			sr_lingli = 10
+			mult = value:spth_num_pops
+		}
+		upkeep = {
+			sr_lingli = 100
+		}
+	}
+	ai_weight = {
+		weight = 120
+	}
+	triggered_country_modifier = {
+		relics_produces_mult = 0.10
+	}
+	score = 17000
+	active_effect = {
+		custom_tooltip = r_touhou_inf_food_box_tooltip
+		hidden_effect = {
+			add_modifier = {
+				modifier = "relic_activation_cooldown"
+				days = @th_triumph_duration
+			}
+			set_timed_country_flag = {
+				flag = touhou_inf_food_box_fired
+				days = 90
+			}
+			set_variable = {
+				which = touhou_inf_food_box_factor_robot
+				value = value:spth_num_pops_is_robot|opt|yes|
+			}
+			set_variable = {
+				which = touhou_inf_food_box_factor_non_robot
+				value = value:spth_num_pops_is_robot|opt|no|
+			}
+			set_variable = {
+				which = touhou_inf_food_box_factor_psionic
+				value = value:spth_num_pops_psionic
+			}
+		}
+	}
+	possible = {
+		custom_tooltip = {
+			fail_text = "requires_relic_no_cooldown"
+			NOT = {
+				has_modifier = relic_activation_cooldown
+			}
+		}
+	}
+}
+
 r_touhou_key_relic = {
     can_be_stolen = no
     activation_duration = @triumph_duration
