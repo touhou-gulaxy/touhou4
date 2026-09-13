@@ -3583,3 +3583,54 @@ touhou_ship_system_scan_research = {
 		}
 	}
 }
+
+touhou_force_mia_return_home = {
+	optimize_memory
+	if = {
+		limit = { can_go_mia = yes }
+		set_mia = mia_return_home
+		set_mia_return_delay = $delay|10$
+	} else_if = {
+		limit = { controller? = { exists = capital_scope } }
+		set_location = controller.capital_scope
+	} else_if = {
+		limit = { exists = controller }
+		if = {
+			limit = { controller = { is_nomadic = yes } }
+			random_owned_ship = { solar_system = { save_event_target_as = touhou_force_mia_return_system } }
+		} else = {
+			controller = {
+				random_system_within_border = { save_event_target_as = touhou_force_mia_return_system }
+				if = {
+					limit = { NOT = { exists = event_target:touhou_force_mia_return_system } }
+					random_owned_colony = {
+						solar_system = { save_event_target_as = touhou_force_mia_return_system }
+					}
+				}
+			}
+		}
+		if = {
+			limit = { NOT = { exists = event_target:touhou_force_mia_return_system } }
+			random_rim_system = { save_event_target_as = touhou_force_mia_return_system }
+			set_location = event_target:touhou_force_mia_return_system.star
+		}
+	} else = {
+		random_rim_system = { save_event_target_as = touhou_force_mia_return_system }
+		set_location = event_target:touhou_force_mia_return_system.star
+	}
+}
+
+touhou_force_mia_fast = {
+	optimize_memory
+	if = {
+		limit = { can_go_mia = yes }
+		set_mia = mia_emergency_ftl
+		set_mia_return_delay = $delay|10$
+	} else_if = {
+		limit = { controller? = { exists = capital_scope } }
+		set_location = controller.capital_scope
+	} else = {
+		random_rim_system = { save_event_target_as = touhou_force_mia_return_system }
+		set_location = event_target:touhou_force_mia_return_system.star
+	}
+}
