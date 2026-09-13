@@ -671,6 +671,7 @@ is_touhou_crisis_faction = {
         is_country_type = touhou_dreamworld
         is_country_type = touhou_boss_seija
         is_country_type = touhou_hostile_faction_enable_move
+		is_country_type = touhou_animal_realm
     }
 }
 is_touhou_lunar_crisis_faction = {
@@ -1632,6 +1633,37 @@ touhou_seija_boss_title_check = {
         check_variable = { which = touhou_seija_boss_stage value = $stg$ }
         is_variable_set = touhou_seija_boss_title
         check_variable = { which = touhou_seija_boss_title value = $idx$ }
+    }
+}
+# max_hp: touhou_seija_display_extra_life_max * has_max_hp
+touhou_seija_boss_has_hp_percentage = {
+    optimize_memory
+    exists = event_target:is_touhou_seija_boss
+    event_target:is_touhou_seija_boss = {
+        if = {
+            limit = { has_ship_flag = touhou_seija_boss_changing_stage }
+            check_variable_arithmetic = {
+                add = 50
+                subtract = value:touhou_seija_boss_changing_stage_days_left
+                divide = 50
+                value > $perc$
+            }
+        } else_if = {
+            limit = {
+                check_variable = { which = touhou_seija_boss_stage value = 2 }
+            }
+            check_variable_arithmetic = {
+                which = value:touhou_seija_boss_has_hp
+                divide = value:touhou_seija_boss_has_max_hp_stg2
+                value > $perc$
+            }
+        } else = {
+            check_variable_arithmetic = {
+                which = value:touhou_seija_boss_has_hp
+                divide = value:touhou_seija_boss_has_max_hp_stg1
+                value > $perc$
+            }
+        }
     }
 }
 

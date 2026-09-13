@@ -1898,7 +1898,12 @@ ship_event = {
                     limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
                     change_variable = { which = spth_extra_life_used value = 1 }
                     remove_modifier = ship_spth_extra_life_lose
-                    add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 1 time_multiplier = value:touhou_extra_life_regen_delay }
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_spth_extra_life_no_regen value > 0 } }
+                        add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used }
+                    } else = {
+                        add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 1 time_multiplier = value:touhou_extra_life_regen_delay }
+                    }
                     ship_event = { id = spth_fleet.1105 days = value:touhou_extra_life_regen_delay }
                 }
                 set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
@@ -5872,30 +5877,40 @@ ship_event = {
         }
         if = {
             limit = { NOT = { is_variable_set = touhou_seija_display_extra_life } }
-            set_variable = { which = touhou_seija_display_extra_life value = 80 }
+            set_variable = { which = touhou_seija_display_extra_life value = @touhou_seija_max_extra_life }
+        }
+        if = {
+            limit = { NOT = { is_variable_set = touhou_seija_display_extra_life_max } }
+            set_variable = { which = touhou_seija_display_extra_life_max value = @touhou_seija_max_extra_life }
         }
         if = {
             limit = { NOT = { is_variable_set = touhou_seija_boss_title_temp } }
             set_variable = { which = touhou_seija_boss_title_temp value = 0 }
         }
 
-        change_variable = { which = touhou_seija_entity_extra_life_used value = 1 }
-        subtract_variable = { which = touhou_seija_display_extra_life value = 1 }
         if = {
-            limit = { check_variable = { which = touhou_seija_entity_extra_life_used value > 40 } }
+            limit = { NOT = { has_ship_flag = has_ship_flag = touhou_seija_boss_changing_stage } }
+            change_variable = { which = touhou_seija_entity_extra_life_used value = 1 }
+            subtract_variable = { which = touhou_seija_display_extra_life value = 1 }
             if = {
-                limit = { check_variable = { which = touhou_seija_boss_stage value != 2 } }
-                set_variable = { which = touhou_seija_boss_title value = 1 }
-                set_variable = { which = touhou_seija_boss_stage value = 2 }
+                limit = { check_variable = { which = touhou_seija_entity_extra_life_used value > @touhou_seija_stage_2_threhold } }
+                if = {
+                    limit = { check_variable = { which = touhou_seija_boss_stage value != 2 } }
+                    set_variable = { which = touhou_seija_boss_title value = 1 }
+                    set_variable = { which = touhou_seija_boss_stage value = 2 }
+                    # 每天回2.00%
+                    fleet = { set_event_locked = yes fleet_event = { id = spth_fleet.2044 days = 25 } }
+                    set_timed_ship_flag = { flag = has_ship_flag = touhou_seija_boss_changing_stage days = 25 }
+                }
+            } else = {
+                set_variable = { which = touhou_seija_boss_stage value = 1 }
             }
-        } else = {
-            set_variable = { which = touhou_seija_boss_stage value = 1 }
-        }
-        change_variable = { which = touhou_seija_boss_title_temp value = 1 }
-        if = {
-            limit = { check_variable = { which = touhou_seija_boss_title_temp value >= 5 } }
-            change_variable = { which = touhou_seija_boss_title value = 1 }
-            set_variable = { which = touhou_seija_boss_title_temp value = 0 }
+            change_variable = { which = touhou_seija_boss_title_temp value = 1 }
+            if = {
+                limit = { check_variable = { which = touhou_seija_boss_title_temp value >= 5 } }
+                change_variable = { which = touhou_seija_boss_title value = 1 }
+                set_variable = { which = touhou_seija_boss_title_temp value = 0 }
+            }
         }
     }
 }
@@ -5929,7 +5944,7 @@ country_event = {
                 }
                 if = {
                     limit = { NOT = { is_variable_set = touhou_seija_display_extra_life } }
-                    set_variable = { which = touhou_seija_display_extra_life value = 80 }
+                    set_variable = { which = touhou_seija_display_extra_life value = @touhou_seija_max_extra_life }
                 }
                 if = {
                     limit = { NOT = { is_variable_set = touhou_seija_boss_title_temp } }
@@ -6045,6 +6060,13 @@ country_event = {
 			set_formation_scale = @touhou_standard_formation_scale
 		}
 	}
+}
+fleet_event = {
+	id = spth_fleet.2044
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = { set_event_locked = no }
 }
 
 # Planet has taken damage from orbital bombardment - Damage is applied daily
