@@ -1833,7 +1833,7 @@ ship_event = {
 			}
             set_timed_ship_flag = { flag = ship_th_has_void_snack_used days = 180 }
             if = {
-                limit = { has_shield_hp <= 100000000 }
+                limit = { has_shield_hp <= 1000000000000 }
                 if = {
                     limit = {
                         check_variable_arithmetic = {
@@ -2519,6 +2519,22 @@ country_event = {
                 set_fleet_flag = touhou_extra_repair_percent_fired
                 fleet_event = { id = spth_fleet.2018 }
             }
+			if = {
+				limit = {
+					NOT = { has_fleet_flag = touhou_sardinia_mooncake_fleet_effect_fired }
+					check_modifier_value = { modifier = fleet_th_has_sardinia_mooncake value > 0 }
+				}
+				set_timed_fleet_flag = { flag = touhou_sardinia_mooncake_fleet_effect_fired days = 30 }
+				random_controlled_ship = {
+					add_modifier = { modifier = touhou_sardinia_mooncake_fleet_effect_lingli_dmg days = 30 mult = modifier:weapon_type_lingli_weapon_damage_mult }
+					add_modifier = { modifier = touhou_sardinia_mooncake_fleet_effect_lingli_rate days = 30 mult = modifier:weapon_type_lingli_weapon_fire_rate_mult }
+					# add_modifier = { modifier = touhou_sardinia_mooncake_fleet_effect_hull_mult days = 30 }
+					if = {
+						limit = { has_max_hp < 1000000000000 }
+						add_modifier = { modifier = touhou_sardinia_mooncake_fleet_effect_hull_add days = 30 mult = trigger:has_max_hp }
+					}
+				}
+			}
             if = {
                 limit = {
                     NOT = { has_fleet_flag = leader_trait_mystia_1_skill_cooldown }
