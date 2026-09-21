@@ -1,3 +1,22 @@
+extra_life_remaining = {
+	base = 0
+	add = modifier:ship_spth_extra_life
+	modifier = { is_variable_set = spth_super_carrier_inv_counter add = spth_super_carrier_inv_counter }
+	add = value:ag_total_disable_lvl
+}
+extra_life_max = {
+	base = 0
+	add = value:extra_life_remaining
+	add = modifier:ship_spth_extra_life_used
+}
+touhou_extra_life_max = {
+	base = 0
+	add = modifier:ship_spth_extra_life
+	add = modifier:ship_spth_extra_life_used
+}
+touhou_ag_extra_life_remaining = {
+	base = 0
+}
 ship_spth_shield_efficiency_count = {
 	base = 0
 	add = modifier:ship_spth_shield_efficiency
@@ -750,6 +769,25 @@ touhou_num_owned_touhou_fe_union_titan = {
     }
     modifier = { add = ag_num_touhou_fe_union_titan_debris is_variable_set = ag_num_touhou_fe_union_titan_debris check_variable = { which = ag_num_touhou_fe_union_titan_debris value > 0 } }
 }
+touhou_num_owned_touhou_sky_control_ship = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = count_owned_ship
+		trigger_scope = this
+		parameters = { limit = { is_ship_size = touhou_sky_control_ship } }
+		mode = add
+	}
+	complex_trigger_modifier = {
+		trigger = count_owned_megastructure
+		trigger_scope = this
+		parameters = { limit = { OR = {
+			AND = { always = $th_stage_0|yes$ is_megastructure_type = touhou_sky_control_ship_base }
+			AND = { always = $th_stage_1|yes$ is_megastructure_type = touhou_sky_control_ship_1 }
+			AND = { always = $th_stage_2|yes$ is_megastructure_type = touhou_sky_control_ship_2 }
+		} } }
+		mode = add
+	}
+}
 
 touhou_max_owned_touhou_system_warper = {
     base = 0
@@ -1398,4 +1436,13 @@ touhou_sky_control_ship_missile_damage_extra = {
 	add = trigger:has_max_hp
 	mult = 0.10
 	min = 1
+}
+touhou_sky_control_ship_protect_factor = {
+	base = 1
+	add = modifier:ship_hull_mult
+	min = 0.1
+}
+touhou_sky_control_ship_protect = {
+	base = 1000000000
+	divide = value:touhou_sky_control_ship_protect_factor
 }

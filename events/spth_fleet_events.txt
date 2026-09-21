@@ -2541,6 +2541,31 @@ country_event = {
 					any_controlled_ship = { check_modifier_value = { modifier = ship_has_touhou_sky_control_ship_aux_armor value > 0 } }
 				}
 				set_timed_fleet_flag = { flag = touhou_sky_control_ship_aux_armor_fired days = 15 }
+				every_controlled_ship = {
+					limit = { is_touhou_ship = yes ship_size_multiplier >= 10 has_max_hp <= 1000000000000 }
+					reroll_random = yes
+					random = {
+						chance = 20
+						add_modifier = {
+							modifier = touhou_sky_control_ship_protect days = 15
+							mult = value:touhou_sky_control_ship_protect
+						}
+						if = {
+							limit = {
+								check_modifier_value = {
+									modifier = ship_hull_regen_add_static
+									value <= 1000000000000
+								}
+							}
+							add_modifier = {
+								modifier = touhou_sky_control_ship_protect_regen
+								days = 15
+							}
+						}
+						spth_repair_ship_perc = { all_hp = yes }
+					}
+				}
+				reroll_random = yes
 				if = {
                     limit = { NOT = { has_fleet_flag = touhou_sky_control_ship_shield_fired } }
                     set_timed_fleet_flag = { flag = touhou_sky_control_ship_shield_fired days = 30 }
@@ -5876,6 +5901,7 @@ country_event = {
 				touhou_sky_control_ship_missile = 36
 				evt_target = touhou_target_fleet
 				fleet_action = spth_fleet.3008
+				fleet_action_delayed = spth_fleet.3009 DAYS = 5 DAYS_RANDOM = 5
 			}
 			event_target:touhou_target_fleet = {
 			}
@@ -6326,7 +6352,7 @@ fleet_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		# set_event_locked = no
+		set_event_locked = yes
 		set_fleet_formation = {
 			position = { x = 15.5   y = 0.0         } #36
 			position = { x = 14.5   y = 5.6         } #35
@@ -6365,6 +6391,14 @@ fleet_event = {
 			position = { x = 2.5    y = -4.3        } #2
 			position = { x = 0.0    y = 0.0         } #1
 		}
+	}
+}
+fleet_event = {
+	id = spth_fleet.3009
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		set_event_locked = no
 	}
 }
 

@@ -1790,6 +1790,8 @@ country_event = {
 				flag_kyouko = { root = { spth_effect_init_kyouko_effect = yes } }
                 flag_seija = { root = { spth_effect_init_seija_effect = yes } }
                 flag_lumiya = { touhou_effect_init_lumiya_effect = yes }
+				flag_gengetsu = { spth_effect_init_gengetsu_effect = yes }
+				flag_mugetsu = { spth_effect_init_mugetsu_effect = yes }
 				flag_remilia = {
 					root = {
 						spth_effect_respawn_ruler_leader = { ID = remilia }
@@ -3265,6 +3267,25 @@ country_event = {
 	immediate = {
 		reroll_random = yes
 		random_list = {
+			10 = {
+				modifier = {
+					factor = 0
+					NOT = { exists = event_target:spth_precursor_makai_network_system }
+					event_target:spth_precursor_makai_network_system = {
+						any_system_megastructure = {
+							OR = {
+								is_megastructure_type = touhou_gateway_network_master_node_damaged
+								is_megastructure_type = touhou_gateway_network_master_node_locked
+								is_megastructure_type = touhou_gateway_network_master_node
+								is_megastructure_type = touhou_gateway_network_master_node_configure
+							}
+						}
+					}
+				}
+				modifier = { factor = 0 has_global_flag = toho_10030_fired }
+				set_global_flag = toho_10030_fired
+				country_event = { id = toho.10030 days = 30 random = 30 }
+			}
 			10 = {
 				modifier = { factor = 0 is_ai = yes }
 				modifier = { factor = 0 is_nomadic = yes }
@@ -14713,8 +14734,8 @@ country_event = {
                 type = touhou_makai_netural
                 flag = {
                     icon = {
-                        category = "touhou_fe_union"
-                        file = "th_ag_fallen_empires_1.dds"
+                        category = "touhousp"
+                        file = "makai_red.dds"
                     }
                     colors = {
                         "sky_blue"
@@ -14770,10 +14791,10 @@ country_event = {
                 }
                 create_fleet = {
                     name = NAME_touhou_sky_control_fleet
-                    settings = { can_disband = no can_change_composition = no can_change_leader = no spawn_debris = no }
+					settings = { spawn_debris = no }
                     effect = {
                         set_owner = event_target:touhou_makai_netural
-                        set_location = prev
+                        set_location = { target = prev distance = 10 angle = 30 direction = in_system }
                         while = {
                             count = 1
                             create_ship = {
@@ -14788,7 +14809,7 @@ country_event = {
                         }
                         set_fleet_flag = NAME_touhou_sky_control_fleet
                         set_fleet_flag = touhou_makai_netural
-                        assign_leader = event_target:touhou_leader_temp_last_created
+						set_event_locked = yes
                     }
                 }
             }
@@ -14807,13 +14828,583 @@ country_event = {
     title = toho.10032.name
     desc = toho.10032.desc
     is_triggered_only = yes
+	show_sound = event_scanner
     diplomatic = yes
     custom_gui = spth_event_large_window
     custom_gui_option = spth_event_large_ui_option
     picture_event_data = { room = spth_unidentified_ship_room }
     option = {
         name = toho.10032.a
+		enable_special_project = {
+			name = "TOUHOU_MAKAI_SKY_CONTROLL_BOARD"
+			location = event_target:touhou_sky_control_ship_event_target
+			owner = root
+		}
     }
+}
+country_event = {
+	id = toho.10033
+	title = toho.10033.name
+	desc = toho.10033.desc
+	is_triggered_only = yes
+	show_sound = event_ship_bridge
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ancient_databank_room }
+	option = {
+		name = toho.10033.a
+		enable_special_project = {
+			name = "TOUHOU_MAKAI_SKY_CONTROLL_DECODE"
+			location = event_target:touhou_sky_control_ship_event_target
+			owner = root
+		}
+	}
+	option = {
+		name = toho.10033.b
+		allow = {
+			custom_tooltip = {
+				fail_text = toho.10033.b.failed
+				OR = {
+					has_country_flag = th_alice_get
+					has_country_flag = th_shinki_get
+				}
+			}
+		}
+		hidden_effect = {
+			country_event = {
+				id = toho.10034
+				days = 15
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.10034
+	title = toho.10034.name
+	desc = toho.10034.desc
+	is_triggered_only = yes
+	show_sound = event_ghost_town
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_alien_propaganda_room }
+	option = {
+		name = toho.10034.a
+		trigger = { has_country_flag = th_shinki_get }
+		hidden_effect = {
+			country_event = {
+				id = toho.10035
+				days = 15
+			}
+		}
+	}
+	option = {
+		name = toho.10034.b
+		trigger = { has_country_flag = th_alice_get }
+		hidden_effect = {
+			country_event = {
+				id = toho.10036
+				days = 15
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.10035
+	title = toho.10035.name
+	desc = toho.10035.desc
+	is_triggered_only = yes
+	show_sound = event_radio_chatter
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	picture_event_data = { room = spth_shinki_2_room }
+	option = {
+		name = toho.10035.a
+		enable_special_project = {
+			name = "TOUHOU_MAKAI_SKY_CONTROLL_DECODE_FAST"
+			location = event_target:touhou_sky_control_ship_event_target
+			owner = root
+		}
+	}
+}
+country_event = {
+	id = toho.10036
+	title = toho.10036.name
+	desc = toho.10036.desc
+	is_triggered_only = yes
+	show_sound = event_radio_chatter
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	picture_event_data = { room = spth_legendary_leader_room portrait = spth_por_alice }
+	option = {
+		name = toho.10036.a
+		enable_special_project = {
+			name = "TOUHOU_MAKAI_SKY_CONTROLL_DECODE_FAST"
+			location = event_target:touhou_sky_control_ship_event_target
+			owner = root
+		}
+	}
+}
+country_event = {
+	id = toho.10037
+	title = toho.10037.name
+	desc = toho.10037.desc
+	is_triggered_only = yes
+	show_sound = event_yellow_alert
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_skrand_ship_room }
+	option = {
+		name = toho.10037.a
+	}
+	option = {
+		name = toho.10037.b
+	}
+	after = {
+		hidden_effect = {
+			country_event = {
+				id = toho.10038
+				days = 60
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.10038
+	title = toho.10038.name
+	desc = toho.10038.desc
+	is_triggered_only = yes
+	show_sound = event_activating_unknown_technology
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	picture_event_data = { room = spth_communication_event_room }
+	immediate = {
+		set_variable = {
+			which = toho_10038_readed_records
+			value = 0
+		}
+	}
+	option = {
+		name = toho.10038.exit
+		allow = {
+			hidden_trigger = {
+				fail_text = toho.10038.exit.fail
+				check_variable = {
+					which = toho_10038_readed_records
+					value >= 10
+				}
+			}
+		}
+		hidden_effect = {
+			clear_variable = toho_10038_readed_records
+			country_event = {
+				id = toho.10039
+			}
+		}
+	}
+	option = {
+		name = toho.10038.a
+		is_dialog_only = yes
+		response_text = toho.10038.desc.1
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+	option = {
+		name = toho.10038.b
+		is_dialog_only = yes
+		response_text = toho.10038.desc.2
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+	option = {
+		name = toho.10038.c
+		is_dialog_only = yes
+		response_text = toho.10038.desc.3
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+	option = {
+		name = toho.10038.d
+		is_dialog_only = yes
+		response_text = toho.10038.desc.4
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+	option = {
+		name = toho.10038.e
+		is_dialog_only = yes
+		response_text = toho.10038.desc.5
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+	option = {
+		name = toho.10038.f
+		is_dialog_only = yes
+		response_text = toho.10038.desc.6
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+	option = {
+		name = toho.10038.g
+		is_dialog_only = yes
+		response_text = toho.10038.desc.7
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+	option = {
+		name = toho.10038.h
+		is_dialog_only = yes
+		response_text = toho.10038.desc.8
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+	option = {
+		name = toho.10038.i
+		is_dialog_only = yes
+		response_text = toho.10038.desc.9
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+	option = {
+		name = toho.10038.j
+		is_dialog_only = yes
+		response_text = toho.10038.desc.10
+		hidden_effect = {
+			change_variable = {
+				which = toho_10038_readed_records
+				value = 1
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.10039
+	title = toho.10039.name
+	desc = toho.10039.desc
+	is_triggered_only = yes
+	show_sound = event_life_support_fail
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_ship_offloading_cargo_room }
+	option = {
+		name = toho.10039.a
+	}
+	after = {
+		hidden_effect = {
+			country_event = {
+				id = toho.10040
+				days = 90
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.10040
+	title = toho.10040.name
+	desc = toho.10040.desc
+	is_triggered_only = yes
+	show_sound = event_bad_omen
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_databank_room }
+	option = {
+		name = toho.10040.a
+	}
+	after = {
+		hidden_effect = {
+			country_event = {
+				id = toho.10041
+				days = 90
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.10041
+	title = toho.10041.name
+	desc = toho.10041.desc
+	is_triggered_only = yes
+	show_sound = event_alien_signal
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	picture_event_data = { room = spth_black_hole_with_gengetsu_room }
+	option = {
+		name = toho.10041.a
+		is_dialog_only = yes
+		response_text = toho.10041.a.response
+	}
+	option = {
+		name = toho.10041.b
+		is_dialog_only = yes
+		response_text = toho.10041.b.response
+	}
+	option = {
+		name = toho.10041.c
+		response_text = toho.10041.c.response
+	}
+	after = {
+		hidden_effect = {
+			country_event = {
+				id = toho.10042
+				days = 90
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.10042
+	title = toho.10042.name
+	desc = toho.10042.desc
+	is_triggered_only = yes
+	show_sound = event_administrative_work
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_emergency_workers_room }
+	option = {
+		name = toho.10042.a
+	}
+	after = {
+		hidden_effect = {
+			country_event = {
+				id = toho.10043
+				days = 90
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.10043
+	title = toho.10043.name
+	desc = toho.10043.desc
+	is_triggered_only = yes
+	show_sound = event_administrative_work
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	picture_event_data = { room = spth_black_hole_with_gengetsu_room }
+	option = {
+		name = toho.10043.a
+		is_dialog_only = yes
+		response_text = toho.10043.a.response
+	}
+	option = {
+		name = toho.10043.b
+		is_dialog_only = yes
+		response_text = toho.10043.b.response
+	}
+	option = {
+		name = toho.10043.c
+		is_dialog_only = yes
+		response_text = toho.10043.c.response
+	}
+	option = {
+		name = toho.10043.d
+		is_dialog_only = yes
+		response_text = toho.10043.d.response
+	}
+	option = {
+		name = toho.10043.e
+		response_text = toho.10043.e.response
+	}
+	after = {
+		hidden_effect = {
+			spth_effect_init_gengetsu_effect = yes
+			spth_effect_init_mugetsu_effect = yes
+			country_event = {
+				id = toho.10044
+				days = 30
+			}
+		}
+	}
+}
+country_event = {
+	id = toho.10044
+	title = toho.10044.name
+	desc = toho.10044.desc
+	is_triggered_only = yes
+	show_sound = alert_research_notification
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_physics_research_room }
+	option = {
+		name = toho.10044.a
+		enable_special_project = {
+			name = "TOUHOU_MAKAI_SKY_CONTROLL_REPAIR"
+			location = event_target:touhou_sky_control_ship_event_target
+			owner = root
+		}
+	}
+}
+country_event = {
+	id = toho.10045
+	title = toho.10045.name
+	desc = toho.10045.desc
+	is_triggered_only = yes
+	show_sound = notification_repair_fleet
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_horizon_needle_room }
+	option = {
+		name = toho.10045.a
+	}
+	after = {
+		hidden_effect = { set_country_flag = tech_touhou_sky_control_ship }
+		touhou_give_tech_option = { touhou_tech = tech_touhou_sky_control_ship research_point = yes }
+		event_target:touhou_sky_control_ship_event_target = {
+			fleet = { set_event_locked = no }
+			set_owner = root
+		}
+	}
+}
+country_event = {
+	id = toho.10046
+	is_triggered_only = yes
+	title = toho.10046.name
+	desc = toho.10046.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_megastructure_construction_room }
+	show_sound = event_ringworld_build_start
+	location = fromfromfrom
+	option = { name = TH_OK }
+}
+country_event = {
+	id = toho.10047
+	is_triggered_only = yes
+	title = toho.10047.name
+	desc = toho.10047.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_megastructure_construction_room }
+	show_sound = event_ringworld_build_start
+	location = fromfromfrom
+	option = { name = TH_OK }
+}
+country_event = {
+	id = toho.10048
+	is_triggered_only = yes
+	title = toho.10048.name
+	desc = toho.10048.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_megastructure_construction_room }
+	show_sound = event_ringworld_build_complete
+	inline_script = { script = events/touhou_ancient_titan_built_options }
+}
+country_event = {
+	id = toho.10049
+	is_triggered_only = yes
+	title = toho.10049.name
+	desc = toho.10049.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_megastructure_construction_room }
+	show_sound = event_ringworld_build_start
+	location = fromfromfrom
+	option = { name = TH_INTERESTRING }
+}
+country_event = {
+	id = toho.10050
+	is_triggered_only = yes
+	title = toho.10050.name
+	desc = toho.10050.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_megastructure_construction_room }
+	show_sound = event_ringworld_build_start
+	location = fromfromfrom
+	option = { name = TH_INTERESTRING }
+}
+country_event = {
+	id = toho.10051
+	is_triggered_only = yes
+	title = toho.10051.name
+	desc = toho.10051.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_megastructure_construction_room }
+	show_sound = event_mega_structure_other_empire_build_complete
+	option = {
+		name = "apoc.130.a.weaker"
+		trigger = { is_pacifist = no any_controlled_ship = { ag_is_ancient_titan = no } }
+	}
+	option = {
+		name = "apoc.130.a.pacif"
+		trigger = { is_pacifist = yes }
+	}
+}
+country_event = {
+	id = toho.10052
+	is_triggered_only = yes
+	hide_window = yes
+	trigger = { NOT = { has_country_flag = th_mugetsu_get } }
+	immediate = {
+		spth_effect_init_gengetsu_effect = yes
+		spth_effect_init_mugetsu_effect = yes
+	}
 }
 
 # Final Speech - Shroud Ending
