@@ -462,6 +462,23 @@ touhou_super_flagship_science = {
 		default_on	= yes
 		tooltip		= AUTOMATION_EXPLORE_TT
 	}
+	ai = {
+		weight = {
+			base = 10
+			modifier = {                       # 本星系优先
+				factor = 3
+				FROM = { solar_system? = { any_system_planet = { is_same_value = ROOT } } }
+			}
+			modifier = {                       # 邻接星系次优先
+				factor = 2
+				distance = { source = FROM use_bypasses = yes max_jumps = 1 }
+			}
+		}
+		# 勘探类刻意不设 max_jumps：需要在全银河范围内找最近的未勘探目标
+		good_enough_weight = 30
+		# 想让 AI 帝国也自动勘探 → 取消下一行注释；保持注释则只有玩家自动化会用
+		# ai_minister = interior
+	}
 	slot = 1
 	icon = GFX_fleet_order_button_survey
 	icon_selected = GFX_fleet_order_button_survey_selected
@@ -531,6 +548,23 @@ touhou_common_ship_science = {
 		priority	= 1
 		default_on	= yes
 		tooltip		= AUTOMATION_EXPLORE_TT
+	}
+	ai = {
+		weight = {
+			base = 10
+			modifier = {                       # 本星系优先
+				factor = 3
+				FROM = { solar_system? = { any_system_planet = { is_same_value = ROOT } } }
+			}
+			modifier = {                       # 邻接星系次优先
+				factor = 2
+				distance = { source = FROM use_bypasses = yes max_jumps = 1 }
+			}
+		}
+		# 勘探类刻意不设 max_jumps：需要在全银河范围内找最近的未勘探目标
+		good_enough_weight = 30
+		# 想让 AI 帝国也自动勘探 → 取消下一行注释；保持注释则只有玩家自动化会用
+		# ai_minister = interior
 	}
 	slot = 1
 	icon = GFX_fleet_order_button_survey
@@ -679,7 +713,323 @@ touhou_sensor_deep_scan = {
 	cooldown = 0
 	uses_vfx_type = survey_effect
 	slot = 1
+	automation = {
+		priority	= 4
+		default_on	= no
+		tooltip		= TOUHOU_AUTOMATION_DEEP_SCAN_TT
+		options = {
+			option = {
+				automation_setting	= touhou_rescanning
+				default			= no
+				name			= TOUHOU_AUTOMATION_OPT_RESCANNING
+				tooltip			= TOUHOU_AUTOMATION_OPT_RESCANNING_TT
+				ai_weight = { base = 1 }
+			}
+			option = {
+				automation_setting	= touhou_owned_only
+				default			= no
+				name			= TOUHOU_AUTOMATION_OPT_OWNED_ONLY
+				tooltip			= TOUHOU_AUTOMATION_OPT_OWNED_ONLY_TT
+				ai_weight = { base = 1 }
+			}
+		}
+	}
+	ai = {
+		max_jumps = 5
+		# This = 目标行星，From = 执行舰队
+		weight = {
+			base = 15000
+			modifier = {                       # 付不起就别去（对应 cost：energy / sr_lingli 各 640）
+				factor = 0
+				from.controller = {
+					resource_stockpile_compare = { resource = energy    value < 640 mult = 1.5 }
+				}
+			}
+			modifier = {
+				factor = 0
+				from.controller = {
+					resource_stockpile_compare = { resource = sr_lingli value < 640 mult = 1.5 }
+				}
+			}
+			modifier = {
+				factor = 0
+				from = { has_automation_setting = touhou_owned_only }
+				OR = {
+					NOT = { exists = space_owner }
+					space_owner = { NOT = { is_same_value = from.owner } }
+				}
+			}
+			modifier = { factor = 3 from = { solar_system? = { any_system_planet = { is_same_value = root } } } }
+			modifier = { factor = 2 distance = { source = from use_bypasses = yes max_jumps = 1 } }
+			modifier = {                       # 未勘探的行星优先（你的深扫效果会给目标 set_surveyed）
+				factor = 2
+				is_surveyed = { who = from.controller status = no }
+			}
+			modifier = {                       # 已经勘探过的降级，避免反复扫同一颗
+				factor = 0.3
+				is_surveyed = { who = from.controller status = yes }
+			}
+			modifier = {
+				factor = 0
+				from = { NOT = { has_automation_setting = touhou_rescanning } }
+				is_variable_set = touhou_deep_scanned_count
+			}
+			modifier = {
+				factor = value:touhou_deep_scan_rescan_factor
+				from = { has_automation_setting = touhou_rescanning }
+				is_variable_set = touhou_deep_scanned_count
+			}
+			modifier = {
+				factor = 0
+				# NOT = { distance = { source = from use_bypasses = yes max_jumps = 5 } }
+				distance = { source = from use_bypasses = yes min_jumps = 5 }
+			}
+		}
+		good_enough_weight = 30
+	}
 }
+
+touhou_ship_return_starbase = {
+    user_scope = fleet
+    scope = galactic_object
+    hide_from_context_menu = { hidden_trigger = { always = yes } }
+    button_visible = { hidden_trigger = { always = no } }
+    button_clickable = { custom_tooltip = { fail_text = "requires_touhou_leader" leader? = { is_touhou_special_leader = yes } } }
+    possible = { custom_tooltip = { fail_text = "requires_touhou_leader" from = { leader? = { is_touhou_special_leader = yes } } } }
+    icon = GFX_touhou_fleet_view_button_fleet_combat
+    icon_selected = GFX_touhou_fleet_view_button_fleet_combat
+    context_menu_name = touhou_ship_return_starbase
+    tooltip = touhou_ship_return_starbase_tooltip
+    activity_key = touhou_ship_return_starbase_action
+    required_progress = 30
+    required_progress_key = touhou_ship_return_starbase_progress_tooltip
+    progress_activity_key = touhou_ship_return_starbase_action_activity
+    slot = 0
+    automation = {
+		priority = 0
+		default_on = yes
+		tooltip = "touhou_ship_return_starbase_auto_tooltip"
+		parent = touhou_scripted_action
+	}
+	ai = {
+		weight = { base = 0 modifier = { add = 1 touhou_is_important_system = { owner = root.from.controller } } }
+		good_enough_weight = 1
+	}
+}
+touhou_ship_guard_system = {
+    user_scope = fleet
+    scope = galactic_object
+    hide_from_context_menu = { hidden_trigger = { always = yes } }
+    button_visible = { hidden_trigger = { always = no } }
+    button_clickable = { custom_tooltip = { fail_text = "requires_touhou_leader" leader? = { is_touhou_special_leader = yes } } }
+    possible = { custom_tooltip = { fail_text = "requires_touhou_leader" from = { leader? = { is_touhou_special_leader = yes } } } }
+    icon = GFX_touhou_fleet_view_button_fleet_combat
+    icon_selected = GFX_touhou_fleet_view_button_fleet_combat
+    context_menu_name = touhou_ship_guard_system
+    tooltip = touhou_ship_guard_system_tooltip
+    activity_key = touhou_ship_guard_system_action
+    required_progress = 10
+    required_progress_key = touhou_ship_guard_system_progress_tooltip
+    progress_activity_key = touhou_ship_guard_system_action_activity
+    slot = 0
+    automation = {
+		priority = 1
+		default_on = no
+		tooltip = "touhou_ship_guard_system_auto_tooltip"
+		also_automate = { touhou_ship_return_starbase }
+		parent = touhou_scripted_action
+	}
+	ai = {
+		max_jumps = 4
+		weight = {
+			base = 0
+			modifier = {
+				add = 300
+				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				distance = { source = from use_bypasses = yes max_jumps = 1 }
+			}
+			modifier = {
+				add = 200
+				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				distance = { source = from use_bypasses = yes max_jumps = 2 }
+			}
+			modifier = {
+				add = 200
+				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				distance = { source = from use_bypasses = yes max_jumps = 3 }
+			}
+			modifier = {
+				add = 100
+				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+			}
+			modifier = { mult = 1.5 touhou_is_important_system = { owner = from.controller } }
+			modifier = {
+				factor = 0
+				NOT = { distance = { source = from use_bypasses = yes max_jumps = 4 } }
+			}
+		}
+		good_enough_weight = 100
+	}
+	finished = {
+		NOT = {
+			any_fleet_in_system = {
+				is_disabled = no
+				exists = controller
+				controller = { is_hostile = from.owner }
+			}
+		}
+	}
+}
+touhou_ship_patrol_system = {
+    user_scope = fleet
+    scope = galactic_object
+    hide_from_context_menu = { hidden_trigger = { always = yes } }
+    button_visible = { hidden_trigger = { always = no } }
+    button_clickable = { custom_tooltip = { fail_text = "requires_touhou_leader" leader? = { is_touhou_special_leader = yes } } }
+    possible = { custom_tooltip = { fail_text = "requires_touhou_leader" from = { leader? = { is_touhou_special_leader = yes } } } }
+    icon = GFX_touhou_fleet_view_button_fleet_patrol
+    icon_selected = GFX_touhou_fleet_view_button_fleet_patrol
+    context_menu_name = touhou_ship_patrol_system
+    tooltip = touhou_ship_patrol_system_tooltip
+    activity_key = touhou_ship_patrol_system_action
+    required_progress = 5
+    required_progress_key = touhou_ship_patrol_system_progress_tooltip
+    progress_activity_key = touhou_ship_patrol_system_action_activity
+    slot = 0
+
+    automation = {
+        priority = 2
+        default_on = no
+        tooltip = touhou_ship_patrol_system_auto_tooltip
+        also_automate = { touhou_ship_return_starbase }
+		parent = touhou_scripted_action
+    }
+
+	ai = {
+		max_jumps = 3
+		weight = {
+			base = 0
+
+			# 有人可杀，过去打架
+			modifier = {
+				add = 250
+				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				distance = { source = from use_bypasses = yes max_jumps = 1 }
+			}
+			modifier = {
+				add = 250
+				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				distance = { source = from use_bypasses = yes max_jumps = 2 }
+			}
+			modifier = {
+				add = 150
+				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+			}
+
+			# 没人杀了，继续苦哈哈巡逻
+			modifier = {
+				add = 60
+				space_owner = { is_same_value = from.owner }
+			}
+			modifier = {
+				add = 40
+				touhou_is_important_system = { owner = from.controller }
+			}
+			modifier = {
+				add = 20
+				is_capital = yes
+			}
+
+			# 降低所在星系权重
+			modifier = {
+				factor = 0.5
+				is_same_value = from.solar_system
+			}
+
+			modifier = {
+				factor = 0
+				NOT = { distance = { source = from use_bypasses = yes max_jumps = 3 } }
+			}
+		}
+		good_enough_weight = 150
+	}
+}
+touhou_ship_blow_planet = {
+    user_scope = fleet
+    scope = planet
+    hide_from_context_menu = { hidden_trigger = { always = yes } }
+    button_visible        = { hidden_trigger = { always = no } }
+
+    button_clickable = { custom_tooltip = { fail_text = "requires_touhou_leader" leader? = { is_touhou_special_leader = yes } } }
+    possible = {
+        custom_tooltip = { fail_text = "requires_touhou_leader" from = { leader? = { is_touhou_special_leader = yes } } }
+        is_colony = yes
+        controller = { is_hostile = from.owner }
+    }
+
+    icon = GFX_touhou_fleet_view_button_fleet_blow_planet
+    icon_selected = GFX_touhou_fleet_view_button_fleet_blow_planet
+    context_menu_name = touhou_ship_blow_planet
+    tooltip = touhou_ship_blow_planet_tooltip
+    activity_key = touhou_ship_blow_planet_action
+    required_progress = 2
+    required_progress_key = touhou_ship_blow_planet_progress_tooltip
+    progress_activity_key = touhou_ship_blow_planet_action_activity
+    slot = 0
+
+    finished = {
+        NOT = { controller = { is_hostile = from.owner } }
+    }
+
+    automation = {
+        priority = 3                          # return(0) < guard(1) < patrol(2) < blow(3)
+        default_on = no
+        tooltip = touhou_ship_blow_planet_auto_tooltip
+        parent = touhou_scripted_action
+        also_automate = { touhou_ship_return_starbase }
+    }
+
+    ai = {
+		max_jumps = 5
+        weight = {
+            base = 0
+
+            # 敌方控制的殖民地，入轨自动轰炸
+            modifier = {
+                add = 200
+                is_colony = yes
+                controller = { is_hostile = from.owner }
+            }
+
+            # 已经在被轰炸的目标降级，避免多支舰队挤在同一颗星球
+            modifier = { factor = 0.5 has_orbital_bombardment = yes }
+
+            # 敌方首都有更高权重
+            modifier = { add = 50 is_capital = yes }
+			modifier = {
+				factor = 0
+				NOT = { distance = { source = from use_bypasses = yes max_jumps = 5 } }
+				# distance = { source = from use_bypasses = yes min_jumps = 5 }
+			}
+        }
+        good_enough_weight = 200
+    }
+}
+
+touhou_scripted_action = {
+    user_scope = fleet
+    scope = planet
+    hide_from_context_menu = { hidden_trigger = { always = yes } }
+    button_visible = { hidden_trigger = { always = no } }
+    automation = {
+        priority = 1
+        default_on = no
+        tooltip = "touhou_scripted_action_tooltip"
+    }
+    context_menu_name = "touhou_scripted_action"
+    ai = { weight = { base = 0.001 } }
+}
+
 touhou_ship_action = {
 	user_scope = fleet
 	scope = self

@@ -1797,6 +1797,10 @@ ship_event = {
 			}
 		}
         set_disabled = no
+        # ship_event = {
+        #     id = spth_fleet.4001
+        #     scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+        # }
     }
 }
 
@@ -2542,6 +2546,17 @@ country_event = {
                 }
                 set_fleet_flag = touhou_extra_repair_percent_fired
                 fleet_event = { id = spth_fleet.2018 }
+            }
+            if = {
+                limit = {
+                    NOT = { has_fleet_flag = ship_has_touhou_missile_craft_protector_cooldown }
+					any_controlled_ship = { check_modifier_value = { modifier = ship_has_touhou_missile_craft_protector value > 0 } }
+                }
+                set_timed_fleet_flag = { flag = ship_has_touhou_missile_craft_protector_cooldown days = 10 }
+                every_controlled_ship = {
+                    limit = { check_modifier_value = { modifier = ship_has_touhou_missile_craft_protector value > 0 } }
+                    add_modifier = { modifier = ship_has_touhou_missile_craft_protector_hull_add days = 10 }
+                }
             }
 			# 同时识别星界突击舰
 			if = {
@@ -6410,6 +6425,19 @@ fleet_event = {
 		set_event_locked = no
 	}
 }
+ship_event = {
+	id = spth_fleet.3010
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+        exists = this
+        # has_ship_flag = ag_disable_damage_reduction_protection
+        spth_has_ag_mod = yes
+    }
+	immediate = {
+		ag_clear_disable_protection = yes
+	}
+}
 
 ship_event = {
 	id = spth_fleet.4000
@@ -6418,5 +6446,17 @@ ship_event = {
 	trigger = { exists = this }
 	immediate = {
 		delete_ship = this
+	}
+}
+ship_event = {
+	id = spth_fleet.4001
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+        fire_on_action = {
+            on_action = on_touhou_disable_trigger_1_delayed
+            scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+        }
 	}
 }

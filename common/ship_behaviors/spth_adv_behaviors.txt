@@ -36,7 +36,7 @@ ship_behavior = {
     preferred_attack_range = max
     formation_distance = max
     return_to_formation_distance = max
-    range_components = strike_craft
+    range_components = weapon_and_strike_craft
     source_target_anchor_factor = 1.0
     combat_target_anchor = root
 
@@ -78,19 +78,30 @@ ship_behavior = {
 
     desc = "SPTH_ARTILLERY_ATTACK_BEHAVIOR_DESC"
 }
+# `attack_move_pattern`/`passive_move_pattern`的可选取值
+# none: 完全不动（和 `stationary` 的区别是连朝向/推进都不算）
+# stationary: 停在原地
+# charge: 直接朝目标冲（近战/鱼雷/舰载机）
+# follow: 跟随目标/编队位移动
+# orbit: 绕目标/战斗位保持距离盘旋
+# stay_at_range: 主动保持 `preferred_attack_range`距离
+# maintain_distance: 保持距离、目标靠近就后退
+# flee: atan(距离差)方向一直远离
 ship_behavior = {
     name = "spth_battle_line_attack"
-    preferred_attack_range = max
-    formation_distance = max
-    return_to_formation_distance = max
-    source_target_anchor_factor = 1.0
-    combat_target_anchor = root
+    preferred_attack_range = max                # 攻击模式下想保持的距离（`attack_move_pattern` 的目标距离）
+    formation_distance = max                    # 被动/跟随编队时相对**战斗位**的距离。
+    return_to_formation_distance = max          # 超过它强制从攻击模式切回被动模式
+    source_target_anchor_factor = 1.0           # 源锚点位置与目标锚点位置之间的插值系数，1.0 = 完全贴向目标锚点，0 = 贴源锚点。
+    combat_target_anchor = root                 # `combat_source_anchor` / `combat_target_anchor`：只能 `parent` / `root`
+                                                #   `parent` = 直接父舰（对于舰载机就是母舰）
+                                                #   `root` = 舰队旗舰/根节点；`combat_target_anchor = root` 时目标锚点就是实际目标
 
-    collision_awareness = 0.2
-    collision_radius = 1.0	#collision_radius is a multiplier on the radius specified in the ship size
-    collision_strafe = 2.5	#collision_strafe allows the ship to move in any direction while colliding with another
-    attack_move_pattern = stay_at_range
-    passive_move_pattern = stay_at_range
+    collision_awareness = 0.9                   # 规避其它舰船的权重，默认50000 = 0.5。越大越会绕开别人，0 = 直接穿过去，1 = 强烈避开。舰船数量越多这个值对性能压力越大。
+    collision_radius = 2.0                      # 允许在碰撞时沿任意方向侧移，默认 1.0；原版`line`/`artillery`/`carrier` 用 2.5。
+    collision_strafe = 3.0                      # 乘到 `ship_size` 的半径上，决定碰撞检测的包围圆大小。
+    attack_move_pattern = stay_at_range         # 攻击中移动模式
+    passive_move_pattern = stay_at_range        # 未进入攻击时移动模式
 
     desc = "SPTH_BATTLE_LINE_BEHAVIOR_DESC"
 }
@@ -105,7 +116,7 @@ ship_behavior = {
     collision_awareness = 0.0
     collision_radius = 0	#collision_radius is a multiplier on the radius specified in the ship size
     collision_strafe = 0	#collision_strafe allows the ship to move in any direction while colliding with another
-    attack_move_pattern = stationary #静止/充电/跟随/静止/无
+    attack_move_pattern = stay_at_range # 自带"远则全速推进、进射程后停住"
     passive_move_pattern = stationary #静止/充电/跟随/静止/无
     desc = "SPTH_FLAGSHIP_BEHAVIOR_DESC"
 }
