@@ -710,13 +710,14 @@ touhou_sensor_deep_scan = {
 	required_progress_key = touhou_sensor_deep_scan_required_progress_tooltip
 	progress_activity_key = touhou_sensor_deep_scan_progress_activity
 	cost = { energy = 640 sr_lingli = 640 }
-	cooldown = 0
+	cooldown = 60
 	uses_vfx_type = survey_effect
 	slot = 1
 	automation = {
 		priority	= 4
 		default_on	= no
 		tooltip		= TOUHOU_AUTOMATION_DEEP_SCAN_TT
+		parent = touhou_scripted_action
 		options = {
 			option = {
 				automation_setting	= touhou_rescanning
@@ -807,14 +808,26 @@ touhou_ship_return_starbase = {
     slot = 0
     automation = {
 		priority = 0
-		default_on = yes
+		default_on = no
 		tooltip = "touhou_ship_return_starbase_auto_tooltip"
 		parent = touhou_scripted_action
 	}
 	ai = {
-		weight = { base = 0 modifier = { add = 1 touhou_is_important_system = { owner = root.from.controller } } }
+		weight = {
+			base = 1
+			modifier = { add = 6 distance = { source = from use_bypasses = yes max_jumps = 1 } }
+			modifier = { add = 4 distance = { source = from use_bypasses = yes max_jumps = 2 } }
+			modifier = { add = 2 distance = { source = from use_bypasses = yes max_jumps = 4 } }
+			modifier = { add = 3 touhou_is_important_system = { owner = from.controller } }
+			modifier = { add = 20 touhou_is_capital_system = { owner = root.from.controller } any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } } }
+			modifier = { add = 114514 from = { has_fleet_flag = touhou_automation_needs_return_starbase } }
+			modifier = { add = 1 touhou_is_important_system = { owner = root.from.controller } }
+			modifier = { factor = 0 NOT = { space_owner? = { is_same_value = from.owner } } }
+			modifier = { factor = 0 is_same_value = from.solar_system }
+		}
 		good_enough_weight = 1
 	}
+	on_completed = on_touhou_ship_return_starbase_completed
 }
 touhou_ship_guard_system = {
     user_scope = fleet
@@ -828,7 +841,7 @@ touhou_ship_guard_system = {
     context_menu_name = touhou_ship_guard_system
     tooltip = touhou_ship_guard_system_tooltip
     activity_key = touhou_ship_guard_system_action
-    required_progress = 10
+    required_progress = 30
     required_progress_key = touhou_ship_guard_system_progress_tooltip
     progress_activity_key = touhou_ship_guard_system_action_activity
     slot = 0
@@ -845,24 +858,32 @@ touhou_ship_guard_system = {
 			base = 0
 			modifier = {
 				add = 300
-				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } }
 				distance = { source = from use_bypasses = yes max_jumps = 1 }
 			}
 			modifier = {
-				add = 200
-				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				add = 220
+				any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } }
 				distance = { source = from use_bypasses = yes max_jumps = 2 }
 			}
 			modifier = {
-				add = 200
-				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				add = 180
+				any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } }
 				distance = { source = from use_bypasses = yes max_jumps = 3 }
 			}
 			modifier = {
-				add = 100
-				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				add = 120
+				any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } }
 			}
-			modifier = { mult = 1.5 touhou_is_important_system = { owner = from.controller } }
+			modifier = {
+				add = 280
+				touhou_is_important_system = { owner = from.controller }
+				any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } }
+			}
+			modifier = {
+				add = 100
+				space_owner? = { is_same_value = from.owner }
+			}
 			modifier = {
 				factor = 0
 				NOT = { distance = { source = from use_bypasses = yes max_jumps = 4 } }
@@ -879,6 +900,7 @@ touhou_ship_guard_system = {
 			}
 		}
 	}
+	on_completed = on_touhou_ship_guard_system_completed
 }
 touhou_ship_patrol_system = {
     user_scope = fleet
@@ -892,7 +914,7 @@ touhou_ship_patrol_system = {
     context_menu_name = touhou_ship_patrol_system
     tooltip = touhou_ship_patrol_system_tooltip
     activity_key = touhou_ship_patrol_system_action
-    required_progress = 5
+    required_progress = 10
     required_progress_key = touhou_ship_patrol_system_progress_tooltip
     progress_activity_key = touhou_ship_patrol_system_action_activity
     slot = 0
@@ -913,37 +935,37 @@ touhou_ship_patrol_system = {
 			# 有人可杀，过去打架
 			modifier = {
 				add = 250
-				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } }
 				distance = { source = from use_bypasses = yes max_jumps = 1 }
 			}
 			modifier = {
 				add = 250
-				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } }
 				distance = { source = from use_bypasses = yes max_jumps = 2 }
 			}
 			modifier = {
 				add = 150
-				any_fleet_in_system = { is_disabled = no exists = controller controller = { is_hostile = from.owner } }
+				any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } }
 			}
 
 			# 没人杀了，继续苦哈哈巡逻
 			modifier = {
+				add = 100
+				space_owner? = { is_same_value = from.owner }
+				NOT = { has_star_flag = touhou_patrol_visited_@from }
+			}
+			modifier = {
 				add = 60
-				space_owner = { is_same_value = from.owner }
-			}
-			modifier = {
-				add = 40
-				touhou_is_important_system = { owner = from.controller }
-			}
-			modifier = {
-				add = 20
-				is_capital = yes
+				space_owner? = { is_same_value = from.owner }
 			}
 
-			# 降低所在星系权重
 			modifier = {
-				factor = 0.5
-				is_same_value = from.solar_system
+				add = 40
+				NOT = { is_same_value = from.solar_system }
+			}
+			modifier = {
+				subtract = 40
+				has_star_flag = touhou_patrol_visited_@from
 			}
 
 			modifier = {
@@ -951,8 +973,9 @@ touhou_ship_patrol_system = {
 				NOT = { distance = { source = from use_bypasses = yes max_jumps = 3 } }
 			}
 		}
-		good_enough_weight = 150
+		good_enough_weight = 60
 	}
+	on_completed = on_touhou_patrol_visited
 }
 touhou_ship_blow_planet = {
     user_scope = fleet
@@ -999,6 +1022,13 @@ touhou_ship_blow_planet = {
                 add = 200
                 is_colony = yes
                 controller = { is_hostile = from.owner }
+                distance = { source = from use_bypasses = yes max_jumps = 3 }
+            }
+            modifier = {
+                add = 120
+                is_colony = yes
+                controller = { is_hostile = from.owner }
+                distance = { source = from use_bypasses = yes max_jumps = 5 }
             }
 
             # 已经在被轰炸的目标降级，避免多支舰队挤在同一颗星球
@@ -1012,7 +1042,7 @@ touhou_ship_blow_planet = {
 				# distance = { source = from use_bypasses = yes min_jumps = 5 }
 			}
         }
-        good_enough_weight = 200
+        good_enough_weight = 120
     }
 }
 
