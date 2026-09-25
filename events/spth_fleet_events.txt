@@ -1723,56 +1723,84 @@ ship_event = {
     immediate = {
         set_confused = no
         remove_terrified = yes
-        spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 sh_perc = 1.0 }
         if = {
-            limit = { has_touhou_invincible = yes }
-            th_spawn_disable_invincible_effect = yes
-            set_disable_at_health = 0.01
-            fire_on_action = {
-                on_action = on_disable_touhou_invincible
-                scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
-            }
+            limit = { NOT = { has_ship_flag = has_touhou_damage_limit } }
+            spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 sh_perc = 1.0 }
         }
-        else_if = {
-            limit = { is_ship_size = TH_super_carrier }
-            change_variable = { which = spth_super_carrier_inv_counter value = 1 }
-            owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
-            if = {
-                limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 4 } }
-                th_spawn_explosion_particle = { color = pink size = large }
-                set_disable_at_health = -1
-                fire_on_action = {
-                    on_action = on_disable_touhou_supercarrier_ended
-                    scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
-                }
-            } else = {
-                th_spawn_disable_invincible_effect = yes
-                set_disable_at_health = 0.01
-                fire_on_action = {
-                    on_action = on_disable_touhou_supercarrier
-                    scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
-                }
-            }
-        }
-        else_if = {
-            limit = { NOT = { has_ship_flag = has_triggered_spth_extra_life } }
-            fire_on_action = {
-                on_action = on_disable_non_spth_extra_life
-                scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
-            }
-        }
-        else = {
-            if = {
-                limit = { check_modifier_value = { modifier = ship_spth_extra_life value > 1 } }
-                set_disable_at_health = 0.01
-            } else = { set_disable_at_health = -1 }
-            th_spawn_disable_extra_life_effect = yes
-            fire_on_action = {
-                on_action = on_trigger_spth_extra_life
-                scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
-            }
-        }
+		set_timed_ship_flag = { flag = touhou_disable_just_fired days = 1 }
+		fire_on_action = {
+			on_action = on_touhou_disable_fired
+			scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+		}
+		if = {
+			limit = { check_variable_arithmetic = { which = value:touhou_ag_extra_life_remaining value > 0 } }
+			# do nothing here.
+		} else = {
+			if = {
+				limit = { has_touhou_invincible = yes }
+				th_spawn_disable_invincible_effect = yes
+				set_disable_at_health = 0.01
+				fire_on_action = {
+					on_action = on_disable_touhou_invincible
+					scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+				}
+			}
+			else_if = {
+				limit = { has_ship_flag = has_touhou_damage_limit }
+				fire_on_action = {
+					on_action = on_disable_touhou_damage_limit
+					scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+				}
+			}
+			else_if = {
+				limit = { is_ship_size = TH_super_carrier }
+				change_variable = { which = spth_super_carrier_inv_counter value = 1 }
+				owner = { change_variable = { which = spth_super_carrier_inv_counter value = 1 } }
+				if = {
+					limit = { check_variable = { which = spth_super_carrier_inv_counter value >= 4 } }
+					th_spawn_explosion_particle = { color = pink size = large }
+					set_disable_at_health = no
+					fire_on_action = {
+						on_action = on_disable_touhou_supercarrier_ended
+						scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+					}
+				} else = {
+					th_spawn_disable_invincible_effect = yes
+					set_disable_at_health = 0.01
+					fire_on_action = {
+						on_action = on_disable_touhou_supercarrier
+						scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+					}
+				}
+			}
+			else_if = {
+				limit = { NOT = { has_ship_flag = has_triggered_spth_extra_life } }
+				fire_on_action = {
+					on_action = on_disable_non_spth_extra_life
+					scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+				}
+			}
+			else = {
+				if = {
+					limit = { check_modifier_value = { modifier = ship_spth_extra_life value > 1 } }
+					set_disable_at_health = 0.01
+				} else_if = {
+					# limit = { is_variable_set = ag_disable_health_var }
+					limit = { check_variable_arithmetic = { which = value:touhou_count_ag_extra_life value > 0 } }
+					set_disable_at_health = 0.05
+				} else = { set_disable_at_health = no }
+				th_spawn_disable_extra_life_effect = yes
+				fire_on_action = {
+					on_action = on_trigger_spth_extra_life
+					scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+				}
+			}
+		}
         set_disabled = no
+        # ship_event = {
+        #     id = spth_fleet.4001
+        #     scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+        # }
     }
 }
 
@@ -1814,7 +1842,7 @@ ship_event = {
 		}
 		if = {
 			limit = {
-				OR = { has_global_flag = touhou_lunar_psi_extra_31 has_global_flag = touhou_lunar_psi_extra_34 }
+				# OR = { has_global_flag = touhou_lunar_psi_extra_31 has_global_flag = touhou_lunar_psi_extra_34 }
 				fromfrom? = { has_fleet_flag = spth_lunar_psi_fleet }
 			}
 			if = {
@@ -1825,6 +1853,7 @@ ship_event = {
 				limit = { has_global_flag = touhou_lunar_psi_extra_34 }
 				set_variable = { which = touhou_common_extra_life_regen_factor value = 0.5 }
 			}
+			lunar_capital_psi_ship_swap_color = yes
 		}
 		if = {
 			limit = {
@@ -1833,7 +1862,7 @@ ship_event = {
 			}
             set_timed_ship_flag = { flag = ship_th_has_void_snack_used days = 180 }
             if = {
-                limit = { has_shield_hp <= 100000000 }
+                limit = { has_shield_hp <= 1000000000000 }
                 if = {
                     limit = {
                         check_variable_arithmetic = {
@@ -1898,7 +1927,12 @@ ship_event = {
                     limit = { check_variable_arithmetic = { which = modifier:ship_spth_extra_life value >= 1 } }
                     change_variable = { which = spth_extra_life_used value = 1 }
                     remove_modifier = ship_spth_extra_life_lose
-                    add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 1 time_multiplier = value:touhou_extra_life_regen_delay }
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_spth_extra_life_no_regen value > 0 } }
+                        add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used }
+                    } else = {
+                        add_modifier = { modifier = ship_spth_extra_life_lose mult = spth_extra_life_used days = 1 time_multiplier = value:touhou_extra_life_regen_delay }
+                    }
                     ship_event = { id = spth_fleet.1105 days = value:touhou_extra_life_regen_delay }
                 }
                 set_variable = { which = ship_spth_extra_life_reduce value = value:ship_spth_extra_life_power_down_value }
@@ -2070,7 +2104,7 @@ ship_event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = { exists = owner owner = { is_touhou_crisis_faction = yes } }
-    immediate = { set_disabled = no set_disable_at_health = -1 }
+    immediate = { set_disabled = no set_disable_at_health = no }
 }
 # This = owner of ship 1 (combatant)
 # From = owner of ship 2 (destroyed)
@@ -2495,15 +2529,154 @@ country_event = {
         fromfrom = {
             if = {
                 limit = {
+                    NOT = { has_fleet_flag = kyouko_mystia_conn_effect_cooldown }
+                    root = { has_country_flag = can_active_kyouko_mystia_conn_effect }
+                }
+                set_timed_fleet_flag = { flag = kyouko_mystia_conn_effect_cooldown days = 180 }
+				set_timed_fleet_flag = { flag = kyouko_mystia_conn_effect_repair days = 15 }
+				fleet_event = { id = spth_fleet.3003 }
+            }
+            if = {
+                limit = {
                     NOT = { has_fleet_flag = touhou_extra_repair_percent_fired }
-                    OR = {
+                    any_controlled_ship = { OR = {
                         check_modifier_value = { modifier = touhou_hull_repair_percent value != 0 }
                         check_modifier_value = { modifier = touhou_armor_repair_percent value != 0 }
                         check_modifier_value = { modifier = touhou_shield_repair_percent value != 0 }
-                    }
+                    } }
                 }
                 set_fleet_flag = touhou_extra_repair_percent_fired
                 fleet_event = { id = spth_fleet.2018 }
+            }
+            if = {
+                limit = {
+                    NOT = { has_fleet_flag = ship_has_touhou_missile_craft_protector_cooldown }
+					any_controlled_ship = { check_modifier_value = { modifier = ship_has_touhou_missile_craft_protector value > 0 } }
+                }
+                set_timed_fleet_flag = { flag = ship_has_touhou_missile_craft_protector_cooldown days = 10 }
+                every_controlled_ship = {
+                    limit = { check_modifier_value = { modifier = ship_has_touhou_missile_craft_protector value > 0 } }
+                    add_modifier = { modifier = ship_has_touhou_missile_craft_protector_hull_add days = 10 }
+                }
+            }
+			# 同时识别星界突击舰
+			if = {
+				limit = {
+					NOT = { has_fleet_flag = touhou_sky_control_ship_aux_armor_fired }
+					any_controlled_ship = { check_modifier_value = { modifier = ship_has_touhou_sky_control_ship_aux_armor value > 0 } }
+				}
+				set_timed_fleet_flag = { flag = touhou_sky_control_ship_aux_armor_fired days = 15 }
+				every_controlled_ship = {
+					limit = { is_touhou_ship = yes ship_size_multiplier >= 10 has_max_hp <= 1000000000000 }
+					reroll_random = yes
+					random = {
+						chance = 20
+						add_modifier = {
+							modifier = touhou_sky_control_ship_protect days = 15
+							mult = value:touhou_sky_control_ship_protect
+						}
+						if = {
+							limit = {
+								check_modifier_value = {
+									modifier = ship_hull_regen_add_static
+									value <= 1000000000000
+								}
+							}
+							add_modifier = {
+								modifier = touhou_sky_control_ship_protect_regen
+								days = 15
+							}
+						}
+						spth_repair_ship_perc = { all_hp = yes }
+					}
+				}
+				reroll_random = yes
+				if = {
+                    limit = { NOT = { has_fleet_flag = touhou_sky_control_ship_shield_fired } }
+                    set_timed_fleet_flag = { flag = touhou_sky_control_ship_shield_fired days = 30 }
+                    set_variable = { which = touhou_sky_control_ship_shield value = 0 }
+                    set_variable = { which = touhou_sky_control_ship_shield_max value = @touhou_ship_attribute_max }
+                    every_controlled_ship = {
+                        set_timed_ship_flag = { flag = touhou_sky_control_ship_shield_affected days = 30 }
+                        prev = {
+                            if = {
+                                limit = {
+                                    check_variable_arithmetic = {
+                                        which = touhou_sky_control_ship_shield_max
+                                        subtract = prev.value:touhou_sky_control_ship_shield_add
+                                        value > touhou_sky_control_ship_shield
+                                    }
+                                }
+                                change_variable = {
+                                    which = touhou_sky_control_ship_shield
+                                    value = prev.value:touhou_sky_control_ship_shield_add
+                                }
+                            }
+                        }
+                    }
+                    save_event_target_as = touhou_target_fleet
+                    create_ship = {
+                        fleet_cache_recalc = no
+                        name = NAME_touhou_sky_control_ship_shield_effect
+                        design = NAME_touhou_sky_control_ship_shield_effect
+                        effect = {
+                            set_ship_flag = has_touhou_damage_limit
+                            set_variable = { which = touhou_damage_limit_disable_at_health value = 0.975 }
+                            set_disable_at_health = 0.975
+                            add_modifier = {
+                                modifier = touhou_sky_control_ship_shield_effect
+                                mult = event_target:touhou_target_fleet.touhou_sky_control_ship_shield
+                            }
+                            ship_event = { id = spth_fleet.4000 days = 30 }
+                        }
+                    }
+                    clear_variable = touhou_sky_control_ship_shield
+                    clear_variable = touhou_sky_control_ship_shield_max
+				}
+			}
+			if = {
+				limit = {
+					NOT = { has_fleet_flag = touhou_sardinia_mooncake_fleet_effect_fired }
+					check_modifier_value = { modifier = fleet_th_has_sardinia_mooncake value > 0 }
+				}
+				set_timed_fleet_flag = { flag = touhou_sardinia_mooncake_fleet_effect_fired days = 30 }
+				random_controlled_ship = {
+					add_modifier = { modifier = touhou_sardinia_mooncake_fleet_effect_lingli_dmg days = 30 mult = modifier:weapon_type_lingli_weapon_damage_mult }
+					add_modifier = { modifier = touhou_sardinia_mooncake_fleet_effect_lingli_rate days = 30 mult = modifier:weapon_type_lingli_weapon_fire_rate_mult }
+					# add_modifier = { modifier = touhou_sardinia_mooncake_fleet_effect_hull_mult days = 30 }
+					if = {
+						limit = { has_max_hp < 1000000000000 }
+						add_modifier = { modifier = touhou_sardinia_mooncake_fleet_effect_hull_add days = 30 mult = trigger:has_max_hp }
+					}
+				}
+			}
+            if = {
+                limit = {
+                    NOT = { has_fleet_flag = leader_trait_mystia_1_skill_cooldown }
+                    any_controlled_ship = { colony? = { check_modifier_value = { modifier = colony_has_mystia value != 0 } } }
+                }
+                set_timed_fleet_flag = { flag = leader_trait_mystia_1_skill_cooldown days = 360 }
+                every_controlled_ship = {
+					if = {
+						limit = { is_touhou_ship = no }
+						touhou_set_terrify_self = { days = 30 }
+					}
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_weapon_range_mult value > 0 } }
+                        add_modifier = { modifier = leader_trait_mystia_1_skill days = 30 mult = modifier:ship_weapon_range_mult }
+                    }
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_accuracy_mult value > 0 } }
+                        add_modifier = { modifier = leader_trait_mystia_1_skill_1 days = 30 mult = modifier:ship_accuracy_mult }
+                    }
+                    if = {
+                        limit = { check_modifier_value = { modifier = ship_tracking_mult value > 0 } }
+                        add_modifier = { modifier = leader_trait_mystia_1_skill_2 days = 30 mult = modifier:ship_tracking_mult }
+                    }
+                    add_modifier = { modifier = leader_trait_mystia_1_skill_alt days = 30 }
+                    add_modifier = { modifier = leader_trait_mystia_1_skill_1_alt days = 30 }
+                    add_modifier = { modifier = leader_trait_mystia_1_skill_2_alt days = 30 }
+                }
             }
             if = {
                 limit = { exists = leader }
@@ -5743,18 +5916,29 @@ country_event = {
         if = {
             limit = { exists = event_target:location_touhou_sky_controll_ship_of_@root }
             play_sound = {
-                sound = hd2_vox_engine_detect_effect
+                sound = touhou_hd2_orbital_barrage_incoming_effect
                 location = event_target:location_touhou_sky_controll_ship_of_@root
             }
-            create_random_fleet = {
-                name = NAME_touhou_sky_control_guard_fleet
-                size = 1600
-                can_overflow = yes
-                effect = {
-                    set_location = event_target:location_touhou_sky_controll_ship_of_@root
-                    fleet_event = { id = spth_fleet.2000 days = 90 }
-                }
-            }
+			spth_create_fleet = {
+				NAME = NAME_fleet_touhou_sky_control_ship_missile
+				can_disband = no is_boss = no OWNER = root
+				location = event_target:location_touhou_sky_controll_ship_of_@root
+				touhou_sky_control_ship_missile = 36
+				evt_target = touhou_target_fleet
+				fleet_action = spth_fleet.3008
+				fleet_action_delayed = spth_fleet.3009 DAYS = 5 DAYS_RANDOM = 5
+			}
+			event_target:touhou_target_fleet = {
+			}
+            # create_random_fleet = {
+            #     name = NAME_touhou_sky_control_guard_fleet
+            #     size = 1600
+            #     can_overflow = yes
+            #     effect = {
+            #         set_location = event_target:location_touhou_sky_controll_ship_of_@root
+            #         fleet_event = { id = spth_fleet.2000 days = 90 }
+            #     }
+            # }
         }
         remove_country_flag = touhou_sky_controll_stratagem_call_fleet
         clear_global_event_target = location_touhou_sky_controll_ship_of_@root
@@ -5835,30 +6019,40 @@ ship_event = {
         }
         if = {
             limit = { NOT = { is_variable_set = touhou_seija_display_extra_life } }
-            set_variable = { which = touhou_seija_display_extra_life value = 80 }
+            set_variable = { which = touhou_seija_display_extra_life value = @touhou_seija_max_extra_life }
+        }
+        if = {
+            limit = { NOT = { is_variable_set = touhou_seija_display_extra_life_max } }
+            set_variable = { which = touhou_seija_display_extra_life_max value = @touhou_seija_max_extra_life }
         }
         if = {
             limit = { NOT = { is_variable_set = touhou_seija_boss_title_temp } }
             set_variable = { which = touhou_seija_boss_title_temp value = 0 }
         }
 
-        change_variable = { which = touhou_seija_entity_extra_life_used value = 1 }
-        subtract_variable = { which = touhou_seija_display_extra_life value = 1 }
         if = {
-            limit = { check_variable = { which = touhou_seija_entity_extra_life_used value > 40 } }
+            limit = { NOT = { has_ship_flag = touhou_seija_boss_changing_stage } }
+            change_variable = { which = touhou_seija_entity_extra_life_used value = 1 }
+            subtract_variable = { which = touhou_seija_display_extra_life value = 1 }
             if = {
-                limit = { check_variable = { which = touhou_seija_boss_stage value != 2 } }
-                set_variable = { which = touhou_seija_boss_title value = 1 }
-                set_variable = { which = touhou_seija_boss_stage value = 2 }
+                limit = { check_variable = { which = touhou_seija_entity_extra_life_used value > @touhou_seija_stage_2_threhold } }
+                if = {
+                    limit = { check_variable = { which = touhou_seija_boss_stage value != 2 } }
+                    set_variable = { which = touhou_seija_boss_title value = 1 }
+                    set_variable = { which = touhou_seija_boss_stage value = 2 }
+                    # 每天回2.00%
+                    fleet = { set_event_locked = yes fleet_event = { id = spth_fleet.2044 days = 25 } }
+                    set_timed_ship_flag = { flag = touhou_seija_boss_changing_stage days = 25 }
+                }
+            } else = {
+                set_variable = { which = touhou_seija_boss_stage value = 1 }
             }
-        } else = {
-            set_variable = { which = touhou_seija_boss_stage value = 1 }
-        }
-        change_variable = { which = touhou_seija_boss_title_temp value = 1 }
-        if = {
-            limit = { check_variable = { which = touhou_seija_boss_title_temp value >= 5 } }
-            change_variable = { which = touhou_seija_boss_title value = 1 }
-            set_variable = { which = touhou_seija_boss_title_temp value = 0 }
+            change_variable = { which = touhou_seija_boss_title_temp value = 1 }
+            if = {
+                limit = { check_variable = { which = touhou_seija_boss_title_temp value >= 5 } }
+                change_variable = { which = touhou_seija_boss_title value = 1 }
+                set_variable = { which = touhou_seija_boss_title_temp value = 0 }
+            }
         }
     }
 }
@@ -5892,7 +6086,7 @@ country_event = {
                 }
                 if = {
                     limit = { NOT = { is_variable_set = touhou_seija_display_extra_life } }
-                    set_variable = { which = touhou_seija_display_extra_life value = 80 }
+                    set_variable = { which = touhou_seija_display_extra_life value = @touhou_seija_max_extra_life }
                 }
                 if = {
                     limit = { NOT = { is_variable_set = touhou_seija_boss_title_temp } }
@@ -6009,6 +6203,13 @@ country_event = {
 		}
 	}
 }
+fleet_event = {
+	id = spth_fleet.2044
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = { set_event_locked = no }
+}
 
 # Planet has taken damage from orbital bombardment - Damage is applied daily
 # This = Planet
@@ -6088,5 +6289,175 @@ country_event = {
 			limit = { check_modifier_value = { modifier = ship_target_weight_mult value < -0.99 } }
 			touhou_standardize_clear_ship_modifier = { modifier = ship_target_weight_mult change = 0.99 DAYS = 30 }
 		}
+	}
+}
+
+fleet_event = {
+	id = spth_fleet.3003
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_fleet_flag = kyouko_mystia_conn_effect_repair
+	}
+	immediate = {
+		if = {
+			limit = { is_in_combat = yes }
+			every_controlled_ship = {
+				spth_repair_ship_perc = { all_hp = yes ar_perc = 1.0 sh_perc = 1.0 }
+			}
+			fleet_event = { id = spth_fleet.3003 days = 1 }
+		} else = {
+			remove_fleet_flag = kyouko_mystia_conn_effect_repair
+		}
+	}
+}
+
+ship_event = {
+	id = spth_fleet.3004
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_ship_flag = touhou_disable_just_fired
+	}
+	immediate = {
+		remove_ship_flag = touhou_disable_just_fired
+		fire_on_action = { on_action = on_ship_touhou_extra_life_enabled }
+	}
+}
+
+ship_event = {
+	id = spth_fleet.3005
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		# add_modifier = {
+		# 	modifier = touhou_while_disabled_standard_remove
+		# 	mult = modifier:ship_damage_reduction_mult days = 1
+		# }
+		# add_modifier = { modifier = touhou_while_disabled days = 1 }
+	}
+}
+ship_event = {
+	id = spth_fleet.3006
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		# remove_modifier = touhou_while_disabled_standard_remove
+		# remove_modifier = touhou_while_disabled
+	}
+}
+
+# 护盾限伤
+# this = ship
+# from = ship, disabler
+# fromfrom = fleet, victim fleet
+# fromfromfrom = fleet, disabler fleet
+# fromfromfromfrom = solar system, where disable triggered
+ship_event = {
+	id = spth_fleet.3007
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_ship_flag = has_touhou_damage_limit
+		is_variable_set = touhou_damage_limit_disable_at_health
+	}
+	immediate = {
+		subtract_variable = {
+			which = touhou_damage_limit_disable_at_health
+			value = 0.025
+		}
+		inline_script = {
+			script = touhou_damage_limit_set
+			val = touhou_damage_limit_disable_at_health
+		}
+	}
+}
+fleet_event = {
+	id = spth_fleet.3008
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		set_event_locked = yes
+		set_fleet_formation = {
+			position = { x = 15.5   y = 0.0         } #36
+			position = { x = 14.5   y = 5.6         } #35
+			position = { x = 11.5   y = 10.4        } #34
+			position = { x = 6.9    y = 13.9        } #33
+			position = { x = 1.4    y = 15.4        } #32
+			position = { x = -4.2   y = 14.9        } #31
+			position = { x = -9.3   y = 12.4        } #30
+			position = { x = -13.2  y = 8.2         } #29
+			position = { x = -15.2  y = 2.8         } #28
+			position = { x = -15.2  y = -2.8        } #27
+			position = { x = -13.2  y = -8.2        } #26
+			position = { x = -9.3   y = -12.4       } #25
+			position = { x = -4.2   y = -14.9       } #24
+			position = { x = 1.4    y = -15.4       } #23
+			position = { x = 6.9    y = -13.9       } #22
+			position = { x = 11.5   y = -10.4       } #21
+			position = { x = 14.5   y = -5.6        } #20
+			position = { x = 10.0   y = 0.0         } #19
+			position = { x = 8.7    y = 5.0         } #18
+			position = { x = 5.0    y = 8.7         } #17
+			position = { x = 0.0    y = 10.0        } #16
+			position = { x = -5.0   y = 8.7         } #15
+			position = { x = -8.7   y = 5.0         } #14
+			position = { x = -10.0  y = 0.0         } #13
+			position = { x = -8.7   y = -5.0        } #12
+			position = { x = -5.0   y = -8.7        } #11
+			position = { x = 0.0    y = -10.0       } #10
+			position = { x = 5.0    y = -8.7        } #9
+			position = { x = 8.7    y = -5.0        } #8
+			position = { x = 5.0    y = 0.0         } #7
+			position = { x = 2.5    y = 4.3         } #6
+			position = { x = -2.5   y = 4.3         } #5
+			position = { x = -5.0   y = 0.0         } #4
+			position = { x = -2.5   y = -4.3        } #3
+			position = { x = 2.5    y = -4.3        } #2
+			position = { x = 0.0    y = 0.0         } #1
+		}
+	}
+}
+fleet_event = {
+	id = spth_fleet.3009
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		set_event_locked = no
+	}
+}
+ship_event = {
+	id = spth_fleet.3010
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+        exists = this
+        # has_ship_flag = ag_disable_damage_reduction_protection
+        spth_has_ag_mod = yes
+    }
+	immediate = {
+		ag_clear_disable_protection = yes
+	}
+}
+
+ship_event = {
+	id = spth_fleet.4000
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		delete_ship = this
+	}
+}
+ship_event = {
+	id = spth_fleet.4001
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+        fire_on_action = {
+            on_action = on_touhou_disable_trigger_1_delayed
+            scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
+        }
 	}
 }

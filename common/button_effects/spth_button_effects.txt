@@ -270,6 +270,96 @@ touhou_izakaya_recipe_book_not_have_made = {
 		} }
 	}
 }
+touhou_izakaya_switch_leader_class = {
+    potential = {
+        OR = {
+            AND = {
+                exists = event_target:touhou_mystia_leader_@from
+                event_target:touhou_mystia_leader_@from = {
+                    exists = colony
+                    colony = { is_same_value = root.colony }
+                }
+            }
+            AND = {
+                exists = event_target:touhou_kyouko_leader_@from
+                event_target:touhou_kyouko_leader_@from = {
+                    exists = colony
+                    colony = { is_same_value = root.colony }
+                }
+            }
+        }
+    }
+    allow = { always = yes }
+    effect = {  }
+}
+touhou_izakaya_switch_mystia_to_official = {
+	potential = {
+        exists = event_target:touhou_mystia_leader_@from
+        event_target:touhou_mystia_leader_@from = {
+            exists = colony
+            colony = { is_same_value = root.colony }
+        }
+        from = { has_country_flag = switch_mystia_to_commander }
+    }
+	allow = { always = yes }
+	effect = {
+        hidden_effect = {
+            event_target:touhou_mystia_leader_@from = { change_leader_class = official }
+            from = { remove_country_flag = switch_mystia_to_commander }
+        }
+	}
+}
+touhou_izakaya_switch_mystia_to_commander = {
+	potential = {
+        exists = event_target:touhou_mystia_leader_@from
+        event_target:touhou_mystia_leader_@from = {
+            exists = colony
+            colony = { is_same_value = root.colony }
+        }
+        from = { NOT = { has_country_flag = switch_mystia_to_commander } }
+    }
+	allow = { always = yes }
+	effect = {
+        hidden_effect = {
+            event_target:touhou_mystia_leader_@from = { change_leader_class = commander }
+            from = { set_country_flag = switch_mystia_to_commander }
+        }
+	}
+}
+touhou_izakaya_switch_kyouko_to_official = {
+	potential = {
+        exists = event_target:touhou_kyouko_leader_@from
+        event_target:touhou_kyouko_leader_@from = {
+            exists = colony
+            colony = { is_same_value = root.colony }
+        }
+        from = { NOT = { has_country_flag = switch_kyouko_to_official } }
+    }
+	allow = { always = yes }
+	effect = {
+        hidden_effect = {
+            event_target:touhou_kyouko_leader_@from = { change_leader_class = official }
+            from = { set_country_flag = switch_kyouko_to_official }
+        }
+	}
+}
+touhou_izakaya_switch_kyouko_to_commander = {
+	potential = {
+        exists = event_target:touhou_kyouko_leader_@from
+        event_target:touhou_kyouko_leader_@from = {
+            exists = colony
+            colony = { is_same_value = root.colony }
+        }
+        from = { has_country_flag = switch_kyouko_to_official }
+    }
+	allow = { always = yes }
+	effect = {
+        hidden_effect = {
+            event_target:touhou_kyouko_leader_@from = { change_leader_class = commander }
+            from = { remove_country_flag = switch_kyouko_to_official }
+        }
+	}
+}
 
 spth_settings_always_on_leader_fuction_effect = {
     potential = { always = yes }

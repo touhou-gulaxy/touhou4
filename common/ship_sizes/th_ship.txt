@@ -1679,6 +1679,7 @@ touhou_sky_control_ship = {
     section_slots = {
         "core" = { locator = "part2" }
     }
+    # can_lead_armada = yes
     num_target_locators = 0
     is_space_station = no
     can_disable = yes
@@ -1696,6 +1697,7 @@ touhou_sky_control_ship = {
             sr_living_metal = 10000
             nanites = 5000
             sr_dark_matter = 5000
+			astral_threads = 1000
         }
         upkeep = {
             sr_lingli = 10
@@ -1704,6 +1706,7 @@ touhou_sky_control_ship = {
             sr_living_metal = 20
             nanites = 10
             sr_dark_matter = 10
+			astral_threads = 10
         }
     }
     is_designable = no
@@ -1714,7 +1717,7 @@ touhou_sky_control_ship = {
     can_be_inspected = yes
     potential_country = { always = no }
     potential_construction = { always = no }
-    prerequisites = { tech_lunar_capital_ships }
+    prerequisites = { tech_touhou_sky_control_ship }
     default_behavior = spth_flagship_attack
     required_component_set = "power_core"
     required_component_set = "ftl_components"
@@ -1825,6 +1828,97 @@ touhou_makai_solg_ship = {
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = makai size = titan ship_class_sub = "" }
     on_click_sound = spth_select_non_gensokyo_fleet
 }
+
+touhou_sky_control_ship_shield_effect = {
+	formation_priority = 20
+	icon = ship_size_space_monster
+	entity = "spth_empty_planet"
+	max_speed = 100
+	acceleration = 0.1
+	rotation_speed = 0.1
+	collision_radius = @corvette_formation_priority
+	max_hitpoints = 1024
+	modifier = {
+	}
+	ship_modifier = {
+		ship_target_weight_mult = 100
+		ship_is_touhou_mod_ship = 1
+	}
+	size_multiplier = 0
+	combat_size_multiplier = 64
+	fleet_slot_size = 0
+	section_slots = {
+		"core" = { locator = "part1" }
+	}
+	is_space_station = no
+	icon_frame = 2
+	base_buildtime = 9999999
+	can_have_federation_design = no
+	enable_default_design = no
+	default_behavior = spth_stationary_attack
+	combat_disengage_chance = -0.9
+	class = shipclass_military
+	possible_country = {
+		always = no
+	}
+	required_component_set = "ship_aura_components"
+	num_target_locators = 1
+	inline_script = { script = ship_sizes/spth_map_icon type = makai }
+	inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = gensokyo size = small ship_class_sub = "_creature" }
+	on_click_sound = spth_select_gensokyo_fleet
+}
+
+touhou_sky_control_ship_missile = {
+	formation_priority = 20
+	icon = ship_size_space_monster
+	entity = "spth_empty_planet"
+	max_speed = 50
+	acceleration = 0.1
+	rotation_speed = 0.1
+	collision_radius = @corvette_formation_priority
+	max_hitpoints = 100000
+	modifier = {
+		ship_hull_mult = 100000
+		ship_shield_add = 100000
+		ship_shield_mult = 100000
+		ship_armor_add = 100000
+		ship_armor_mult = 100000
+	}
+	ship_modifier = {
+		ship_target_weight_mult = -1
+		ship_damage_reduction_mult = 1
+		ship_damage_reduction_add = 1000000000000
+		ship_spth_inv_status = 1
+		ship_is_touhou_mod_ship = 1
+	}
+	size_multiplier = 0
+	combat_size_multiplier = 0
+	fleet_slot_size = 0
+	section_slots = {
+		"core" = { locator = "root" }
+	}
+	is_space_station = no
+	icon_frame = 2
+	base_buildtime = 9999999
+	can_have_federation_design = no
+	enable_default_design = no
+	default_behavior = spth_flagship_attack
+	combat_disengage_chance = -0.9
+	class = shipclass_military
+	possible_country = {
+		always = no
+	}
+	required_component_set = "power_core"
+	required_component_set = "ftl_components"
+	required_component_set = "combat_computers"
+	required_component_set = "thruster_components"
+	required_component_set = "sensor_components"
+	num_target_locators = 1
+	inline_script = { script = ship_sizes/spth_map_icon type = makai }
+	inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = gensokyo size = small ship_class_sub = "_creature" }
+	on_click_sound = spth_select_gensokyo_fleet
+}
+
 spth_kamikakushi_gate = {
 	formation_priority = @juggernaut_formation_priority
 	max_speed = 0
@@ -1959,6 +2053,7 @@ starbase_spth_kamikakushi = {
 	inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = kamikakushi size = small ship_class_sub = "" }
 	on_click_sound = spth_select_non_gensokyo_fleet
+	prerequisites = { tech_touhou_fuck_starbase_never }
 }
 touhou_makai_gateway_ship = {
     max_speed = 80
@@ -2119,7 +2214,7 @@ spth_space_shrine_station = {
 	can_have_federation_design = no
 	components_add_to_cost = no
 	enable_default_design = no	#if yes, countries will have an auto-generated design at start
-	is_designable = no
+	is_designable = yes
 	available_to_everyone = yes
 	can_disable = yes
     # is_hero_ship = yes
@@ -2148,7 +2243,7 @@ spth_space_shrine_station = {
 	accepts_all_modifiers = yes
 	class = shipclass_starbase
 	never_lost = yes
-	prerequisites = { tech_spth_space_shrine_station }
+	prerequisites = { tech_spth_space_shrine_station tech_touhou_arkship_never }
 	construction_type = starbase_shipyard
 	potential_construction = { always = no }
 	possible_construction = { always = no }
@@ -2270,7 +2365,7 @@ gensokyo_ringworld_arkship = {
 	required_component_set = "sensor_components"
 	required_component_set = "combat_computers"
 	prerequisites = {
-		tech_gensokyo_ringworld_arkship
+		tech_touhou_arkship_never
 	}
 	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
 	inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = gensokyo size = large ship_class_sub = "" }
@@ -2292,53 +2387,53 @@ izakaya_arkship_1 = {
 		}
 	}
 	modifier = {
-		ship_evasion_mult = @izakaya_arkship_1_ship_evasion_mult
-		ship_weapon_damage = @izakaya_arkship_1_ship_weapon_damage
-		starbase_shipyard_capacity_add = @izakaya_arkship_1_starbase_shipyard_capacity_add
+		ship_evasion_mult = @izakaya_arkship_3_ship_evasion_mult
+		ship_weapon_damage = @izakaya_arkship_3_ship_weapon_damage
+		starbase_shipyard_capacity_add = @izakaya_arkship_3_starbase_shipyard_capacity_add
 		planet_building_capacity_add = 1
-		starbase_building_capacity_add = @izakaya_arkship_1_starbase_building_capacity_add
-		ship_cloaking_strength_add = @izakaya_arkship_1_ship_cloaking_strength_add
+		starbase_building_capacity_add = @izakaya_arkship_3_starbase_building_capacity_add
+		ship_cloaking_strength_add = @izakaya_arkship_3_ship_cloaking_strength_add
 		starbase_module_capacity_add = 3
 		pop_environment_tolerance = 1.00
 	}
 	ship_modifier = {
-		shipsize_izakaya_arkship_1_shield_add = @izakaya_arkship_1_ship_shield_add
-		shipsize_izakaya_arkship_1_armor_add = @izakaya_arkship_1_ship_armor_add
-		shipsize_izakaya_arkship_1_shield_regen_add_static = @izakaya_arkship_1_ship_shield_regen_add_static
-		shipsize_izakaya_arkship_1_armor_regen_add_static = @izakaya_arkship_1_ship_armor_regen_add_static
-		shipsize_izakaya_arkship_1_hull_regen_add_static = @izakaya_arkship_1_ship_hull_regen_add_static
-		ship_damage_reduction_add = @izakaya_arkship_1_ship_damage_reduction_add
-		ship_target_weight_mult = @izakaya_arkship_1_ship_target_weight_mult
-		ship_damage_against_starbases_mult = @izakaya_arkship_1_ship_damage_against_starbases_mult
-		ship_evasion_add = @izakaya_arkship_1_ship_evasion_add
+		shipsize_izakaya_arkship_1_shield_add = @izakaya_arkship_3_ship_shield_add
+		shipsize_izakaya_arkship_1_armor_add = @izakaya_arkship_3_ship_armor_add
+		shipsize_izakaya_arkship_1_shield_regen_add_static = @izakaya_arkship_3_ship_shield_regen_add_static
+		shipsize_izakaya_arkship_1_armor_regen_add_static = @izakaya_arkship_3_ship_armor_regen_add_static
+		shipsize_izakaya_arkship_1_hull_regen_add_static = @izakaya_arkship_3_ship_hull_regen_add_static
+		ship_damage_reduction_add = @izakaya_arkship_3_ship_damage_reduction_add
+		ship_target_weight_mult = @izakaya_arkship_3_ship_target_weight_mult
+		ship_damage_against_starbases_mult = @izakaya_arkship_3_ship_damage_against_starbases_mult
+		ship_evasion_add = @izakaya_arkship_3_ship_evasion_add
 		force_disparity_fire_rate_mult = 1
-		ship_orbit_upkeep_mult = @izakaya_arkship_1_ship_orbit_upkeep_mult
-		ship_repair_hull_mult = @izakaya_arkship_1_ship_repair_hull_mult
-		ship_repair_armor_mult = @izakaya_arkship_1_ship_repair_armor_mult
-		ship_weapon_range_mult = @izakaya_arkship_1_ship_weapon_range_mult
-		shipsize_izakaya_arkship_1_shield_damage_mult = @izakaya_arkship_1_ship_shield_damage_mult
-		shipsize_izakaya_arkship_1_armor_damage_mult = @izakaya_arkship_1_ship_armor_damage_mult
-		shipsize_izakaya_arkship_1_hull_damage_mult = @izakaya_arkship_1_ship_hull_damage_mult
-		ship_starting_experience_add = @izakaya_arkship_1_ship_starting_experience_add
+		ship_orbit_upkeep_mult = @izakaya_arkship_3_ship_orbit_upkeep_mult
+		ship_repair_hull_mult = @izakaya_arkship_3_ship_repair_hull_mult
+		ship_repair_armor_mult = @izakaya_arkship_3_ship_repair_armor_mult
+		ship_weapon_range_mult = @izakaya_arkship_3_ship_weapon_range_mult
+		shipsize_izakaya_arkship_1_shield_damage_mult = @izakaya_arkship_3_ship_shield_damage_mult
+		shipsize_izakaya_arkship_1_armor_damage_mult = @izakaya_arkship_3_ship_armor_damage_mult
+		shipsize_izakaya_arkship_1_hull_damage_mult = @izakaya_arkship_3_ship_hull_damage_mult
+		ship_starting_experience_add = @izakaya_arkship_3_ship_starting_experience_add
 		ship_spth_armor_efficiency = 1
 		ship_spth_shield_efficiency = 1
 		ship_is_touhou_mod_ship = 1
 		ship_has_touhou_action = 1
 	}
-	entity = spth_empty_planet
-	max_hitpoints = @izakaya_arkship_1_hitpoint
+	entity = toho_arkship_tiger_entity
+	max_hitpoints = @izakaya_arkship_3_hitpoint
 	size_multiplier = 1
-	fleet_slot_size = 16
+	fleet_slot_size = 1
 	combat_size_multiplier = 0
 	section_slots = {
-		"mid" =	{ locator = "root" }
-		"1" =	{ locator = "root" }
-		"2" =	{ locator = "root" }
-		"3" =	{ locator = "root" }
-		"4" =	{ locator = "root" }
-		"5" =	{ locator = "root" }
-		"6" =	{ locator = "root" }
-		"spinal_mount_1"	 = { locator = "root" }
+		"mid" =	{ locator = "part1" }
+		"1" =	{ locator = "part2" }
+		"2" =	{ locator = "part2" }
+		"3" =	{ locator = "part2" }
+		"4" =	{ locator = "part2" }
+		"5" =	{ locator = "part2" }
+		"6" =	{ locator = "part2" }
+		"spinal_mount_1"	 = { locator = "part3" }
 	}
 	num_target_locators = 8
 	uses_name_prefix = no
@@ -2349,7 +2444,7 @@ izakaya_arkship_1 = {
 	can_have_federation_design = no
 	components_add_to_cost = no
 	enable_default_design = no	#if yes, countries will have an auto-generated design at start
-	is_designable = no
+	is_designable = yes
 	available_to_everyone = yes
 	can_disable = yes
 	# is_hero_ship = yes
@@ -2357,7 +2452,7 @@ izakaya_arkship_1 = {
 		hero_ship_fleet_background = "GFX_fleet_view_touhou_gensokyo_ship"
 		capabilities = {
 			can_repair
-			can_upgrade
+			# can_upgrade
 		}
 		custom_class_text_color = H
 	}
@@ -2382,7 +2477,7 @@ izakaya_arkship_1 = {
 	required_component_set = "thruster_components"
 	required_component_set = "sensor_components"
 	required_component_set = "combat_computers"
-	potential_country = { always = no } # should only get by event.
+	prerequisites = { tech_reverse_engine_izakaya_arkship tech_touhou_arkship_never }
 	inline_script = { script = ship_sizes/spth_map_icon type = gensokyo }
 	inline_script = { script = ship_sizes/touhou_ship_extra_icon owner = gensokyo size = large ship_class_sub = "" }
 	on_click_sound = spth_select_gensokyo_fleet
@@ -2459,7 +2554,7 @@ touhou_synaptic_lathe_arkship = {
 	can_have_federation_design = no
 	components_add_to_cost = no
 	enable_default_design = no	#if yes, countries will have an auto-generated design at start
-	is_designable = no
+	is_designable = yes
 	available_to_everyone = yes
 	can_disable = yes
 	# is_hero_ship = yes
@@ -2483,6 +2578,9 @@ touhou_synaptic_lathe_arkship = {
 	scripted_action = {
 		touhou_synaptic_lathe_mia
 		touhou_synaptic_lathe_exouds
+	}
+	prerequisites = {
+		tech_touhou_arkship_never
 	}
 	collects_stockpile_to_country = yes
 	accepts_all_modifiers = yes
@@ -2712,6 +2810,7 @@ touhou_mirror_empire_starbase = {
     required_component_set = "combat_computers"
     inline_script = { script = ship_sizes/spth_map_icon type = kamikakushi }
     on_click_sound = spth_select_non_gensokyo_fleet
+	prerequisites = { tech_touhou_fuck_starbase_never }
 }
 touhou_makai_empire_starbase = {
     formation_priority = 1

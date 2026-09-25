@@ -399,7 +399,7 @@ ship_event = {
         }
         if = {
             limit = {
-                has_shield_hp < 200000000
+                has_shield_hp < 2000000000000
                 check_variable_arithmetic = {
                     which = value:spth_max_shield_value|percent|2.0|
                     value > trigger:has_shield_hp
@@ -769,11 +769,11 @@ ship_event = {
             fleet = {
                 every_controlled_ship = {
                     if = {
-                        limit = { has_shield_hp <= 100000000 }
+                        limit = { has_shield_hp <= 1000000000000 }
                         reduce_shield = prevprev.th_leader_sp_216_satsuki_rin_repair_val
                     }
                     if = {
-                        limit = { has_hp <= 100000000 }
+                        limit = { has_hp <= 1000000000000 }
                         reduce_hp = prevprev.th_leader_sp_216_satsuki_rin_repair_val
                     }
                 }
@@ -1430,4 +1430,146 @@ country_event = {
             }
         }
     }
+}
+
+leader_event = {
+    id = th_leader_sp.1004
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        owner? = {
+            has_country_flag = th_mystia_get
+            has_country_flag = th_kyouko_get
+        }
+        exists = event_target:touhou_mystia_leader_@owner
+        exists = event_target:touhou_kyouko_leader_@owner
+        if = {
+            limit = { is_same_value = event_target:touhou_mystia_leader_@owner }
+            if = {
+                limit = { leader_class = commander }
+                fleet? = { is_ship_size = izakaya_arkship_1 }
+                event_target:touhou_kyouko_leader_@owner = { colony? = { fleet? = { is_same_value = prevprevprev.fleet } } }
+            } else = {
+                colony? = { carrier_is_type = ship fleet? = { is_ship_size = izakaya_arkship_1 } }
+                event_target:touhou_kyouko_leader_@owner = { fleet? = { is_same_value = prevprev.colony.fleet } }
+            }
+        }
+        else_if = {
+            limit = { is_same_value = event_target:touhou_kyouko_leader_@owner }
+            if = {
+                limit = { leader_class = commander }
+                fleet? = { is_ship_size = izakaya_arkship_1 }
+                event_target:touhou_mystia_leader_@owner = { colony? = { fleet? = { is_same_value = prevprevprev.fleet } } }
+            } else = {
+                colony? = { carrier_is_type = ship fleet? = { is_ship_size = izakaya_arkship_1 } }
+                event_target:touhou_mystia_leader_@owner = { fleet? = { is_same_value = prevprev.colony.fleet } }
+            }
+        }
+        else = {
+            always = no
+        }
+    }
+    immediate = {
+        owner = { set_country_flag = can_active_kyouko_mystia_conn_effect }
+        # log = "Activate Kyouko and Mystia conn effect."
+    }
+}
+leader_event = {
+    id = th_leader_sp.1005
+    hide_window = yes
+    is_triggered_only = yes
+    trigger = {
+        owner? = {
+            has_country_flag = th_mystia_get
+            has_country_flag = th_kyouko_get
+        }
+        exists = event_target:touhou_mystia_leader_@owner
+        exists = event_target:touhou_kyouko_leader_@owner
+        if = {
+            limit = { is_same_value = event_target:touhou_mystia_leader_@owner }
+            if = {
+                limit = { leader_class = commander }
+                fleet? = { is_ship_size = izakaya_arkship_1 }
+                event_target:touhou_kyouko_leader_@owner = { colony? = { fleet? = { is_same_value = prevprevprev.fleet } } }
+            } else = {
+                colony? = { carrier_is_type = ship fleet? = { is_ship_size = izakaya_arkship_1 } }
+                event_target:touhou_kyouko_leader_@owner = { fleet? = { is_same_value = prevprev.colony.fleet } }
+            }
+        }
+        else_if = {
+            limit = { is_same_value = event_target:touhou_kyouko_leader_@owner }
+            if = {
+                limit = { leader_class = commander }
+                fleet? = { is_ship_size = izakaya_arkship_1 }
+                event_target:touhou_mystia_leader_@owner = { colony? = { fleet? = { is_same_value = prevprevprev.fleet } } }
+            } else = {
+                colony? = { carrier_is_type = ship fleet? = { is_ship_size = izakaya_arkship_1 } }
+                event_target:touhou_mystia_leader_@owner = { fleet? = { is_same_value = prevprev.colony.fleet } }
+            }
+        }
+        else = {
+            always = no
+        }
+    }
+    immediate = {
+        owner = { remove_country_flag = can_active_kyouko_mystia_conn_effect }
+        # log = "Deactivate Kyouko and Mystia conn effect."
+    }
+}
+
+
+country_event = {
+	id = th_leader_sp.1006
+	title = th_leader_sp.1006.name
+	desc = th_leader_sp.1006.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_announcement_room }
+	option = { name = th_leader_sp.1006.a }
+	after = {
+		hidden_effect = {
+			country_event = {
+				id = th_leader_sp.1007
+				days = 30
+				random = 30
+			}
+		}
+	}
+}
+country_event = {
+	id = th_leader_sp.1007
+	title = th_leader_sp.1007.name
+	desc = th_leader_sp.1007.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_announcement_room }
+	option = { name = th_leader_sp.1006.a }
+	after = {
+		hidden_effect = {
+			country_event = {
+				id = th_leader_sp.1008
+				days = 30
+				random = 30
+			}
+		}
+	}
+}
+country_event = {
+	id = th_leader_sp.1008
+	title = th_leader_sp.1008.name
+	desc = th_leader_sp.1008.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_announcement_room }
+	option = { name = th_leader_sp.1008.a }
+	option = { name = th_leader_sp.1008.b }
+	after = {
+		add_relic = r_touhou_inf_food_box
+	}
 }

@@ -1225,7 +1225,7 @@ ancient_titan_touhou_fleet_repair_init_alt = {
 touhou_repair_ship_hull_overflow = {
     optimize_memory
     if = {
-        limit = { has_hp <= 100000000 }
+        limit = { has_hp <= 1000000000000 }
         if = {
             limit = {
                 check_variable_arithmetic = {
@@ -1242,7 +1242,7 @@ touhou_repair_ship_hull_overflow = {
 touhou_repair_ship_shield_overflow = {
     optimize_memory
     if = {
-        limit = { has_shield_hp <= 100000000 }
+        limit = { has_shield_hp <= 1000000000000 }
         if = {
             limit = {
                 check_variable_arithmetic = {
@@ -1259,7 +1259,7 @@ touhou_repair_ship_shield_overflow = {
 touhou_repair_ship_shield_overflow_static = {
     optimize_memory
     if = {
-        limit = { has_shield_hp <= 100000000 }
+        limit = { has_shield_hp <= 1000000000000 }
         if = {
             limit = {
                 check_variable_arithmetic = {
@@ -1360,10 +1360,20 @@ touhou_instant_kill_ship = {
 		limit = { this? = { is_disabled = no } }
 		reduce_shield = @touhou_instant_kill_reduce_shield_amount
 		repair_armor_amount = @touhou_instant_kill_reduce_armor_amount
-		damage_ship = {
+		add_modifier = {
+            modifier = touhou_instant_kill_standard_remove_ship_damage_reduction_mult
+            mult = modifier:ship_damage_reduction_mult
+		}
+		add_modifier = {
+            modifier = touhou_instant_kill_standard_remove_ship_damage_reduction_add
+            mult = modifier:ship_damage_reduction_add
+		}
+		while = { count = 66 damage_ship = {
 			amount = @touhou_instant_kill_standard_damage
 			attacker = $source$
-		}
+		} }
+		remove_modifier = touhou_instant_kill_standard_remove_ship_damage_reduction_mult
+		remove_modifier = touhou_instant_kill_standard_remove_ship_damage_reduction_add
 	}
 }
 touhou_add_or_set_variable = {
@@ -2382,6 +2392,14 @@ touhou_set_terrify = {
         ship_event = { id = spth_fleet.2012 days = $days$ }
     }
 }
+touhou_set_terrify_self = {
+	optimize_memory
+	if = {
+		limit = { touhou_never_set_terrify_ship = no }
+		set_terrified_by = this
+		ship_event = { id = spth_fleet.2012 days = $days$ }
+	}
+}
 touhou_eat_fleet = {
     optimize_memory
     if = {
@@ -2912,6 +2930,7 @@ ship_reapers_instant_kill_on_hit = {
         }
         reduce_shield = @touhou_instant_kill_reduce_shield_amount
         repair_armor_amount = @touhou_instant_kill_reduce_armor_amount
+		touhou_instant_kill_ship = { source = from }
         create_ambient_object = {
             type = lunar_capital_superlaser_instant_kill_hit_explosion
             location = this
@@ -3015,7 +3034,7 @@ touhou_sky_control_ship_destroy_system = {
                 root.owner = {
                     country_event = {
                         id = touhou_ship_actions.101
-                        scopes = { from = event_target:touhou_sky_control_ship_temp fromfrom = root }
+                        scopes = { from = event_target:touhou_sky_control_ship_target_$slot$ fromfrom = event_target:touhou_sky_control_ship_temp }
                     }
                 }
             }
@@ -3561,6 +3580,120 @@ touhou_ship_system_scan_research = {
 				30 = { add_deposit = d_touhou_lunar_zro_1_research $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
 				20 = { add_deposit = d_touhou_lunar_zro_2_research $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
 				10 = { add_deposit = d_touhou_lunar_zro_3_research $touhou_scope|root.owner$ = { set_$touhou_scope_type|country$_flag = touhou_spawned_random_deposit } }
+			}
+		}
+	}
+}
+
+touhou_force_mia_return_home = {
+	optimize_memory
+	if = {
+		limit = { can_go_mia = yes }
+		set_mia = mia_return_home
+		set_mia_return_delay = $delay|10$
+	} else_if = {
+		limit = { controller? = { exists = capital_scope } }
+		set_location = controller.capital_scope
+	} else_if = {
+		limit = { exists = controller }
+		if = {
+			limit = { controller = { is_nomadic = yes } }
+			random_owned_ship = { solar_system = { save_event_target_as = touhou_force_mia_return_system } }
+		} else = {
+			controller = {
+				random_system_within_border = { save_event_target_as = touhou_force_mia_return_system }
+				if = {
+					limit = { NOT = { exists = event_target:touhou_force_mia_return_system } }
+					random_owned_colony = {
+						solar_system = { save_event_target_as = touhou_force_mia_return_system }
+					}
+				}
+			}
+		}
+		if = {
+			limit = { NOT = { exists = event_target:touhou_force_mia_return_system } }
+			random_rim_system = { save_event_target_as = touhou_force_mia_return_system }
+			set_location = event_target:touhou_force_mia_return_system.star
+		}
+	} else = {
+		random_rim_system = { save_event_target_as = touhou_force_mia_return_system }
+		set_location = event_target:touhou_force_mia_return_system.star
+	}
+}
+
+touhou_force_mia_fast = {
+	optimize_memory
+	if = {
+		limit = { can_go_mia = yes }
+		set_mia = mia_emergency_ftl
+		set_mia_return_delay = $delay|10$
+	} else_if = {
+		limit = { controller? = { exists = capital_scope } }
+		set_location = controller.capital_scope
+	} else = {
+		random_rim_system = { save_event_target_as = touhou_force_mia_return_system }
+		set_location = event_target:touhou_force_mia_return_system.star
+	}
+}
+
+touhou_kill_should_not_mia = {
+	optimize_memory
+	if = {
+		limit = {
+			OR = {
+				exists = starbase
+				is_ship_class = shipclass_starbase
+			}
+			is_mobile = no
+		}
+		delete_fleet = { target = this kill_leader = yes destroy_template = yes }
+	}
+}
+
+touhou_test_spwan_system_makai_network = {
+	optimize_memory
+	owner = {
+		set_global_flag = spth_precursor_makai_network_spawned
+		set_spawn_system_batch = begin
+		random_system_within_border = {
+			spawn_system = {
+				initializer = spth_precursor_makai_network_system
+				hyperlane = no
+				effect = {
+					add_hyperlane = {
+						from = this
+						to = prev
+					}
+				}
+			}
+		}
+		set_spawn_system_batch = end
+		if = {
+			limit = { NOT = { has_event_chain = touhou_makai_chain } }
+			begin_event_chain = { event_chain = touhou_makai_chain target = this }
+		}
+		create_point_of_interest = {
+			id = spth_precursor_capital_makai.poi
+			name = spth_precursor_makai_network.poi
+			desc = spth_precursor_makai_network.poi.desc
+			event_chain = touhou_makai_chain
+			location = event_target:spth_precursor_makai_network_system
+		}
+		country_event = { id = spth_precursor.50 }
+		every_playable_country = {
+			limit = { NOT = { is_same_value = prev } }
+			if = {
+				limit = { has_special_project = spth_precursor_makai_network_discover }
+				abort_special_project = {
+					type = spth_precursor_makai_network_discover
+					location = capital_scope
+				}
+			}
+			country_event = {
+				id = spth_precursor.51
+				days = 30
+				random = 30
+				scopes = { from = prev }
 			}
 		}
 	}

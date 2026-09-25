@@ -1742,7 +1742,7 @@ fleet_event = {
             limit = { is_ship_size = touhou_sky_control_ship }
             set_ship_design = { design = NAME_touhou_sky_control_ship_alt }
         }
-        fleet_event = { id = touhou_ship_actions.21 days = 5 random = 15 }
+        fleet_event = { id = touhou_ship_actions.21 days = 10 random = 10 }
     }
 }
 fleet_event = {
@@ -3714,6 +3714,8 @@ planet_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
+        if = { limit = { NOT = { is_variable_set = touhou_deep_scanned_count } } set_variable = { which = touhou_deep_scanned_count value = 0 } }
+        change_variable = { which = touhou_deep_scanned_count value = 1 }
 		from = {
 			every_controlled_ship = {
 				limit = { check_modifier_value = { modifier = ship_can_use_touhou_deep_scan value > 0 } }
@@ -3940,5 +3942,34 @@ fleet_event = {
 		} else = {
 			fleet_event = { id = touhou_ship_actions.315 days = 1 }
 		}
+	}
+}
+system_event = {
+	id = touhou_ship_actions.316
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { from? = { has_fleet_flag = touhou_automation_needs_return_starbase } }
+	immediate = {
+        from = { remove_fleet_flag = touhou_automation_needs_return_starbase }
+	}
+}
+system_event = {
+	id = touhou_ship_actions.317
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { from? = { NOT = { has_fleet_flag = touhou_automation_needs_return_starbase } } }
+	immediate = {
+        from = { set_fleet_flag = touhou_automation_needs_return_starbase }
+	}
+}
+system_event = {
+	id = touhou_ship_actions.318
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = from NOT = { has_star_flag = touhou_patrol_visited_@from } }
+	immediate = {
+        solar_system = {
+            set_timed_star_flag = { flag = touhou_patrol_visited_@from days = 360 }
+        }
 	}
 }

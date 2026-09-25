@@ -2,6 +2,13 @@ touhou_always = {
     optimize_memory
     always = $always$
 }
+count_extra_life_remaining = {
+    optimize_memory
+    check_variable_arithmetic = {
+        which = value:extra_life_remaining
+        value $rel$ $amount$
+    }
+}
 touhou_debug_print_scopes_trigger = {
 	optimize_memory
 	custom_tooltip = {
@@ -323,12 +330,19 @@ spth_fleet_has_special_leader = {
     fromfrom = {
         # exists = leader
         OR = {
+            AND = {
+                NOT = { has_fleet_flag = kyouko_mystia_conn_effect_cooldown }
+                root = { has_country_flag = can_active_kyouko_mystia_conn_effect }
+            }
             any_controlled_ship = {
                 OR = {
                     # check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 }
                     check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 }
                     check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 }
                     check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 }
+                    colony? = { check_modifier_value = { modifier = colony_has_mystia value != 0 } }
+					check_modifier_value = { modifier = ship_has_touhou_sky_control_ship_aux_armor value > 0 }
+					check_modifier_value = { modifier = ship_has_touhou_missile_craft_protector value > 0 }
                 }
             }
             AND = {
@@ -377,6 +391,8 @@ spth_fleet_has_special_leader = {
             check_modifier_value = { modifier = fleet_th_has_gengetsu_and_mugetsu value > 0 }
             check_modifier_value = { modifier = fleet_th_has_mugetsu value > 0 }
             check_modifier_value = { modifier = fleet_th_has_gengetsu value > 0 }
+			check_modifier_value = { modifier = fleet_th_has_sardinia_mooncake value > 0 }
+            check_modifier_value = { modifier = fleet_has_mystia value != 0 }
             check_modifier_value = { modifier = fleet_convert_evasion_to_damage_reduction value > 0 }
         }
     }
@@ -665,6 +681,7 @@ is_touhou_crisis_faction = {
         is_country_type = touhou_dreamworld
         is_country_type = touhou_boss_seija
         is_country_type = touhou_hostile_faction_enable_move
+		is_country_type = touhou_animal_realm
     }
 }
 is_touhou_lunar_crisis_faction = {
@@ -733,7 +750,9 @@ has_touhou_disable = {
             check_variable = { which = spth_super_carrier_inv_counter value <= 4 }
         }
         has_touhou_invincible = yes
-        check_modifier_value = { modifier = ship_spth_extra_life value >= 0.01 }
+        # check_modifier_value = { modifier = ship_spth_extra_life value >= 0.01 }
+		check_variable_arithmetic = { which = value:extra_life_remaining value >= 0.01 }
+		has_ship_flag = has_touhou_damage_limit
         # has_ship_flag = has_triggered_spth_extra_life
     }
 }
@@ -756,10 +775,11 @@ spth_not_trigger_extra_life = {
     optimize_memory
     OR = {
         is_ship_size = TH_super_carrier
+		# removed faeture:
         # we do not check ancient titan.
         # and when ag_disable is activated, stop this check.
-        ag_is_ancient_titan = yes
-        has_ship_flag = ag_set_disable_at_health
+        # ag_is_ancient_titan = yes
+        # has_ship_flag = ag_set_disable_at_health
     }
 }
 spth_dynamic_ship_part_trigger = {
@@ -1628,6 +1648,37 @@ touhou_seija_boss_title_check = {
         check_variable = { which = touhou_seija_boss_title value = $idx$ }
     }
 }
+# max_hp: touhou_seija_display_extra_life_max * has_max_hp
+touhou_seija_boss_has_hp_percentage = {
+    optimize_memory
+    exists = event_target:is_touhou_seija_boss
+    event_target:is_touhou_seija_boss = {
+        if = {
+            limit = { has_ship_flag = touhou_seija_boss_changing_stage }
+            check_variable_arithmetic = {
+                add = 50
+                subtract = value:touhou_seija_boss_changing_stage_days_left
+                divide = 50
+                value > $perc$
+            }
+        } else_if = {
+            limit = {
+                check_variable = { which = touhou_seija_boss_stage value = 2 }
+            }
+            check_variable_arithmetic = {
+                which = value:touhou_seija_boss_has_hp
+                divide = value:touhou_seija_boss_has_max_hp_stg2
+                value > $perc$
+            }
+        } else = {
+            check_variable_arithmetic = {
+                which = value:touhou_seija_boss_has_hp
+                divide = value:touhou_seija_boss_has_max_hp_stg1
+                value > $perc$
+            }
+        }
+    }
+}
 
 touhou_gensokyo_planet_district_converted = {
     optimize_memory
@@ -1983,4 +2034,34 @@ touhou_has_enough_resources_list = {
 touhou_is_delve_blocked = {
     optimize_memory
     inline_script = { script = trigger/touhou_is_shroud_inhibited }
+}
+
+touhou_is_important_system = {
+	optimize_memory
+	OR = {
+		any_system_planet_colony = { exists = owner owner = { is_same_value = $owner$ } }
+		any_system_ship_colony = { exists = owner owner = { is_same_value = $owner$ } }
+		any_system_megastructure = {
+            exists = owner owner = { is_same_value = $owner$ }
+            NOR = {
+                is_megastructure_type = gateway_0
+                is_megastructure_type = gateway_final
+                is_megastructure_type = gateway_ruined
+                is_megastructure_type = gateway_restored
+                is_megastructure_type = gateway_derelict
+                is_megastructure_type = gateway_ness_ruined
+                is_megastructure_type = gateway_ness_restored
+                is_megastructure_type = hyper_relay
+                is_megastructure_type = hyper_relay_ruined
+                is_megastructure_type = hyper_relay_restored
+            }
+		}
+	}
+}
+touhou_is_capital_system = {
+	optimize_memory
+	OR = {
+        any_system_planet_colony = { is_capital = yes exists = owner owner = { is_same_value = $owner$ } }
+		any_system_ship_colony = { is_capital = yes exists = owner owner = { is_same_value = $owner$ } }
+	}
 }

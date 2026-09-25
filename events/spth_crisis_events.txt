@@ -422,7 +422,8 @@ country_event = {
                     }
                 }
                 if = {
-                    limit = { has_global_flag = touhou_kamikakushi_extra_33 }
+                    limit = { has_global_flag = touhou_kamikakushi_extra_33 NOT = { has_fleet_flag = touhou_kamikakushi_extra_33_cooldown } }
+                    set_timed_fleet_flag = { flag = touhou_kamikakushi_extra_33_cooldown days = 10 }
                     every_owned_ship = {
                         limit = { NOT = { has_ship_flag = spth_invincible } }
                         add_modifier = { modifier = spth_kamikakushi_inv_modifier days = 3 }
@@ -2156,6 +2157,7 @@ country_event = {
     }
 }
 # 定期在铸造厂刷新舰队，每1080d就尝试重刷守卫舰队
+# 每720d，尝试移动铸造厂到新位置
 country_event = {
     id = touhou_crisis.302
     hide_window = yes
@@ -2181,6 +2183,63 @@ country_event = {
                 spth_kamikakushi_spawn_elite_defence_fleet = yes
                 spth_kamikakushi_spawn_small_defence_fleet = yes
             }
+			if = {
+				limit = { NOT = { has_global_flag = touhou_kamikakushi_super_shipyard_enemy_jump_cooldown } }
+				set_timed_global_flag = { flag = touhou_kamikakushi_super_shipyard_enemy_jump_cooldown days = 720 }
+				event_target:spth_kamikaushi_crisis_super_shipyard = {
+					every_neighbor_system = {
+						limit = {
+							OR = {
+								has_star_flag = ag_no_jump_in_system
+								has_star_flag = spth_no_jump_in_system
+							}
+						}
+						if = {
+							limit = { NOT = { has_star_flag = used_has_spth_no_jump_in_system } }
+							remove_star_flag = spth_no_jump_in_system
+						}
+						if = {
+							limit = { NOT = { has_star_flag = used_has_ag_no_jump_in_system } }
+							remove_star_flag = ag_no_jump_in_system
+						}
+					}
+				}
+				random_rim_system = {
+					limit = { spth_is_no_spawn_crisis_system = no }
+					save_event_target_as = spth_target_system
+					event_target:spth_kamikaushi_crisis_super_shipyard = {
+						move_system = {
+							target = prev
+							min_distance = 10
+							max_distance = 25
+							hyperlane = no
+						}
+						add_hyperlane = { from = this to = prev }
+					}
+					if = {
+						limit = {
+							has_star_flag = spth_no_jump_in_system
+						}
+						set_star_flag = used_has_spth_no_jump_in_system
+					}
+					if = {
+						limit = {
+							has_star_flag = ag_no_jump_in_system
+						}
+						set_star_flag = used_has_ag_no_jump_in_system
+					}
+					set_star_flag = spth_no_jump_in_system
+					set_star_flag = ag_no_jump_in_system
+				}
+				every_playable_country = {
+					country_event = {
+						id = touhou_crisis.306
+						scopes = {
+							fromfrom = event_target:spth_target_system
+						}
+					}
+				}
+			}
             # E刷2队，1+1
             # N刷3队，2+1
             # H刷6队，4+2
@@ -2279,7 +2338,11 @@ event = {
                             }
                         }
                     } else_if = {
-                        limit = { is_touhou_player_faction = yes }
+                        limit = {
+							event_target:spth_kamikaushi_crisis_super_shipyard_mega.owner = {
+								is_touhou_player_faction = yes
+							}
+						}
                         event_target:spth_kamikaushi_crisis_super_shipyard.space_owner = {
                             country_event = { id = touhou_crisis.305 }
                         }
@@ -2315,6 +2378,134 @@ country_event = {
     option = {
         name = touhou_crisis.304.a
     }
+}
+country_event = {
+	id = touhou_crisis.306
+	title = touhou_crisis.306.name
+	desc = touhou_crisis.306.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = touhou_system_warper_settings_room }
+	is_triggered_only = yes
+	option = {
+		name = touhou_crisis.306.a
+	}
+	option = {
+		name = touhou_crisis.306.b
+	}
+}
+
+country_event = {
+	id = touhou_crisis.307
+	title = touhou_crisis.307.name
+	desc = touhou_crisis.307.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = touhou_system_warper_jump_room }
+	is_triggered_only = yes
+	option = {
+		name = touhou_crisis.307.a
+	}
+}
+
+country_event = {
+	id = touhou_crisis.308
+	title = touhou_crisis.308.name
+	desc = touhou_crisis.308.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = spth_es2_aethon_room }
+	is_triggered_only = yes
+	option = {
+		name = touhou_crisis.308.a
+	}
+	option = {
+		name = touhou_crisis.308.b
+	}
+}
+
+# THIS = Target System
+# FROM = Megastructure
+system_event = {
+	id = touhou_crisis.309
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		from.owner = {
+			save_event_target_as = touhou_target_country
+			country_event = {
+				id = touhou_crisis.307
+				scopes = {
+					from = root.from.solar_system
+					fromfrom = root
+				}
+			}
+		}
+		from.solar_system = {
+            every_neighbor_system = {
+                every_fleet_in_system = {
+                    limit = { controller? = { is_hostile = event_target:touhou_target_country } }
+                    every_controlled_ship = {
+                        touhou_set_terrify_self = { days = 15 }
+                        add_modifier = {
+                            modifier = touhou_megastructure_kamikakushi_super_shipyard_move_hull_damage
+                            days = 30 mult = trigger:has_max_hp
+                        }
+                        spth_reduce_shield_max = { percent = 1 }
+                        spth_reduce_armor_max = { percent = 1 }
+                    }
+                }
+            }
+			move_system = {
+				target = root
+				min_distance = 10
+				max_distance = 25
+				hyperlane = no
+			}
+			add_hyperlane = { from = this to = root }
+		}
+		every_fleet_in_system = {
+			limit = { controller? = { is_hostile = event_target:touhou_target_country } }
+			every_controlled_ship = {
+				touhou_set_terrify_self = { days = 15 }
+				add_modifier = {
+					modifier = touhou_megastructure_kamikakushi_super_shipyard_move_hull_damage
+					days = 30 mult = trigger:has_max_hp
+				}
+				spth_reduce_shield_max = { percent = 1 }
+				spth_reduce_armor_max = { percent = 1 }
+			}
+		}
+        every_neighbor_system = {
+            every_fleet_in_system = {
+                limit = { controller? = { is_hostile = event_target:touhou_target_country } }
+                every_controlled_ship = {
+                    touhou_set_terrify_self = { days = 15 }
+                    add_modifier = {
+                        modifier = touhou_megastructure_kamikakushi_super_shipyard_move_hull_damage
+                        days = 30 mult = trigger:has_max_hp
+                    }
+                    spth_reduce_shield_max = { percent = 1 }
+                    spth_reduce_armor_max = { percent = 1 }
+                }
+            }
+        }
+
+		every_playable_country = {
+			limit = { NOT = { is_same_value = event_target:touhou_target_country } }
+			country_event = {
+				id = touhou_crisis.308
+				scopes = {
+					from = root.from.solar_system
+					fromfrom = root
+					fromfromfrom = event_target:touhou_target_country
+				}
+			}
+		}
+	}
 }
 
 # 杀了土著
