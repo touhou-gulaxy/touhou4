@@ -1,9 +1,21 @@
 import kotlin.io.path.Path
-import kotlin.io.path.appendLines
 import kotlin.io.path.appendText
+import kotlin.io.path.exists
 import kotlin.io.path.readLines
 import kotlin.io.path.writeText
 import kotlin.math.roundToInt
+
+// ============================================================================
+// component_vars.kts —— 生成组件属性 / 资源成本 / 缩放系数三份定义文件
+//
+// 由 ../../kotlinc -script ./component_vars.kts 运行（工作目录 = 本文件所在目录）
+// 生成物：
+//   components_attributes.log  属性定义（来自 components_attributes.csv）
+//   components_resources.log   成本/维护定义（来自 components_resources.csv）
+//   components_scales.log      @touhou_generic_scale_*_factor（**以 mod 现有值为准**）
+// 再由 utils/component_vars_sync（cpp 步骤）合并进
+//   common/scripted_variables/spth_component_variables.txt
+// ============================================================================
 
 data class ComponentResource(
     var clazz: String,
@@ -72,55 +84,32 @@ data class ComponentAttribute(
 fun readComponentResourceCSV(content: List<String>): List<ComponentResource> {
     val res = ArrayDeque<ComponentResource>()
     content.forEach { line ->
-        if (line.isNotEmpty()) {
-            // println(line)
+        if (line.isNotEmpty() && !line.startsWith("#")) {
             val data = line.split(',')
             res.addLast(
                 ComponentResource(
-                    data[0],
-                    data[1],
-                    data[2],
-                    data[3].toFloat(),
-                    data[4].toFloat(),
-                    data[5].toFloat(),
-                    data[6].toFloat(),
-                    data[7].toFloat(),
-                    data[8].toFloat(),
+                    data[0], data[1], data[2],
+                    data[3].toFloat(), data[4].toFloat(), data[5].toFloat(),
+                    data[6].toFloat(), data[7].toFloat(), data[8].toFloat(),
                 )
             )
         }
     }
     return res
 }
-
-val types_cached = HashSet<String>();
 
 fun readComponentAttributeCSV(content: List<String>): List<ComponentAttribute> {
     val res = ArrayDeque<ComponentAttribute>()
     content.forEach { line ->
-        if (line.isNotEmpty()) {
-            // println(line)
+        if (line.isNotEmpty() && !line.startsWith("#")) {
             val data = line.split(',')
             res.addLast(
                 ComponentAttribute(
-                    data[0],
-                    data[1],
-                    data[2],
-                    data[3].toFloat(),
-                    data[4].toFloat(),
-                    data[5].toFloat(),
-                    data[6].toFloat(),
-                    data[7].toFloat(),
-                    data[8].toFloat(),
-                    data[9].toFloat(),
-                    data[10].toFloat(),
-                    data[11].toFloat(),
-                    data[12].toFloat(),
-                    data[13].toFloat(),
-                    data[14].toFloat(),
-                    data[15].toFloat(),
-                    data[16].toFloat(),
-                    data[17].toInt(),
+                    data[0], data[1], data[2],
+                    data[3].toFloat(), data[4].toFloat(), data[5].toFloat(), data[6].toFloat(),
+                    data[7].toFloat(), data[8].toFloat(), data[9].toFloat(), data[10].toFloat(),
+                    data[11].toFloat(), data[12].toFloat(), data[13].toFloat(), data[14].toFloat(),
+                    data[15].toFloat(), data[16].toFloat(), data[17].toInt(),
                 )
             )
         }
@@ -128,32 +117,57 @@ fun readComponentAttributeCSV(content: List<String>): List<ComponentAttribute> {
     return res
 }
 
-val OUTPUT_ATTR_FILE = Path("./components_attributes.log")
-OUTPUT_ATTR_FILE.writeText("")
-
-//readComponentResourceCSV(Path("./components_resources.csv").readLines().drop(1)).forEach {
-//    println(it)
-//}
-readComponentAttributeCSV(Path("./components_attributes.csv").readLines().drop(1)).forEach {
-    // println(it)
-    OUTPUT_ATTR_FILE.appendText(it.toString() + '\n')
-    types_cached.add(it.type)
+/** 从 mod 现有 scripted_variables 里读出 @name = value（用于"以 mod 为准"） */
+fun parseExistingDefs(pathStr: String): Map<String, String> {
+    val out = HashMap<String, String>()
+    val path = Path(pathStr)
+    if (!path.exists()) return out
+    path.readLines().forEach { raw ->
+        val line = raw.substringBefore('#').trim()
+        if (line.startsWith("@")) {
+            val i = line.indexOf('=')
+            if (i > 0) out[line.substring(1, i).trim()] = line.substring(i + 1).trim()
+        }
+    }
+    return out
 }
-types_cached.forEach {
-    println("@touhou_generic_scale_damage_${it}_factor = 1.0")
-    println("@touhou_generic_scale_windup_${it}_factor = 1.0")
-    println("@touhou_generic_scale_fire_time_${it}_factor = 1.0")
-}
-//readComponentAttributeCSV(Path("./components_attributes.csv").readLines().drop(1)).map {
-//    it.name += "_mutation"
-//    it.power = 0
-//    it.range /= 1.25f
-//    it.min_range /= 1.25f
-//    it.damage_min /= 2.025f
-//    it.damage_max /= 2.025f
-//    it.fire_time /= 1.10f
-//    it
-//}.forEach {
-//    println(it.toCSVLine())
-//}
 
+// 以脚本所在目录为基准（用 ../../kotlinc -script ./component_vars.kts 时即 utils/）
+val scriptDir = Path("./")
+
+val ATTR_CSV = scriptDir.resolve("components_attributes.csv")
+val RES_CSV = scriptDir.resolve("components_resources.csv")
+val TARGET_VARS = scriptDir.resolve("../common/scripted_variables/spth_component_variables.txt")
+val OUT_ATTR = scriptDir.resolve("components_attributes.log")
+val OUT_RES = scriptDir.resolve("components_resources.log")
+val OUT_SCALE = scriptDir.resolve("components_scales.log")
+
+val typesCached = sortedSetOf<String>()   // 排序输出，保证多次运行结果一致
+
+// ---------- 1) 属性 ----------
+OUT_ATTR.writeText("")
+readComponentAttributeCSV(ATTR_CSV.readLines().drop(1)).forEach {
+    OUT_ATTR.appendText(it.toString() + '\n')
+    typesCached.add(it.type)
+}
+
+// ---------- 2) 资源成本 / 维护（以前这段是注释掉的，现在纳入流程） ----------
+OUT_RES.writeText("")
+readComponentResourceCSV(RES_CSV.readLines().drop(1)).forEach {
+    OUT_RES.appendText(it.toString() + '\n')
+}
+
+// ---------- 3) 缩放系数：以 mod 现有值为准，缺失的 type 才用 1.0 ----------
+val existing = parseExistingDefs(TARGET_VARS.toString())
+OUT_SCALE.writeText("")
+typesCached.forEach { t ->
+    listOf("damage", "windup", "fire_time").forEach { kind ->
+        val key = "touhou_generic_scale_${kind}_${t}_factor"
+        val value = existing[key] ?: "1.0"
+        OUT_SCALE.appendText("@$key = $value\n")
+    }
+}
+
+println("generated: ${OUT_ATTR.toAbsolutePath().normalize()} (${typesCached.size} types)")
+println("generated: ${OUT_RES.toAbsolutePath().normalize()}")
+println("generated: ${OUT_SCALE.toAbsolutePath().normalize()} (values taken from ${TARGET_VARS.toAbsolutePath().normalize()})")

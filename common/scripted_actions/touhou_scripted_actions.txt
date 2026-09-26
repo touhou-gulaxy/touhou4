@@ -819,8 +819,8 @@ touhou_ship_return_starbase = {
 			modifier = { add = 4 distance = { source = from use_bypasses = yes max_jumps = 2 } }
 			modifier = { add = 2 distance = { source = from use_bypasses = yes max_jumps = 4 } }
 			modifier = { add = 3 touhou_is_important_system = { owner = from.controller } }
-			modifier = { add = 20 touhou_is_capital_system = { owner = root.from.controller } any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } } }
-			modifier = { add = 114514 from = { has_fleet_flag = touhou_automation_needs_return_starbase } }
+			modifier = { add = 10 touhou_is_capital_system = { owner = root.from.controller } any_fleet_in_system = { is_disabled = no controller? = { is_hostile = from.owner } } }
+			modifier = { add = 1 from = { has_fleet_flag = touhou_automation_needs_return_starbase } }
 			modifier = { add = 1 touhou_is_important_system = { owner = root.from.controller } }
 			modifier = { factor = 0 NOT = { space_owner? = { is_same_value = from.owner } } }
 			modifier = { factor = 0 is_same_value = from.solar_system }
@@ -828,6 +828,40 @@ touhou_ship_return_starbase = {
 		good_enough_weight = 1
 	}
 	on_completed = on_touhou_ship_return_starbase_completed
+}
+touhou_ship_return_after_blow = {
+    user_scope = fleet
+    scope = planet
+    hide_from_context_menu = { hidden_trigger = { always = yes } }
+    button_visible = { hidden_trigger = { always = no } }
+    button_clickable = { custom_tooltip = { fail_text = "requires_touhou_leader" leader? = { is_touhou_special_leader = yes } } }
+    possible = { custom_tooltip = { fail_text = "requires_touhou_leader" from = { leader? = { is_touhou_special_leader = yes } } } }
+    icon = GFX_touhou_fleet_view_button_fleet_combat
+    icon_selected = GFX_touhou_fleet_view_button_fleet_combat
+    context_menu_name = touhou_ship_return_starbase
+    tooltip = touhou_ship_return_starbase_tooltip
+    activity_key = touhou_ship_return_starbase_action
+    required_progress = 30
+    required_progress_key = touhou_ship_return_starbase_progress_tooltip
+    progress_activity_key = touhou_ship_return_starbase_action_activity
+    slot = 0
+    automation = {
+		priority = 0
+		default_on = no
+		tooltip = "touhou_ship_return_starbase_auto_tooltip"
+		parent = touhou_scripted_action
+	}
+	ai = {
+		weight = {
+			base = 0
+			modifier = { add = 1 solar_system? = { touhou_is_important_system = { owner = root.from.controller } } }
+			modifier = { add = 1 space_owner? = { is_same_value = from.owner } }
+			# modifier = { factor = 0 NOT = { space_owner? = { is_same_value = from.owner } } }
+			# modifier = { factor = 0 solar_system? = { is_same_value = from.solar_system } }
+		}
+		good_enough_weight = 1
+	}
+	# on_completed = on_touhou_ship_return_starbase_completed
 }
 touhou_ship_guard_system = {
     user_scope = fleet
@@ -1009,7 +1043,7 @@ touhou_ship_blow_planet = {
         default_on = no
         tooltip = touhou_ship_blow_planet_auto_tooltip
         parent = touhou_scripted_action
-        also_automate = { touhou_ship_return_starbase }
+        also_automate = { touhou_ship_return_after_blow }
     }
 
     ai = {
