@@ -1,0 +1,27 @@
+custom_tooltip_with_params = {
+	description = touhou_psionic_lighting_on_hit
+	description_parameters = { TOUHOU_PERC = $chance$ TOUHOU_MIN = @spth_$name$_$tag$_$type$_damage_min TOUHOU_MAX = @spth_$name$_$tag$_$type$_damage_max }
+}
+hidden_effect = {
+	if = {
+		limit = { NOT = { has_ship_flag = touhou_mutex_$name$_$tag$_$type$ } }
+		random = {
+			chance = $chance$
+			set_timed_ship_flag = { flag = touhou_mutex_$name$_$tag$_$type$ days = 2 }
+			set_variable_to_random_value = { which = touhou_temp_$name$_$tag$_$type$ min = $min$ max = $max$ round = yes }
+			add_modifier = {
+				modifier = touhou_instant_kill_standard_remove_ship_damage_reduction_mult
+				mult = modifier:ship_damage_reduction_mult
+			}
+			add_modifier = {
+				modifier = touhou_instant_kill_standard_remove_ship_damage_reduction_add
+				mult = modifier:ship_damage_reduction_add
+			}
+			multiply_variable = { which = touhou_temp_$name$_$tag$_$type$ value = from.value:touhou_psionic_lighting_damage_factor }
+			touhou_damage_ship = { amount = touhou_temp_$name$_$tag$_$type$ source = from }
+			remove_modifier = touhou_instant_kill_standard_remove_ship_damage_reduction_add
+			remove_modifier = touhou_generic_standard_remove_ship_damage_reduction_mult
+			clear_variable = touhou_temp_$name$_$tag$_$type$
+		}
+	}
+}
