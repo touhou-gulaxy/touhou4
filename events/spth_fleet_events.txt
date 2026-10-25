@@ -1018,7 +1018,7 @@ planet_event = {
             }
             if = {
                 limit = { check_variable = { which = touhou_destroy_planet_bombardment_charge value > 10 } }
-                # set_update_modifiers_batch = begin
+                # touhou_stop_global_modifier_system = yes
                 random_list = {
                     80 = { set_variable = { which = touhou_destroy_planet_bombardment_charge value = 10 } }
                     20 = {
@@ -1123,7 +1123,7 @@ planet_event = {
                         }
                     }
                 }
-                # set_update_modifiers_batch = end
+                # touhou_resume_global_modifier_system = yes
             }
         }
         if = {
@@ -2164,9 +2164,9 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes any_owned_ship = { has_ship_flag = spth_super_carrier_sys_triggered } }
-            set_update_modifiers_batch = begin
+            touhou_stop_global_modifier_system = yes
             spth_super_carrier_main_system_self_fleet = yes
-            set_update_modifiers_batch = end
+            touhou_resume_global_modifier_system = yes
             fleet_event = { id = spth_fleet.1005 days = 1 }
         } else = { spth_super_carrier_finalize_system_self_fleet = yes }
     }
@@ -5378,7 +5378,8 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-            every_owned_ship = {
+			touhou_stop_global_modifier_system = yes
+			every_controlled_ship = {
                 limit = {
                     check_modifier_value = { modifier = touhou_psionic_inhibitor_weapon value > 0 }
                 }
@@ -5391,10 +5392,12 @@ fleet_event = {
                     mult = value:touhou_psionic_inhibitor_weapon_damage_modifier
                 }
             }
+			touhou_resume_global_modifier_system = yes
             fleet_event = { id = spth_fleet.2017 days = 8 }
         } else = {
             remove_fleet_flag = touhou_psionic_inhibitor_weapon_effect
-            every_owned_ship = {
+			touhou_stop_global_modifier_system = yes
+			every_controlled_ship = {
                 limit = {
                     check_modifier_value = { modifier = touhou_psionic_inhibitor_weapon value > 0 }
                 }
@@ -5403,6 +5406,7 @@ fleet_event = {
                     remove_modifier = touhou_psionic_inhibitor_weapon_self_modifier
                 }
             }
+			touhou_resume_global_modifier_system = yes
         }
     }
 }
@@ -5831,7 +5835,7 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-            every_owned_ship = {
+			every_controlled_ship = {
                 limit = {
                     check_modifier_value = { modifier = ship_has_touhou_time_effect_weapon value > 0 }
                 }
@@ -5870,7 +5874,7 @@ fleet_event = {
             fleet_event = { id = spth_fleet.2031 days = 6 }
         } else = {
             remove_fleet_flag = touhou_time_weapon_effect_fired
-            every_owned_ship = {
+			every_controlled_ship = {
                 clear_variable = touhou_time_attack_stacks
             }
         }
@@ -6209,6 +6213,7 @@ fleet_event = {
 				set_variable = { which = spth_kamikakushi_cruiser_coverage_val value = value:spth_kamikakushi_cruiser_coverage_calc }
 			}
 
+			touhou_stop_global_modifier_system = yes
             every_controlled_ship = {
                 # limit = {
                 #     OR = {
@@ -6255,14 +6260,17 @@ fleet_event = {
 					}
 				}
 			}
+			touhou_resume_global_modifier_system = yes
 			fleet_event = { id = spth_fleet.2042 days = 2 }
 		} else = {
+			touhou_stop_global_modifier_system = yes
 			every_controlled_ship = {
 				clear_variable = spth_kamikakushi_cruiser_arua_protect_val
 				clear_variable = spth_kamikakushi_cruiser_coverage_val
 				remove_modifier = spth_kamikakushi_cruiser_coverage_shield_repair
 				TH_clear_all_dynamic_modifier = yes
 			}
+			touhou_resume_global_modifier_system = yes
 			clear_variable = spth_kamikakushi_cruiser_coverage_val
             if = {
                 limit = { has_fleet_flag = touhou_standard_dynamic_modifier_system_fired }
@@ -6278,38 +6286,22 @@ fleet_event = {
 	immediate = {
 		if = {
 			limit = { is_in_combat = yes }
-			every_controlled_ship = {
-				if = {
-					limit = { check_modifier_value = { modifier = ship_spth_negative_force_disparity value < 0 } }
-					set_variable = { which = ship_spth_negative_force_disparity_factor value = value:ship_spth_negative_force_disparity_factor }
-					# 总射速缩放基础值 1；分类修正只缩放各自贡献，加算后整体仍为 factor 倍。
-					touhou_standard_percent_apply_modifier = { modifier = ship_fire_rate_mult base = 1 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = ship_home_territory_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = owned_ship_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = space_fauna_ship_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = weapon_type_gravity_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = weapon_type_psionic_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = weapon_type_anti_psionic_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = weapon_type_lingli_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = weapon_type_energy_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = weapon_type_kinetic_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-					touhou_standard_percent_apply_modifier = { modifier = weapon_type_explosive_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
-				}
-				else = {
-					clear_variable = ship_spth_negative_force_disparity_factor
-					if = {
-						limit = {
-							OR = {
-								is_variable_set = thstdpcl_ship_spth_negative_force_disparity_ship_fire_rate_mult_offset
-								has_modifier = ship_spth_negative_force_disparity_ship_fire_rate_mult
-							}
-						}
-						touhou_standard_percent_clear_modifier = { prefix = ship_spth_negative_force_disparity }
-					}
+			touhou_stop_global_modifier_system = yes
+			if = {
+				limit = { spth_negative_force_disparity_close = no }
+				every_controlled_ship = {
+					spth_negative_force_disparity_ship_effect = yes
 				}
 			}
+			else = {
+				every_controlled_ship = {
+					# do nothing here, may be need more later.
+				}
+			}
+			touhou_resume_global_modifier_system = yes
 			fleet_event = { id = spth_fleet.2045 days = 2 }
 		} else = {
+			touhou_stop_global_modifier_system =yes
 			every_controlled_ship = {
 				clear_variable = ship_spth_negative_force_disparity_factor
 				if = {
@@ -6322,6 +6314,7 @@ fleet_event = {
 					touhou_standard_percent_clear_modifier = { prefix = ship_spth_negative_force_disparity }
 				}
 			}
+			touhou_resume_global_modifier_system = yes
 			if = {
 				limit = { has_fleet_flag = touhou_standard_dynamic_modifier_system_negative_fired }
 				remove_fleet_flag = touhou_standard_dynamic_modifier_system_negative_fired
