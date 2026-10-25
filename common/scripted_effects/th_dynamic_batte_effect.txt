@@ -48,7 +48,7 @@ TH_dynamic_modifier_conditional = {
         set_variable = { which = touhou_$modifier$_value value = modifier:$modifier$ }
         subtract_variable = { which = touhou_$modifier$_value value = $value$ }
         change_variable = { which = basic_touhou_$modifier$_value value = touhou_$modifier$_value }
-        add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = basic_touhou_$modifier$_value days = @touhou_dynamic_modifier_system_modifier_last_time  }
+        add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = basic_touhou_$modifier$_value days = @touhou_dynamic_modifier_system_modifier_last_time }
         clear_variable = touhou_$modifier$_value
     }
 }
@@ -67,6 +67,64 @@ TH_timed_check_modifier = {
         add_modifier = { modifier = TH_dynamic_reset_$modifier$ multiplier = $value$ days = $days$ }
     }
     clear_variable = spth_check_value_$modifier$
+}
+
+# 将某个射速修正的加算贡献乘以 $factor$。
+# 总射速修正使用 base = 1 负责缩放基础射速，分类修正使用 base = 0。
+# offset 记录当前动态修正贡献，每轮都用基础值重新计算并替换，避免累计漂移。
+touhou_standard_percent_apply_modifier = {
+	optimize_memory
+	if = {
+		limit = { NOT = { is_variable_set = thstdpcl_$prefix$_$modifier$_offset } }
+		set_variable = { which = thstdpcl_$prefix$_$modifier$_offset value = 0 }
+	}
+
+	# base = 当前总修正 - 上一轮动态修正
+	set_variable = {
+		which = thstdpcl_$prefix$_$modifier$_base
+		value = modifier:$modifier$
+	}
+	subtract_variable = {
+		which = thstdpcl_$prefix$_$modifier$_base
+		value = thstdpcl_$prefix$_$modifier$_offset
+	}
+
+	# new_offset = factor * (base + $base$) - base - $base$
+	set_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset_temp
+		value = thstdpcl_$prefix$_$modifier$_base
+	}
+	change_variable = { which = thstdpcl_$prefix$_$modifier$_offset_temp value = $base$ }
+	multiply_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset_temp
+		value = $factor$
+	}
+	subtract_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset_temp
+		value = thstdpcl_$prefix$_$modifier$_base
+	}
+	subtract_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset_temp
+		value = $base$
+	}
+
+	remove_modifier = $prefix$_$modifier$
+	add_modifier = {
+		modifier = $prefix$_$modifier$
+		days = @touhou_dynamic_modifier_system_modifier_last_time
+		multiplier = thstdpcl_$prefix$_$modifier$_offset_temp
+	}
+
+	set_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset
+		value = thstdpcl_$prefix$_$modifier$_offset_temp
+	}
+	clear_variable = thstdpcl_$prefix$_$modifier$_base
+	clear_variable = thstdpcl_$prefix$_$modifier$_offset_temp
+}
+touhou_standard_percent_clear_modifier = {
+	optimize_memory
+	inline_script = { script = effect/touhou_stdpcl_mod_$prefix$ }
 }
 
 sakuya_the_world_dynamic = {
@@ -1090,12 +1148,26 @@ yukari_kamikakushi_reduce_effect = {
 
 spth_kamikakushi_cruiser_arua_protect_item = {
     optimize_memory
-    TH_dynamic_modifier_conditional = {
-        modifier = $modifier$
-        relation = "<"
-        limit_value = 0.1
-        value = 0.1
-    }
+	if = {
+		limit = { is_variable_set = spth_kamikakushi_cruiser_arua_protect_val }
+		if = {
+			limit = { check_variable = { which = spth_kamikakushi_cruiser_arua_protect_val value > 0 } }
+			TH_dynamic_modifier_conditional = {
+				modifier = $modifier$
+				relation = "<"
+				limit_value = spth_kamikakushi_cruiser_arua_protect_val
+				value = spth_kamikakushi_cruiser_arua_protect_val
+			}
+		}
+	}
+	else = {
+		TH_dynamic_modifier_conditional = {
+			modifier = $modifier$
+			relation = "<"
+			limit_value = 0.1
+			value = 0.1
+		}
+	}
 }
 spth_kamikakushi_cruiser_arua_protect_effect = {
     optimize_memory
@@ -1113,6 +1185,18 @@ spth_kamikakushi_cruiser_arua_protect_effect = {
     } else = {
         # log = "未启动protect for [This.GetName]"
     }
+}
+spth_kamikakushi_cruiser_arua_protect_effect_ship = {
+	optimize_memory
+	if = {
+		limit = { fleet = { spth_kamikakushi_cruiser_arua_protect_close = no } }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_damage }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_fire_rate_mult }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_tracking_mult }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_accuracy_mult }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_range_mult }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_evasion_mult }
+	}
 }
 
 spth_always_remove_modifer = {

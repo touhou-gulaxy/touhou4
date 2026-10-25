@@ -1,4 +1,4 @@
-// component_vars_sync.cpp —— 把 component_vars.kts 生成的定义合并进 mod 的 scripted_variables
+// component_vars_sync.cpp —— 把 component_vars 生成的定义合并进 mod 的 scripted_variables
 //
 // 用法（通常由 utils/gen_component_vars.sh 调用）：
 //   component_vars_sync --target <mod>/common/scripted_variables/spth_component_variables.txt

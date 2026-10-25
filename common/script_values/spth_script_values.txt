@@ -251,10 +251,30 @@ spth_get_ship_size_square_root = {
 	min = 0
 }
 # cur_shield_hp = max * perc
+spth_max_shield_value_factor = {
+	base = 1
+	add = modifier:ship_shield_mult
+	min = 0
+}
+spth_max_shield_value_alt = {
+	base = 0
+	add = modifier:ship_shield_add
+	mult = value:spth_max_shield_value_factor
+	min = 0
+}
 spth_max_shield_value = {
 	base = 0
 	add = trigger:has_shield_hp
-	divide = trigger:has_shield_percentage
+	modifier = {
+		has_shield_percentage <= 0
+		mult = 0
+		add = value:spth_max_shield_value_alt
+	}
+	modifier = {
+		has_shield_percentage > 0
+		mult = 0
+		divide = trigger:has_shield_percentage
+	}
 	mult = $percent$
 	floor = yes
 	min = 0
