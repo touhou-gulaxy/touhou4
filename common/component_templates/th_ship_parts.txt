@@ -637,11 +637,17 @@ utility_component_template = {
 	power = 0
 	hidden = yes
 	ship_modifier = {
-		spth_kamikakushi_cruiser_arua = 5
+		custom_tooltip = spth_kamikakushi_cruiser_arua_effect
+		show_only_custom_tooltip = no
+		spth_kamikakushi_cruiser_arua = 0.075
 	}
 	triggered_ship_modifier = {
 		ship_damage_reduction_add = @spth_kamikakushi_cruiser_arua__damage_recution_per_lvl
 		mult = event_target:global_event_country.spth_lunar_capital_crisis_difficulty
+	}
+	triggered_ship_modifier = {
+		touhou_shield_repair_static_add = 0.512
+		mult = value:spth_kamikakushi_cruiser_self_regen
 	}
 	prerequisites = { tech_spth_kamikakushi_cruiser }
 	potential = { ship_uses_TH_weapon_gungnir_large = yes }
@@ -697,7 +703,13 @@ utility_component_template = {
 	power = 0
 	hidden = yes
 	ship_modifier = {
-		spth_kamikakushi_cruiser_arua = 1
+		custom_tooltip = spth_kamikakushi_cruiser_arua_effect
+		show_only_custom_tooltip = no
+		spth_kamikakushi_cruiser_arua = 0.05
+	}
+	triggered_ship_modifier = {
+		touhou_shield_repair_static_add = 0.256
+		mult = value:spth_kamikakushi_cruiser_self_regen
 	}
 	prerequisites = { tech_spth_kamikakushi_cruiser }
 	potential = { ship_uses_spth_kamikakushi_cruiser_arua_alt = yes }
@@ -751,7 +763,8 @@ utility_component_template = {
 	power = 0
 	hidden = yes
 	ship_modifier = {
-		spth_kamikakushi_cruiser_arua = 10
+		spth_kamikakushi_cruiser_arua = 0.15
+		ship_has_spth_negative_force_disparity = 1
 	}
 	prerequisites = { tech_spth_kamikakushi_cruiser }
 	potential = { ship_uses_spth_kamikakushi_cruiser_arua_alt = yes }
@@ -765,8 +778,9 @@ utility_component_template = {
 			priority = 10
 		}
 		modifier = {
-			ship_spth_shield_efficiency = 1.15
-			ship_spth_armor_efficiency = 1.15
+			ship_spth_shield_efficiency = 1.00
+			ship_spth_armor_efficiency = 1.00
+			touhou_shield_repair_percent = 0.0005
 		}
         graphics = {
             area_effect = {
@@ -778,6 +792,28 @@ utility_component_template = {
                 dynamic_scale = no
             }
         }
+	}
+	hostile_aura = {
+		name = "spth_kamikakushi_titan_arua_supress"
+		radius = 400
+		apply_on = ships
+		stack_info = {			#A ship can only be affected by one aura of a certain id. If multiple auras have the same ID the one with the highest priority will be applied.
+			id = spth_kamikakushi_titan_arua_supress
+			priority = 10
+		}
+		modifier = {
+			ship_spth_negative_force_disparity = -0.25
+		}
+		graphics = {
+			area_effect = {
+				entity = "circle_area_entity"
+				dynamic_scale = yes
+			}
+			ship_effect = {
+				entity = "ship_aura_negative_kamikakushi_entity"
+				dynamic_scale = no
+			}
+		}
 	}
 	inline_script = { script = ship_components/spth_component_resources class = common size = utility type = dynamic_aura }
 	ai_weight = {
@@ -793,7 +829,8 @@ utility_component_template = {
 	hidden = yes
 	ship_modifier = {
 		ship_damage_reduction_add = 720
-		spth_kamikakushi_cruiser_arua = 10
+		spth_kamikakushi_cruiser_arua = 0.10
+		ship_has_spth_negative_force_disparity = 1
 	}
 	prerequisites = { tech_spth_kamikakushi_cruiser }
 	potential = { ship_uses_spth_kamikakushi_cruiser_arua_alt = yes }
@@ -807,8 +844,9 @@ utility_component_template = {
 			priority = 10
 		}
 		modifier = {
-			ship_spth_shield_efficiency = 1.15
-			ship_spth_armor_efficiency = 1.15
+			ship_spth_shield_efficiency = 1.00
+			ship_spth_armor_efficiency = 1.00
+			touhou_shield_repair_percent = 0.0005
 		}
         graphics = {
             area_effect = {
@@ -821,9 +859,69 @@ utility_component_template = {
             }
         }
 	}
+	hostile_aura = {
+		name = "spth_kamikakushi_titan_arua_supress"
+		radius = 400
+		apply_on = ships
+		stack_info = {
+			id = spth_kamikakushi_titan_arua_supress_player
+			priority = 10
+		}
+		modifier = {
+			ship_spth_negative_force_disparity = -0.25
+		}
+		graphics = {
+			area_effect = {
+				entity = "circle_area_entity"
+				dynamic_scale = yes
+			}
+			ship_effect = {
+				entity = "ship_aura_negative_kamikakushi_entity"
+				dynamic_scale = no
+			}
+		}
+	}
 	inline_script = { script = ship_components/spth_component_resources class = common size = utility type = dynamic_aura }
 	ai_weight = {
 		weight = 1000
+	}
+}
+utility_component_template = {
+	key = "touhou_command_fire_rate_aura"
+	size = medium
+	icon = "GFX_touhou_command_fire_rate_aura"
+	icon_frame = 1
+	power = 0
+	prerequisites = { tech_touhou_command_dreadnought }
+	potential = {
+		ship_uses_touhou_command_dreadnought = yes
+	}
+	component_set = "ship_aura_components"
+	friendly_aura = {
+		name = "touhou_command_fire_rate_aura_name"
+		radius = 400
+		apply_on = ships
+		stack_info = {			#A ship can only be affected by one aura of a certain id. If multiple auras have the same ID the one with the highest priority will be applied.
+			id = touhou_command_fire_rate_aura
+			priority = 10
+		}
+		modifier = {
+			force_disparity_fire_rate_mult = 0.25
+		}
+		graphics = {
+			area_effect = {
+				entity = "circle_area_entity"
+				dynamic_scale = yes
+			}
+			ship_effect = {
+				entity = "ship_aura_positive_gensokyo_entity"
+				dynamic_scale = no
+			}
+		}
+	}
+	inline_script = { script = ship_components/spth_component_resources class = common size = utility type = dynamic_aura }
+	ai_weight = {
+		weight = 10
 	}
 }
 utility_component_template = {
@@ -848,6 +946,7 @@ utility_component_template = {
 			priority = 10
 		}
 		modifier = {
+			force_disparity_fire_rate_mult = 0.30
 			ship_th_has_ship_part_keine = 1
 		}
         graphics = {
@@ -1069,10 +1168,12 @@ utility_component_template = {
         ship_unlock_touhou_ship_blow_planet = 1
 	}
     scripted_action = {
-        touhou_ship_return_starbase
+        # touhou_scripted_action
         touhou_ship_guard_system
         touhou_ship_patrol_system
         touhou_ship_blow_planet
+        touhou_ship_return_starbase
+        touhou_ship_return_after_blow
     }
 	potential = { ship_from_touhou_country = yes }
 	prerequisites = { tech_th_weapon_mofashu }
@@ -2478,6 +2579,7 @@ utility_component_template = {
     power = -120
     ship_modifier = {
         ship_provide_spth_damage_reduction_mult_max = 1
+		ship_has_spth_negative_force_disparity = 1
     }
     hostile_aura = {
         name = touhou_flandre_aux_aura
@@ -2490,6 +2592,7 @@ utility_component_template = {
             ship_damage_reduction_mult = -0.15
             ship_spth_damage_reduction_mult_max = -0.025
             ship_target_weight_mult = 0.20
+			ship_spth_negative_force_disparity = -0.05
         }
         graphics = {
             area_effect = {
@@ -2530,6 +2633,7 @@ utility_component_template = {
     power = -120
     ship_modifier = {
         ship_provide_spth_damage_reduction_mult_max = 1
+		ship_has_spth_negative_force_disparity = 1
     }
     hostile_aura = {
         name = touhou_flandre_aux_aura
@@ -2544,7 +2648,7 @@ utility_component_template = {
             ship_target_weight_mult = 0.25
             ship_armor_reduction = 0.10
             ship_shield_reduction = 0.10
-            force_disparity_fire_rate_mult = -0.25
+            ship_spth_negative_force_disparity = -0.10
         }
         graphics = {
             area_effect = {
@@ -2582,6 +2686,7 @@ utility_component_template = {
     ship_limit = 1
     ship_modifier = {
         ship_provide_spth_damage_reduction_mult_max = 1
+		ship_has_spth_negative_force_disparity = 1
     }
     blocked_by = {
         touhou_flandre_aux_1
@@ -2601,7 +2706,7 @@ utility_component_template = {
             ship_target_weight_mult = 0.50
             ship_armor_reduction = 0.25
             ship_shield_reduction = 0.25
-            force_disparity_fire_rate_mult = -0.5
+            ship_spth_negative_force_disparity = -0.15
         }
         damage_per_day = {
             damage = { min = 48 max = 72 }

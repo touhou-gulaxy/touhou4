@@ -101,6 +101,40 @@ check_aura_suppressors = {
         tc_check_aura_suppressors = yes
     }
 }
+is_psionic_aura_suppressed = {
+    optimize_memory
+    NOT = { any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_burster" value != 0 } } }
+    OR = {
+        any_system_planet_colony = {
+            OR = {
+                AND = {
+                    has_active_building = building_psionic_suppressor
+                    exists = owner
+                    owner = {
+                        has_resource = { type = sr_zro amount > 0 }
+                    }
+                }
+                has_active_building = building_ancient_ward_2
+            }
+        }
+        any_system_ship_colony = {
+            OR = {
+                AND = {
+                    has_active_building = building_psionic_suppressor
+                    exists = owner
+                    owner = {
+                        has_resource = { type = sr_zro amount > 0 }
+                    }
+                }
+                has_active_building = building_ancient_ward_2
+            }
+        }
+        has_megastructure = shroud_seal
+        check_variable_arithmetic = { which = value:count_neighbor_shroud_seals value > 0 }
+        any_ship_in_system = { check_modifier_value = { modifier = "is_psionic_inhibitor" value != 0 } }
+        tc_check_aura_suppressors = yes
+    }
+}
 
 # 人偶一些trigger，sb驴为什么连这个也要覆盖？
 is_domestic_robot = {

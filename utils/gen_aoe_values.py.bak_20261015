@@ -1,0 +1,173 @@
+#!/usr/bin/env python3
+"""gen_aoe_values.py —— 重新生成 AOE / 链式伤害的"预算值"变量块。
+
+背景
+----
+`common/inline_scripts/ship_components/touhou_aoe_attribute.txt` 与
+`touhou_chain_damage_attribute.txt` 只用 **名字拼接** 取数（不写数学），
+具体数值来自 `common/scripted_variables/touhou_aoe_config.txt` 末尾由本脚本生成的
+`BEGIN/END GENERATED` 区块。
+
+用法（在本 mod 根目录下）
+----
+    python3 utils/gen_aoe_values.py            # 重新生成（就地写回 config）
+    python3 utils/gen_aoe_values.py --check    # 只比对，不一致 exit 1
+    python3 utils/gen_aoe_values.py --dry-run  # 打印将写入的内容
+
+新增/修改了 `inline_script = { script = ship_components/touhou_aoe_attribute ... }`
+或 `.../touhou_chain_damage_attribute ...` 的调用组合后，跑一次即可。
+
+约定 / 坑
+----
+* 生成块放在 config 文件**末尾**：同文件内引用基础变量，加载顺序零风险。
+  chain 引用的 `spth_*_damage_min/max` 在 `spth_component_variables.txt`（字母序在前）。
+* 参数值里**不能带 `.`**（会拼出非法变量名）：`dmg_scale = 1.25` 要写成 `1_25`，
+  并定义 `@touhou_aoe_value_1_25 = 1.25`。脚本会检查。
+* inline_script 里带 `$param$` 转发的情况（如 touhou_psionic_singularity_stats）
+  会被解析一层，按调用者的实参展开。
+"""
+from __future__ import annotations
+
+import os
+import re
+import sys
+from pathlib import Path
+
+_env_root = os.environ.get("TOUHOU_MOD_ROOT")
+ROOT = Path(_env_root).resolve() if _env_root else Path(__file__).resolve().parents[1]
+CFG = ROOT / "common/scripted_variables/touhou_aoe_config.txt"
+AOE_SCRIPT = "touhou_aoe_attribute"
+CHAIN_SCRIPT = "touhou_chain_damage_attribute"
+GEN_HEAD = "# ===== BEGIN GENERATED"
+
+
+def all_texts() -> dict[Path, str]:
+    out = {}
+    for p in sorted(ROOT.glob("common/**/*.txt")):
+        try:
+            out[p] = p.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            pass
+    return out
+
+
+def parse_params(body: str) -> dict[str, str]:
+    return dict(re.findall(r"([A-Za-z_]\w*)\s*=\s*(\"[^\"]*\"|[^\s{}]+)", body))
+
+
+def script_stem(body: str) -> str | None:
+    m = re.search(r"script\s*=\s*([^\s{}]+)", body)
+    return Path(m.group(1)).stem if m else None
+
+
+def collect(texts: dict[Path, str]):
+    """返回 (调用点列表, 每个 inline_script 名 -> 调用它的实参列表)"""
+    sites, callers = {}, {}
+    for p, t in texts.items():
+        for m in re.finditer(r"inline_script\s*=\s*\{([^{}]*)\}", t, re.S):
+            body = m.group(1)
+            stem = script_stem(body)
+            if not stem:
+                continue
+            params = parse_params(body)
+            sites.setdefault(stem, []).append((p, params))
+            callers.setdefault(stem, []).append(params)
+    return sites, callers
+
+
+def resolve(sites, callers, key: str):
+    """把某 inline_script 的调用点解析成具体参数（$param$ 展开一层）。"""
+    out = []
+    for p, params in sites.get(key, []):
+        if not any("$" in v for v in params.values()):
+            out.append((p, params))
+            continue
+        name = p.stem
+        for outer in callers.get(name) or [{}]:
+            merged = {}
+            for k, v in params.items():
+                m = re.fullmatch(r"\$(\w+)\$", v.strip())
+                merged[k] = outer.get(m.group(1), v.strip()) if m else v.strip()
+            out.append((p, merged))
+    return out
+
+
+def aoe_block():
+    errs, combos = [], set()
+    sites, callers = _CACHE
+    for _, p in resolve(sites, callers, AOE_SCRIPT):
+        need = ("slot", "type", "faction", "tier", "dmg_extra", "dmg_scale", "rng_extra", "rng_scale")
+        if any(k not in p for k in need):
+            errs.append(f"{AOE_SCRIPT}: 参数不全 {sorted(p.items())}"); continue
+        bad = [k for k in need if "." in p[k]]
+        if bad:
+            errs.append(f"{AOE_SCRIPT}: 参数 {bad} 含 '.'，会拼出非法变量名 -> {sorted(p.items())}"); continue
+        combos.add(tuple(p[k] for k in need))
+    lines = ["", GEN_HEAD + ": per-combination AOE values (do not hand-edit) =====",
+             "# 由 utils/gen_aoe_values.py 生成；必须在上面那些基础 @变量之后。",
+             "@touhou_aoe_value_1_25 = 1.25"]
+    for slot, typ, fac, tier, de, ds, rg_e, rg_s in sorted(combos):
+        key = f"{slot}_{fac}_{typ}_t{tier}_e{de}_s{ds.replace('.', '_')}_re{rg_e}_rs{rg_s}"
+        val = "touhou_aoe_value_" + ds.replace(".", "_")
+        D = (f"( {de} + touhou_aoe_dmg_base * touhou_aoe_dmg_{slot}_slot_factor * {val}"
+             f" * touhou_aoe_dmg_{typ}_type_factor * touhou_aoe_dmg_{fac}_factor"
+             f" * touhou_aoe_dmg_t{tier}_factor * touhou_aoe_dmg_factor )")
+        R = (f"( {rg_e} + touhou_aoe_rng_base * touhou_aoe_rng_{slot}_slot_factor * {rg_s}"
+             f" * touhou_aoe_rng_{typ}_type_factor * touhou_aoe_rng_{fac}_factor"
+             f" * touhou_aoe_rng_t{tier}_factor * touhou_aoe_rng_factor )")
+        lines += [f"@touhou_aoe_{key}_min = @[ touhou_aoe_dmg_min_factor * {D} ]",
+                  f"@touhou_aoe_{key}_max = @[ touhou_aoe_dmg_max_factor * {D} ]",
+                  f"@touhou_aoe_{key}_rng = @[ {R} ]"]
+    lines.append("# ===== END GENERATED: per-combination AOE values =====")
+    return "\n".join(lines) + "\n", errs, len(combos)
+
+
+def chain_block():
+    errs, combos = [], set()
+    sites, callers = _CACHE
+    for _, p in resolve(sites, callers, CHAIN_SCRIPT):
+        if any(k not in p or "$" in p[k] for k in ("name", "tag", "type")):
+            errs.append(f"{CHAIN_SCRIPT}: name/tag/type 未解析 {sorted(p.items())}"); continue
+        combos.add((p["name"], p["tag"], p["type"]))
+    lines = ["", GEN_HEAD + ": per-combination chain values (do not hand-edit) =====",
+             "# 引用 spth_<name>_<tag>_<type>_damage_min/_max（在 spth_component_variables.txt，字母序在前）。"]
+    for name, tag, typ in sorted(combos):
+        base = f"spth_{name}_{tag}_{typ}"
+        expr = (f"( {base}_damage_min + {base}_damage_max ) / 4"
+                f" * touhou_generic_scale_damage_{typ}_factor")
+        lines += [f"@touhou_chain_{name}_{tag}_{typ}_min = @[ touhou_chain_dmg_min_factor * {expr} ]",
+                  f"@touhou_chain_{name}_{tag}_{typ}_max = @[ touhou_chain_dmg_max_factor * {expr} ]"]
+    lines.append("# ===== END GENERATED: per-combination chain values =====")
+    return "\n".join(lines) + "\n", errs, len(combos)
+
+
+_CACHE = (None, None)
+
+
+def main() -> int:
+    global _CACHE
+    texts = all_texts()
+    _CACHE = collect(texts)
+    aoe, err_a, n_a = aoe_block()
+    chain, err_c, n_c = chain_block()
+    for e in err_a + err_c:
+        print("[!]", e, file=sys.stderr)
+
+    old = CFG.read_text(encoding="utf-8")
+    i = old.find(GEN_HEAD)
+    head = (old[:i].rstrip("\n") + "\n") if i >= 0 else (old.rstrip("\n") + "\n")
+    new = head + aoe + chain
+
+    if "--dry-run" in sys.argv:
+        print(new); return 0
+    if "--check" in sys.argv:
+        if new == old:
+            print(f"OK: config 与生成结果一致（AOE {n_a} + chain {n_c} 组合）"); return 0
+        print("config 与生成结果不一致：跑 python3 utils/gen_aoe_values.py", file=sys.stderr); return 1
+    CFG.write_text(new, encoding="utf-8")
+    print(f"已写入 {CFG.relative_to(ROOT)}：AOE {n_a} 组合 / chain {n_c} 组合")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

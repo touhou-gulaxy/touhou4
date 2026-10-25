@@ -48,7 +48,7 @@ TH_dynamic_modifier_conditional = {
         set_variable = { which = touhou_$modifier$_value value = modifier:$modifier$ }
         subtract_variable = { which = touhou_$modifier$_value value = $value$ }
         change_variable = { which = basic_touhou_$modifier$_value value = touhou_$modifier$_value }
-        add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = basic_touhou_$modifier$_value days = @touhou_dynamic_modifier_system_modifier_last_time  }
+        add_modifier = { modifier = TH_dynamic_remove_$modifier$ multiplier = basic_touhou_$modifier$_value days = @touhou_dynamic_modifier_system_modifier_last_time }
         clear_variable = touhou_$modifier$_value
     }
 }
@@ -69,11 +69,70 @@ TH_timed_check_modifier = {
     clear_variable = spth_check_value_$modifier$
 }
 
+# 将某个射速修正的加算贡献乘以 $factor$。
+# 总射速修正使用 base = 1 负责缩放基础射速，分类修正使用 base = 0。
+# offset 记录当前动态修正贡献，每轮都用基础值重新计算并替换，避免累计漂移。
+touhou_standard_percent_apply_modifier = {
+	optimize_memory
+	if = {
+		limit = { NOT = { is_variable_set = thstdpcl_$prefix$_$modifier$_offset } }
+		set_variable = { which = thstdpcl_$prefix$_$modifier$_offset value = 0 }
+	}
+
+	# base = 当前总修正 - 上一轮动态修正
+	set_variable = {
+		which = thstdpcl_$prefix$_$modifier$_base
+		value = modifier:$modifier$
+	}
+	subtract_variable = {
+		which = thstdpcl_$prefix$_$modifier$_base
+		value = thstdpcl_$prefix$_$modifier$_offset
+	}
+
+	# new_offset = factor * (base + $base$) - base - $base$
+	set_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset_temp
+		value = thstdpcl_$prefix$_$modifier$_base
+	}
+	change_variable = { which = thstdpcl_$prefix$_$modifier$_offset_temp value = $base$ }
+	multiply_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset_temp
+		value = $factor$
+	}
+	subtract_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset_temp
+		value = thstdpcl_$prefix$_$modifier$_base
+	}
+	subtract_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset_temp
+		value = $base$
+	}
+
+	remove_modifier = $prefix$_$modifier$
+	add_modifier = {
+		modifier = $prefix$_$modifier$
+		days = @touhou_dynamic_modifier_system_modifier_last_time
+		multiplier = thstdpcl_$prefix$_$modifier$_offset_temp
+	}
+
+	set_variable = {
+		which = thstdpcl_$prefix$_$modifier$_offset
+		value = thstdpcl_$prefix$_$modifier$_offset_temp
+	}
+	clear_variable = thstdpcl_$prefix$_$modifier$_base
+	clear_variable = thstdpcl_$prefix$_$modifier$_offset_temp
+}
+touhou_standard_percent_clear_modifier = {
+	optimize_memory
+	inline_script = { script = effect/touhou_stdpcl_mod_$prefix$ }
+}
+
 sakuya_the_world_dynamic = {
     optimize_memory
     if = {
         limit = { is_in_combat = yes }
-        every_owned_ship = {
+		touhou_stop_global_modifier_system = yes
+		every_controlled_ship = {
             TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = "!=" limit_value = -1 value = -1 }
             TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = "!=" limit_value = -1 value = -1 }
             TH_dynamic_modifier_conditional = { modifier = ship_weapon_range_mult relation = ">" limit_value = -1 value = -1 }
@@ -82,13 +141,16 @@ sakuya_the_world_dynamic = {
             TH_dynamic_modifier_conditional = { modifier = ship_fire_rate_mult relation = ">" limit_value = -10000 value = -10000 }
             TH_dynamic_modifier_conditional = { modifier = strike_craft_regeneration_mult relation = ">" limit_value = -1 value = -1 }
         }
+		touhou_resume_global_modifier_system = yes
         fleet_event = { id = Th_dynamic_battle_vict.1 days = $interval$ }
     } else = {
         remove_fleet_flag = TH_sakuya_the_world_dynamic_vict
-        every_owned_ship = {
+		touhou_stop_global_modifier_system = yes
+		every_controlled_ship = {
             TH_clear_all_dynamic_modifier = yes
             remove_ship_flag = TH_sakuya_the_world_dynamic_vict
         }
+		touhou_resume_global_modifier_system = yes
     }
 
 }
@@ -137,10 +199,12 @@ satori_dynamic_battle = {
     optimize_memory
     if = {
         limit = { is_in_combat = yes }
-        every_owned_ship = {
+		touhou_stop_global_modifier_system = yes
+		every_controlled_ship = {
             TH_dynamic_modifier_conditional = { modifier = ship_evasion_mult relation = ">" limit_value = -1 value = -1 }
             TH_dynamic_modifier_conditional = { modifier = ship_evasion_add relation = ">" limit_value = -100 value = -100 }
         }
+		touhou_resume_global_modifier_system = yes
         fleet_event = { id = Th_dynamic_battle_vict.2 days = $interval$ }
     }
     else = {
@@ -148,10 +212,12 @@ satori_dynamic_battle = {
             limit = { has_fleet_flag = TH_satori_dynamic_vict }
             remove_fleet_flag = TH_satori_dynamic_vict
         }
-        every_owned_ship = {
+		touhou_stop_global_modifier_system = yes
+		every_controlled_ship = {
             TH_clear_all_dynamic_modifier = yes
             clear_variable = satori_dynamic_vict_duration_debug
         }
+		touhou_resume_global_modifier_system = yes
     }
 }
 satori_dynamic_boost = {
@@ -160,12 +226,14 @@ satori_dynamic_boost = {
         limit = { is_in_combat = yes }
         if = {
             limit = { satori_dynamic_boost_close = no }
-            every_owned_ship = {
+			touhou_stop_global_modifier_system = yes
+            every_controlled_ship = {
                 TH_dynamic_modifier_conditional = { modifier = ship_accuracy_add relation = "<" limit_value = 100 value = 100 }
                 TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = "<" limit_value = 1 value = 1 }
                 TH_dynamic_modifier_conditional = { modifier = ship_tracking_add relation = "<" limit_value = 100 value = 100 }
                 TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = "<" limit_value = 1 value = 1 }
             }
+			touhou_resume_global_modifier_system = yes
         }
         fleet_event = { id = Th_dynamic_battle_vict.3 days = $interval$ }
     }
@@ -175,22 +243,26 @@ satori_dynamic_boost = {
             remove_fleet_flag = TH_satori_dynamic_boost
             clear_variable = satori_dynamic_boost_duration_debug
         }
-        every_owned_ship = {
+		touhou_stop_global_modifier_system = yes
+		every_controlled_ship = {
             TH_clear_all_dynamic_modifier = yes
             clear_variable = satori_dynamic_boost_duration_debug
         }
+		touhou_resume_global_modifier_system = yes
     }
 }
 koishi_dynamic_battle = {
     optimize_memory
     if = {
         limit = { is_in_combat = yes }
-        every_owned_ship = {
+		touhou_stop_global_modifier_system = yes
+        every_controlled_ship = {
             TH_dynamic_modifier_conditional = { modifier = ship_accuracy_add relation = ">" limit_value = -100 value = -100 }
             TH_dynamic_modifier_conditional = { modifier = ship_tracking_add relation = ">" limit_value = -100 value = -100 }
             TH_dynamic_modifier_conditional = { modifier = ship_accuracy_mult relation = ">" limit_value = -1 value = -1 }
             TH_dynamic_modifier_conditional = { modifier = ship_tracking_mult relation = ">" limit_value = -1 value = -1 }
         }
+		touhou_resume_global_modifier_system = yes
         fleet_event = { id = Th_dynamic_battle_vict.4 days = $interval$ }
     }
     else = {
@@ -198,20 +270,24 @@ koishi_dynamic_battle = {
             limit = { has_fleet_flag = TH_koishi_dynamic_vict }
             remove_fleet_flag = TH_koishi_dynamic_vict
         }
-        every_owned_ship = {
+		touhou_stop_global_modifier_system = yes
+		every_controlled_ship = {
             TH_clear_all_dynamic_modifier = yes
             clear_variable = koishi_dynamic_vict_duration_debug
         }
+		touhou_resume_global_modifier_system = yes
     }
 }
 koishi_dynamic_boost = {
     optimize_memory
     if = {
         limit = { is_in_combat = yes }
-        every_owned_ship = {
+		touhou_stop_global_modifier_system = yes
+		every_controlled_ship = {
             TH_dynamic_modifier_conditional = { modifier = ship_evasion_mult relation = "<" limit_value = 1 value = 1 }
             TH_dynamic_modifier_conditional = { modifier = ship_evasion_add relation = "<" limit_value = 90 value = 90 }
         }
+		touhou_resume_global_modifier_system = yes
         fleet_event = { id = Th_dynamic_battle_vict.5 days = $interval$ }
     }
     else = {
@@ -220,10 +296,12 @@ koishi_dynamic_boost = {
             remove_fleet_flag = TH_koishi_dynamic_boost
             clear_variable = koishi_dynamic_boost_duration_debug
         }
-        every_owned_ship = {
+		touhou_stop_global_modifier_system = yes
+		every_controlled_ship = {
             TH_clear_all_dynamic_modifier = yes
             clear_variable = koishi_dynamic_boost_duration_debug
         }
+		touhou_resume_global_modifier_system = yes
     }
 }
 
@@ -261,7 +339,7 @@ spth_armor_shield_efficiency_system_check = {
         variable = spth_armor_efficiency_count
         parameters = { limit = { check_modifier_value = { modifier = ship_spth_shield_efficiency value > 0 } } }
     }
-    set_update_modifiers_batch = begin
+    touhou_stop_global_modifier_system = yes
     if = {
         limit = { check_variable = { which = spth_shield_efficiency_count value > 0 } }
         if = {
@@ -285,13 +363,13 @@ spth_armor_shield_efficiency_system_check = {
         # from = { every_owned_ship = { remove_ship_flag = has_spth_armor_efficiency_debuff } }
     }
     # from = { every_owned_ship = { spth_armor_shield_efficiency_system_debuff = yes } }
-    every_owned_ship = { spth_armor_shield_efficiency_system_buff = yes }
-    set_update_modifiers_batch = end
+	every_controlled_ship = { spth_armor_shield_efficiency_system_buff = yes }
+    touhou_resume_global_modifier_system = yes
 }
 #This: enemy fleet
 spth_armor_shield_efficiency_system_check_enemy = {
     optimize_memory
-    set_update_modifiers_batch = begin
+    touhou_stop_global_modifier_system = yes
     # if = {
     #     limit = { check_variable = { which = spth_shield_efficiency_count value > 0 } }
     #     if = {
@@ -314,19 +392,19 @@ spth_armor_shield_efficiency_system_check_enemy = {
     #     remove_fleet_flag = has_spth_armor_efficiency_buff
     #     from = { every_owned_ship = { remove_ship_flag = has_spth_armor_efficiency_debuff } }
     # }
-    every_owned_ship = {
+	every_controlled_ship = {
         set_ship_flag = has_spth_shield_efficiency_debuff
         set_ship_flag = has_spth_armor_efficiency_debuff
         spth_armor_shield_efficiency_system_debuff = yes
     }
-    set_update_modifiers_batch = end
+    touhou_resume_global_modifier_system = yes
 }
 @spth_armor_shield_efficiency_factor = 2
 # 加成系统
 spth_armor_shield_efficiency_system_buff = {
     optimize_memory
     # 旧版本：
-    # set_update_modifiers_batch = begin
+    # touhou_stop_global_modifier_system = yes
     # add_modifier = { modifier = spth_shield_efficiency_regen multiplier = value:ship_spth_shield_efficiency_count }
     # add_modifier = { modifier = spth_armor_efficiency_regen multiplier = value:ship_spth_armor_efficiency_count }
     # set_variable = { which = spth_shield_efficiency_var_debug value = modifier:ship_spth_shield_efficiency }
@@ -345,7 +423,7 @@ spth_armor_shield_efficiency_system_buff = {
     #     add_modifier = { modifier = spth_armor_efficiency_hardening multiplier = spth_armor_efficiency_var_hardening }
     #     add_modifier = { modifier = spth_armor_efficiency_hardening_rst multiplier = spth_armor_efficiency_var_debug }
     # }
-    # set_update_modifiers_batch = end
+    # touhou_resume_global_modifier_system = yes
 	# new version:
     add_modifier = { modifier = spth_shield_efficiency_regen multiplier = value:ship_spth_shield_efficiency_count }
     add_modifier = { modifier = spth_armor_efficiency_regen multiplier = value:ship_spth_armor_efficiency_count }
@@ -372,7 +450,7 @@ spth_armor_shield_efficiency_system_buff = {
 # 减益系统
 spth_armor_shield_efficiency_system_debuff = {
     optimize_memory
-    # set_update_modifiers_batch = begin
+    # touhou_stop_global_modifier_system = yes
     if = {
         limit = { has_ship_flag = has_spth_shield_efficiency_debuff }
         TH_dynamic_modifier_conditional = {
@@ -403,7 +481,7 @@ spth_armor_shield_efficiency_system_debuff = {
             value = 0
         }
     }
-    # set_update_modifiers_batch = end
+    # touhou_resume_global_modifier_system = yes
 }
 # 系统结束运行
 spth_armor_shield_efficiency_system_end = {
@@ -1090,12 +1168,26 @@ yukari_kamikakushi_reduce_effect = {
 
 spth_kamikakushi_cruiser_arua_protect_item = {
     optimize_memory
-    TH_dynamic_modifier_conditional = {
-        modifier = $modifier$
-        relation = "<"
-        limit_value = 0.1
-        value = 0.1
-    }
+	if = {
+		limit = { is_variable_set = spth_kamikakushi_cruiser_arua_protect_val }
+		if = {
+			limit = { check_variable = { which = spth_kamikakushi_cruiser_arua_protect_val value > 0 } }
+			TH_dynamic_modifier_conditional = {
+				modifier = $modifier$
+				relation = "<"
+				limit_value = spth_kamikakushi_cruiser_arua_protect_val
+				value = spth_kamikakushi_cruiser_arua_protect_val
+			}
+		}
+	}
+	else = {
+		TH_dynamic_modifier_conditional = {
+			modifier = $modifier$
+			relation = "<"
+			limit_value = 0.1
+			value = 0.1
+		}
+	}
 }
 spth_kamikakushi_cruiser_arua_protect_effect = {
     optimize_memory
@@ -1113,6 +1205,18 @@ spth_kamikakushi_cruiser_arua_protect_effect = {
     } else = {
         # log = "未启动protect for [This.GetName]"
     }
+}
+spth_kamikakushi_cruiser_arua_protect_effect_ship = {
+	optimize_memory
+	if = {
+		limit = { fleet = { spth_kamikakushi_cruiser_arua_protect_close = no } }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_damage }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_fire_rate_mult }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_tracking_mult }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_accuracy_mult }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_range_mult }
+		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_evasion_mult }
+	}
 }
 
 spth_always_remove_modifer = {
@@ -1253,4 +1357,64 @@ touhou_try_pop_stack_fleet_avg_modifier = {
         add_modifier = { modifier = $prefix$_$modifier$ days = $duration$ mult = touhou_stack_$stack$_avg_modifier_$modifier$_value }
         clear_variable = touhou_stack_$stack$_avg_modifier_$modifier$_value
     }
+}
+spth_negative_force_disparity_ship_effect = {
+	optimize_memory
+	if = {
+		limit = { check_modifier_value = { modifier = ship_spth_negative_force_disparity value < 0 } }
+		set_variable = { which = ship_spth_negative_force_disparity_factor value = value:ship_spth_negative_force_disparity_factor }
+		if = {
+			limit = {
+				NOT = {
+					is_variable_set = thstdpcl_ship_spth_negative_force_disparity_ship_fire_rate_mult_offset
+				}
+			}
+			set_variable = {
+				which = thstdpcl_ship_spth_negative_force_disparity_ship_fire_rate_mult_offset
+				value = 0
+			}
+		}
+		# 总射速缩放基础值 1；分类修正只缩放各自贡献，加算后整体仍为 factor 倍。
+		if = {
+			limit = {
+				is_variable_set = spth_kamikakushi_cruiser_arua_protect_val
+
+				# 预计压完百分比后的 ship_fire_rate_mult
+				check_variable_arithmetic = {
+					which = modifier:ship_fire_rate_mult
+					subtract = thstdpcl_ship_spth_negative_force_disparity_ship_fire_rate_mult_offset
+					add = 1
+					multiply = ship_spth_negative_force_disparity_factor
+					subtract = 1
+					value < spth_kamikakushi_cruiser_arua_protect_val
+				}
+			}
+			# do nothing here
+		}
+		else = {
+			touhou_standard_percent_apply_modifier = { modifier = ship_fire_rate_mult base = 1 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		}
+		touhou_standard_percent_apply_modifier = { modifier = ship_home_territory_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		touhou_standard_percent_apply_modifier = { modifier = owned_ship_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		touhou_standard_percent_apply_modifier = { modifier = space_fauna_ship_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		touhou_standard_percent_apply_modifier = { modifier = weapon_type_gravity_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		touhou_standard_percent_apply_modifier = { modifier = weapon_type_psionic_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		touhou_standard_percent_apply_modifier = { modifier = weapon_type_anti_psionic_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		touhou_standard_percent_apply_modifier = { modifier = weapon_type_lingli_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		touhou_standard_percent_apply_modifier = { modifier = weapon_type_energy_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		touhou_standard_percent_apply_modifier = { modifier = weapon_type_kinetic_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+		touhou_standard_percent_apply_modifier = { modifier = weapon_type_explosive_weapon_fire_rate_mult base = 0 prefix = ship_spth_negative_force_disparity factor = ship_spth_negative_force_disparity_factor }
+	}
+	else = {
+		clear_variable = ship_spth_negative_force_disparity_factor
+		if = {
+			limit = {
+				OR = {
+					is_variable_set = thstdpcl_ship_spth_negative_force_disparity_ship_fire_rate_mult_offset
+					has_modifier = ship_spth_negative_force_disparity_ship_fire_rate_mult
+				}
+			}
+			touhou_standard_percent_clear_modifier = { prefix = ship_spth_negative_force_disparity }
+		}
+	}
 }
