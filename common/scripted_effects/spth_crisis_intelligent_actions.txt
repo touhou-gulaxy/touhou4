@@ -140,11 +140,15 @@ spth_invasion_fleet_wandering_action = {
                                 NOT = { is_same_value = root }
                             } }
                         }
-                        any_ship_in_system = {
-                            exists = owner
-                            owner = { is_hostile = event_target:$OWNER$ }
-                            is_disabled = no is_ship_class = shipclass_military
-                        }
+                        # any_ship_in_system = {
+                        #     exists = owner
+                        #     owner = { is_hostile = event_target:$OWNER$ }
+                        #     is_disabled = no is_ship_class = shipclass_military
+                        # }
+						any_fleet_in_system = {
+							controller? = { is_hostile = event_target:$OWNER$ }
+							any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+						}
                     }
                 }
                 save_event_target_as = $TYPE$_invasion_fleet_wandering_action_target
@@ -241,20 +245,26 @@ spth_invasion_fleet_action = {
     else_if = {
         limit = {
             root = {
-                exists = solar_system
-                solar_system = { any_ship_in_system = {
-                    exists = owner
-                    owner = { is_hostile = event_target:$OWNER$ }
-                    is_disabled = no is_ship_class = shipclass_military
-                } }
+                # exists = solar_system
+                # solar_system = { any_ship_in_system = {
+                #     exists = owner
+                #     owner = { is_hostile = event_target:$OWNER$ }
+                #     is_disabled = no is_ship_class = shipclass_military
+                # } }
+				solar_system? = {
+					any_fleet_in_system = {
+						controller? = { is_hostile = event_target:$OWNER$ }
+						any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+					}
+				}
             }
         }
         root = {
             solar_system = {
                 random_fleet_in_system = {
                     limit = {
-                        exists = owner
-                        owner = { is_hostile = event_target:$OWNER$ }
+                        # exists = owner
+						controller? = { is_hostile = event_target:$OWNER$ }
                         any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
                     }
                     prevprev = { auto_follow_fleet = { target = prev attack_fleet = yes } }
@@ -265,17 +275,25 @@ spth_invasion_fleet_action = {
     # 寻找周围星系有无敌对单位
     else_if = {
         limit = {
-            solar_system = { any_neighbor_system = { OR = {
-                AND = {
-                    exists = starbase
-                    starbase = { exists = owner owner = { is_hostile = event_target:$OWNER$ } }
-                }
-                any_ship_in_system = {
-                    exists = owner
-                    owner = { is_hostile = event_target:$OWNER$ }
-                    is_disabled = no is_ship_class = shipclass_military
-                }
-            } } }
+            solar_system = {
+				any_neighbor_system = {
+					OR = {
+						AND = {
+							exists = starbase
+							starbase = { exists = owner owner = { is_hostile = event_target:$OWNER$ } }
+						}
+						# any_ship_in_system = {
+						# 	exists = owner
+						# 	owner = { is_hostile = event_target:$OWNER$ }
+						# 	is_disabled = no is_ship_class = shipclass_military
+						# }
+						any_fleet_in_system = {
+							controller? = { is_hostile = event_target:$OWNER$ }
+							any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+						}
+					}
+				}
+			}
         }
         solar_system = { random_neighbor_system = {
             limit = { OR = {
@@ -283,11 +301,15 @@ spth_invasion_fleet_action = {
                     exists = starbase
                     starbase = { exists = owner owner = { is_hostile = event_target:$OWNER$ } }
                 }
-                any_ship_in_system = {
-                    exists = owner
-                    owner = { is_hostile = event_target:$OWNER$ }
-                    is_disabled = no is_ship_class = shipclass_military
-                }
+                # any_ship_in_system = {
+                #     exists = owner
+                #     owner = { is_hostile = event_target:$OWNER$ }
+                #     is_disabled = no is_ship_class = shipclass_military
+                # }
+				any_fleet_in_system = {
+					controller? = { is_hostile = event_target:$OWNER$ }
+					any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+				}
             } }
             system_star = { prevprevprev = { auto_move_to_planet = { target = prev clear_auto_move_on_arrival = yes } } }
         } }
@@ -612,11 +634,15 @@ spth_invasion_fleet_action = {
                     use_bypasses = yes
                     limit = {
                         NOT = { is_same_value = root.solar_system }
-                        any_ship_in_system = {
-                            exists = owner
-                            owner = { is_hostile = event_target:$OWNER$ }
-                            is_disabled = no is_ship_class = shipclass_military
-                        }
+                        # any_ship_in_system = {
+                        #     exists = owner
+                        #     owner = { is_hostile = event_target:$OWNER$ }
+                        #     is_disabled = no is_ship_class = shipclass_military
+                        # }
+						any_fleet_in_system = {
+							controller? = { is_hostile = event_target:$OWNER$ }
+							any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+						}
                         prev = { can_access_system = prev }
                     }
                     save_event_target_as = $TYPE$_invasion_fleet_action_target
@@ -641,11 +667,15 @@ spth_invasion_fleet_action = {
                         max_steps = 50
                         limit = {
                             NOT = { is_same_value = root.solar_system }
-                            any_ship_in_system = {
-                                exists = owner
-                                owner = { is_hostile = event_target:$OWNER$ }
-                                is_disabled = no is_ship_class = shipclass_military
-                            }
+                            # any_ship_in_system = {
+                            #     exists = owner
+                            #     owner = { is_hostile = event_target:$OWNER$ }
+                            #     is_disabled = no is_ship_class = shipclass_military
+                            # }
+							any_fleet_in_system = {
+								controller? = { is_hostile = event_target:$OWNER$ }
+								any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+							}
                         }
                         save_event_target_as = $TYPE$_invasion_fleet_action_target
                     }
@@ -679,11 +709,15 @@ spth_invasion_fleet_action = {
                             min_jumps = 1
                             max_jumps = 10
                         }
-                        any_ship_in_system = {
-                            exists = owner
-                            owner = { is_hostile = event_target:$OWNER$ }
-                            is_disabled = no is_ship_class = shipclass_military
-                        }
+                        # any_ship_in_system = {
+                        #     exists = owner
+                        #     owner = { is_hostile = event_target:$OWNER$ }
+                        #     is_disabled = no is_ship_class = shipclass_military
+                        # }
+						any_fleet_in_system = {
+							controller? = { is_hostile = event_target:$OWNER$ }
+							any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+						}
                         prev = { can_access_system = prev }
                     }
                     save_event_target_as = $TYPE$_invasion_fleet_action_target
@@ -714,11 +748,15 @@ spth_invasion_fleet_action = {
                                 min_jumps = 1
                                 max_jumps = 10
                             }
-                            any_ship_in_system = {
-                                exists = owner
-                                owner = { is_hostile = event_target:$OWNER$ }
-                                is_disabled = no is_ship_class = shipclass_military
-                            }
+                            # any_ship_in_system = {
+                            #     exists = owner
+                            #     owner = { is_hostile = event_target:$OWNER$ }
+                            #     is_disabled = no is_ship_class = shipclass_military
+                            # }
+							any_fleet_in_system = {
+								controller? = { is_hostile = event_target:$OWNER$ }
+								any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+							}
                         }
                         save_event_target_as = $TYPE$_invasion_fleet_action_target
                     }

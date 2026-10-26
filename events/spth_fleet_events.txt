@@ -2333,6 +2333,12 @@ country_event = {
     }
     immediate = {
         fromfrom = {
+            set_variable = { which = spth_yuyuko_fan_weapon_coverage_val value = 1 }
+            if = {
+                limit = { NOT = { has_fleet_flag = touhou_standard_dynamic_modifier_system_fired } }
+                set_fleet_flag = touhou_standard_dynamic_modifier_system_fired
+                fleet_event = { id = spth_fleet.2042 }
+            }
             # 清空返魂蝶击杀变量
             every_owned_ship = {
                 limit = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } }
@@ -2359,7 +2365,7 @@ country_event = {
                 }
             }
             last_created_ambient_object = { set_location = { target = prev distance = 0 angle = random } }
-            fleet_event = { id = spth_fleet.1201 days = 2 }
+            fleet_event = { id = spth_fleet.1201 days = 4 }
         }
     }
 }
@@ -2370,7 +2376,7 @@ fleet_event = {
     immediate = {
         if = {
             limit = { is_in_combat = yes }
-            fleet_event = { id = spth_fleet.1201 days = 2 }
+            fleet_event = { id = spth_fleet.1201 days = 4 }
         } else = {
             remove_fleet_flag = ship_spth_yuyuko_fan_display_fired
             every_ambient_object = {
@@ -2403,9 +2409,8 @@ country_event = {
             fromfromfrom = {
                 exists = fleet
                 fleet = {
-                    any_owned_ship = {
-                        check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 }
-                    }
+					is_variable_set = spth_yuyuko_fan_weapon_coverage_val
+                    check_variable = { which = spth_yuyuko_fan_weapon_coverage_val value > 0 }
                 }
             }
         }
@@ -2463,7 +2468,10 @@ country_event = {
             if = {
                 limit = {
                     exists = fleet
-                    fleet = { any_owned_ship = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } } }
+                    fleet = {
+						is_variable_set = spth_yuyuko_fan_weapon_coverage_val
+						check_variable = { which = spth_yuyuko_fan_weapon_coverage_val value > 0 }
+					}
                 }
                 fleet = {
                     every_owned_ship = {
@@ -6214,48 +6222,89 @@ fleet_event = {
 			}
 
 			touhou_stop_global_modifier_system = yes
-            every_controlled_ship = {
-                # limit = {
-                #     OR = {
-                #         # check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 }
-                #         check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 }
-                #         check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 }
-                #         check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 }
-                #     }
-                # }
-                # if = {
-                #     limit = { check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 } }
-                #     add_modifier = {
-                #         modifier = touhou_standard_correct_damage_spth_yuzhu days = 30
-                #         mult = value:touhou_spth_yuzhu_instant_kill_value|final_dmg|@touhou_instant_kill_weapon_target_damage|slot|giga|
-                #     }
-                # }
-                if = {
-                    limit = { check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 } }
-                    TH_dynamic_modifier_conditional = { modifier = ship_hull_regen_mult relation = "<" limit_value = 0 value = 0 }
-                }
-                if = {
-                    limit = { check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 } }
-                    TH_dynamic_modifier_conditional = { modifier = ship_armor_regen_mult relation = "<" limit_value = 0 value = 0 }
-                }
-                if = {
-                    limit = { check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 } }
-                    TH_dynamic_modifier_conditional = { modifier = ship_shield_regen_mult relation = "<" limit_value = 0 value = 0 }
-                }
-				if = {
-					limit = { is_variable_set = spth_kamikakushi_cruiser_arua_protect_val }
-					spth_kamikakushi_cruiser_arua_protect_effect_ship = yes
-				}
-				if = {
-					limit = { is_variable_set = spth_kamikakushi_cruiser_coverage_val }
-					set_variable = { which = spth_kamikakushi_cruiser_coverage_val value = prev.spth_kamikakushi_cruiser_coverage_val }
-					remove_modifier = spth_kamikakushi_cruiser_coverage_shield_repair
+			set_variable = { which = spth_yuyuko_fan_weapon_coverage_val value = 0 }
+			if = {
+				limit = { spth_kamikakushi_cruiser_arua_protect_close = no }
+				every_controlled_ship = {
+					# limit = {
+					#     OR = {
+					#         # check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 }
+					#         check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 }
+					#         check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 }
+					#         check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 }
+					#     }
+					# }
+					# if = {
+					#     limit = { check_modifier_value = { modifier = ship_has_spth_yuzhu value != 0 } }
+					#     add_modifier = {
+					#         modifier = touhou_standard_correct_damage_spth_yuzhu days = 30
+					#         mult = value:touhou_spth_yuzhu_instant_kill_value|final_dmg|@touhou_instant_kill_weapon_target_damage|slot|giga|
+					#     }
+					# }
 					if = {
-						limit = { check_variable = { which = spth_kamikakushi_cruiser_coverage_val value > 0 } }
-						add_modifier = {
-							modifier = spth_kamikakushi_cruiser_coverage_shield_repair
-							multiplier = value:spth_kamikakushi_cruiser_coverage_shield_repair_val
-							days = @touhou_dynamic_modifier_system_modifier_last_time
+						limit = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } }
+						prev = { set_variable = { which = spth_yuyuko_fan_weapon_coverage_val value = 1 } }
+					}
+					if = {
+						limit = { check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 } }
+						TH_dynamic_modifier_conditional = { modifier = ship_hull_regen_mult relation = "<" limit_value = 0 value = 0 }
+					}
+					if = {
+						limit = { check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 } }
+						TH_dynamic_modifier_conditional = { modifier = ship_armor_regen_mult relation = "<" limit_value = 0 value = 0 }
+					}
+					if = {
+						limit = { check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 } }
+						TH_dynamic_modifier_conditional = { modifier = ship_shield_regen_mult relation = "<" limit_value = 0 value = 0 }
+					}
+					if = {
+						limit = { is_variable_set = spth_kamikakushi_cruiser_arua_protect_val }
+						spth_kamikakushi_cruiser_arua_protect_effect_ship = yes
+					}
+					if = {
+						limit = { is_variable_set = spth_kamikakushi_cruiser_coverage_val }
+						set_variable = { which = spth_kamikakushi_cruiser_coverage_val value = prev.spth_kamikakushi_cruiser_coverage_val }
+						remove_modifier = spth_kamikakushi_cruiser_coverage_shield_repair
+						if = {
+							limit = { check_variable = { which = spth_kamikakushi_cruiser_coverage_val value > 0 } }
+							add_modifier = {
+								modifier = spth_kamikakushi_cruiser_coverage_shield_repair
+								multiplier = value:spth_kamikakushi_cruiser_coverage_shield_repair_val
+								days = @touhou_dynamic_modifier_system_modifier_last_time
+							}
+						}
+					}
+				}
+			}
+			else = {
+				every_controlled_ship = {
+					if = {
+						limit = { check_modifier_value = { modifier = ship_spth_yuyuko_fan_weapon_count value > 0 } }
+						prev = { set_variable = { which = spth_yuyuko_fan_weapon_coverage_val value = 1 } }
+					}
+					if = {
+						limit = { check_modifier_value = { modifier = touhou_ship_hull_regen_mult_min_add value != 0 } }
+						TH_dynamic_modifier_conditional = { modifier = ship_hull_regen_mult relation = "<" limit_value = 0 value = 0 }
+					}
+					if = {
+						limit = { check_modifier_value = { modifier = touhou_ship_armor_regen_mult_min_add value != 0 } }
+						TH_dynamic_modifier_conditional = { modifier = ship_armor_regen_mult relation = "<" limit_value = 0 value = 0 }
+					}
+					if = {
+						limit = { check_modifier_value = { modifier = touhou_ship_shield_regen_mult_min_add value != 0 } }
+						TH_dynamic_modifier_conditional = { modifier = ship_shield_regen_mult relation = "<" limit_value = 0 value = 0 }
+					}
+					if = {
+						limit = { is_variable_set = spth_kamikakushi_cruiser_coverage_val }
+						set_variable = { which = spth_kamikakushi_cruiser_coverage_val value = prev.spth_kamikakushi_cruiser_coverage_val }
+						remove_modifier = spth_kamikakushi_cruiser_coverage_shield_repair
+						if = {
+							limit = { check_variable = { which = spth_kamikakushi_cruiser_coverage_val value > 0 } }
+							add_modifier = {
+								modifier = spth_kamikakushi_cruiser_coverage_shield_repair
+								multiplier = value:spth_kamikakushi_cruiser_coverage_shield_repair_val
+								days = @touhou_dynamic_modifier_system_modifier_last_time
+							}
 						}
 					}
 				}
@@ -6272,6 +6321,7 @@ fleet_event = {
 			}
 			touhou_resume_global_modifier_system = yes
 			clear_variable = spth_kamikakushi_cruiser_coverage_val
+			clear_variable = spth_yuyuko_fan_weapon_coverage_val
             if = {
                 limit = { has_fleet_flag = touhou_standard_dynamic_modifier_system_fired }
                 remove_fleet_flag = touhou_standard_dynamic_modifier_system_fired
