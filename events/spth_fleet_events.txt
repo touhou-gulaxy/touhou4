@@ -6645,6 +6645,183 @@ ship_event = {
         fire_on_action = {
             on_action = on_touhou_disable_trigger_1_delayed
             scopes = { from = from fromfrom = fleet fromfromfrom = from.fleet fromfromfromfrom = solar_system }
-        }
+		}
+	}
+}
+
+# Expire the distributed movement claim after its scheduled lease.
+system_event = {
+	id = spth_fleet.2050
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		if = {
+			limit = { exists = from }
+			touhou_adv_clear_distributed_claim_marker = yes
+		}
+		if = {
+			limit = { is_variable_set = touhou_adv_claim_count }
+			subtract_variable = {
+				which = touhou_adv_claim_count
+				value = 1
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = touhou_adv_claim_count
+						value <= 0
+					}
+				}
+				clear_variable = touhou_adv_claim_count
+			}
+		}
+	}
+}
+
+# Expire a support reservation.
+system_event = {
+	id = spth_fleet.2051
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		if = {
+			limit = { exists = from }
+			touhou_adv_clear_support_marker = yes
+		}
+		if = {
+			limit = { is_variable_set = touhou_adv_support_count }
+			subtract_variable = {
+				which = touhou_adv_support_count
+				value = 1
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = touhou_adv_support_count
+						value <= 0
+					}
+				}
+				clear_variable = touhou_adv_support_count
+			}
+		}
+	}
+}
+
+# Expire the first concentrated-attack reservation.
+system_event = {
+	id = spth_fleet.2052
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		if = {
+			limit = { exists = from }
+			touhou_adv_clear_concentrate_marker_0 = yes
+		}
+		if = {
+			limit = {
+				is_variable_set = touhou_adv_concentrate_count_0
+			}
+			subtract_variable = {
+				which = touhou_adv_concentrate_count_0
+				value = 1
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = touhou_adv_concentrate_count_0
+						value <= 0
+					}
+				}
+				clear_variable = touhou_adv_concentrate_count_0
+			}
+		}
+	}
+}
+
+# Expire the second concentrated-attack reservation.
+system_event = {
+	id = spth_fleet.2053
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		if = {
+			limit = { exists = from }
+			touhou_adv_clear_concentrate_marker_1 = yes
+		}
+		if = {
+			limit = {
+				is_variable_set = touhou_adv_concentrate_count_1
+			}
+			subtract_variable = {
+				which = touhou_adv_concentrate_count_1
+				value = 1
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = touhou_adv_concentrate_count_1
+						value <= 0
+					}
+				}
+				clear_variable = touhou_adv_concentrate_count_1
+			}
+		}
+	}
+}
+
+# Release the escort reservation held by a value-2 pathfinder fleet.
+fleet_event = {
+	id = spth_fleet.2054
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		if = {
+			limit = { is_variable_set = touhou_adv_follower_claim }
+			clear_variable = touhou_adv_follower_claim
+		}
+	}
+}
+
+# Release one bombardment assignment after its lease expires.
+country_event = {
+	id = spth_fleet.2055
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		if = {
+			limit = { exists = from }
+			from = {
+				if = {
+					limit = {
+						is_variable_set = touhou_adv_bombarding
+					}
+					clear_variable = touhou_adv_bombarding
+				}
+			}
+		}
+		if = {
+			limit = {
+				is_variable_set = touhou_adv_bombard_count
+			}
+			subtract_variable = {
+				which = touhou_adv_bombard_count
+				value = 1
+			}
+			if = {
+				limit = {
+					check_variable = {
+						which = touhou_adv_bombard_count
+						value <= 0
+					}
+				}
+				clear_variable = touhou_adv_bombard_count
+			}
+		}
 	}
 }

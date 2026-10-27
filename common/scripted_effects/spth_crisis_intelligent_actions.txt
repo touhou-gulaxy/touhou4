@@ -1,3 +1,5 @@
+@spth_invasion_fleet_system_max_count = 3
+
 spth_create_jump_particle_effect = {
     optimize_memory
     create_ambient_object = {
@@ -100,6 +102,18 @@ spth_invasion_fleet_wandering_action = {
         75 = {
             solar_system = { random_neighbor_system = {
                 limit = { prevprev = { can_access_system = prev } }
+				weights = {
+					base = 100 modifier = {
+						factor = 0.2
+						count_fleet_in_system = {
+							count >= @spth_invasion_fleet_system_max_count
+							limit = {
+								owner = { is_same_value = event_target:$OWNER$ }
+								any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+							}
+						}
+					}
+				}
                 save_event_target_as = $TYPE$_invasion_fleet_wandering_action_target
             } }
             if = {
@@ -151,6 +165,18 @@ spth_invasion_fleet_wandering_action = {
 						}
                     }
                 }
+				weights = {
+					base = 100 modifier = {
+						factor = 0.2
+						count_fleet_in_system = {
+							count >= @spth_invasion_fleet_system_max_count
+							limit = {
+								owner = { is_same_value = event_target:$OWNER$ }
+								any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+							}
+						}
+					}
+				}
                 save_event_target_as = $TYPE$_invasion_fleet_wandering_action_target
             }
             if = {
@@ -169,6 +195,18 @@ spth_invasion_fleet_wandering_action = {
             else = {
                 solar_system = { random_neighbor_system = {
                     limit = { prevprev = { can_access_system = prev } }
+					weights = {
+						base = 100 modifier = {
+							factor = 0.2
+							count_fleet_in_system = {
+								count >= @spth_invasion_fleet_system_max_count
+								limit = {
+									owner = { is_same_value = event_target:$OWNER$ }
+									any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+								}
+							}
+						}
+					}
                     save_event_target_as = $TYPE$_invasion_fleet_wandering_action_target
                 } }
                 if = {
@@ -192,6 +230,8 @@ spth_invasion_fleet_wandering_action = {
 # 3. 寻找周围星系有无敌对单位
 # 4. 自主行为, 四个概率
 # 5. 找不到目标，摆烂了，开始转圈QAQ
+# 跨星系选点时同一星系最多容纳两支己方军事舰队，允许成对推进但避免全堆在一处。
+# 当前星系内的交战和单星球排他逻辑保持不变。
 # paramaters:
 # ID(EVENT), must has $ID$.12 event
 # TYPE
@@ -311,6 +351,18 @@ spth_invasion_fleet_action = {
 					any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
 				}
             } }
+			weights = {
+				base = 100 modifier = {
+					factor = 0.2
+					count_fleet_in_system = {
+						count >= @spth_invasion_fleet_system_max_count
+						limit = {
+							owner = { is_same_value = event_target:$OWNER$ }
+							any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+						}
+					}
+				}
+			}
             system_star = { prevprevprev = { auto_move_to_planet = { target = prev clear_auto_move_on_arrival = yes } } }
         } }
     }
@@ -580,6 +632,18 @@ spth_invasion_fleet_action = {
                                 }
                             }
                         }
+						weights = {
+							base = 100 modifier = {
+								factor = 0.2
+								count_fleet_in_system = {
+									count >= @spth_invasion_fleet_system_max_count
+									limit = {
+										owner = { is_same_value = event_target:$OWNER$ }
+										any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+									}
+								}
+							}
+						}
                         save_event_target_as = $TYPE$_invasion_fleet_action_target
                     }
                     #如果星系内具备有效目标，就80%概率走过去，20%概率飞过去（飞过去必须吃debuff）
@@ -758,6 +822,19 @@ spth_invasion_fleet_action = {
 								any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
 							}
                         }
+						weights = {
+							base = 100
+							modifier = {
+								factor = 0.2
+								count_fleet_in_system = {
+									count >= @spth_invasion_fleet_system_max_count
+									limit = {
+										owner = { is_same_value = event_target:$OWNER$ }
+										any_owned_ship = { is_disabled = no is_ship_class = shipclass_military }
+									}
+								}
+							}
+						}
                         save_event_target_as = $TYPE$_invasion_fleet_action_target
                     }
                     #如果星系内具备有效目标，就80%概率走过去，20%概率飞过去（飞过去必须吃debuff）

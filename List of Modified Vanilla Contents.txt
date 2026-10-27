@@ -1,84 +1,385 @@
+# Modified Vanilla Contents
+#
+# Last reviewed against Stellaris v4.5.2 and mod version 2.5.1.
+# This file lists intentional vanilla overrides and compatibility hooks.
+# Mod-added definitions are listed only where they replace or extend a
+# vanilla key.
+#
+# Categories:
+#   [FILE]       Same relative path as a vanilla file
+#   [DEFINITION] Vanilla top-level definition overridden or extended
+#   [PATCH]      Vanilla behavior altered through a compatibility definition
 
-# List for Modified Vanilla Codes
 
-# gfx/FX
-#   buttonstate_rendertarget_hologram.shader -> removed highlight and edge color.
+# =============================================================================
+# [FILE] Direct file replacements
+# =============================================================================
 
-# common/agreement_term_values
-#   add resource term of sr_lingli&sr_fuka
+# common/inline_scripts/shroud/psionic_aura_monthly_decrease.txt
+#   Adds the mod's psionic inhibitor/burster logic to vanilla aura decay.
+#   Inhibitor station in the current system: -75 monthly decrease.
+#   Inhibitor station in a neighboring system: -50 monthly decrease.
+#   Burster stations suppress both extra penalties.
 
-# common/component_templates
-#   NOT OVERWRITE
-#   add kill_computer_line to break the computer sort.
+# common/inline_scripts/shroud/aura_wide_modifiers.txt
+#   Compatibility mirror of the v4.5 file. As of this review the gameplay
+#   content is identical; the checked-in copy differs mainly in formatting.
 
-# common/defines:
-# 	MAX_GFX_PROJECTILES 100 -> 832
-# 	MAX_GFX_PRIO_PROJECTILES 100 -> 832
-#   MAX_GFX_MISSILES -> 160
-#   MUZZLE_FLASH_LIMIT -> 64
-#   MUZZLE_FLASH_DURATION -> 1.0
-#   SHIP_RANDOM_HEIGHT_OFFSET -> 100
-#   MISSED_BEAM_LENGTH -> 0
-#   MISSILE_HEIGHT_OFFSET -> 25
-#   MISSILE_RANDOM_OFFSET_MIN_RADIUS -> 5
-#   MISSILE_RANDOM_OFFSET_MAX_RADIUS -> 35
-#   MOVE_SHIP_TO_FLEET_MAX_DIST -> 20
-#   FLEET_BASE_FORMATION_SCALE -> 7
-#   FLEET_BASE_FORMATION_DIV -> 30
-#   OUT_OF_COMBAT_SHIELD_REGEN_MULT -> 1.0
-#   OUT_OF_COMBAT_ARMOR_REGEN_MULT -> 1.0
-#   OUT_OF_COMBAT_HULL_REGEN_MULT -> 1.0
-#   COMBAT_BACK_OFF_RATE -> 0.75
-#   COMBAT_TARGET_STICKYNESS_FACTOR -> 256.0
-#   RANDOM_TARGETING_WEIGHT -> 1.0
-#   ADMIRAL_DEATH_CHANCE -> 0.0
-#   COMBAT_SHIP_LOW_HEALTH_THRESHOLD -> 0.50
-#   COMBAT_SHIP_LOW_HEALTH_TARGETING_WEIGHT -> 0.75
-#   COMBAT_SHIP_DISTANCE_TARGETING_WEIGHT -> 0.050
-#   COMBAT_SHIP_DISTANCE_TARGETING_WEIGHT_MIN -> 0.10
-#   COMBAT_SHIP_UNARMED_TARGETING_WEIGHT -> 0.005
-#   COMBAT_SHIP_STARBASE_TARGETING_WEIGHT -> 0.25
-#   COMBAT_SHIP_EVASION_AVOID_MIN_SHIP_SIZE -> 8
-#   COMBAT_SHIP_EVASION_AVOID_THRESHOLD -> 0.7
-#   SHIP_DISENGAGE_HEALTH_THRESHOLD -> 0.32
-#   TRIGGERED_MODIFIER_UPDATE_DELAY -> 30
-#   CLOAKING_ACTIVATION_COOLDOWN -> 72
-#   REINFORCE_MIA_TIME_MULT -> 0
-# 	COUNCIL_RESEARCH_POSITIONS: Added new councilor type, compatible with Ancient Empire mod & Voyage to Eternity - Kemomimi Girl Species and More.
-# 	COUNCIL_NAVAL_POSITIONS: Added new councilor type, compatible with Ancient Empire mod & Voyage to Eternity - Kemomimi Girl Species and More.
-# 	COUNCIL_DIPLOMACY_POSITIONS: Added new councilor type, compatible with Ancient Empire mod & Voyage to Eternity - Kemomimi Girl Species and More.
+# interface/~~~~~touhou_override_icons.gfx
+#   Replaces vanilla GFX_ship_class_small and GFX_ship_class_medium with
+#   85-frame Touhou ship-class icon sheets.
 
-# common/game_rules
+# gfx/FX/buttonstate_rendertarget_hologram.shader
+#   Removes the animated highlight/edge blend from the hologram button fill.
+#   This is primarily a Linux/macOS rendering compatibility change.
+
+# gfx/exe_icon.bmp
+#   Replaces the executable icon with the mod icon.
+
+# gfx/interface/icons/buildings/building_residence.dds
+#   Replaces the vanilla residence building icon.
+
+# gfx/interface/icons/modifiers/mod_ship_damage_reduction_add.dds
+# gfx/interface/icons/modifiers/mod_ship_damage_reduction_mult.dds
+#   Replaces vanilla modifier icons used by the mod's damage-reduction UI.
+
+
+# =============================================================================
+# [DEFINITION] Vanilla graphical definitions
+# =============================================================================
+
+# gfx/models/planets/*touhou_overwrite_planet_entities.asset
+#   Replaces the vanilla orbital_bombardment_effects entity.
+#   Includes compatibility for vanilla bombardment modes and multiple
+#   overhaul mods.
+
+# gfx/models/ui/touhou_frontend_background.*
+#   Replaces/adds the frontend background entity set used by the mod's
+#   start screen and menu styling.
+
+
+# =============================================================================
+# [DEFINITION] Defines
+# =============================================================================
+
+# common/defines/*高优先级_touhou_defines.txt
+#
+# NGraphics:
+#   MAX_GFX_PROJECTILES:
+#     100 -> 500
+#   MAX_GFX_PRIO_PROJECTILES:
+#     100 -> 500
+#   MAX_GFX_MISSILES:
+#     50 -> 200
+#   MUZZLE_FLASH_LIMIT:
+#     50 -> 64
+#   MUZZLE_FLASH_DURATION:
+#     2.0 -> 1.0
+#   SHIP_RANDOM_HEIGHT_OFFSET:
+#     15.0 -> 100
+#   MISSED_BEAM_LENGTH:
+#     1500.0 -> 0.0
+#   MISSILE_HEIGHT_OFFSET:
+#     10.0 -> 25.0
+#   MISSILE_RANDOM_OFFSET_MIN_RADIUS:
+#     5.0 -> 5.0 (explicitly repeated)
+#   MISSILE_RANDOM_OFFSET_MAX_RADIUS:
+#     10.0 -> 35.0
+#
+# NGameplay:
+#   TRIGGERED_MODIFIER_UPDATE_DELAY:
+#     5 -> 5 (redundant with v4.5 vanilla)
+#   SHIPYARD_REINFORCE_MAX_JUMPS:
+#     100 -> 10
+#   REINFORCE_MIA_TIME_MULT:
+#     1.0 -> 0.01
+#   MIA_UNKNOWN_PATH_TIME_COEFFICIENT:
+#     10 -> 1
+#   MIA_UNKNOWN_PATH_CURVATURE_COEFFICIENT:
+#     2 -> 1
+#
+# NCombat:
+#   SHIP_CURRENT_TARGET_MULTIPLIER:
+#     1.1 -> 1.5
+#   SHIP_RECENT_TARGET_PENALIZER:
+#     0.3 -> 0.5
+#   NUMBER_OF_TARGETS_TO_REMEMBER:
+#     10.0 -> 8.0
+#   SHIP_DISENGAGE_INACTIVITY_DAYS:
+#     150 -> 0 (disables this inactivity disengage rule)
+
+# common/defines/龘龘龘~z_spth_defines.txt
+#
+# NGraphics:
+#   MUZZLE_FLASH_LIMIT                  = 64
+#   MUZZLE_FLASH_DURATION               = 1.0
+#   SHIP_RANDOM_HEIGHT_OFFSET           = 100
+#   MISSED_BEAM_LENGTH                  = 0.0
+#   MISSILE_HEIGHT_OFFSET               = 25.0
+#   MISSILE_RANDOM_OFFSET_MIN_RADIUS    = 5.0
+#   MISSILE_RANDOM_OFFSET_MAX_RADIUS    = 35.0
+#
+# NCombat:
+#   COMBAT_BACK_OFF_RATE:
+#     0.50 -> 0.75
+#   RANDOM_TARGETING_WEIGHT             = 1.0
+#   ADMIRAL_DEATH_CHANCE:
+#     0.1 -> 0.0
+#   COMBAT_SHIP_LOW_HEALTH_THRESHOLD    = 0.50
+#   COMBAT_SHIP_LOW_HEALTH_TARGETING_WEIGHT:
+#     1.5 -> 0.75
+#   COMBAT_SHIP_DISTANCE_TARGETING_WEIGHT:
+#     0.002 -> 0.050
+#   COMBAT_SHIP_DISTANCE_TARGETING_WEIGHT_MIN = 0.10
+#   COMBAT_SHIP_UNARMED_TARGETING_WEIGHT = 0.005
+#   COMBAT_SHIP_STARBASE_TARGETING_WEIGHT:
+#     0.75 -> 0.25
+#   COMBAT_SHIP_EVASION_AVOID_MIN_SHIP_SIZE = 8
+#   COMBAT_SHIP_EVASION_AVOID_THRESHOLD = 0.7
+#   SHIP_DISENGAGE_HEALTH_THRESHOLD:
+#     0.5 -> 0.32
+#
+# NShip:
+#   MOVE_SHIP_TO_FLEET_MAX_DIST:
+#     50.0 -> 20
+#   FLEET_BASE_FORMATION_SCALE:
+#     3.0 -> 7
+#   FLEET_BASE_FORMATION_DIV:
+#     10 -> 30
+#   OUT_OF_COMBAT_SHIELD_REGEN_MULT:
+#     5.0 -> 1.0
+#   OUT_OF_COMBAT_ARMOR_REGEN_MULT:
+#     5.0 -> 1.0
+#   OUT_OF_COMBAT_HULL_REGEN_MULT:
+#     5.0 -> 1.0
+#
+# NGameplay:
+#   COUNCIL_RESEARCH_POSITIONS,
+#   COUNCIL_NAVAL_POSITIONS,
+#   COUNCIL_DIPLOMACY_POSITIONS
+#     Extended with Touhou councilors and compatibility entries for
+#     Ancient Empire and Voyage to Eternity.
+#   NAVAL_CAPACITY_MAX:
+#     9999 -> 25600
+#   CLOAKING_ACTIVATION_COOLDOWN:
+#     120 -> 72 days
+#
+# Note:
+#   COMBAT_TARGET_STICKYNESS_FACTOR = 256.0 is commented out and is not
+#   currently an active override.
+#   TRIGGERED_MODIFIER_UPDATE_DELAY is present in another mod defines file
+#   but equals the v4.5 vanilla value of 5.
+
+# common/defines/touhou_defines.txt
+#   NGameplay.COMMAND_LIMIT_MAX:
+#     1000 -> 1600
+
+
+# =============================================================================
+# [DEFINITION] Game rules
+# =============================================================================
+
+# These are complete replacements. Recheck the corresponding vanilla rules
+# after every Stellaris update.
+
+# common/game_rules/zzzz_toho_game_rules.txt
 #   can_orbital_bombard
 #   can_enter_system_by_jump
 #   can_species_be_assembled
+#   has_full_sensor_range
+#   can_jump_drive
+#
+# common/game_rules/*_touhou_gamerules.txt
+#   should_count_towards_leader_cap
+#   should_pay_for_leader_upkeep
+#   can_add_negative_traits_organic
+#   can_leader_explore_astral_rift
+#   shroud_delve_cooldown_days
+#   can_colony_auto_migrate
+#   system_blocks_sensors
+#   is_delve_blocked
+#
+# common/game_rules/toho_games_rules.txt
+#   can_add_advanced_traits
+#   can_remove_positive_traits_organic
+#   can_modify_organic_portraits
 
-# common/scripted_triggers:
-# 	has_upgraded_capital
-#	has_major_upgraded_capital
+
+# =============================================================================
+# [DEFINITION] Scripted triggers
+# =============================================================================
+
+# Confirmed vanilla keys overridden by
+# common/scripted_triggers/*override* or *覆盖* files:
+#
+#   has_upgraded_capital
+#   has_major_upgraded_capital
 #   has_fully_upgraded_capital
+#   can_be_leader
+#   can_enter_system_by_jump_trigger
+#   can_fill_specialist_job_trigger
+#   can_set_ai_policy
+#   colossus_possible_construction
+#   colossus_potential_construction
+#   complex_specialist_job_check_trigger
+#   has_encountered_any_fauna
+#   has_psionic_leader_trait
+#   is_capturable_space_critter_country_type
+#   is_domestic_robot
+#   is_head_of_research
+#   is_memory_vault_empire
+#   is_player_crisis
+#   is_psionic_aura_suppressed
+#   juggernaut_possible_construction
+#   juggernaut_potential_construction
+#   physicist_is_astral_researcher_trigger
+#   politician_is_science_director
+#   titan_possible_construction
+#   titan_potential_construction
+#
+# common/scripted_triggers/mode_species_job_trigger.txt
+#   is_organic_species
+#   is_robotic_species
 
-# events/
-# 	overwrite grand_archive.10095, disallow its trigger to fuck up on_damage_taken performance consumption.
-#   overwrite grand_archive.9000, disallow its trigger.
-#   overwrite grand_archive.10090, disallow its trigger.
 
-# gfx/FX/buttonstate_rendertarget_hologram.txt
-#   remove the hologram effect, overwrite this rather than spriteType
-#   is for compatibility on Linux and MacOS.
+# =============================================================================
+# [DEFINITION] Scripted effects
+# =============================================================================
 
-# gfx/models/planets
-# 	orbital_bombardment_effects, compatible with Ancient Empire mod, ACOT, SWGS and ADF.
+# common/scripted_effects/*东方覆盖_effects.txt
+#   finish_first_contact_effect
+#   synth_queen_mini_wipe_system
+#   synth_queen_wipe_system
+#   activate_behemoth_superweapon
+#   arkship_exodus_jump_system_effects
+#   dyson_gun_apply_damage
+#   dyson_gun_damage_ship
+#   dyson_gun_devastate_colony
+#   dyson_gun_firing
 
-# gfx/models/ui/[a-z_]*frontend[a-z_]*
-#   replace the frontend background with touhou frontend background.
 
-# gfx/exe_icon.bmp
-#   replace exe_icon, just add a layer on it.
+# =============================================================================
+# [DEFINITION] Vanilla agreement terms
+# =============================================================================
 
-# localisation
-#   MOD_SHIP_{HULL, ARMOR, SHIELD}_REGEN_ADD_PERC
-#   COMPONENT_AURA_DAMAGE_TOOLTIP, display more information
+# common/agreement_term_values/spth_sub_agreement_term_values.txt
+#   Replaces vanilla subject agreement terms so that Spirit Power and
+#   Spell Card resources can also be subsidized:
+#
+#   resource_subsidies_basic
+#   resource_subsidies_advanced
+#   resource_subsidies_research
+#   resource_subsidies_unity
+#   resource_subsidies_strategic
+#   joins_overlord_wars_none
+#   joins_overlord_wars_defensive
+#   joins_overlord_wars_offensive
+#   joins_overlord_wars_all
+#   joins_subject_wars_none
+#   joins_subject_wars_defensive
+#   joins_subject_wars_offensive
+#   joins_subject_wars_all
+#   subject_holdings_limit_0 through subject_holdings_limit_4
+
+
+# =============================================================================
+# [DEFINITION] Events
+# =============================================================================
+
+# events/!vanilla_repair_ancient_relics_events.txt
+#   ancrel.4046
+#     Rebuilt event to keep its archaeology flow and rewards compatible.
+
+# events/!!!spth_vanilla_repair_events.txt
+#   grand_archive.10095
+#   grand_archive.10090
+#     Trigger disabled (always = no) to remove expensive/broken
+#     on_damage_taken behavior.
+#   grand_archive.9000
+#     Trigger removed for performance/compatibility.
+#   grand_archive.3200
+#     Cutholoid engulf event compatibility.
+#   nomads.51
+#   nomads.8004
+#     Vanilla Nomads damage callbacks disabled to avoid repeated heavy
+#     on_damage_taken processing.
+
+# events/!!!!_touhou_vanilla_overwrite_events.txt
+#   first_contact_critters.25
+#     Extended first-contact description/options and Grand Archive handoff.
+#   crisis.6052
+#     End-of-the-Cycle destruction adapted to protect mod systems/countries.
+#   shroud.4972
+#     End-of-the-Cycle destruction adapted to protect Ancient Empire systems.
+#   shroud.5310
+#     Patron-attunement dialogue extended with the mod's Great Patron content.
+#   paragon_2.1005
+#   paragon_2.1020
+#   paragon_2.1021
+#     Paragon/leader interactions extended for compatibility.
+
+
+# =============================================================================
+# [DEFINITION] On-actions
+# =============================================================================
+
+# The following files replace or extend vanilla on_action callback lists:
+#
+# common/on_actions/!!!!!!!!!!!!spth_on_actions.txt
+# common/on_actions/th_on_actions.txt
+# common/on_actions/spth_vop_on_actions.txt
+# common/on_actions/*繁星录后置_on_actions.txt
+#
+# 74 vanilla callback keys are currently present across these files,
+# including battle entry, ship destroyed/disabled, fleet arrival, monthly
+# pulses, leader lifecycle, colonization, diplomacy, terraforming,
+# megastructure and crisis callbacks.
+#
+# These are high-risk update points: vanilla callback changes can silently
+# remove new vanilla behavior even when no script error is reported.
+
+
+# =============================================================================
+# [DEFINITION] HUD and assets
+# =============================================================================
+
+# common/button_effects/GF_nyto_effect_button.txt
+#   GF: Nyto boss health-bar button set.
+
+# common/button_effects/spth_bossbar_effect_button.txt
+#   Touhou boss health-bar button set.
+
+# interface/spth_override_vanilla.gfx
+#   Currently contains only a commented placeholder; no active override.
+
+
+# =============================================================================
+# [DEFINITION] Localisation replacements
+# =============================================================================
+
+# localisation/<language>/replace/spth_vanilla_repair_l_<language>.yml
+#   MOD_SHIP_HULL_REGEN_ADD_PERC
+#   MOD_SHIP_ARMOR_REGEN_ADD_PERC
+#   MOD_SHIP_SHIELD_REGEN_ADD_PERC
+#   COMPONENT_AURA_DAMAGE_TOOLTIP
 #   CLOAKING_COOLDOWN_TOOLTIP
-#   crisis.7516.desc.worm, compatible with GF: Nyto mod.
-#   crisis.7516.desc.greatwound, compatible with GF: Nyto mod.
+
+# localisation/<language>/replace/spth_cosmo_replace_l_<language>.yml
+#   crisis.7516.desc.worm
+#   crisis.7516.desc.greatwound
+#   Redirected for compatibility with GF: Nyto.
+
+
+# =============================================================================
+# Compatibility notes
+# =============================================================================
+
+# common/component_templates
+#   New component keys use mod-specific names. The old "kill_computer_line"
+#   sorting workaround is retained where needed, but no vanilla component
+#   template file is directly overwritten.
+
+# common/scripted_triggers/!!!ph_MOD_triggers@FW.txt
+#   Placeholder definitions prevent missing-key errors when optional
+#   compatibility mods are absent. These should not be interpreted as active
+#   vanilla overrides unless a real implementation replaces the placeholder.
