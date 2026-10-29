@@ -25,10 +25,10 @@
 
 | 用途 | 路径 |
 |---|---|
-| 游戏安装 | `/home/koishi/SteamLibrary/steamapps/common/Stellaris/` |
-| 4.5 反编译源码 | `/home/koishi/ghidra_decompiled/stellaris4.5/` |
-| 注入式性能报告 | `/home/koishi/ghidra_decompiled/stellaris4.5/perf/pdxperf-report.txt` |
-| 游戏日志 | `~/.local/share/Paradox Interactive/Stellaris/logs/` |
+| 游戏安装 | 不同开发设备上可能不同，交接时单独说明 |
+| 4.5 反编译源码 | 不同开发设备上可能不同，关键词`ghidra_decompiled`或`stellaris_decomp` |
+| 注入式性能报告 | 不同开发设备上可能不同，或者可能不存在 |
+| 游戏日志 | 路径中包含`Paradox Interactive/Stellaris/logs/` |
 | 配套资源 | `../touhou_resources/` |
 
 游戏启动时会截断或重建 `script_profiling*.log`。需要保留的性能数据应先用
@@ -118,10 +118,10 @@ touhou_resume_global_modifier_system
 - 开启 script profiler 本身会增加堆分配和计时开销，绝对耗时不可直接当作
   未开启 profiler 的帧时间。
 
-需要完整函数/分配归因时使用：
+需要完整函数/分配归因时使用注入式分析报告（可能不存在）：
 
 ```text
-/home/koishi/ghidra_decompiled/stellaris4.5/perf/pdxperf-report.txt
+perf/pdxperf-report.txt
 ```
 
 或对带符号的 `stellaris` 进程使用 Linux `perf`。
