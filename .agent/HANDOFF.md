@@ -189,3 +189,11 @@ git diff --check
 - 不覆盖无法确认来源的未提交更改。
 - 不因性能优化改变事件 scope、触发时序或玩家可见概率，除非明确说明。
 - 每次调整后记录性能收益和正确性验证条件。
+
+## 11. Stellaris 4.6 preview 迁移资料
+
+4.5.3 与内部 4.6 preview 的数据、API、兼容影响和 Windows PE 静态分析
+可行性见 [STELLARIS_4.6_PREVIEW_COMPARISON.md](STELLARIS_4.6_PREVIEW_COMPARISON.md)。
+
+迁移时优先检查绝对伦理、`on_entering_war` 改名、`can_orbital_bombard`
+覆盖、领袖背景生成和星球人口管控逻辑。
