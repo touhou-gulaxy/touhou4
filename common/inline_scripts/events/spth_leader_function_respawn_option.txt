@@ -3,5 +3,15 @@ option = {
     icon = { icon = GFX_spth_trait_icon_$ID$ text = leader_trait_$ID$ }
     custom_tooltip = leader_trait_$ID$_desc
     trigger = { has_country_flag = th_$ID$_get NOT = { any_owned_leader = { has_trait = leader_trait_$ID$ } } }
-    hidden_effect = { spth_effect_init_$ID$_effect = yes }
+    hidden_effect = {
+		# FEAT: currently stellaris inline script can be considered as a kind of SFINAE.
+		inline_script = { script = effect/touhou_leader_function_respawn_$ID$ }
+		if = {
+			limit = { has_country_flag = touhou_leader_function_respawn_selected_ruler_$ID$ }
+			remove_country_flag = touhou_leader_function_respawn_selected_ruler_$ID$
+		}
+		else = {
+			spth_effect_init_$ID$_effect = yes
+		}
+	}
 }
