@@ -1875,6 +1875,14 @@ touhou_gateway_config_lgate_active = {
                                 activate_gateway = this
                             }
                         }
+						if = {
+							limit = { has_star_flag = lgate }
+							set_star_flag = touhou_before_has_lgate
+						}
+						if = {
+							limit = { has_star_flag = lcluster1 }
+							set_star_flag = touhou_before_has_lcluster1
+						}
                         set_star_flag = lgate
                         set_star_flag = touhou_gateway_network_lgate_activated
                     }
@@ -1944,7 +1952,20 @@ touhou_gateway_config_lgate_deactive = {
                     th_spawn_explosion_particle = { color = purple size = small }
                     remove_megastructure = this
                 }
-                remove_star_flag = lcluster1 remove_star_flag = lgate
+				if = {
+					limit = { has_star_flag = touhou_before_has_lcluster1 }
+					remove_star_flag = touhou_before_has_lcluster1
+				}
+				else = {
+					remove_star_flag = lcluster1
+				}
+				if = {
+					limit = { has_star_flag = touhou_before_has_lgate }
+					remove_star_flag = touhou_before_has_lgate
+				}
+				else = {
+					remove_star_flag = lgate
+				}
                 remove_star_flag = touhou_gateway_network_lgate_activated
                 every_system_megastructure = {
                     limit = {
@@ -2017,7 +2038,7 @@ touhou_gateway_config_lgate_mode = {
                     set_timed_megastructure_flag = { flag = touhou_gateway_network_configuring days = 15 }
                 }
                 if = {
-                    limit = { has_star_flag = lcluster1 }
+                    limit = { has_star_flag = lcluster1 NOT = { has_star_flag = touhou_before_has_lcluster1 } }
                     remove_star_flag = lcluster1
                 } else = {
                     set_star_flag = lcluster1
