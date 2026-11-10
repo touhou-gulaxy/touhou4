@@ -25,6 +25,8 @@ should_count_towards_leader_cap = {
         }
 		has_trait = leader_trait_paladin
 		has_trait = leader_trait_nomadic_sage
+        has_trait = leader_trait_spiritual_prodigy
+        has_trait = leader_trait_golden_generation
 		has_leader_flag = temp_contestant_admiral
     }
 }
@@ -224,4 +226,103 @@ is_delve_blocked = {
 # this = country
 is_country_psionic = {
 	always = no
+}
+
+# Scope = Country
+can_open_ideologies_tab = {
+	# always = yes
+	game_rule_can_open_ideologies_tab = yes
+}
+
+# Root/This = target colony
+# From = cultural envoy fleet
+can_cultural_envoy_convert_colony = {
+    controller? = {
+        custom_tooltip = {
+            fail_text = FLEETORDER_CULTURAL_ENVOY_CONVERT_GESTALT
+            is_gestalt = no
+        }
+        custom_tooltip = {
+            fail_text = FLEETORDER_CULTURAL_ENVOY_CONVERT_TOUHOU
+            is_touhou_player_faction = no
+        }
+        custom_tooltip = {
+            fail_text = FLEETORDER_CULTURAL_ENVOY_CONVERT_TOUHOU_CRISIS
+            is_touhou_crisis_faction = no
+        }
+        custom_tooltip = {
+            fail_text = FLEETORDER_CULTURAL_ENVOY_CONVERT_MOD_CRISIS
+            is_invisable_faction = no
+            ag_is_ancient_country = no
+            NOT = { is_variable_set = block_cultural_envoy_convert_colony }
+        }
+    }
+}
+
+# These rules lift the restriction on assigning the empire ruler to a post.
+# The leader class each post requires still applies on top of them.
+
+# This = ruler, From = fleet
+# Required leader class: Commander
+ruler_can_lead_navy = {
+    block_ruler_can_check = { type = lead_navy }
+    unlock_ruler_can_check = { type = lead_navy }
+}
+
+# This = ruler, From = fleet
+# Required leader class: Commander
+# The fleet is the transport carrying the armies, so this covers both.
+ruler_can_lead_army = {
+    block_ruler_can_check = { type = lead_army }
+    unlock_ruler_can_check = { type = lead_army }
+}
+
+# This = ruler, From = fleet
+# Required leader class: Scientist
+ruler_can_crew_science_ship = {
+    block_ruler_can_check = { type = crew_science_ship }
+    unlock_ruler_can_check = { type = crew_science_ship }
+}
+
+# This = ruler, From = fleet
+# Required leader class: Official
+ruler_can_crew_cultural_envoy = {
+    block_ruler_can_check = { type = crew_cultural_envoy }
+    unlock_ruler_can_check = { type = crew_cultural_envoy }
+}
+
+# This = ruler, From = country
+# Required leader class: Official
+ruler_can_be_assigned_to_galactic_community = {
+    block_ruler_can_check = { type = be_assigned_to_galactic_community }
+    unlock_ruler_can_check = { type = be_assigned_to_galactic_community }
+}
+
+# This = ruler, From = federation
+# Required leader class: Official
+ruler_can_be_assigned_to_federation = {
+    block_ruler_can_check = { type = be_assigned_to_federation }
+    unlock_ruler_can_check = { type = be_assigned_to_federation }
+}
+
+# This = ruler, From = ideology
+# Required leader class: Official
+ruler_can_be_ideology_advocate = {
+    block_ruler_can_check = { type = be_ideology_advocate }
+    unlock_ruler_can_check = { type = be_ideology_advocate }
+}
+
+# This = ruler, From = colony
+# Required leader class: Official, Commander or Scientist
+ruler_can_govern_planet = {
+    block_ruler_can_check = { type = govern_planet }
+    OR = {
+        unlock_ruler_can_check = { type = govern_planet }
+        owner? = {
+            has_valid_civic = civic_philosopher_king
+        }
+        from = {
+            is_capital = yes
+        }
+    }
 }
