@@ -1312,6 +1312,9 @@ country_event = { # 领袖生成时随机添加领袖种族特质
 					10 = {
 						spth_add_trait = { trait = leader_trait_th_kami }
 					}
+					10 = {
+						spth_add_trait = { trait = leader_trait_th_majo }
+					}
 					40 = {
 						spth_add_trait = { trait = leader_trait_th_yousei }
 					}
@@ -1792,6 +1795,9 @@ country_event = {
                 flag_lumiya = { touhou_effect_init_lumiya_effect = yes }
 				flag_gengetsu = { spth_effect_init_gengetsu_effect = yes }
 				flag_mugetsu = { spth_effect_init_mugetsu_effect = yes }
+				flag_lilywhite = { touhou_effect_init_lilywhite_effect = yes }
+				flag_wriggle = { spth_effect_init_wriggle_effect = yes }
+				flag_inaba = { spth_effect_init_inaba_effect = yes }
 				flag_remilia = {
 					root = {
 						spth_effect_respawn_ruler_leader = { ID = remilia }
@@ -3029,6 +3035,7 @@ country_event = {
         NOT = { has_country_flag = tech_touhou_psionic_burster }
         is_ai = no has_country_flag = has_encountered_kamikakushi_aura
     }
+	immediate = { set_country_flag = tech_touhou_psionic_burster }
     diplomatic = yes
     custom_gui = spth_event_large_window
     custom_gui_option = spth_event_large_ui_option
@@ -3359,6 +3366,73 @@ country_event = {
                 }
                 set_country_flag = toho_4227_pre_fired
                 country_event = { id = toho.4227 days = 30 random = 60 }
+            }
+            10 = {
+                modifier = { factor = 0 has_country_flag = toho_8138_fired }
+                modifier = { factor = 0 has_country_flag = th_inaba_get }
+                modifier = {
+                    factor = 0
+                    NOT = {
+                        any_owned_colony = {
+                            is_colony = yes
+                            has_deposit = d_zhulin
+                            pop_amount > 1000
+                        }
+                    }
+                }
+                random_owned_colony = {
+                    limit = {
+                        is_colony = yes
+                        has_deposit = d_zhulin
+                        pop_amount > 1000
+                    }
+                    save_global_event_target_as = toho_8138_target_@root
+                }
+                if = {
+                    limit = { exists = event_target:toho_8138_target_@root }
+                    set_country_flag = toho_8138_fired
+                    country_event = {
+                        id = toho.8138
+                        scopes = { from = event_target:toho_8138_target_@root }
+                    }
+                }
+            }
+            10 = {
+                modifier = { factor = 0 has_country_flag = toho_8143_fired }
+                modifier = { factor = 0 has_country_flag = th_wriggle_get }
+                modifier = {
+                    factor = 0
+                    NOT = {
+                        has_country_flag = th_aya_get
+                    }
+                }
+                modifier = { factor = 0 NOT = { any_owned_colony = { pop_amount > 2500 } } }
+                random_owned_colony = {
+                    limit = { is_colony = yes }
+                    save_global_event_target_as = toho_8143_target_@root
+                }
+                if = {
+                    limit = { exists = event_target:toho_8143_target_@root }
+                    set_country_flag = toho_8143_fired
+                    country_event = {
+                        id = toho.8143
+                        scopes = { from = event_target:toho_8143_target_@root }
+                    }
+                }
+            }
+            10 = {
+                modifier = { factor = 0 has_country_flag = toho_8146_fired }
+                modifier = { factor = 0 has_country_flag = th_lilywhite_get }
+                modifier = { factor = 0 NOT = { spth_is_spring = yes } }
+                modifier = {
+                    factor = 0
+                    NOT = { capital_scope = { sapient_pop_amount > 5000 } }
+                }
+                set_country_flag = toho_8146_fired
+                country_event = {
+                    id = toho.8146
+                    scopes = { from = capital_scope }
+                }
             }
 			30 = { log = "\\[This.GetName]无事发生QAQ" }
 		}
@@ -4101,6 +4175,336 @@ country_event = {
 	option = { name = toho.8137.a }
 	after = {
         add_relic = r_fantasy_mystia_drink
+	}
+}
+# 因幡帝：迷途竹林的人口失踪
+country_event = {
+	id = toho.8138
+	title = toho.8138.name
+	desc = toho.8138.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	location = from
+	picture_event_data = { room = spth_colony_settlement_room }
+	immediate = {
+		from = {
+			save_global_event_target_as = toho_8138_target_@root
+			random_owned_pop_group = {
+				limit = { pop_amount >= 100 }
+				remove_pop_amount = 100
+			}
+			add_modifier = { modifier = touhou_inaba_missing_pop_modifier }
+		}
+		enable_special_project = {
+			name = touhou_inaba_bamboo_missing
+			owner = root
+			location = event_target:toho_8138_target_@root
+		}
+	}
+	option = { name = toho.8138.a }
+}
+country_event = {
+	id = toho.8139
+	title = toho.8139.name
+	desc = toho.8139.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	location = from
+	picture_event_data = { room = spth_ship_in_orbit_2_room }
+	option = { name = toho.8139.a }
+	after = {
+		country_event = {
+			id = toho.8140
+			days = 60 random = 60
+			scopes = { from = event_target:toho_8138_target_@root }
+		}
+	}
+}
+country_event = {
+	id = toho.8140
+	title = toho.8140.name
+	desc = toho.8140.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	location = from
+	picture_event_data = { room = spth_emergency_workers_room }
+	option = { name = toho.8140.a }
+	after = {
+		from = {
+			create_pop_group = {
+				species = owner_main_species
+				size = 100
+			}
+			remove_modifier = touhou_inaba_missing_pop_modifier
+		}
+		enable_special_project = {
+			name = touhou_inaba_bamboo_legend
+			owner = root
+			location = event_target:toho_8138_target_@root
+		}
+	}
+}
+country_event = {
+	id = toho.8141
+	title = toho.8141.name
+	desc = toho.8141.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	location = from
+	picture_event_data = {
+		room = touhou_inaba_snow_room
+	}
+	option = {
+		name = toho.8141.a
+		is_dialog_only = yes
+		response_text = toho.8141.a.response
+	}
+	option = {
+		name = toho.8141.b
+		is_dialog_only = yes
+		response_text = toho.8141.b.response
+	}
+	option = {
+		name = toho.8141.c
+		is_dialog_only = yes
+		response_text = toho.8141.c.response
+	}
+	option = {
+		name = toho.8141.d
+		response_text = toho.8141.d.response
+	}
+	after = {
+		country_event = {
+			id = toho.8142
+			days = 1
+			scopes = { from = event_target:toho_8138_target_@root }
+		}
+	}
+}
+country_event = {
+	id = toho.8142
+	title = toho.8142.name
+	desc = toho.8142.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	location = from
+	picture_event_data = {
+		room = touhou_inaba_moon_room
+	}
+	immediate = { spth_effect_init_inaba_effect = yes }
+	option = { name = toho.8142.a }
+	after = {
+		clear_global_event_target = toho_8138_target_@root
+	}
+}
+
+# 莉格露：殖民地的昆虫暴发
+country_event = {
+	id = toho.8143
+	title = toho.8143.name
+	desc = toho.8143.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	location = from
+	picture_event_data = { room = spth_crimson_crawlers_room }
+	immediate = {
+		from = {
+			save_global_event_target_as = toho_8143_target_@root
+			add_modifier = { modifier = touhou_wriggle_insect_outbreak }
+		}
+	}
+	option = { name = toho.8143.a }
+	after = {
+		country_event = {
+			id = toho.8144
+			days = 90 random = 90
+			scopes = { from = event_target:toho_8143_target_@root }
+		}
+	}
+}
+country_event = {
+	id = toho.8144
+	title = toho.8144.name
+	desc = toho.8144.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	location = from
+	picture_event_data = {
+		room = touhou_wriggle_standalone_room
+	}
+	option = { name = toho.8144.a }
+	after = {
+		country_event = {
+			id = toho.8145
+			days = 45 random = 45
+			scopes = { from = event_target:toho_8143_target_@root }
+		}
+	}
+}
+country_event = {
+	id = toho.8145
+	title = toho.8145.name
+	desc = toho.8145.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	location = from
+	picture_event_data = {
+		room = spth_wriggle_com_room
+	}
+	option = {
+		name = toho.8145.a
+		is_dialog_only = yes
+		response_text = toho.8145.a.response
+	}
+	option = {
+		name = toho.8145.b
+		is_dialog_only = yes
+		response_text = toho.8145.b.response
+	}
+	option = {
+		name = toho.8145.c
+		is_dialog_only = yes
+		response_text = toho.8145.c.response
+	}
+	option = { name = toho.8145.d }
+	after = {
+		spth_effect_init_wriggle_effect = yes
+		event_target:toho_8143_target_@root = {
+			remove_modifier = touhou_wriggle_insect_outbreak
+		}
+		clear_global_event_target = toho_8143_target_@root
+	}
+}
+
+# 莉莉白：迟到的春天
+country_event = {
+	id = toho.8146
+	title = toho.8146.name
+	desc = toho.8146.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	location = from
+	picture_event_data = { room = spth_arctic_planet_room }
+	immediate = {
+		from = {
+			save_global_event_target_as = toho_8146_target_@root
+			add_modifier = { modifier = touhou_lilywhite_endless_winter }
+		}
+		enable_special_project = {
+			name = touhou_lilywhite_spring
+			owner = root
+			location = event_target:toho_8146_target_@root
+		}
+	}
+	option = { name = toho.8146.a }
+}
+country_event = {
+	id = toho.8147
+	title = toho.8147.name
+	desc = toho.8147.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	location = from
+	picture_event_data = { room = spth_astral_rift_lonely_planet_room }
+	option = { name = toho.8147.a }
+	after = {
+		enable_special_project = {
+			name = touhou_lilywhite_rescue
+			owner = root
+			location = event_target:toho_8146_target_@root
+		}
+	}
+}
+country_event = {
+	id = toho.8148
+	title = toho.8148.name
+	desc = toho.8148.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	diplomatic_title = BLANK_STRING
+	custom_gui = spth_special_diplomacy_window
+	custom_gui_option = spth_special_diplomacy_option
+	force_open = yes
+	location = from
+	picture_event_data = {
+		room = touhou_lilywhite_rescure_room
+	}
+	option = {
+		name = toho.8148.a
+		is_dialog_only = yes
+		response_text = toho.8148.a.response
+	}
+	option = {
+		name = toho.8148.b
+		is_dialog_only = yes
+		response_text = toho.8148.b.response
+	}
+	option = {
+		name = toho.8148.c
+		is_dialog_only = yes
+		response_text = toho.8148.c.response
+	}
+	option = {
+		name = toho.8148.d
+		response_text = toho.8148.d.response
+	}
+	after = {
+		country_event = {
+			id = toho.8149
+			days = 1
+			scopes = { from = event_target:toho_8146_target_@root }
+		}
+	}
+}
+country_event = {
+	id = toho.8149
+	title = toho.8149.name
+	desc = toho.8149.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	location = from
+	picture_event_data = {
+		room = hakuri_shrine_night_room
+		portrait = spth_por_lilywhite
+	}
+	immediate = {
+		spth_effect_init_lilywhite_effect = yes
+		add_monthly_resource_mult = { resource = energy value = 12 min = 3000 }
+		add_monthly_resource_mult = { resource = minerals value = 12 min = 3000 }
+		add_monthly_resource_mult = { resource = alloys value = 12 min = 1500 }
+	}
+	option = { name = toho.8149.a }
+	after = {
+		event_target:toho_8146_target_@root = {
+			remove_modifier = touhou_lilywhite_endless_winter
+		}
+		clear_global_event_target = toho_8146_target_@root
 	}
 }
 

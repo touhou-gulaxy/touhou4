@@ -337,7 +337,7 @@ spth_armor_shield_efficiency_system_check = {
     export_trigger_value_to_variable = {
         trigger = count_owned_ship
         variable = spth_armor_efficiency_count
-        parameters = { limit = { check_modifier_value = { modifier = ship_spth_shield_efficiency value > 0 } } }
+        parameters = { limit = { check_modifier_value = { modifier = ship_spth_armor_efficiency value > 0 } } }
     }
     touhou_stop_global_modifier_system = yes
     if = {
@@ -396,6 +396,29 @@ spth_armor_shield_efficiency_system_check_enemy = {
         set_ship_flag = has_spth_shield_efficiency_debuff
         set_ship_flag = has_spth_armor_efficiency_debuff
         spth_armor_shield_efficiency_system_debuff = yes
+		if = {
+			limit = { NOT = { is_ship_size = spth_kamikakushi_cruiser } }
+			if = {
+				limit = {
+					is_variable_set = spth_shield_damage_debuff_threshold
+					check_modifier_value = {
+						modifier = ship_shield_damage_mult
+						value > spth_shield_damage_debuff_threshold
+					}
+				}
+				add_modifier = { modifier = spth_shield_efficiency_debuff multiplier = value:spth_shield_damage_debuff_value }
+			}
+			if = {
+				limit = {
+					is_variable_set = spth_armor_damage_debuff_threshold
+					check_modifier_value = {
+						modifier = ship_armor_damage_mult
+						value > spth_armor_damage_debuff_threshold
+					}
+				}
+				add_modifier = { modifier = spth_armor_efficiency_debuff multiplier = value:spth_armor_damage_debuff_value }
+			}
+		}
     }
     touhou_resume_global_modifier_system = yes
 }
@@ -1208,15 +1231,21 @@ spth_kamikakushi_cruiser_arua_protect_effect = {
 }
 spth_kamikakushi_cruiser_arua_protect_effect_ship = {
 	optimize_memory
-	if = {
-		limit = { fleet = { spth_kamikakushi_cruiser_arua_protect_close = no } }
-		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_damage }
-		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_fire_rate_mult }
-		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_tracking_mult }
-		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_accuracy_mult }
-		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_range_mult }
-		spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_evasion_mult }
-	}
+	# if = {
+	# 	limit = { fleet = { spth_kamikakushi_cruiser_arua_protect_close = no } }
+	# 	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_damage }
+	# 	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_fire_rate_mult }
+	# 	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_tracking_mult }
+	# 	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_accuracy_mult }
+	# 	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_range_mult }
+	# 	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_evasion_mult }
+	# }
+	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_damage }
+	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_fire_rate_mult }
+	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_tracking_mult }
+	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_accuracy_mult }
+	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_weapon_range_mult }
+	spth_kamikakushi_cruiser_arua_protect_item =  { modifier = ship_evasion_mult }
 }
 
 spth_always_remove_modifer = {

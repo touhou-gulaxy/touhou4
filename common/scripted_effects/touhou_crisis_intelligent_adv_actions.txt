@@ -1,0 +1,2106 @@
+# Advanced crisis fleet movement.
+#
+# Priorities:
+# 1. Role-specific escalation: escort, portal rescue, or nearby reinforcement.
+# 2. Reinforce a friendly crisis fleet that is already fighting.
+# 3. Target nearby hostile colonies from a limited bombardment fleet pool.
+# 4. Attack adjacent hostile colonies, starbases, and fleets before expansion.
+# 5. Concentrate on a local or nearby system containing several hostile fleets.
+# 6. Distribute the remaining fleets over unclaimed systems.
+#
+# Parameters for the main movement effects:
+#   ID    - event namespace, whose .12 event schedules another fleet action
+#   TYPE  - namespace used in ownership variable names
+#   OWNER - country event target of the crisis
+
+# Find a friendly fleet that is fighting and has not yet reached the support cap.
+# Pick the closest eligible system so fleets do not cross the galaxy to reinforce.
+# The target is saved as touhou_adv_support_target.
+touhou_adv_find_support_target = {
+    optimize_memory
+    # Avoid a galaxy-scale closest_system scan when no friendly fleet is fighting.
+    if = {
+        limit = {
+            owner = {
+                any_owned_fleet = {
+                    NOT = { is_same_value = root }
+                    exists = solar_system
+                    NOT = { is_same_value = root.solar_system }
+                    distance = {
+                        source = root.solar_system
+                        type = hyperlane
+                        use_bypasses = yes
+                        min_jumps = 1
+                        max_jumps = $MAX_STEPS$
+                    }
+                    is_in_combat = yes
+                    any_owned_ship = {
+                        is_disabled = no
+                        is_ship_class = shipclass_military
+                    }
+                    OR = {
+                        root = {
+                            NOT = {
+                                is_variable_set = touhou_adv_support_portal_only
+                            }
+                        }
+                        check_variable = {
+                            which = touhou_adv_pathfinder_fleetpower
+                            value = @touhou_adv_pathfinder_fleetpower_portal_fleet
+                        }
+                    }
+                }
+            }
+        }
+        closest_system = {
+            max_steps = $MAX_STEPS$
+            use_bypasses = yes
+            limit = {
+                NOT = { is_same_value = root.solar_system }
+                exists = star
+                OR = {
+                    NOT = { is_variable_set = touhou_adv_support_count }
+                    check_variable = {
+                        which = touhou_adv_support_count
+                        value <= 0
+                    }
+                }
+                any_fleet_in_system = {
+                    controller? = { is_same_value = event_target:$OWNER$ }
+                    is_in_combat = yes
+                    any_owned_ship = {
+                        is_disabled = no
+                        is_ship_class = shipclass_military
+                    }
+                    OR = {
+                        NOT = {
+                            root = {
+                                is_variable_set = touhou_adv_support_portal_only
+                            }
+                        }
+                        check_variable = {
+                            which = touhou_adv_pathfinder_fleetpower
+                            value = @touhou_adv_pathfinder_fleetpower_portal_fleet
+                        }
+                    }
+                }
+                count_fleet_in_system = {
+                    count >= 1
+                    limit = {
+                        controller? = { is_hostile = event_target:$OWNER$ }
+                        any_owned_ship = {
+                            is_disabled = no
+                            is_ship_class = shipclass_military
+                        }
+                    }
+                }
+                # At most three crisis fleets, including the fleet being reinforced.
+                count_fleet_in_system = {
+                    count < 3
+                    limit = {
+                        controller? = { is_same_value = event_target:$OWNER$ }
+                        any_owned_ship = {
+                            is_disabled = no
+                            is_ship_class = shipclass_military
+                        }
+                    }
+                }
+                root = { can_access_system = prev }
+            }
+            save_event_target_as = touhou_adv_support_target
+            set_variable = {
+                which = touhou_adv_$TYPE$_support_@root
+                value = 1
+            }
+            set_variable = {
+                which = touhou_adv_support_count
+                value = 1
+            }
+            system_event = {
+                id = spth_fleet.2051
+                days = 90
+                scopes = { from = root }
+            }
+        }
+    }
+}
+
+# Claim a system for one distributed attacker.
+# The claimant is encoded in the variable name. The count variable is only an
+# occupancy index and lets the same fleet recognize and continue its own claim.
+touhou_adv_claim_distributed_system = {
+    optimize_memory
+    if = {
+        limit = {
+            exists = star
+            NOT = {
+                is_variable_set = touhou_adv_$TYPE$_claim_@root
+            }
+        }
+        set_variable = {
+            which = touhou_adv_$TYPE$_claim_@root
+            value = 1
+        }
+        if = {
+            limit = { is_variable_set = touhou_adv_claim_count }
+            add_variable = {
+                which = touhou_adv_claim_count
+                value = 1
+            }
+        }
+        else = {
+            set_variable = {
+                which = touhou_adv_claim_count
+                value = 1
+            }
+        }
+        system_event = {
+            id = spth_fleet.2050
+            days = $DAYS$
+            scopes = { from = root }
+        }
+    }
+}
+
+# Reserve one of two inbound reinforcement slots for a concentrated attack.
+# A hotspot can still have one local fleet plus two incoming fleets.
+touhou_adv_claim_concentrated_system = {
+    optimize_memory
+    if = {
+        limit = {
+            exists = star
+            OR = {
+                NOT = {
+                    is_variable_set = touhou_adv_concentrate_count_0
+                }
+                check_variable = {
+                    which = touhou_adv_concentrate_count_0
+                    value <= 0
+                }
+            }
+        }
+        set_variable = {
+            which = touhou_adv_$TYPE$_concentrate_0_@root
+            value = 1
+        }
+        set_variable = {
+            which = touhou_adv_concentrate_count_0
+            value = 1
+        }
+        system_event = {
+            id = spth_fleet.2052
+            days = 90
+            scopes = { from = root }
+        }
+    }
+    else_if = {
+        limit = {
+            exists = star
+            OR = {
+                NOT = {
+                    is_variable_set = touhou_adv_concentrate_count_1
+                }
+                check_variable = {
+                    which = touhou_adv_concentrate_count_1
+                    value <= 0
+                }
+            }
+        }
+        set_variable = {
+            which = touhou_adv_$TYPE$_concentrate_1_@root
+            value = 1
+        }
+        set_variable = {
+            which = touhou_adv_concentrate_count_1
+            value = 1
+        }
+        system_event = {
+            id = spth_fleet.2053
+            days = 90
+            scopes = { from = root }
+        }
+    }
+}
+
+# Events cannot receive script parameters, so expiry events call these helpers to
+# clear every TYPE-specific variable name that the fleet passed as FROM may own.
+# Add any new touhou_adv_fleet_action TYPE to the relevant list.
+touhou_adv_clear_distributed_claim_marker = {
+    if = {
+        limit = { exists = from }
+        clear_variable = touhou_adv_makai_defence_system_claim_@from
+        clear_variable = touhou_adv_touhou_hostile_faction_type_lunar_capital_psi_before_claim_@from
+        clear_variable = touhou_adv_touhou_hostile_faction_claim_@from
+        clear_variable = touhou_adv_spth_auto_combat_player_claim_@from
+        clear_variable = touhou_adv_touhou_awaken_empire_claim_@from
+        clear_variable = touhou_adv_spth_kamikaushi_claim_@from
+        clear_variable = touhou_adv_spth_lunar_psi_claim_@from
+        clear_variable = touhou_adv_touhou_mirror_empire_claim_@from
+    }
+}
+
+touhou_adv_clear_support_marker = {
+    if = {
+        limit = { exists = from }
+        clear_variable = touhou_adv_makai_defence_system_support_@from
+        clear_variable = touhou_adv_touhou_hostile_faction_type_lunar_capital_psi_before_support_@from
+        clear_variable = touhou_adv_touhou_hostile_faction_support_@from
+        clear_variable = touhou_adv_spth_auto_combat_player_support_@from
+        clear_variable = touhou_adv_touhou_awaken_empire_support_@from
+        clear_variable = touhou_adv_spth_kamikaushi_support_@from
+        clear_variable = touhou_adv_spth_lunar_psi_support_@from
+        clear_variable = touhou_adv_touhou_mirror_empire_support_@from
+    }
+}
+
+touhou_adv_clear_concentrate_marker_0 = {
+    if = {
+        limit = { exists = from }
+        clear_variable = touhou_adv_makai_defence_system_concentrate_0_@from
+        clear_variable = touhou_adv_touhou_hostile_faction_type_lunar_capital_psi_before_concentrate_0_@from
+        clear_variable = touhou_adv_touhou_hostile_faction_concentrate_0_@from
+        clear_variable = touhou_adv_spth_auto_combat_player_concentrate_0_@from
+        clear_variable = touhou_adv_touhou_awaken_empire_concentrate_0_@from
+        clear_variable = touhou_adv_spth_kamikaushi_concentrate_0_@from
+        clear_variable = touhou_adv_spth_lunar_psi_concentrate_0_@from
+        clear_variable = touhou_adv_touhou_mirror_empire_concentrate_0_@from
+    }
+}
+
+touhou_adv_clear_concentrate_marker_1 = {
+    if = {
+        limit = { exists = from }
+        clear_variable = touhou_adv_makai_defence_system_concentrate_1_@from
+        clear_variable = touhou_adv_touhou_hostile_faction_type_lunar_capital_psi_before_concentrate_1_@from
+        clear_variable = touhou_adv_touhou_hostile_faction_concentrate_1_@from
+        clear_variable = touhou_adv_spth_auto_combat_player_concentrate_1_@from
+        clear_variable = touhou_adv_touhou_awaken_empire_concentrate_1_@from
+        clear_variable = touhou_adv_spth_kamikaushi_concentrate_1_@from
+        clear_variable = touhou_adv_spth_lunar_psi_concentrate_1_@from
+        clear_variable = touhou_adv_touhou_mirror_empire_concentrate_1_@from
+    }
+}
+
+touhou_adv_create_jump_particle_effect = {
+    optimize_memory
+    create_ambient_object = {
+        type = horror_spawn_object
+        location = this
+        use_3d_location = yes
+        entity_offset = { min = 0 max = 0 }
+        entity_offset_angle = { min = 0 max = 0 }
+        entity_offset_height = { min = 0 max = 0 }
+        entity_scale_to_size = yes
+        scale = 0.05
+    }
+}
+
+# Apply the normal cooldown, or the reduced cooldown from Flying Fantastica
+# without the jump-drive debuff. This must run in fleet scope.
+touhou_adv_apply_jump_drive_cooldown = {
+    optimize_memory
+    if = {
+        limit = {
+            has_global_flag = touhou_kamikakushi_extra_12
+            owner? = {
+                OR = {
+                    is_country_type = spth_kamikakushi_invader
+                    is_country_type = spth_makai_defence_system
+                    is_country_type = spth_makai_defence_system_crisis
+                    is_country_type = spth_kamikakushi_country
+                }
+            }
+        }
+        while = {
+            limit = {
+                any_owned_ship = {
+                    NOT = { has_ship_flag = ag_jump_drive_cooldown }
+                }
+            }
+            random_owned_ship = {
+                limit = {
+                    NOT = { has_ship_flag = ag_jump_drive_cooldown }
+                }
+                set_timed_ship_flag = {
+                    flag = ag_jump_drive_cooldown
+                    days = 40
+                }
+            }
+        }
+    }
+    else = {
+        while = {
+            limit = {
+                any_owned_ship = {
+                    NOT = { has_ship_flag = ag_jump_drive_cooldown }
+                }
+            }
+            random_owned_ship = {
+                limit = {
+                    NOT = { has_ship_flag = ag_jump_drive_cooldown }
+                }
+                set_timed_ship_flag = {
+                    flag = ag_jump_drive_cooldown
+                    days = 200
+                }
+                add_modifier = {
+                    modifier = jump_drive_cooldown
+                    days = 200
+                }
+            }
+        }
+    }
+}
+
+touhou_adv_jump_drive_planet_action = {
+    optimize_memory
+    random_list = {
+        80 = {
+            prevprev = {
+                auto_move_to_planet = {
+                    target = prev
+                    clear_auto_move_on_arrival = yes
+                }
+            }
+        }
+        20 = {
+            modifier = {
+                factor = 0
+                prevprev = {
+                    any_owned_ship = { has_ship_flag = ag_jump_drive_cooldown }
+                }
+            }
+            modifier = {
+                factor = 3
+                prevprev = {
+                    has_global_flag = touhou_kamikakushi_extra_12
+                    owner? = {
+                        OR = {
+                            is_country_type = spth_kamikakushi_invader
+                            is_country_type = spth_makai_defence_system
+                            is_country_type = spth_makai_defence_system_crisis
+                            is_country_type = spth_kamikakushi_country
+                        }
+                    }
+                }
+            }
+            prevprev = {
+                set_location = { target = prev distance = 300 angle = random }
+                every_owned_ship = { touhou_adv_create_jump_particle_effect = yes }
+                touhou_adv_apply_jump_drive_cooldown = yes
+                auto_move_to_planet = {
+                    target = prev
+                    clear_auto_move_on_arrival = yes
+                }
+            }
+        }
+    }
+}
+
+touhou_adv_jump_drive_fleet_action = {
+    optimize_memory
+    random_list = {
+        75 = {
+            prevprev = {
+                auto_follow_fleet = { target = prev attack_fleet = yes }
+            }
+        }
+        25 = {
+            modifier = {
+                factor = 0
+                prevprev = {
+                    any_owned_ship = { has_ship_flag = ag_jump_drive_cooldown }
+                }
+            }
+            modifier = {
+                factor = 3
+                prevprev = {
+                    has_global_flag = touhou_kamikakushi_extra_12
+                    owner? = {
+                        OR = {
+                            is_country_type = spth_kamikakushi_invader
+                            is_country_type = spth_makai_defence_system
+                            is_country_type = spth_makai_defence_system_crisis
+                            is_country_type = spth_kamikakushi_country
+                        }
+                    }
+                }
+            }
+            prevprev = {
+                set_location = { target = prev distance = 200 angle = random }
+                every_owned_ship = { touhou_adv_create_jump_particle_effect = yes }
+                touhou_adv_apply_jump_drive_cooldown = yes
+                auto_follow_fleet = { target = prev attack_fleet = yes }
+            }
+        }
+    }
+}
+
+# Fallback movement. The caller must only invoke this while the fleet is idle.
+touhou_adv_fleet_wandering_action = {
+    optimize_memory
+    random_list = {
+        # Prefer an unclaimed neighboring system.
+        80 = {
+            solar_system = {
+                random_neighbor_system = {
+                    limit = {
+                        exists = star
+                        OR = {
+                            NOT = {
+                                is_variable_set = touhou_adv_claim_count
+                            }
+                            check_variable = {
+                                which = touhou_adv_claim_count
+                                value <= 0
+                            }
+                            is_variable_set = touhou_adv_$TYPE$_claim_@root
+                        }
+                        root = { can_access_system = prev }
+                    }
+                    save_event_target_as = touhou_adv_target_system
+                }
+            }
+            if = {
+                limit = { exists = event_target:touhou_adv_target_system }
+                event_target:touhou_adv_target_system = {
+                    touhou_adv_claim_distributed_system = {
+                        TYPE = $TYPE$
+                        DAYS = 180
+                    }
+                }
+                auto_move_to_planet = {
+                    target = event_target:touhou_adv_target_system.star
+                    clear_auto_move_on_arrival = yes
+                }
+            }
+            else = {
+                fleet_event = { id = $ID$.12 days = 30 random = 30 }
+            }
+        }
+        # Emergency dispersal. This keeps set_location exclusively as a jump,
+        # never as an ordinary waypoint.
+        20 = {
+            modifier = {
+                factor = 0
+                any_owned_ship = { has_ship_flag = ag_jump_drive_cooldown }
+            }
+            random_system = {
+                limit = {
+                    exists = star
+                    NOT = { is_same_value = prev.solar_system }
+                    OR = {
+                        NOT = {
+                            is_variable_set = touhou_adv_claim_count
+                        }
+                        check_variable = {
+                            which = touhou_adv_claim_count
+                            value <= 0
+                        }
+                        is_variable_set = touhou_adv_$TYPE$_claim_@root
+                    }
+                    OR = {
+                        AND = {
+                            exists = starbase
+                            starbase = {
+                                exists = owner
+                                owner = { is_hostile = event_target:$OWNER$ }
+                            }
+                        }
+                        any_system_planet = {
+                            exists = controller
+                            controller = { is_hostile = event_target:$OWNER$ }
+                            OR = {
+                                is_colony = yes
+                                is_under_colonization = yes
+                            }
+                        }
+                        any_fleet_in_system = {
+                            controller? = { is_hostile = event_target:$OWNER$ }
+                            any_owned_ship = {
+                                is_disabled = no
+                                is_ship_class = shipclass_military
+                            }
+                        }
+                    }
+                }
+                save_event_target_as = touhou_adv_target_system
+            }
+            if = {
+                limit = { exists = event_target:touhou_adv_target_system }
+                event_target:touhou_adv_target_system = {
+                    touhou_adv_claim_distributed_system = {
+                        TYPE = $TYPE$
+                        DAYS = 180
+                    }
+                    star = {
+                        root = {
+                            set_location = {
+                                target = prev
+                                distance = 300
+                                angle = random
+                            }
+                            every_owned_ship = {
+                                touhou_adv_create_jump_particle_effect = yes
+                            }
+                            touhou_adv_apply_jump_drive_cooldown = yes
+                            auto_move_to_planet = {
+                                target = prev
+                                clear_auto_move_on_arrival = yes
+                            }
+                        }
+                    }
+                }
+            }
+            else = {
+                fleet_event = { id = $ID$.12 days = 30 random = 30 }
+            }
+        }
+    }
+}
+
+# A pathfinder value of 1 may escort one unclaimed value-2 fleet. The leader
+# stores the reservation and the follower stores the resulting fleet order.
+touhou_adv_try_follow_power_two = {
+    if = {
+        limit = {
+            NOT = { is_variable_set = touhou_adv_bombarding }
+            check_variable = {
+                which = touhou_adv_pathfinder_fleetpower
+                value = @touhou_adv_pathfinder_fleetpower_vangard_fleet
+            }
+        }
+        owner = {
+            random_owned_fleet = {
+                limit = {
+                    NOT = { is_same_value = root }
+                    exists = solar_system
+                    check_variable = {
+                        which = touhou_adv_pathfinder_fleetpower
+                        value = @touhou_adv_pathfinder_fleetpower_mainforce_fleet
+                    }
+                    NOT = {
+                        is_variable_set = touhou_adv_follower_claim
+                    }
+                }
+                save_event_target_as = touhou_adv_follow_leader_fleet
+            }
+        }
+        if = {
+            limit = { exists = event_target:touhou_adv_follow_leader_fleet }
+            event_target:touhou_adv_follow_leader_fleet = {
+                set_variable = {
+                    which = touhou_adv_follower_claim
+                    value = 1
+                }
+                fleet_event = {
+                    id = spth_fleet.2054
+                    days = 360
+                }
+            }
+            auto_follow_fleet = {
+                target = event_target:touhou_adv_follow_leader_fleet
+                attack_fleet = no
+            }
+            set_variable = {
+                which = touhou_adv_action_handled
+                value = 1
+            }
+        }
+    }
+}
+
+# Vanguards attack an enemy military fleet in the current system before
+# considering an adjacent hostile system. Nearby hostile colonies are handled
+# by touhou_adv_try_start_bombardment before this effect is called.
+touhou_adv_try_vanguard_attack_nearby_fleet = {
+    optimize_memory
+    if = {
+        limit = {
+            NOT = { is_variable_set = touhou_adv_bombarding }
+            exists = solar_system
+            solar_system = {
+                any_fleet_in_system = {
+                    controller? = {
+                        is_hostile = event_target:$OWNER$
+                    }
+                    any_owned_ship = {
+                        is_disabled = no
+                        is_ship_class = shipclass_military
+                    }
+                }
+            }
+        }
+        solar_system = {
+            random_fleet_in_system = {
+                limit = {
+                    controller? = {
+                        is_hostile = event_target:$OWNER$
+                    }
+                    any_owned_ship = {
+                        is_disabled = no
+                        is_ship_class = shipclass_military
+                    }
+                }
+                prevprev = {
+                    auto_follow_fleet = {
+                        target = prev
+                        attack_fleet = yes
+                    }
+                }
+            }
+        }
+        set_variable = {
+            which = touhou_adv_action_handled
+            value = 1
+        }
+    }
+    [[!LOCAL_ONLY]
+    if = {
+        limit = {
+            NOT = { is_variable_set = touhou_adv_action_handled }
+            NOT = { is_variable_set = touhou_adv_bombarding }
+            exists = solar_system
+            solar_system = {
+                any_neighbor_system = {
+                    exists = star
+                    any_fleet_in_system = {
+                        controller? = {
+                            is_hostile = event_target:$OWNER$
+                        }
+                        any_owned_ship = {
+                            is_disabled = no
+                            is_ship_class = shipclass_military
+                        }
+                    }
+                }
+            }
+        }
+        solar_system = {
+            random_neighbor_system = {
+                limit = {
+                    exists = star
+                    any_fleet_in_system = {
+                        controller? = {
+                            is_hostile = event_target:$OWNER$
+                        }
+                        any_owned_ship = {
+                            is_disabled = no
+                            is_ship_class = shipclass_military
+                        }
+                    }
+                    root = { can_access_system = prev }
+                }
+                save_event_target_as = touhou_adv_target_system
+            }
+        }
+        if = {
+            limit = { exists = event_target:touhou_adv_target_system }
+            event_target:touhou_adv_target_system = {
+                touhou_adv_claim_distributed_system = {
+                    TYPE = $TYPE$
+                    DAYS = 180
+                }
+            }
+            auto_move_to_planet = {
+                target = event_target:touhou_adv_target_system.star
+                clear_auto_move_on_arrival = yes
+            }
+            set_variable = {
+                which = touhou_adv_action_handled
+                value = 1
+            }
+        }
+    }
+    ]
+}
+
+# Value-1 fleets that cannot escort a value-2 fleet prefer nearby hostile
+# strategic systems, then fall back to nearby unowned space.
+touhou_adv_find_nearest_open_system = {
+    optimize_memory
+    if = {
+        limit = { exists = solar_system }
+        closest_system = {
+            max_steps = $MAX_STEPS$
+            use_bypasses = yes
+            limit = {
+                NOT = { is_same_value = root.solar_system }
+                exists = star
+                OR = {
+                    NOT = { is_variable_set = touhou_adv_claim_count }
+                    check_variable = {
+                        which = touhou_adv_claim_count
+                        value <= 0
+                    }
+                    is_variable_set = touhou_adv_$TYPE$_claim_@root
+                }
+                OR = {
+                    AND = {
+                        exists = owner
+                        owner = { is_hostile = event_target:$OWNER$ }
+                    }
+                    AND = {
+                        exists = starbase
+                        starbase = {
+                            exists = owner
+                            owner = { is_hostile = event_target:$OWNER$ }
+                        }
+                    }
+                    any_system_planet = {
+                        exists = controller
+                        controller = {
+                            is_hostile = event_target:$OWNER$
+                        }
+                        OR = {
+                            is_colony = yes
+                            is_under_colonization = yes
+                        }
+                    }
+                    any_fleet_in_system = {
+                        controller? = {
+                            is_hostile = event_target:$OWNER$
+                        }
+                        any_owned_ship = {
+                            is_disabled = no
+                            is_ship_class = shipclass_military
+                        }
+                    }
+                }
+                count_fleet_in_system = {
+                    count < 2
+                    limit = {
+                        controller? = {
+                            is_hostile = event_target:$OWNER$
+                        }
+                        any_owned_ship = {
+                            is_disabled = no
+                            is_ship_class = shipclass_military
+                        }
+                    }
+                }
+                root = { can_access_system = prev }
+            }
+            save_event_target_as = touhou_adv_open_system
+        }
+        if = {
+            limit = {
+                NOT = { exists = event_target:touhou_adv_open_system }
+            }
+            closest_system = {
+                max_steps = $MAX_STEPS$
+                use_bypasses = yes
+                limit = {
+                    NOT = { is_same_value = root.solar_system }
+                    exists = star
+                    NOT = { exists = owner }
+                    OR = {
+                        NOT = { is_variable_set = touhou_adv_claim_count }
+                        check_variable = {
+                            which = touhou_adv_claim_count
+                            value <= 0
+                        }
+                        is_variable_set = touhou_adv_$TYPE$_claim_@root
+                    }
+                    count_fleet_in_system = {
+                        count < 2
+                        limit = {
+                            controller? = {
+                                is_hostile = event_target:$OWNER$
+                            }
+                            any_owned_ship = {
+                                is_disabled = no
+                                is_ship_class = shipclass_military
+                            }
+                        }
+                    }
+                    root = { can_access_system = prev }
+                }
+                save_event_target_as = touhou_adv_open_system
+            }
+        }
+        if = {
+            limit = { exists = event_target:touhou_adv_open_system }
+            event_target:touhou_adv_open_system = {
+                touhou_adv_claim_distributed_system = {
+                    TYPE = $TYPE$
+                    DAYS = 180
+                }
+            }
+            auto_move_to_planet = {
+                target = event_target:touhou_adv_open_system.star
+                clear_auto_move_on_arrival = yes
+            }
+            set_variable = {
+                which = touhou_adv_action_handled
+                value = 1
+            }
+        }
+    }
+}
+
+# Assign at most a small number of fleets to hostile planets. A planet already
+# orbited by another crisis fleet is excluded, and the lease prevents a large
+# portion of the crisis navy from being consumed by bombardment duty.
+touhou_adv_assign_bombard_target = {
+    optimize_memory
+    if = {
+        limit = {
+            exists = event_target:touhou_adv_bombard_target_system
+        }
+        event_target:touhou_adv_bombard_target_system = {
+            touhou_adv_claim_distributed_system = {
+                TYPE = $TYPE$
+                DAYS = 180
+            }
+            random_system_planet = {
+                limit = {
+                    exists = controller
+                    controller = { is_hostile = event_target:$OWNER$ }
+                    OR = {
+                        is_colony = yes
+                        is_under_colonization = yes
+                    }
+                    count_fleet_in_orbit = {
+                        count = 0
+                        limit = {
+                            exists = owner
+                            owner = {
+                                is_same_value = event_target:$OWNER$
+                            }
+                            NOT = { is_same_value = root }
+                        }
+                    }
+                }
+                touhou_adv_jump_drive_planet_action = yes
+            }
+        }
+        set_variable = {
+            which = touhou_adv_bombarding
+            value = 1
+        }
+        owner = {
+            if = {
+                limit = {
+                    is_variable_set = touhou_adv_bombard_count
+                }
+                add_variable = {
+                    which = touhou_adv_bombard_count
+                    value = 1
+                }
+            }
+            else = {
+                set_variable = {
+                    which = touhou_adv_bombard_count
+                    value = 1
+                }
+            }
+            country_event = {
+                id = spth_fleet.2055
+                days = 360
+                scopes = { from = root }
+            }
+        }
+        set_variable = {
+            which = touhou_adv_action_handled
+            value = 1
+        }
+    }
+}
+
+touhou_adv_try_start_bombardment = {
+    optimize_memory
+    if = {
+        limit = {
+            has_global_flag = spth_kamikaushi_crisis_start
+            exists = solar_system
+            NOT = { is_variable_set = touhou_adv_bombarding }
+            NOT = {
+                check_variable = {
+                    which = touhou_adv_pathfinder_fleetpower
+                    value = @touhou_adv_pathfinder_fleetpower_portal_fleet
+                }
+            }
+            NOT = {
+                check_variable = {
+                    which = touhou_adv_pathfinder_fleetpower
+                    value = @touhou_adv_pathfinder_fleetpower_flagship_fleet
+                }
+            }
+            owner = {
+                OR = {
+                    NOT = {
+                        is_variable_set = touhou_adv_bombard_count
+                    }
+                    check_variable = {
+                        which = touhou_adv_bombard_count
+                        value < @touhou_adv_bombard_fleet_limit
+                    }
+                }
+            }
+        }
+        # closest_system starts at one jump away, so handle the current system
+        # explicitly after the fleet clears a hostile starbase.
+        if = {
+            limit = {
+                solar_system = {
+                    exists = star
+                    OR = {
+                        NOT = { is_variable_set = touhou_adv_claim_count }
+                        check_variable = {
+                            which = touhou_adv_claim_count
+                            value <= 0
+                        }
+                        is_variable_set = touhou_adv_$TYPE$_claim_@root
+                    }
+                    any_system_planet = {
+                        exists = controller
+                        controller = { is_hostile = event_target:$OWNER$ }
+                        OR = {
+                            is_colony = yes
+                            is_under_colonization = yes
+                        }
+                        count_fleet_in_orbit = {
+                            count = 0
+                            limit = {
+                                exists = owner
+                                owner = {
+                                    is_same_value = event_target:$OWNER$
+                                }
+                                NOT = { is_same_value = root }
+                            }
+                        }
+                    }
+                }
+            }
+            solar_system = {
+                save_event_target_as = touhou_adv_bombard_target_system
+            }
+        }
+        [[!LOCAL_ONLY]
+        else = {
+            closest_system = {
+                max_steps = $MAX_STEPS$
+                use_bypasses = yes
+                limit = {
+                    exists = star
+                    OR = {
+                        NOT = { is_variable_set = touhou_adv_claim_count }
+                        check_variable = {
+                            which = touhou_adv_claim_count
+                            value <= 0
+                        }
+                        is_variable_set = touhou_adv_$TYPE$_claim_@root
+                    }
+                    any_system_planet = {
+                        exists = controller
+                        controller = { is_hostile = event_target:$OWNER$ }
+                        OR = {
+                            is_colony = yes
+                            is_under_colonization = yes
+                        }
+                        count_fleet_in_orbit = {
+                            count = 0
+                            limit = {
+                                exists = owner
+                                owner = {
+                                    is_same_value = event_target:$OWNER$
+                                }
+                                NOT = { is_same_value = root }
+                            }
+                        }
+                    }
+                    root = { can_access_system = prev }
+                }
+                save_event_target_as = touhou_adv_bombard_target_system
+            }
+        }
+        ]
+        touhou_adv_assign_bombard_target = {
+            TYPE = $TYPE$
+            OWNER = $OWNER$
+        }
+    }
+}
+
+touhou_adv_fleet_action = {
+    optimize_memory
+    if = {
+        limit = {
+            OR = {
+                NOT = { is_fleet_idle = yes }
+                has_fleet_flag = touhou_adv_pathfinder_action_recent
+            }
+        }
+        # Do not overwrite an order that is already progressing, and coalesce
+        # duplicate delayed events generated by arrival, combat, and spawning.
+    }
+    else = {
+        set_timed_fleet_flag = {
+            flag = touhou_adv_pathfinder_action_recent
+            days = @touhou_adv_pathfinder_action_cooldown_days
+        }
+        if = { limit = { is_variable_set = touhou_adv_action_handled } clear_variable = touhou_adv_action_handled }
+        if = {
+            limit = {
+                exists = orbit
+                orbit = {
+                    OR = {
+                        is_colony = yes
+                        is_under_colonization = yes
+                    }
+                    exists = controller
+                    controller = {
+                        is_hostile = event_target:$OWNER$
+                    }
+                }
+            }
+            set_variable = {
+                which = touhou_adv_action_handled
+                value = 1
+            }
+        }
+        if = {
+            limit = {
+                NOT = { is_variable_set = touhou_adv_action_handled }
+                check_variable = {
+                    which = touhou_adv_pathfinder_fleetpower
+                    value = @touhou_adv_pathfinder_fleetpower_vangard_fleet
+                }
+            }
+            # Check the current system and its immediate neighbors before
+            # allowing a vanguard to escort a main-force fleet.
+            touhou_adv_try_start_bombardment = {
+                TYPE = $TYPE$
+                OWNER = $OWNER$
+                MAX_STEPS = @touhou_adv_nearby_colony_max_steps
+                LOCAL_ONLY = yes
+            }
+            if = {
+                limit = {
+                    NOT = { is_variable_set = touhou_adv_action_handled }
+                }
+                touhou_adv_try_vanguard_attack_nearby_fleet = {
+                    TYPE = $TYPE$
+                    OWNER = $OWNER$
+                    LOCAL_ONLY = yes
+                }
+            }
+            if = {
+                limit = {
+                    NOT = { is_variable_set = touhou_adv_action_handled }
+                }
+                touhou_adv_try_start_bombardment = {
+                    TYPE = $TYPE$
+                    OWNER = $OWNER$
+                    MAX_STEPS = 1
+                }
+            }
+            if = {
+                limit = {
+                    NOT = { is_variable_set = touhou_adv_action_handled }
+                }
+                touhou_adv_try_vanguard_attack_nearby_fleet = {
+                    TYPE = $TYPE$
+                    OWNER = $OWNER$
+                }
+            }
+        }
+        if = {
+            limit = {
+                NOT = { is_variable_set = touhou_adv_action_handled }
+            }
+            touhou_adv_try_follow_power_two = yes
+        }
+
+        if = {
+            limit = {
+                NOT = { is_variable_set = touhou_adv_action_handled }
+            }
+            if = {
+                limit = { exists = solar_system }
+                # A local hostile colony takes precedence over strategic
+                # dispersal and ordinary support for vanguards and default fleets.
+                if = {
+                    limit = {
+                        NOT = {
+                            check_variable = {
+                                which = touhou_adv_pathfinder_fleetpower
+                                value = @touhou_adv_pathfinder_fleetpower_mainforce_fleet
+                            }
+                        }
+                        NOT = {
+                            check_variable = {
+                                which = touhou_adv_pathfinder_fleetpower
+                                value = @touhou_adv_pathfinder_fleetpower_battlegroup_fleet
+                            }
+                        }
+                        NOT = {
+                            check_variable = {
+                                which = touhou_adv_pathfinder_fleetpower
+                                value = @touhou_adv_pathfinder_fleetpower_flagship_fleet
+                            }
+                        }
+                        NOT = {
+                            check_variable = {
+                                which = touhou_adv_pathfinder_fleetpower
+                                value = @touhou_adv_pathfinder_fleetpower_vangard_fleet
+                            }
+                        }
+                    }
+                    touhou_adv_try_start_bombardment = {
+                        TYPE = $TYPE$
+                        OWNER = $OWNER$
+                        MAX_STEPS = @touhou_adv_nearby_colony_max_steps
+                        LOCAL_ONLY = yes
+                    }
+                }
+                # Value-3/5 fleets give an attacked portal fleet priority.
+                if = {
+                    limit = {
+                        OR = {
+                            check_variable = {
+                                which = touhou_adv_pathfinder_fleetpower
+                                value = @touhou_adv_pathfinder_fleetpower_battlegroup_fleet
+                            }
+                            check_variable = {
+                                which = touhou_adv_pathfinder_fleetpower
+                                value = @touhou_adv_pathfinder_fleetpower_flagship_fleet
+                            }
+                        }
+                    }
+                    set_variable = {
+                        which = touhou_adv_support_portal_only
+                        value = 1
+                    }
+                    touhou_adv_find_support_target = {
+                        TYPE = $TYPE$
+                        OWNER = $OWNER$
+                        MAX_STEPS = 20
+                    }
+                    clear_variable = touhou_adv_support_portal_only
+                    # Battlegroups may additionally reinforce a normal nearby battle.
+                    if = {
+                        limit = {
+                            NOT = { exists = event_target:touhou_adv_support_target }
+                            check_variable = {
+                                which = touhou_adv_pathfinder_fleetpower
+                                value = @touhou_adv_pathfinder_fleetpower_battlegroup_fleet
+                            }
+                        }
+                        touhou_adv_find_support_target = {
+                            TYPE = $TYPE$
+                            OWNER = $OWNER$
+                            MAX_STEPS = 5
+                        }
+                    }
+                }
+                else_if = {
+                    limit = {
+                        check_variable = {
+                            which = touhou_adv_pathfinder_fleetpower
+                            value = @touhou_adv_pathfinder_fleetpower_mainforce_fleet
+                        }
+                    }
+                    # Main-force fleets rarely divert to rescue a portal fleet.
+                    random_list = {
+                        35 = {
+                            set_variable = {
+                                which = touhou_adv_support_portal_only
+                                value = 1
+                            }
+                            touhou_adv_find_support_target = {
+                                TYPE = $TYPE$
+                                OWNER = $OWNER$
+                                MAX_STEPS = 20
+                            }
+                            clear_variable = touhou_adv_support_portal_only
+                        }
+                        65 = { }
+                    }
+                }
+                else_if = {
+                    limit = {
+                        check_variable = {
+                            which = touhou_adv_pathfinder_fleetpower
+                            value = @touhou_adv_pathfinder_fleetpower_vangard_fleet
+                        }
+                    }
+                    # An unpaired vanguard prefers open or hostile strategic space.
+                    touhou_adv_find_nearest_open_system = {
+                        TYPE = $TYPE$
+                        OWNER = $OWNER$
+                        MAX_STEPS = @touhou_adv_nearby_colony_max_steps
+                    }
+                    if = {
+                        limit = {
+                            NOT = { is_variable_set = touhou_adv_action_handled }
+                        }
+                        touhou_adv_find_support_target = {
+                            TYPE = $TYPE$
+                            OWNER = $OWNER$
+                            MAX_STEPS = 20
+                        }
+                    }
+                }
+                else = {
+                    touhou_adv_find_support_target = {
+                        TYPE = $TYPE$
+                        OWNER = $OWNER$
+                        MAX_STEPS = 20
+                    }
+                }
+            }
+
+            if = {
+                limit = {
+                    NOT = { is_variable_set = touhou_adv_action_handled }
+                    NOT = {
+                        exists = event_target:touhou_adv_support_target
+                    }
+                }
+                if = {
+                    limit = {
+                        check_variable = {
+                            which = touhou_adv_pathfinder_fleetpower
+                            value = @touhou_adv_pathfinder_fleetpower_battlegroup_fleet
+                        }
+                    }
+                    touhou_adv_try_start_bombardment = {
+                        TYPE = $TYPE$
+                        OWNER = $OWNER$
+                        MAX_STEPS = @touhou_adv_battlegroup_colony_max_steps
+                    }
+                }
+                else = {
+                    touhou_adv_try_start_bombardment = {
+                        TYPE = $TYPE$
+                        OWNER = $OWNER$
+                        MAX_STEPS = @touhou_adv_nearby_colony_max_steps
+                    }
+                }
+            }
+
+            if = {
+                limit = {
+                    NOT = { is_variable_set = touhou_adv_action_handled }
+                }
+                # 1. Reinforce active friendly combat.
+                if = {
+                limit = { exists = event_target:touhou_adv_support_target }
+                auto_move_to_planet = {
+                    target = event_target:touhou_adv_support_target.star
+                    clear_auto_move_on_arrival = yes
+                }
+            }
+            # 2. Concentrate on a local system with at least two hostile fleets.
+            else_if = {
+            limit = {
+                exists = solar_system
+                solar_system = {
+                    count_fleet_in_system = {
+                        count >= 2
+                        limit = {
+                            controller? = { is_hostile = event_target:$OWNER$ }
+                            any_owned_ship = {
+                                is_disabled = no
+                                is_ship_class = shipclass_military
+                            }
+                        }
+                    }
+                    # Incoming fleets stop at three. A fleet that has already
+                    # arrived is still allowed to fight when it is the third one.
+                    count_fleet_in_system = {
+                        count <= 3
+                        limit = {
+                            controller? = { is_same_value = event_target:$OWNER$ }
+                            any_owned_ship = {
+                                is_disabled = no
+                                is_ship_class = shipclass_military
+                            }
+                        }
+                    }
+                }
+            }
+            solar_system = {
+                random_fleet_in_system = {
+                    limit = {
+                        controller? = { is_hostile = event_target:$OWNER$ }
+                        any_owned_ship = {
+                            is_disabled = no
+                            is_ship_class = shipclass_military
+                        }
+                    }
+                    prevprev = {
+                        auto_follow_fleet = { target = prev attack_fleet = yes }
+                    }
+                }
+            }
+        }
+        # 3. A single hostile fleet in the current system is claimed by one fleet.
+        else_if = {
+            limit = {
+                exists = solar_system
+                solar_system = {
+                    OR = {
+                        NOT = {
+                            is_variable_set = touhou_adv_claim_count
+                        }
+                        check_variable = {
+                            which = touhou_adv_claim_count
+                            value <= 0
+                        }
+                        is_variable_set = touhou_adv_$TYPE$_claim_@root
+                    }
+                    count_fleet_in_system = {
+                        count = 1
+                        limit = {
+                            controller? = { is_hostile = event_target:$OWNER$ }
+                            any_owned_ship = {
+                                is_disabled = no
+                                is_ship_class = shipclass_military
+                            }
+                        }
+                    }
+                    count_fleet_in_system = {
+                        count <= 1
+                        limit = {
+                            controller? = { is_same_value = event_target:$OWNER$ }
+                            any_owned_ship = {
+                                is_disabled = no
+                                is_ship_class = shipclass_military
+                            }
+                        }
+                    }
+                }
+            }
+            solar_system = {
+                touhou_adv_claim_distributed_system = {
+                    TYPE = $TYPE$
+                    DAYS = 180
+                }
+                random_fleet_in_system = {
+                    limit = {
+                        controller? = { is_hostile = event_target:$OWNER$ }
+                        any_owned_ship = {
+                            is_disabled = no
+                            is_ship_class = shipclass_military
+                        }
+                    }
+                    prevprev = {
+                        auto_follow_fleet = { target = prev attack_fleet = yes }
+                    }
+                }
+            }
+        }
+        # 4. Reinforce or attack a neighboring hotspot.
+        else_if = {
+            limit = {
+                exists = solar_system
+                solar_system = {
+                    any_neighbor_system = {
+                        exists = star
+                        OR = {
+                            NOT = {
+                                is_variable_set = touhou_adv_support_count
+                            }
+                            check_variable = {
+                                which = touhou_adv_support_count
+                                value <= 0
+                            }
+                        }
+                        OR = {
+                            NOT = {
+                                is_variable_set = touhou_adv_concentrate_count_0
+                            }
+                            check_variable = {
+                                which = touhou_adv_concentrate_count_0
+                                value <= 0
+                            }
+                            NOT = {
+                                is_variable_set = touhou_adv_concentrate_count_1
+                            }
+                            check_variable = {
+                                which = touhou_adv_concentrate_count_1
+                                value <= 0
+                            }
+                        }
+                        count_fleet_in_system = {
+                            count >= 2
+                            limit = {
+                                controller? = { is_hostile = event_target:$OWNER$ }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        count_fleet_in_system = {
+                            count < 2
+                            limit = {
+                                controller? = { is_same_value = event_target:$OWNER$ }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            solar_system = {
+                random_neighbor_system = {
+                    limit = {
+                        exists = star
+                        OR = {
+                            NOT = {
+                                is_variable_set = touhou_adv_support_count
+                            }
+                            check_variable = {
+                                which = touhou_adv_support_count
+                                value <= 0
+                            }
+                        }
+                        OR = {
+                            NOT = {
+                                is_variable_set = touhou_adv_concentrate_count_0
+                            }
+                            check_variable = {
+                                which = touhou_adv_concentrate_count_0
+                                value <= 0
+                            }
+                            NOT = {
+                                is_variable_set = touhou_adv_concentrate_count_1
+                            }
+                            check_variable = {
+                                which = touhou_adv_concentrate_count_1
+                                value <= 0
+                            }
+                        }
+                        count_fleet_in_system = {
+                            count >= 2
+                            limit = {
+                                controller? = { is_hostile = event_target:$OWNER$ }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        count_fleet_in_system = {
+                            count < 2
+                            limit = {
+                                controller? = { is_same_value = event_target:$OWNER$ }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        root = { can_access_system = prev }
+                    }
+                    save_event_target_as = touhou_adv_target_system
+                }
+            }
+            if = {
+                limit = { exists = event_target:touhou_adv_target_system }
+                event_target:touhou_adv_target_system = {
+                    touhou_adv_claim_concentrated_system = {
+                        TYPE = $TYPE$
+                    }
+                }
+                auto_move_to_planet = {
+                    target = event_target:touhou_adv_target_system.star
+                    clear_auto_move_on_arrival = yes
+                }
+            }
+            else = {
+                touhou_adv_fleet_wandering_action = {
+                    ID = $ID$
+                    TYPE = $TYPE$
+                    OWNER = $OWNER$
+                }
+            }
+        }
+        # 5. Prefer an adjacent hostile colony, starbase, or military fleet over
+        # moving into neighboring unowned space.
+        else_if = {
+            limit = {
+                exists = solar_system
+                solar_system = {
+                    any_neighbor_system = {
+                        exists = star
+                        OR = {
+                            NOT = {
+                                is_variable_set = touhou_adv_claim_count
+                            }
+                            check_variable = {
+                                which = touhou_adv_claim_count
+                                value <= 0
+                            }
+                            is_variable_set = touhou_adv_$TYPE$_claim_@root
+                        }
+                        count_fleet_in_system = {
+                            count < 2
+                            limit = {
+                                controller? = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        OR = {
+                            AND = {
+                                exists = starbase
+                                starbase = {
+                                    exists = owner
+                                    owner = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                }
+                            }
+                            any_fleet_in_system = {
+                                controller? = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                            AND = {
+                                owner = {
+                                    OR = {
+                                        NOT = {
+                                            is_variable_set = touhou_adv_bombard_count
+                                        }
+                                        check_variable = {
+                                            which = touhou_adv_bombard_count
+                                            value < @touhou_adv_bombard_fleet_limit
+                                        }
+                                    }
+                                }
+                                any_system_planet = {
+                                    exists = controller
+                                    controller = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                    OR = {
+                                        is_colony = yes
+                                        is_under_colonization = yes
+                                    }
+                                    count_fleet_in_orbit = {
+                                        count = 0
+                                        limit = {
+                                            exists = owner
+                                            owner = {
+                                                is_same_value = event_target:$OWNER$
+                                            }
+                                            NOT = { is_same_value = root }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            solar_system = {
+                random_neighbor_system = {
+                    limit = {
+                        exists = star
+                        OR = {
+                            NOT = {
+                                is_variable_set = touhou_adv_claim_count
+                            }
+                            check_variable = {
+                                which = touhou_adv_claim_count
+                                value <= 0
+                            }
+                            is_variable_set = touhou_adv_$TYPE$_claim_@root
+                        }
+                        count_fleet_in_system = {
+                            count < 2
+                            limit = {
+                                controller? = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        OR = {
+                            AND = {
+                                exists = starbase
+                                starbase = {
+                                    exists = owner
+                                    owner = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                }
+                            }
+                            any_fleet_in_system = {
+                                controller? = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                            AND = {
+                                owner = {
+                                    OR = {
+                                        NOT = {
+                                            is_variable_set = touhou_adv_bombard_count
+                                        }
+                                        check_variable = {
+                                            which = touhou_adv_bombard_count
+                                            value < @touhou_adv_bombard_fleet_limit
+                                        }
+                                    }
+                                }
+                                any_system_planet = {
+                                    exists = controller
+                                    controller = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                    OR = {
+                                        is_colony = yes
+                                        is_under_colonization = yes
+                                    }
+                                    count_fleet_in_orbit = {
+                                        count = 0
+                                        limit = {
+                                            exists = owner
+                                            owner = {
+                                                is_same_value = event_target:$OWNER$
+                                            }
+                                            NOT = { is_same_value = root }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        root = { can_access_system = prev }
+                    }
+                    save_event_target_as = touhou_adv_target_system
+                }
+            }
+            if = {
+                limit = { exists = event_target:touhou_adv_target_system }
+                event_target:touhou_adv_target_system = {
+                    touhou_adv_claim_distributed_system = {
+                        TYPE = $TYPE$
+                        DAYS = 180
+                    }
+                }
+                auto_move_to_planet = {
+                    target = event_target:touhou_adv_target_system.star
+                    clear_auto_move_on_arrival = yes
+                }
+            }
+            else = {
+                touhou_adv_fleet_wandering_action = {
+                    ID = $ID$
+                    TYPE = $TYPE$
+                    OWNER = $OWNER$
+                }
+            }
+        }
+        # 6. A distributed neighboring target.
+        else_if = {
+            limit = {
+                exists = solar_system
+                solar_system = {
+                    any_neighbor_system = {
+                        exists = star
+                        OR = {
+                            NOT = {
+                                is_variable_set = touhou_adv_claim_count
+                            }
+                            check_variable = {
+                                which = touhou_adv_claim_count
+                                value <= 0
+                            }
+                            is_variable_set = touhou_adv_$TYPE$_claim_@root
+                        }
+                        count_fleet_in_system = {
+                            count < 2
+                            limit = {
+                                controller? = { is_hostile = event_target:$OWNER$ }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        OR = {
+                            NOT = { exists = owner }
+                            AND = {
+                                exists = owner
+                                owner = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                            }
+                            AND = {
+                                exists = starbase
+                                starbase = {
+                                    exists = owner
+                                    owner = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                }
+                            }
+                            any_system_planet = {
+                                exists = controller
+                                controller = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                OR = {
+                                    is_colony = yes
+                                    is_under_colonization = yes
+                                }
+                            }
+                            any_fleet_in_system = {
+                                controller? = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            solar_system = {
+                random_neighbor_system = {
+                    limit = {
+                        exists = star
+                        OR = {
+                            NOT = {
+                                is_variable_set = touhou_adv_claim_count
+                            }
+                            check_variable = {
+                                which = touhou_adv_claim_count
+                                value <= 0
+                            }
+                            is_variable_set = touhou_adv_$TYPE$_claim_@root
+                        }
+                        count_fleet_in_system = {
+                            count < 2
+                            limit = {
+                                controller? = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        OR = {
+                            NOT = { exists = owner }
+                            AND = {
+                                exists = owner
+                                owner = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                            }
+                            AND = {
+                                exists = starbase
+                                starbase = {
+                                    exists = owner
+                                    owner = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                }
+                            }
+                            any_system_planet = {
+                                exists = controller
+                                controller = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                OR = {
+                                    is_colony = yes
+                                    is_under_colonization = yes
+                                }
+                            }
+                            any_fleet_in_system = {
+                                controller? = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        root = { can_access_system = prev }
+                    }
+                    save_event_target_as = touhou_adv_target_system
+                }
+            }
+            if = {
+                limit = { exists = event_target:touhou_adv_target_system }
+                event_target:touhou_adv_target_system = {
+                    touhou_adv_claim_distributed_system = {
+                        TYPE = $TYPE$
+                        DAYS = 180
+                    }
+                }
+                auto_move_to_planet = {
+                    target = event_target:touhou_adv_target_system.star
+                    clear_auto_move_on_arrival = yes
+                }
+            }
+            else = {
+                touhou_adv_fleet_wandering_action = {
+                    ID = $ID$
+                    TYPE = $TYPE$
+                    OWNER = $OWNER$
+                }
+            }
+        }
+        # 7. Autonomous movement: first respond to a macro-scale hotspot.
+        # closest_system is an effect and cannot be used inside an else_if limit.
+        else = {
+            closest_system = {
+                max_steps = 50
+                use_bypasses = yes
+                limit = {
+                    NOT = { is_same_value = root.solar_system }
+                    exists = star
+                    OR = {
+                        # Prefer nearby unowned or hostile strategic space.
+                        AND = {
+                            OR = {
+                                NOT = { is_variable_set = touhou_adv_claim_count }
+                                check_variable = {
+                                    which = touhou_adv_claim_count
+                                    value <= 0
+                                }
+                                is_variable_set = touhou_adv_$TYPE$_claim_@root
+                            }
+                            OR = {
+                                NOT = { exists = owner }
+                                AND = {
+                                    exists = owner
+                                    owner = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                }
+                            }
+                            count_fleet_in_system = {
+                                count < 2
+                                limit = {
+                                    controller? = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                    any_owned_ship = {
+                                        is_disabled = no
+                                        is_ship_class = shipclass_military
+                                    }
+                                }
+                            }
+                        }
+                        # Fleet hotspots remain eligible and use their own slots.
+                        AND = {
+                            OR = {
+                                NOT = {
+                                    is_variable_set = touhou_adv_support_count
+                                }
+                                check_variable = {
+                                    which = touhou_adv_support_count
+                                    value <= 0
+                                }
+                            }
+                            OR = {
+                                NOT = {
+                                    is_variable_set = touhou_adv_concentrate_count_0
+                                }
+                                check_variable = {
+                                    which = touhou_adv_concentrate_count_0
+                                    value <= 0
+                                }
+                                NOT = {
+                                    is_variable_set = touhou_adv_concentrate_count_1
+                                }
+                                check_variable = {
+                                    which = touhou_adv_concentrate_count_1
+                                    value <= 0
+                                }
+                            }
+                            count_fleet_in_system = {
+                                count >= 2
+                                limit = {
+                                    controller? = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                    any_owned_ship = {
+                                        is_disabled = no
+                                        is_ship_class = shipclass_military
+                                    }
+                                }
+                            }
+                            count_fleet_in_system = {
+                                count < 2
+                                limit = {
+                                    controller? = {
+                                        is_same_value = event_target:$OWNER$
+                                    }
+                                    any_owned_ship = {
+                                        is_disabled = no
+                                        is_ship_class = shipclass_military
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    root = { can_access_system = prev }
+                }
+                save_event_target_as = touhou_adv_target_system
+            }
+            if = {
+                limit = { exists = event_target:touhou_adv_target_system }
+                event_target:touhou_adv_target_system = {
+                    if = {
+                        limit = {
+                            count_fleet_in_system = {
+                                count >= 2
+                                limit = {
+                                    controller? = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                    any_owned_ship = {
+                                        is_disabled = no
+                                        is_ship_class = shipclass_military
+                                    }
+                                }
+                            }
+                        }
+                        touhou_adv_claim_concentrated_system = {
+                            TYPE = $TYPE$
+                        }
+                    }
+                    else = {
+                        touhou_adv_claim_distributed_system = {
+                            TYPE = $TYPE$
+                            DAYS = 180
+                        }
+                    }
+                }
+                auto_move_to_planet = {
+                    target = event_target:touhou_adv_target_system.star
+                    clear_auto_move_on_arrival = yes
+                }
+            }
+            # 8. Otherwise distribute fleets over the closest unclaimed system.
+            # Claimed closer systems are filtered out, so later fleets naturally
+            # move to the next-closest one instead of jumping into the distance.
+            else = {
+                closest_system = {
+                    max_steps = 50
+                    use_bypasses = yes
+                    limit = {
+                        NOT = { is_same_value = root.solar_system }
+                        exists = star
+                        OR = {
+                            NOT = { is_variable_set = touhou_adv_claim_count }
+                            check_variable = {
+                                which = touhou_adv_claim_count
+                                value <= 0
+                            }
+                            is_variable_set = touhou_adv_$TYPE$_claim_@root
+                        }
+                        # Hotspots are handled by the concentration branches.
+                        count_fleet_in_system = {
+                            count < 2
+                            limit = {
+                                controller? = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        OR = {
+                            NOT = { exists = owner }
+                            AND = {
+                                exists = owner
+                                owner = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                            }
+                            AND = {
+                                exists = starbase
+                                starbase = {
+                                    exists = owner
+                                    owner = {
+                                        is_hostile = event_target:$OWNER$
+                                    }
+                                }
+                            }
+                            any_system_planet = {
+                                exists = controller
+                                controller = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                OR = {
+                                    is_colony = yes
+                                    is_under_colonization = yes
+                                }
+                            }
+                            any_fleet_in_system = {
+                                controller? = {
+                                    is_hostile = event_target:$OWNER$
+                                }
+                                any_owned_ship = {
+                                    is_disabled = no
+                                    is_ship_class = shipclass_military
+                                }
+                            }
+                        }
+                        root = { can_access_system = prev }
+                    }
+                    save_event_target_as = touhou_adv_target_system
+                }
+                if = {
+                    limit = { exists = event_target:touhou_adv_target_system }
+                    event_target:touhou_adv_target_system = {
+                        touhou_adv_claim_distributed_system = {
+                            TYPE = $TYPE$
+                            DAYS = 180
+                        }
+                    }
+                    auto_move_to_planet = {
+                        target = event_target:touhou_adv_target_system.star
+                        clear_auto_move_on_arrival = yes
+                    }
+                }
+                else = {
+                    touhou_adv_fleet_wandering_action = {
+                        ID = $ID$
+                        TYPE = $TYPE$
+                        OWNER = $OWNER$
+                    }
+                }
+            }
+                if = {
+                    limit = { is_variable_set = touhou_adv_action_handled }
+                    clear_variable = touhou_adv_action_handled
+                }
+            }
+        }
+    }
+}
+}
