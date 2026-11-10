@@ -505,6 +505,7 @@ fleet_event = {
         NOT = { has_global_flag = spth_kamikaushi_crisis_ended }
     }
     immediate = { spth_invasion_fleet_action = { ID = touhou_crisis TYPE = spth_kamikaushi OWNER = spth_kamikakushi_country } }
+	# immediate = { touhou_adv_fleet_action = { ID = touhou_crisis TYPE = spth_kamikaushi OWNER = spth_kamikakushi_country } }
 }
 
 # kamikakushi crisis bombed a planet
@@ -1528,11 +1529,88 @@ country_event = {
         fromfrom = { OR = { is_star = yes NOT = { exists = owner } } }
     }
     immediate = {
-        from = {
-            clear_orders = yes
-            clear_fleet_actions = this
-            fleet_event = { id = touhou_crisis.12 days = 3 random = 2 }
-        }
+        # if = {
+        #     limit = {
+        #         from = {
+        #             OR = {
+        #                 check_variable = {
+        #                     which = touhou_adv_pathfinder_fleetpower
+        #                     value = @touhou_adv_pathfinder_fleetpower_battlegroup_fleet
+        #                 }
+        #                 check_variable = {
+        #                     which = touhou_adv_pathfinder_fleetpower
+        #                     value = @touhou_adv_pathfinder_fleetpower_vangard_fleet
+        #                 }
+        #             }
+        #             exists = solar_system
+        #             solar_system = {
+        #                 NOT = {
+        #                     AND = {
+        #                         exists = starbase
+        #                         starbase = {
+        #                             exists = owner
+        #                             owner = {
+        #                                 is_hostile = event_target:spth_kamikakushi_country
+        #                             }
+        #                         }
+        #                     }
+        #                 }
+        #                 NOT = {
+        #                     any_fleet_in_system = {
+        #                         controller? = {
+        #                             is_hostile = event_target:spth_kamikakushi_country
+        #                         }
+        #                         any_owned_ship = {
+        #                             is_disabled = no
+        #                             is_ship_class = shipclass_military
+        #                         }
+        #                     }
+        #                 }
+        #                 any_system_planet = {
+        #                     exists = controller
+        #                     controller = {
+        #                         is_hostile = event_target:spth_kamikakushi_country
+        #                     }
+        #                     OR = {
+        #                         is_colony = yes
+        #                         is_under_colonization = yes
+        #                     }
+        #                 }
+        #             }
+        #         }
+        #     }
+        #     from = {
+        #         touhou_adv_try_start_bombardment = {
+        #             TYPE = spth_kamikaushi
+        #             OWNER = spth_kamikakushi_country
+        #             MAX_STEPS = 1
+        #             LOCAL_ONLY = yes
+        #         }
+        #         set_variable = {
+        #             which = touhou_adv_action_handled
+        #             value = 1
+        #         }
+        #     }
+        # }
+        # if = {
+        #     limit = {
+        #         from = {
+        #             NOT = {
+        #                 is_variable_set = touhou_adv_action_handled
+        #             }
+        #         }
+        #     }
+        #     from = {
+        #         clear_orders = yes
+        #         clear_fleet_actions = this
+        #         fleet_event = { id = touhou_crisis.12 days = 3 random = 2 }
+        #     }
+        # }
+		from = {
+			clear_orders = yes
+			clear_fleet_actions = this
+			fleet_event = { id = touhou_crisis.12 days = 3 random = 2 }
+		}
     }
 }
 #Invasion fleet action on win a space battle.

@@ -1573,3 +1573,107 @@ country_event = {
 		add_relic = r_touhou_inf_food_box
 	}
 }
+
+carrier_event = {
+	id = th_leader_sp.1009
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		exists = planet
+		owner? = { is_ai = no spth_check_gensokyo_auth = yes }
+		check_modifier_value = {
+			modifier = discover_touhou_deposit_when_clear
+			value > 0
+		}
+	}
+	immediate = {
+		random_list = {
+			100 = {
+				modifier = { factor = modifier:discover_touhou_deposit_when_clear }
+				touhou_create_random_gensokyo_deposit = yes
+				owner? = {
+					country_event = {
+						id = th_leader_sp.1010
+						scopes = {
+							from = root.planet
+							fromfrom = event_target:touhou_target_deposit
+						}
+					}
+				}
+			}
+			100 = {
+				modifier = { factor = value:not_discover_touhou_deposit_when_clear }
+				# do nothing here.
+			}
+		}
+	}
+}
+country_event = {
+	id = th_leader_sp.1010
+	title = th_leader_sp.1010.name
+	desc = th_leader_sp.1010.desc
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_country_flag = th_leader_sp_1010_no_notify
+		}
+	}
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = touhou_inaba_sit_by_lake_room }
+	option = {
+		name = th_leader_sp.1010.1
+	}
+	option = {
+		name = th_leader_sp.1010.b
+		hidden_effect = {
+			set_country_flag = th_leader_sp_1010_no_notify
+		}
+ 	}
+}
+
+# Planet has taken damage from orbital bombardment - Damage is applied daily
+# This = Planet
+# From = Bombarder
+# local_devastation = variable of daily devastation
+planet_event = {
+	id = th_leader_sp.1011
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_variable_set = local_devastation
+		check_variable = {
+			which = local_devastation
+			value > 0
+		}
+		owner? = { is_ai = no spth_check_gensokyo_auth = yes }
+		check_modifier_value = {
+			modifier = touhou_wriggle_reduce_orbitial_bomb_damage
+			value > 0
+		}
+	}
+	immediate = {
+		set_variable = {
+			which = touhou_wriggle_local_devastation
+			value = local_devastation
+		}
+		multiply_variable = {
+			which = touhou_wriggle_local_devastation
+			value = -0.5
+		}
+		if = {
+			limit = {
+				check_variable = {
+					which = touhou_wriggle_local_devastation
+					value >= 0
+				}
+			}
+			multiply_variable = {
+				which = touhou_wriggle_local_devastation
+				value = -1
+			}
+		}
+		clear_variable = touhou_wriggle_local_devastation
+	}
+}
