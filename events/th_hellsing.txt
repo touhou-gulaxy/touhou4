@@ -735,3 +735,200 @@ country_event = {
 		}	
 	}
 }
+
+event = {
+	id = th_hellsing.100
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				is_scope_type = megastructure
+				is_touhou_shipyard_megastructure = yes
+			}
+			set_overclock = {
+				overclock = overclock_touhou_shipyard_hellsing_override
+			}
+		}
+	}
+}
+
+event = {
+	id = th_hellsing.101
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				is_scope_type = megastructure
+				is_touhou_shipyard_megastructure = yes
+			}
+			set_overclock = {
+				overclock = overclock_touhou_shipyard_hellsing_default
+				cooldown = no
+			}
+		}
+	}
+}
+
+# Fired from on_megastructure_built and on_megastructure_upgraded
+# A Megastructure has been built or upgraded
+# Root = Country
+# From = Megastructure
+# FromFrom = System
+country_event = {
+	id = th_hellsing.102
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_variable_set = touhou_scarlet_hellsing_fired
+		from? = {
+			is_touhou_shipyard_megastructure = yes
+			is_touhou_hellsing_megastructure_active = no
+		}
+	}
+	immediate = {
+		from = {
+			touhou_hellsing_megastructure_activate = yes
+		}
+	}
+}
+
+# Executed when a megastructure is rendered ownerless
+# this = solar system containing megastructure
+# from = megastructure
+# fromfrom = old owner (if existing)
+system_event = {
+	id = th_hellsing.103
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		OR = {
+			NOT = { exists = fromfrom }
+			fromfrom = { NOT = { is_variable_set = touhou_scarlet_hellsing_fired } }
+		}
+		from? = {
+			is_touhou_shipyard_megastructure = yes
+			is_touhou_hellsing_megastructure_active = no
+		}
+	}
+	immediate = {
+		from = {
+			touhou_hellsing_megastructure_deactivate = yes
+		}
+	}
+}
+# Executed when a megastructure has a new owner
+# this = new owner
+# from = megastructure
+# fromfrom = old owner (if existing)
+country_event = {
+	id = th_hellsing.104
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		from? = { is_touhou_shipyard_megastructure = yes }
+		OR = {
+			# should switch to default
+			AND = {
+				root = { NOT = { is_variable_set = touhou_scarlet_hellsing_fired } }
+				from = { is_touhou_hellsing_megastructure_active = yes }
+			}
+			# should switch to override
+			AND = {
+				root = { is_variable_set = touhou_scarlet_hellsing_fired }
+				from = { is_touhou_hellsing_megastructure_active = no }
+			}
+		}
+	}
+	immediate = {
+		from = {
+			if = {
+				limit = { is_variable_set = overclock_touhou_shipyard_hellsing_override }
+				touhou_hellsing_megastructure_deactivate = yes
+			}
+			else = {
+				touhou_hellsing_megastructure_activate = yes
+			}
+		}
+	}
+}
+
+ship_event = {
+	id = th_hellsing.105
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		owner? = { is_variable_set = touhou_scarlet_hellsing_fired }
+		from? = { is_scope_type = megastructure }
+	}
+	immediate = {
+		from = {
+			if = {
+				limit = {
+					is_touhou_shipyard_megastructure = yes
+					is_touhou_hellsing_megastructure_active = yes
+				}
+				if = {
+					limit = {
+						NOT = { is_variable_set = touhou_scarlet_hellsing_built_count }
+					}
+					set_variable = {
+						which = touhou_scarlet_hellsing_built_count
+						value = 0
+					}
+				}
+
+				if = {
+					limit = {
+						NOT = { is_variable_set = touhou_scarlet_hellsing_built_count_max }
+					}
+					set_variable = {
+						which = touhou_scarlet_hellsing_built_count_max
+						value = value:touhou_megastructure_hellsing_built_sizes_max_value
+					}
+				}
+
+				change_variable = {
+					which = touhou_scarlet_hellsing_built_count
+					value = 1
+				}
+
+				if = {
+					limit = {
+						check_variable = {
+							which = touhou_scarlet_hellsing_built_count
+							value >= value:touhou_megastructure_hellsing_built_sizes_max_value
+						}
+						is_touhou_hellsing_megastructure_active = yes
+					}
+					touhou_hellsing_megastructure_deactivate = yes
+					owner = {
+						if = {
+							limit = {
+								NOT = {
+									any_owned_megastructure = {
+										is_touhou_shipyard_megastructure = yes
+										check_variable = {
+											which = touhou_scarlet_hellsing_built_count
+											value < value:touhou_megastructure_hellsing_built_sizes_max_value
+										}
+									}
+								}
+							}
+							if = {
+								limit = { NOT = { has_country_flag = touhou_scarlet_hellsing_cooldown } }
+								set_timed_country_flag = {
+									flag = touhou_scarlet_hellsing_cooldown
+									days = 360
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

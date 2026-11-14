@@ -46,3 +46,72 @@ touhou_system_warper_system_jump_project_fleet = {
         touhou_system_warper_jump_project_fleet_mode = 1
     }
 }
+
+overclock_touhou_shipyard_hellsing_override = {
+	icon = GFX_touhou_overclock_ultra
+	overclock_group = touhou_shipyard_overclock
+	potential = {
+		always = no
+	}
+	possible = {
+		owner? = { has_technology = tech_touhou_scarlet_hellsing }
+		NOT = { has_megastructure_flag = touhou_scarlet_hellsing_working }
+		check_variable_arithmetic = {
+			which = value:touhou_megastructure_hellsing_built_sizes_max_value
+			value > 0
+		}
+	}
+
+	resources = {
+		category = touhou_megastructures
+		cost = {
+			alloys = 2500
+			energy = 5000
+			sr_lingli = 5000
+		}
+		upkeep = {
+			energy = 25
+			sr_lingli = 50
+		}
+	}
+
+	megastructure_modifier = {
+		overclock_touhou_shipyard_hellsing_override = 1
+	}
+
+	on_overclock_start = {
+		set_variable = {
+			which = touhou_scarlet_hellsing_built_count
+			value = 0
+		}
+		set_megastructure_flag = touhou_scarlet_hellsing_working
+	}
+}
+overclock_touhou_shipyard_hellsing_default = {
+	icon = GFX_touhou_overclock_default
+	overclock_group = touhou_shipyard_overclock
+	potential = {
+		always = no
+	}
+
+	resources = {
+		category = touhou_megastructures
+		cost = {
+		}
+	}
+
+	on_overclock_start = {
+		if = {
+			limit = {
+				has_megastructure_flag = touhou_scarlet_hellsing_working
+			}
+			remove_megastructure_flag = touhou_scarlet_hellsing_working
+		}
+		if = {
+			limit = {
+				is_variable_set = touhou_scarlet_hellsing_built_count
+			}
+			clear_variable = touhou_scarlet_hellsing_built_count
+		}
+	}
+}

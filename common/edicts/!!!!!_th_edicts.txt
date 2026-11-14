@@ -430,18 +430,55 @@ barrier_power_harnessing = {
 }
 
 hmx_hellsing = {
-	length = 1
+	length = 180
 	icon = GFX_edict_type_touhou
 	potential = {
-		always = no
 		is_ai = no
-		has_ascension_perk = ap_hm3
+	}
+	show_tech_unlock_if = {
+		always = no
+	}
+	prerequisites = {
+		tech_touhou_scarlet_hellsing
 	}
 	effect = {
 		hidden_effect = {
-			country_event = {
-				id = th_hellsing.0
+			set_variable = {
+				which = touhou_scarlet_hellsing_fired
+				value = 1
 			}
+			every_owned_megastructure = {
+				limit = {
+					is_touhou_shipyard_megastructure = yes
+					is_touhou_hellsing_megastructure_active = no
+				}
+				touhou_hellsing_megastructure_activate = yes
+			}
+		}
+	}
+	on_disabled = {
+		hidden_effect = {
+			clear_variable = touhou_scarlet_hellsing_fired
+			set_timed_country_flag = {
+				flag = touhou_scarlet_hellsing_cooldown
+				days = 360
+			}
+			every_owned_megastructure = {
+				limit = {
+					is_touhou_shipyard_megastructure = yes
+					is_touhou_hellsing_megastructure_active = yes
+				}
+				touhou_hellsing_megastructure_deactivate = yes
+			}
+		}
+	}
+	allow = {
+		is_ai = no
+		any_owned_megastructure = {
+			is_touhou_shipyard_megastructure = yes
+		}
+		NOT = {
+			has_country_flag = touhou_scarlet_hellsing_cooldown
 		}
 	}
 }
