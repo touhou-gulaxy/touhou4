@@ -1,196 +1,103 @@
 # 本地开发交接
 
-最后更新：2026-11-10 20:47 Asia/Shanghai
+最后更新：2026-11-15 Asia/Shanghai
 
-本文只记录当前设备和当前工作树的状态。接手前先执行：
+本文只记录当前设备和当前工作树附近的状态。开始前执行：
 
 ```bash
 git status --short --branch
 git log -5 --oneline --decorate
 ```
 
-## 1. 当前 Git 状态
+## 1. Git 与版本
 
 - 工作目录：`/home/koishi/IdeaProjects/touhou4`
 - 分支：`dev/4.6`
-- HEAD：`5c78ae2d9e83ed343445d5ce01093dd0efd8af9d`
-- 相对 `origin/dev/4.6`：领先 1 个提交，尚未 push
-- 已跟踪文件改动：
-  - `events/02_th_events.txt`
-  - `events/touhou_shroud_events.txt`
-- 已有未跟踪文件，勿删除或覆盖：
-  - `utils/automation/util.hpp`
-  - `utils/automation/util.inl`
+- 当前基线：`f5e08448 update version number`
+- 当前工作树：约 146 个已修改或未跟踪状态条目，包含大量新增 DDS
+- 上游：`origin/dev/4.6`
+- 当前 MOD 版本：`2.5.3`
+- `descriptor.mod`、`spth_version`、`spth_version_date` 和更新日志已同步
 
-### 4.6 preview 暂时还原
+当前工作树包含尚未分配版本号的下一轮功能，不能把 `HEAD` 的 2.5.3 发布日志
+视为已经包含这些改动。实际状态以 `git status` 为准。
 
-为方便先把兼容版本发布到创意工坊，已执行：
+当前未提交功能主要包括：
 
-```bash
-git revert --no-edit 495a9af42ae585c811e4666c3759258a096a830d
-```
+- 四阶段幻想星环方舟巨构及完工世界舰
+- 标准方舟 40 个普通挂载和 7 个轴基挂载
+- 无灵力方舟 21 个普通挂载和 2 个轴基挂载
+- 无灵力武器倍率、弱化命中效果、图标和太阳反应堆
+- 方舟/月都/战斗神社/夜雀食堂/突触凝练舰数值调整
+- 东方国家认证通用神隐星门权限
+- 新增舰船、组件、巨构的本地化与合成 DDS 资源
 
-生成的 revert 提交：
+## 2. 当前设备路径
 
-```text
-5c78ae2d9e83ed343445d5ce01093dd0efd8af9d
-Revert "port 4.6 overwrite and new generic compatibility"
-```
+主要路径记录在 [local_config.json](local_config.json)：
 
-反向提交包含 8 个文件，`5 insertions / 188 deletions`。已核对这些路径在
-revert 后与 `495a9af4^` 一致。
+| 用途 | 当前路径 |
+|---|---|
+| 游戏安装 | `/home/koishi/SteamLibrary/steamapps/common/Stellaris/` |
+| 4.5 反编译源码 | `/home/koishi/ghidra_decompiled/stellaris4.5/` |
+| 游戏日志 | `/home/koishi/.local/share/Paradox Interactive/Stellaris/logs/` |
+| 注入式性能报告 | `/home/koishi/ghidra_decompiled/stellaris4.5/perf/pdxperf-report.txt` |
+| 配套资源 | `/home/koishi/IdeaProjects/touhou_resources/` |
+| Workshop 内容根目录 | `/home/koishi/SteamLibrary/steamapps/workshop/content/281990/` |
 
-创意工坊发布完成并确认不再需要发布当前状态后，恢复内部 preview 改动：
+注入式性能报告可能较旧；使用前检查文件时间和对应游戏版本。
 
-```bash
-git revert --no-edit 5c78ae2d9e83ed343445d5ce01093dd0efd8af9d
-```
+## 3. 最近一次游戏加载
 
-执行前重新确认没有新的相关冲突。该恢复操作会创建新提交，不会自动 push。
+- 游戏版本：Cygnus `v4.5.4`
+- `game.log` 启动时间：2026-11-15 18:47:09
+- `error.log` 最后写入：2026-11-15 18:51:24
+- 本次启动未生成新的 crash 目录
+- `error.log` 未出现 `touhou_non_genso_parts.txt`、新增方舟挂载、
+  `spth_component_attributes_non_genso` 或对应 GFX 的路径错误
+- 本次加载早于最后的无灵力方舟挂载文件加入，因此这些挂载仍需实测
 
-## 2. 灵潜事件重写
+启动无解析错误不等于功能已实测。以下功能仍需游戏内逐项验证：
 
-### 原版候选事件
+- 幻想星环方舟四个阶段、第二个轴基槽、完工舰生成与殖民地功能
+- 标准及无灵力方舟挂载是否在正确 section 出现、可安装并显示合成图标
+- 无灵力武器 `on_hit`、统一倍率变量、无灵力太阳反应堆和隙间引擎
+- 方舟、战斗神社、夜雀食堂和突触凝练舰的新容量/生存数值
+- 东方国家认证使用神隐星门的权限
+- `hmx_hellsing` 的启动、120 天到期、全舰坞达标终止和 360 天冷却
+- 自定义科研/工程舰船执行迁移后的特殊项目
+- 统治者领袖手动复活
+- `touhou_shroud.2xxx` 自定义聊天 UI
+- 大规模舰队选择性能的实际改进
 
-4.5.3 与当前可访问的 4.6 preview 中，
-`on_patron_delve_failed` 的候选集合一致：
+## 4. 当前日志中的项目相关问题
 
-- 28 个真实 `shroud.*` 事件
-- 1 个 fallback：`utopia.3002`
-- `0 = shroud.3` 只是零权重占位，不应视为真实候选
+很多错误来自并存的大型 MOD，不能全部归因于本仓库。以下是当前最值得继续处理的
+项目路径。
 
-相关路径：
+### 4.1 `touhou_ship_combat_power` 图标
 
-- 原版 4.5.3：
-  `/home/koishi/SteamLibrary/steamapps/common/Stellaris/common/on_actions/00_on_actions.txt`
-- 4.6 preview：
-  `/home/koishi/ghidra_decompiled/Stellaris4.6_preview/common/on_actions/00_on_actions.txt`
-- MOD override：`common/on_actions/th_on_actions.txt`
-- MOD 重写事件：`events/touhou_shroud_events.txt`
-- 入口事件：`events/02_th_events.txt` 中的 `toho.8300`
-
-### 已修正的转发
-
-`events/02_th_events.txt` 当前有三项未提交改动，分别把错误指向原版事件的分支
-改为 MOD 重写事件：
-
-```text
-shroud.3060 -> touhou_shroud.2060
-shroud.3065 -> touhou_shroud.2065
-shroud.3070 -> touhou_shroud.2070
-```
-
-这三项改动不是本轮自定义 UI 修改产生的，工作区中已经存在，未回退。
-
-`toho.8300` 本体仍逐项保留全部 28 个原版 `shroud.*` ID 和
-`utopia.3002` fallback。按其原始 ID 计算没有遗漏；MOD 重写路径的上述三项已补上。
-
-## 3. 灵潜自定义 UI
-
-### 已完成
-
-`events/touhou_shroud_events.txt` 已对全部可见事件补齐：
-
-```txt
-custom_gui = spth_special_diplomacy_window
-custom_gui_option = spth_special_diplomacy_option
-```
-
-字段统一放在 `force_open = yes` 前。
-
-结构统计：
-
-- 顶层 `country_event`：84
-- 可见事件：81
-- 隐藏事件：3（`touhou_shroud.10000`、`.10001`、`.2064`）
-- 81/81 可见事件都有 `diplomatic = yes`
-- 81/81 都有 `force_open = yes`
-- 81/81 都有 `picture_event_data`
-- 81/81 的 `picture_event_data` 都包含
-  `room = spth_ag_excited_shroud_room`
-- 81/81 都有成对的 `custom_gui` 和 `custom_gui_option`
-- 原版 `picture` / `event_picture` / `event_picture_background` 字段数量：0
-- 81/81 可见事件都只有一个 `diplomatic_title`
-
-`.2281` 至 `.2288` 原先各有两个 `diplomatic_title`。第二个
-`diplomatic_title = BLANK_STRING` 已删除，保留：
-
-```txt
-diplomatic_title = shroud.3.diplo_title
-```
-
-本轮 diff：
-
-- 新增 162 行（81 × 2 个 UI 字段）
-- 删除 8 行重复标题
-- `git diff --check` 通过
-
-UI 定义：
-
-- `interface/spth_special_diplomacy_ui.gui`
-- 窗口名：`spth_special_diplomacy_window`
-- 选项名：`spth_special_diplomacy_option`
-
-可参考写法：
-
-- `events/02_th_events.txt` 的 `toho.8200`
-- `events/spth_astral_rift_events.txt` 的 `spth_astral_rift.129`
-
-### 运行验证状态
-
-当前 `error.log` 生成于 2026-11-10 20:44:28。
-`events/touhou_shroud_events.txt` 的最后修改时间为 20:41:12，因此本次启动确实
-加载了加入 UI 字段后的版本。
-
-日志中没有以下项目的解析错误：
-
-- `events/touhou_shroud_events.txt`
-- `custom_gui = spth_special_diplomacy_window`
-- `custom_gui_option = spth_special_diplomacy_option`
-- `picture_event_data`
-
-但这不等于 UI 已完成运行时验证：`game.log` 本次只记录了
-`gensokyo_start.1145` 和 `operation.1001` 的选择，没有实际触发灵潜重写事件。
-下次需要在游戏内或控制台触发至少一个 `touhou_shroud.2xxx` 事件，确认聊天框、
-选项按钮、背景房间、人物和被截断文本的布局。
-
-建议抽查：
+当前隐藏资源的占位实现会产生：
 
 ```text
-touhou_shroud.2001
-touhou_shroud.2100
-touhou_shroud.2281
+Did not find an icon for resource: touhou_ship_combat_power
+Did not find a greyscale icon for resource: touhou_ship_combat_power
+Missing modifier icon "gfx/interface/icons/modifiers/mod_resource_touhou_ship_combat_power_mult.dds"
+Missing modifier icon "gfx/interface/icons/modifiers/mod_touhou_ship_combat_power_*_*.dds"
 ```
 
-## 4. error.log 分析
+资源项位于：
 
-日志路径：
+- `common/strategic_resources/touhou_advanced_strategic_resources.txt`
+- `common/inline_scripts/ship_sizes/touhou_optimize_evaluation_resource.txt`
+- `common/inline_scripts/ship_sizes/touhou_optimize_evaluation_resource_upkeeps.txt`
 
-```text
-/home/koishi/.local/share/Paradox Interactive/Stellaris/logs/error.log
-```
-
-本次运行信息：
-
-- 游戏版本：`Cygnus v4.5.3`
-- 启动时间：20:42:48
-- 日志最后时间：20:44:28
-- 文件大小：5,140,192 bytes
-- 行数：25,909
-- 启动耗时：47.291 秒
-- 首次缓存重算：1.844 秒
-
-日志包含多个大型兼容 MOD 和本地启用的其他 MOD。很多错误来自公共兼容层或
-外部内容，不能全部归因于本仓库。以下只列对本项目最有价值的项目。
-
-### 4.1 当前 UI 改动结论
-
-本次自定义 UI 字段没有引入启动或解析错误。81 个可见事件在引擎加载阶段通过。
-真实界面仍需触发事件后目测。
+需要判断这些图标是否只影响日志。隐藏资源如果仍参与资源表工具提示，可能应提供
+占位图标，而不是长期保留 missing texture 警告。
 
 ### 4.2 `toho.8301` 重复 triggered localization
 
-日志共记录 7 条：
+当前仍报告：
 
 ```text
 toho.8301.desc.14
@@ -202,168 +109,130 @@ toho.8301.desc.21
 toho.8301.desc.22
 ```
 
-都在 `events/02_th_events.txt` 的 `toho.8301` 描述块中。原因是第一个
-`desc` 只检查虚境冷却，而另外两个 `desc` 也包含相同冷却条件，并分别叠加
-“月都灵能危机结束”和“Zeta 危机结束”标记。因此多个描述块可能同时命中并输出
-相同本地化键。
+第一个 desc 已经正确排除“月都灵能危机结束或 AG Zeta 危机结束”。
+剩余问题位于第二个和第三个 desc：当两个结束旗标同时存在时，两者会同时命中。
+应把这两个 desc 改为互斥，或在同一个 desc 内根据两个旗标选择文本。
 
-建议将三个描述条件改为互斥，或在同一个 triggered description 内用
-`if / else_if / else` 选择文本。不要仅删除日志输出，否则文本仍可能重复。
+### 4.3 `th_spawn_explosion_particle` scope 警告
 
-### 4.3 `paragon_2.1005` 重复事件 ID
-
-本项目：
-
-```text
-events/!!!!_touhou_vanilla_overwrite_events.txt line 402
-```
-
-原版 4.5.3：
-
-```text
-events/paragon_events_2.txt line 11
-```
-
-引擎报告事件 ID 已存在。需要确认这里的“覆盖”是否依赖加载顺序，最好改成不冲突
-的 MOD 命名空间并通过 on_action/trigger 转发，或明确采用可维护的覆盖机制。
-
-### 4.4 莉莉白的错误效果名
-
-`events/02_th_events.txt:1798` 调用：
-
-```txt
-touhou_effect_init_lilywhite_effect
-```
-
-实际定义名是：
-
-```txt
-spth_effect_init_lilywhite_effect
-```
-
-定义位于 `common/scripted_effects/th_special_leader_effects.txt:811`。
-这是明确的拼写错误，日志报 `Invalid scripted effect`。
-
-### 4.5 `th_spawn_explosion_particle` 的 scope 噪声
-
-日志中有 23 条与该效果相关的错误，集中为：
+当前仍有：
 
 ```text
 Wrong scope for trigger 'has_ship_flag'
 Wrong scope for effect 'set_timed_ship_flag'
 Wrong scope for trigger 'is_ship_size'
+Current Scope: ...
+Supported Scopes: ship
 ```
 
-效果位于 `common/scripted_effects/th_battle_effects.txt:116`。它在同一个
-`if` 的 limit 中同时写 `is_scope_type = ship` 和 ship-only 条件；脚本条件不应
-假定短路求值。调用点又包括 planet、megastructure、system 等非 ship scope：
+调用点包括特殊项目、按钮 effect、事件和危机 effect。脚本已经在最外层增加
+`is_scope_type = ship`，但引擎静态检查仍会报告内层 ship-only 字段。不要简单
+把警告当作已修复；需要确认调用点实际 scope，并把 ship-only 部分放进明确的
+ship scope。
 
-- `common/special_projects/spth_projects.txt`
-- `common/button_effects/spth_button_effects.txt`
-- `events/touhou_ship_actions_events.txt`
-- `events/02_th_events.txt`
+### 4.4 `th_ship.txt` 的 ship growth stage
 
-建议外层只判断 scope，例如：
-
-```txt
-if = {
-    limit = { is_scope_type = ship }
-    if = {
-        limit = { NOT = { has_ship_flag = ... } }
-        set_timed_ship_flag = { ... }
-        if = { limit = { is_ship_size = ... } ... }
-    }
-}
-```
-
-非 ship scope 仍应执行通用的 ambient object 创建分支，但不应求值
-ship-only trigger/effect。
-
-### 4.6 4.5.3 与 4.6-only 语法并存
-
-当前日志来自 4.5.3，但仍出现大量类似：
+`touhou_optimize_evaluation_resource_upkeeps.txt` 在部分 ship size 中被
+`ship_growth_stage` scope 解析，日志出现：
 
 ```text
-Unexpected token: ai_update_type
-Unexpected token: inherit_name
-Unexpected token: is_capped_by_modifier
-Unexpected token: total_fire_time
-Unexpected token: condition_string
-Unexpected token: min_range
-Unexpected token: windup
-Unexpected token: tracking
+Invalid scope for event target 'owner'
+Got ship_growth_stage
 ```
 
-统计：
+需要确认这些 ship size 是否真的会进入 growth stage，以及 `exists = owner`
+在该静态资源表求值阶段是否可靠。不要仅因为舰队 UI 已加速就忽略。
 
-- `persistent.cpp` 结构解析错误：1,277 条
-- `reader.cpp` 高级语句/变量解析错误：4,282 条
-- `parser_deferred_database_objects.cpp` 延迟引用失败：2,644 条
-- 重复事件 ID：105 条
-- 缺失本地化键引用：705 条，去重后 364 个键
-- `Wrong scope for trigger`：313 条
-- `Invalid scope for event target`：91 条
-- 除零错误：3 条
-- `Undefined event target`：4 条
-- 各类 `Invalid scripted effect`：15 条
+### 4.5 AG 隐藏修正重名
 
-这并不表示上述全部是新增 4.6 内容；仓库里已有部分 4.6 风格字段，同时加载了
-其他兼容 MOD。发布 4.5 内容前，不应仅凭当前 `error.log` 就认为兼容完成。
-恢复 4.6 preview 改动后，应使用真实 4.6 preview 再跑一次并单独对比日志。
+`ship_is_constructor`、`ship_is_science_ship`、`ship_is_colonizer`、
+`ship_is_transport` 与 AG Mod 同名并报告重复定义。当前定义内容相同，但存在
+后续漂移风险。若修改其定义，必须同时检查 AG 版本和加载顺序。
 
-### 4.7 已知但优先级较低的问题
+### 4.6 Paragon 事件 ID 冲突
 
-- `events/02_th_events.txt` 仍有对不存在的 SRA 建筑、科技和市政引用。
-- `common/scripted_effects/spth_planet_effects.txt` 中出现不存在的 SRA 建筑。
-- `events/lunar_capital_psi_crisis_events.txt` 有损坏 event target 和缺失图片。
-- `events/crisis.211` 日志报 `has no valid options`。
-- 资源侧有大量缺失音频、纹理、mesh、attach point、粒子时间戳和字体/UI 解析错误。
-- `ag_system_selector`、Ancient Empire 舰船、Kuat 相关调用贡献了大量延迟引用失败。
+当前日志仍报告：
 
-这些应单独建任务清理，避免和灵潜 UI 验证混在一起。
+```text
+paragon_2.1005 already exists
+paragon_2.1020 already exists
+paragon_2.1021 already exists
+paragon_2.2000 already exists
+paragon.403/404/405/549 already exists
+```
 
-## 5. 建议下一步
+其中本项目覆盖位于
+`events/!!!!_touhou_vanilla_overwrite_events.txt`。这些 ID 与当前加载的原版或
+其他 MOD 事件冲突，不能仅依赖 `!!!!` 文件名排序。发布前应确认覆盖是否仍符合
+当前游戏版本，优先改为 MOD 命名空间并通过 on_action 或 trigger 转发。
 
-优先级从高到低：
+## 5. 4.6 preview 状态
 
-1. 重启游戏并用控制台触发 `touhou_shroud.2001`、`.2100`、`.2281`，确认自定义
-   UI 和背景房间的实际显示。
-2. 修复 `toho.8301` 三个描述条件重叠导致的重复本地化警告。
-3. 修复 `touhou_effect_init_lilywhite_effect` 拼写。
-4. 重构 `th_spawn_explosion_particle` 的 ship-only scope 判断。
-5. 决定 `paragon_2.1005` 的覆盖策略。
-6. 发布创意工坊后，执行 preview revert 的反向提交恢复命令。
-7. 使用真实 4.6 preview 重新运行，和本次 4.5.3 日志分组对比。
+此前 `5c78ae2d` 曾临时 revert 4.6 覆盖兼容，但随后 `16e488f4` 已重新应用，
+当前代码以重新应用后的版本为准。不要在后续发布准备中再次自动 revert。
 
-## 6. 其他未完成/需重新确认的事项
+4.6 preview 的静态对比、伦理变化、on_action 改名和巨构模块资料见：
 
-此前提出的 `toho.4009` 拆解巨构选项及
-`touhou_gateway_network_quantum_catapult` 的清理模块/flag 逻辑，当前工作树中
-没有对应改动。不要假定已经完成；继续处理前先重新读取事件和相关 megastructure
-定义。
+- [STELLARIS_4.6_PREVIEW_COMPARISON.md](STELLARIS_4.6_PREVIEW_COMPARISON.md)
 
-当前 `script_profiling.log` 和 `script_profiling_summary.log` 都是 0 bytes，
-本次启动没有可用于战斗性能分析的 profiler 数据。
+当前稳定发布目标仍是 `4.5.*`。4.6 兼容层属于内部前瞻内容，发布前应确认目标
+版本和创意工坊版本描述。
 
-## 7. 关键文件
+## 6. 本地化同步
 
-- 4.6 preview 对比资料：`.agent/STELLARIS_4.6_PREVIEW_COMPARISON.md`
-- 基础项目交接：`.agent/HANDOFF.md`
-- 本机路径配置：`.agent/local_config.json`
-- 灵潜重写事件：`events/touhou_shroud_events.txt`
-- 灵潜入口和分发：`events/02_th_events.txt`
-- 灵潜自定义 UI：`interface/spth_special_diplomacy_ui.gui`
-- 战斗爆炸效果：`common/scripted_effects/th_battle_effects.txt`
-- 莉莉白特殊效果：`common/scripted_effects/th_special_leader_effects.txt`
+工具：
 
-## 8. 提交前检查
+```text
+utils/loc/sync_english_localisation.sh
+```
 
-最低限度执行：
+用法：
+
+```bash
+utils/loc/sync_english_localisation.sh --dry-run
+utils/loc/sync_english_localisation.sh
+```
+
+规则：
+
+- 源目录：`localisation/english/`
+- 目标：除 `simp_chinese` 外的八种语言
+- 排除：
+  `localisation/russian/replace/spth_vanilla_repair_l_russian.yml`
+- 正文同步英文，仅把首行语言头改成目标语言
+- 工具是幂等的，重复执行不会重写相同文件
+
+该工具会覆盖目标语言现有正文，这是当前发布策略；运行前先做 `--dry-run`，并确认
+没有需要保留的独立翻译。
+
+## 7. 常用检查命令
 
 ```bash
 git diff --check
-git status --short
+rg -n "Unknown inline_script|Wrong scope|Invalid scope|Cannot divide by zero" \
+  "/home/koishi/.local/share/Paradox Interactive/Stellaris/logs/error.log"
+rg -n "common/special_projects|common/inline_scripts/special_projects|events/th_hellsing|common/inline_scripts/ship_sizes/touhou" \
+  "/home/koishi/.local/share/Paradox Interactive/Stellaris/logs/error.log"
 ```
 
-当前改动尚未提交。不要覆盖 `events/02_th_events.txt` 中已有的三项事件转发修正，
-也不要删除两个未跟踪的 automation 文件。
+检查性能日志前先复制，因为游戏重启可能截断文件：
+
+```bash
+cp script_profiling_summary.log /tmp/script_profiling_summary.before.log
+```
+
+## 8. 当前未提交/未验证事项
+
+- 本文的修改和 `.agent/skills/` 下的新增项目技能尚未提交
+- 当前工作树的大批新功能、GFX、DDS 和本地化均尚未提交
+- 四阶段幻想星环方舟及其完工世界舰尚未完成完整运行测试
+- 标准 47 个、无灵力 23 个方舟挂载尚未在游戏内逐槽验证
+- 无灵力武器弱化 `on_hit` 与无灵力太阳反应堆尚未完成实战验证
+- 方舟/月都/恒星基地的新容量和生存数值尚未完成平衡验证
+- `toho.8301` 第二、第三个 desc 的重叠尚未修复
+- 隐藏资源 `touhou_ship_combat_power` 的资源和 modifier 图标缺失
+- `th_spawn_explosion_particle` 的静态 scope 警告仍在
+- ship growth stage 下的 owner scope 警告仍在
+- Paragon 覆写事件 ID 与其他内容冲突
+- Hellsing 设计目标曾讨论 90 天，但当前代码仍为 120 天
+- 2.5.3 新功能尚未全部完成游戏内实测

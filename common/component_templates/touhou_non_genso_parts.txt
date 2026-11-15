@@ -43,14 +43,55 @@ weapon_component_template = {
         component_lifesteal_add = 0.10
     }
     inline_script = { script = ship_components/spth_component_basic size = extra_large }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = energy type = extra_large }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = energy type = extra_large }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = extra_large }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    inline_script = { script = ship_components/touhou_aoe_attribute slot = x type = common faction = common tier = 1 dmg_extra = 0 dmg_scale = 1 rng_extra = 0 rng_scale = 1 }
+    target_focus = spread
+    on_hit = {
+        hidden_effect = {
+            custom_tooltip_with_params = {
+                description = th_weapon_spark_hit_effect
+                description_parameters = { TOUHOU_STACK = 2.00 }
+            }
+            custom_tooltip_with_params = {
+                description = th_weapon_spark_hit_effect_2
+                description_parameters = { TOUHOU_SHIELD = 256.00 }
+            }
+            if = {
+                limit = { has_ship_flag = has_touhou_echo_status_full }
+                touhou_repair_ship_shield_overflow_static = { amount = -256.00 }
+            } else = {
+                if = {
+                    limit = { NOT = { has_ship_flag = touhou_echo_status_stack_cooldown_x } }
+                    set_timed_ship_flag = { flag = touhou_echo_status_stack_cooldown_x days = 4 }
+                    if = {
+                        limit = { NOT = { is_variable_set = touhou_echo_status_stacks } }
+                        set_variable = { which = touhou_echo_status_stacks value = 0 }
+                    }
+                    change_variable = { which = touhou_echo_status_stacks value = 2 }
+                }
+                if = {
+                    limit = {
+                        is_variable_set = touhou_echo_status_stacks
+                        check_variable = { which = touhou_echo_status_stacks value >= 16 }
+                    }
+                    set_variable = { which = touhou_echo_status_stacks value = 0 }
+                    set_timed_ship_flag = { flag = has_touhou_echo_status_full days = 4 }
+                    add_modifier = {
+                        modifier = touhou_echo_status_full days = 4
+                        mult = value:touhou_echo_status_full_factor
+                    }
+                }
+            }
+            touhou_weapon_emp_charge_module_effect = { size = extra_large }
+        }
+    }
 }
 weapon_component_template = {
     key = "TH_weapon_spark1_non_genso"
     entity = "invisible_turret_entity"
-    icon = "GFX_th_weapon_spark"
+    icon = "GFX_th_weapon_spark_titanic"
     # firing_arc = 25.0
     prerequisites = { "tech_th_weapon_spark_2_non_genso" }
     component_set = "th_weapon_spark1_non_genso"
@@ -64,9 +105,34 @@ weapon_component_template = {
         component_lifesteal_add = 0.10
     }
     inline_script = { script = ship_components/spth_component_basic size = titanic }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = energy type = titanic }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = energy type = titanic }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = titanic }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    inline_script = { script = ship_components/touhou_aoe_attribute slot = t type = common faction = common tier = 1 dmg_extra = 0 dmg_scale = 1 rng_extra = 0 rng_scale = 1 }
+    target_focus = spread
+    on_hit = {
+        custom_tooltip = TH_weapon_spark1_hit_effect
+        hidden_effect = {
+            if = {
+                limit = {
+                    from = { NOT = { has_ship_flag = concept_touhou_sunbeam } }
+                    NOT = {
+                        has_ship_flag = concept_touhou_sunbeam
+                        has_ship_flag = concept_touhou_sunbeam_victim
+                    }
+                }
+                from = {
+                    save_event_target_as = concept_touhou_sunbeam_target
+                    set_timed_ship_flag = { flag = concept_touhou_sunbeam days = 8 }
+                }
+                set_timed_ship_flag = { flag = concept_touhou_sunbeam days = 6 }
+                set_timed_ship_flag = { flag = concept_touhou_sunbeam_victim days = 3 }
+                touhou_spawn_sunbeam_object = yes
+                reduce_shield = value:concept_touhou_sunbeam_damage|base|4446|min|4446|max|36000|
+            }
+            touhou_weapon_emp_charge_module_effect = { size = titanic }
+        }
+    }
 }
 weapon_component_template = {
     key = "TH_weapon_gungnir1_non_genso"
@@ -85,14 +151,82 @@ weapon_component_template = {
         component_lifesteal_add = 0.10
     }
     inline_script = { script = ship_components/spth_component_basic size = extra_large }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kinetic type = extra_large }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = kinetic type = extra_large }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = extra_large }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    inline_script = { script = ship_components/touhou_aoe_attribute slot = x type = common faction = common tier = 1 dmg_extra = 0 dmg_scale = 1 rng_extra = 0 rng_scale = 1 }
+    target_focus = spread
+    on_hit = {
+        custom_tooltip = TH_weapon_gungnir1_hit_effect
+        hidden_effect = {
+            if = {
+                limit = {
+                    NOT = {
+                        from? = { has_ship_flag = concept_touhou_blood_slash_cooldown }
+                        has_ship_flag = concept_touhou_blood_slash
+                        has_modifier = concept_touhou_blood_slash_armor
+                    }
+                }
+                random_list = {
+                    12 = {
+                        from = { set_timed_ship_flag = { flag = concept_touhou_blood_slash_cooldown days = 14 } }
+                        set_timed_ship_flag = { flag = concept_touhou_blood_slash days = 4 }
+                        if = {
+                            limit = { has_armor_percentage > 0.05 }
+                            random_list = {
+                                25 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_armor
+                                        mult = value:concept_touhou_blood_slash_damage days = 2
+                                    }
+                                }
+                                50 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_armor
+                                        mult = value:concept_touhou_blood_slash_damage days = 2
+                                    }
+                                }
+                                25 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_armor
+                                        mult = value:concept_touhou_blood_slash_damage days = 3
+                                    }
+                                }
+                            }
+                        } else = {
+                            random_list = {
+                                25 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_hull
+                                        mult = value:concept_touhou_blood_slash_damage days = 2
+                                    }
+                                }
+                                50 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_hull
+                                        mult = value:concept_touhou_blood_slash_damage days = 2
+                                    }
+                                }
+                                25 = {
+                                    add_modifier = {
+                                        modifier = concept_touhou_blood_slash_hull
+                                        mult = value:concept_touhou_blood_slash_damage days = 3
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    88 = {}
+                }
+            }
+            touhou_weapon_emp_charge_module_effect = { size = extra_large }
+        }
+    }
 }
 weapon_component_template = {
     key = "TH_weapon_gungnir2_non_genso"
     entity = "invisible_turret_entity"
-    icon = "GFX_th_weapon_gungnir"
+    icon = "GFX_th_weapon_gungnir_titanic"
     # firing_arc = 25.0
     prerequisites = { "tech_th_weapon_gungnir_non_genso" }
     component_set = "th_weapon_gungnir2_non_genso"
@@ -106,15 +240,44 @@ weapon_component_template = {
         component_lifesteal_add = 0.10
     }
     inline_script = { script = ship_components/spth_component_basic size = titanic }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kinetic type = titanic }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = kinetic type = titanic }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = titanic }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    inline_script = { script = ship_components/touhou_aoe_attribute slot = t type = common faction = common tier = 1 dmg_extra = 0 dmg_scale = 1 rng_extra = 0 rng_scale = 1 }
+    target_focus = spread
+    on_hit = {
+        custom_tooltip = TH_weapon_gungnir2_hit_effect
+        hidden_effect = {
+            if = {
+                limit = {
+                    NOT = { has_ship_flag = concept_scarlet_destiny }
+                    from? = { NOT = { has_ship_flag = concept_scarlet_destiny_cooldown } }
+                }
+                from = { set_timed_ship_flag = { flag = concept_scarlet_destiny_cooldown days = 14 } }
+                if = {
+                    limit = { NOT = { is_variable_set = concept_scarlet_destiny_stacks } }
+                    set_variable = { which = concept_scarlet_destiny_stacks value = 0 }
+                }
+                change_variable = { which = concept_scarlet_destiny_stacks value = 1 }
+                if = {
+                    limit = { check_variable = { which = concept_scarlet_destiny_stacks value >= 10 } }
+                    set_variable = { which = concept_scarlet_destiny_stacks value = 0 }
+                    set_timed_ship_flag = { flag = concept_scarlet_destiny days = 1 }
+                    add_modifier = { modifier = touhou_gungnir_hit_hull_damage days = 1 mult = modifier:ship_hull_damage_mult }
+                    add_modifier = { modifier = touhou_gungnir_hit_armor_damage days = 1 mult = modifier:ship_armor_damage_mult }
+                    add_modifier = { modifier = touhou_gungnir_hit_shield_damage days = 1 mult = modifier:ship_shield_damage_mult }
+                    add_modifier = { modifier = touhou_gungnir_hit_no_damage_modifier days = 1 }
+                }
+            }
+            touhou_weapon_emp_charge_module_effect = { size = titanic }
+        }
+    }
 }
 # 能量
 weapon_component_template = {
     key = "SMALL_th_weapon_spark_non_genso"
     entity = "turret_missile_medium_entity"
-    icon = "GFX_th_weapon_spark"
+    icon = "GFX_th_weapon_spark_common"
     # firing_arc = 25.0
     prerequisites = { "tech_th_weapon_spark_non_genso" }
     component_set = "th_weapon_spark_non_genso"
@@ -124,14 +287,52 @@ weapon_component_template = {
     ai_tag_weight = 1000
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = small }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = energy type = small }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = energy type = small }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip_with_params = {
+            description = th_weapon_spark_hit_effect
+            description_parameters = { TOUHOU_STACK = 1.00 }
+        }
+        custom_tooltip_with_params = {
+            description = th_weapon_spark_hit_effect_2
+            description_parameters = { TOUHOU_SHIELD = 36.00 }
+        }
+        hidden_effect = {
+            if = {
+                limit = { has_ship_flag = has_touhou_echo_status_full }
+                touhou_repair_ship_shield_overflow_static = { amount = -36.00 }
+            } else = {
+                if = {
+                    limit = { NOT = { has_ship_flag = touhou_echo_status_stack_cooldown_s } }
+                    set_timed_ship_flag = { flag = touhou_echo_status_stack_cooldown_s days = 3 }
+                    if = {
+                        limit = { NOT = { is_variable_set = touhou_echo_status_stacks } }
+                        set_variable = { which = touhou_echo_status_stacks value = 0 }
+                    }
+                    change_variable = { which = touhou_echo_status_stacks value = 1 }
+                }
+                if = {
+                    limit = {
+                        is_variable_set = touhou_echo_status_stacks
+                        check_variable = { which = touhou_echo_status_stacks value >= 16 }
+                    }
+                    set_variable = { which = touhou_echo_status_stacks value = 0 }
+                    set_timed_ship_flag = { flag = has_touhou_echo_status_full days = 4 }
+                    add_modifier = {
+                        modifier = touhou_echo_status_full days = 4
+                        mult = value:touhou_echo_status_full_factor
+                    }
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_weapon_spark_non_genso"
     entity = "turret_missile_medium_entity"
-    icon = "GFX_th_weapon_spark"
+    icon = "GFX_th_weapon_spark_common"
     #firing_arc = 25.0
     prerequisites = { "tech_th_weapon_spark_non_genso" }
     component_set = "th_weapon_spark_non_genso"
@@ -141,14 +342,52 @@ weapon_component_template = {
     ai_tag_weight = 1000
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = medium }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = energy type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = energy type = medium }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip_with_params = {
+            description = th_weapon_spark_hit_effect
+            description_parameters = { TOUHOU_STACK = 1.00 }
+        }
+        custom_tooltip_with_params = {
+            description = th_weapon_spark_hit_effect_2
+            description_parameters = { TOUHOU_SHIELD = 48.00 }
+        }
+        hidden_effect = {
+            if = {
+                limit = { has_ship_flag = has_touhou_echo_status_full }
+                touhou_repair_ship_shield_overflow_static = { amount = -48.00 }
+            } else = {
+                if = {
+                    limit = { NOT = { has_ship_flag = touhou_echo_status_stack_cooldown_m } }
+                    set_timed_ship_flag = { flag = touhou_echo_status_stack_cooldown_m days = 2 }
+                    if = {
+                        limit = { NOT = { is_variable_set = touhou_echo_status_stacks } }
+                        set_variable = { which = touhou_echo_status_stacks value = 0 }
+                    }
+                    change_variable = { which = touhou_echo_status_stacks value = 1 }
+                }
+                if = {
+                    limit = {
+                        is_variable_set = touhou_echo_status_stacks
+                        check_variable = { which = touhou_echo_status_stacks value >= 16 }
+                    }
+                    set_variable = { which = touhou_echo_status_stacks value = 0 }
+                    set_timed_ship_flag = { flag = has_touhou_echo_status_full days = 4 }
+                    add_modifier = {
+                        modifier = touhou_echo_status_full days = 4
+                        mult = value:touhou_echo_status_full_factor
+                    }
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "LARGE_th_weapon_spark_non_genso"
     entity = "turret_missile_medium_entity"
-    icon = "GFX_th_weapon_spark"
+    icon = "GFX_th_weapon_spark_common"
     #firing_arc = 25.0
     prerequisites = { "tech_th_weapon_spark_non_genso" }
     component_set = "th_weapon_spark_non_genso"
@@ -158,9 +397,47 @@ weapon_component_template = {
     ai_tag_weight = 1000
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = large }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = energy type = large }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = energy type = large }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip_with_params = {
+            description = th_weapon_spark_hit_effect
+            description_parameters = { TOUHOU_STACK = 1.00 }
+        }
+        custom_tooltip_with_params = {
+            description = th_weapon_spark_hit_effect_2
+            description_parameters = { TOUHOU_SHIELD = 64.00 }
+        }
+        hidden_effect = {
+            if = {
+                limit = { has_ship_flag = has_touhou_echo_status_full }
+                touhou_repair_ship_shield_overflow_static = { amount = -64.00 }
+            } else = {
+                if = {
+                    limit = { NOT = { has_ship_flag = touhou_echo_status_stack_cooldown_l } }
+                    set_timed_ship_flag = { flag = touhou_echo_status_stack_cooldown_l days = 3 }
+                    if = {
+                        limit = { NOT = { is_variable_set = touhou_echo_status_stacks } }
+                        set_variable = { which = touhou_echo_status_stacks value = 0 }
+                    }
+                    change_variable = { which = touhou_echo_status_stacks value = 1 }
+                }
+                if = {
+                    limit = {
+                        is_variable_set = touhou_echo_status_stacks
+                        check_variable = { which = touhou_echo_status_stacks value >= 16 }
+                    }
+                    set_variable = { which = touhou_echo_status_stacks value = 0 }
+                    set_timed_ship_flag = { flag = has_touhou_echo_status_full days = 4 }
+                    add_modifier = {
+                        modifier = touhou_echo_status_full days = 4
+                        mult = value:touhou_echo_status_full_factor
+                    }
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_yinyang_jade_non_genso"
@@ -175,9 +452,21 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_shield }
     ai_tag_weight = 997
     inline_script = { script = ship_components/spth_component_basic size = small }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = energy type = small }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = energy type = small }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip_with_params = {
+            description = th_yinyang_jade_hit_effect
+            description_parameters = { TOUHOU_AMOUNT = 0.4 }
+        }
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = ship_has_touhou_nimble_fabric_effect } }
+                touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = 0.004 duration = 3 threshold = 0.5 }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_yinyang_jade_non_genso"
@@ -192,9 +481,21 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_shield }
     ai_tag_weight = 998
     inline_script = { script = ship_components/spth_component_basic size = medium }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = energy type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = energy type = medium }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip_with_params = {
+            description = th_yinyang_jade_hit_effect
+            description_parameters = { TOUHOU_AMOUNT = 0.8 }
+        }
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = ship_has_touhou_nimble_fabric_effect } }
+                touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = 0.008 duration = 3 threshold = 0.5 }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "LARGE_th_yinyang_jade_non_genso"
@@ -209,15 +510,26 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_shield }
     ai_tag_weight = 999
     inline_script = { script = ship_components/spth_component_basic size = large }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = energy type = large }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = energy type = large }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip_with_params = {
+            description = th_yinyang_jade_hit_effect
+            description_parameters = { TOUHOU_AMOUNT = 1.6 }
+        }
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = ship_has_touhou_nimble_fabric_effect } }
+                touhou_stack_modifier_effect = { modifier = ship_damage_reduction_mult value = 0.016 duration = 3 threshold = 0.5 }
+            }
+        }
+    }
 }
 # sp
 weapon_component_template = {
     key = "MEDIUM_th_weapon_ex_muso_non_genso"
-    entity = "turret_missile_medium_entity"
-    icon = "GFX_th_weapon_muso"
+    icon = "GFX_th_weapon_ex_muso"
     # firing_arc = 25.0
     prerequisites = { "tech_th_weapon_muso_2_non_genso" }
     component_set = "th_weapon_ex_muso_non_genso"
@@ -227,14 +539,17 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_shield weapon_role_anti_armor }
     ai_tag_weight = 999
     inline_script = { script = ship_components/spth_component_basic size = medium }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = muso type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = special tag = muso type = medium }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = special size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.75 duration = 3.00 dynamic = yes threshold = 20 }
+    }
 }
 weapon_component_template = {
     key = "LARGE_th_weapon_ex_muso_non_genso"
-    entity = "turret_missile_medium_entity"
-    icon = "GFX_th_weapon_muso"
+    icon = "GFX_th_weapon_ex_muso"
     # firing_arc = 25.0
     prerequisites = { "tech_th_weapon_muso_2_non_genso" }
     component_set = "th_weapon_ex_muso_non_genso"
@@ -244,9 +559,13 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_shield weapon_role_anti_armor }
     ai_tag_weight = 999
     inline_script = { script = ship_components/spth_component_basic size = large }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = muso type = large }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = special tag = muso type = large }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = special size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    target_focus = spread
+    on_hit = {
+        touhou_steal_modifier_on_hit = { modifier = ship_damage_reduction_add value = 0.75 duration = 3.00 dynamic = yes threshold = 20 }
+    }
 }
 # 动能
 weapon_component_template = {
@@ -260,9 +579,24 @@ weapon_component_template = {
     ai_tag_weight = 998
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = large }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kinetic type = large }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = kinetic type = large }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip = th_weapon_needle_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = concept_touhou_constraint } }
+                random_list = {
+                    8 = {
+                        set_timed_ship_flag = { flag = concept_touhou_constraint days = 8 }
+                        add_modifier = { modifier = concept_touhou_constraint days = 2 }
+                    }
+                    92 = {}
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_weapon_needle_non_genso"
@@ -275,9 +609,24 @@ weapon_component_template = {
     ai_tag_weight = 998
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = medium }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kinetic type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = kinetic type = medium }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip = th_weapon_needle_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = concept_touhou_constraint } }
+                random_list = {
+                    8 = {
+                        set_timed_ship_flag = { flag = concept_touhou_constraint days = 8 }
+                        add_modifier = { modifier = concept_touhou_constraint days = 2 }
+                    }
+                    92 = {}
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_weapon_needle_non_genso"
@@ -290,9 +639,24 @@ weapon_component_template = {
     ai_tag_weight = 998
     target_focus = spread
     inline_script = { script = ship_components/spth_component_basic size = small }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kinetic type = small }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = kinetic type = small }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip = th_weapon_needle_hit_effect
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = concept_touhou_constraint } }
+                random_list = {
+                    8 = {
+                        set_timed_ship_flag = { flag = concept_touhou_constraint days = 8 }
+                        add_modifier = { modifier = concept_touhou_constraint days = 2 }
+                    }
+                    92 = {}
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "th_barrage_normal_1_non_genso"
@@ -303,13 +667,35 @@ weapon_component_template = {
     component_set = "th_barrage_normal_non_genso"
     projectile_gfx = "spth_mix_mid_bullet_ballistic"
     target_focus = spread
-    tags = { weapon_type_kinetic l_slot weapon_type_sanae }
+    tags = { weapon_type_kinetic s_slot weapon_type_sanae }
     ai_tags = { weapon_role_anti_armor }
     ai_tag_weight = 997
     inline_script = { script = ship_components/spth_component_basic size = small }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kinetic type = small }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = kinetic type = small }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip = th_barrage_normal_hit_effect
+        hidden_effect = {
+            from = {
+                if = {
+                    limit = { NOT = { has_ship_flag = concept_touhou_cleanse } }
+                    set_timed_ship_flag = { flag = concept_touhou_cleanse days = 5 }
+                    set_timed_ship_flag = { flag = concept_touhou_cleanse_fired days = 2 }
+                    if = {
+                        limit = { has_modifier = concept_touhou_blood_slash_armor }
+                        remove_modifier = concept_touhou_blood_slash_armor
+                    }
+                    if = {
+                        limit = { has_ship_flag = concept_touhou_echo_strike_victim }
+                        remove_ship_flag = concept_touhou_echo_strike_victim
+                    }
+                    prev = { reduce_shield = value:concept_touhou_cleanse_damage|size|small|factor|0.5| }
+                    touhou_repair_ship_shield_overflow_static = { amount = value:concept_touhou_cleanse_health_small|factor|0.5| }
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "th_barrage_normal_2_non_genso"
@@ -320,13 +706,35 @@ weapon_component_template = {
     component_set = "th_barrage_normal_non_genso"
     projectile_gfx = "spth_mix_mid_1_bullet_ballistic"
     target_focus = spread
-    tags = { weapon_type_kinetic l_slot weapon_type_sanae }
+    tags = { weapon_type_kinetic m_slot weapon_type_sanae }
     ai_tags = { weapon_role_anti_armor }
     ai_tag_weight = 998
     inline_script = { script = ship_components/spth_component_basic size = medium }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kinetic type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = kinetic type = medium }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip = th_barrage_normal_hit_effect
+        hidden_effect = {
+            from = {
+                if = {
+                    limit = { NOT = { has_ship_flag = concept_touhou_cleanse } }
+                    set_timed_ship_flag = { flag = concept_touhou_cleanse days = 5 }
+                    set_timed_ship_flag = { flag = concept_touhou_cleanse_fired days = 2 }
+                    if = {
+                        limit = { has_modifier = concept_touhou_blood_slash_armor }
+                        remove_modifier = concept_touhou_blood_slash_armor
+                    }
+                    if = {
+                        limit = { has_ship_flag = concept_touhou_echo_strike_victim }
+                        remove_ship_flag = concept_touhou_echo_strike_victim
+                    }
+                    prev = { reduce_shield = value:concept_touhou_cleanse_damage|size|medium|factor|0.5| }
+                    touhou_repair_ship_shield_overflow_static = { amount = value:concept_touhou_cleanse_health_medium|factor|0.5| }
+                }
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "th_barrage_normal_3_non_genso"
@@ -341,9 +749,31 @@ weapon_component_template = {
     ai_tags = { weapon_role_anti_armor }
     ai_tag_weight = 999
     inline_script = { script = ship_components/spth_component_basic size = large }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kinetic type = large }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = kinetic type = large }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip = th_barrage_normal_hit_effect
+        hidden_effect = {
+            from = {
+                if = {
+                    limit = { NOT = { has_ship_flag = concept_touhou_cleanse } }
+                    set_timed_ship_flag = { flag = concept_touhou_cleanse days = 5 }
+                    set_timed_ship_flag = { flag = concept_touhou_cleanse_fired days = 2 }
+                    if = {
+                        limit = { has_modifier = concept_touhou_blood_slash_armor }
+                        remove_modifier = concept_touhou_blood_slash_armor
+                    }
+                    if = {
+                        limit = { has_ship_flag = concept_touhou_echo_strike_victim }
+                        remove_ship_flag = concept_touhou_echo_strike_victim
+                    }
+                    prev = { reduce_shield = value:concept_touhou_cleanse_damage|size|large|factor|0.5| }
+                    touhou_repair_ship_shield_overflow_static = { amount = value:concept_touhou_cleanse_health_large|factor|0.5| }
+                }
+            }
+        }
+    }
 }
 # 河童导弹
 weapon_component_template = {
@@ -368,9 +798,35 @@ weapon_component_template = {
     missile_health = 400
     missile_retarget_range = 80
     inline_script = { script = ship_components/spth_component_all size = large type = missile }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kappa type = large }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = special tag = kappa type = large }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = large }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip = LARGE_th_kappa_torpedo_on_hit
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = th_kappa_torpedo_clear_flag } }
+                set_timed_ship_flag = { flag = th_kappa_torpedo_clear_flag days = 4 }
+                add_modifier = {
+                    modifier = th_kappa_torpedo_clear
+                    mult = value:th_kappa_torpedo_modifier_value|sub|0.5|
+                    days = 2
+                }
+            }
+            if = {
+                limit = {
+                    check_variable_arithmetic = {
+                        which = from.modifier:ship_shield_penetration_add add = 4.25
+                        multiply = from.modifier:ship_shield_penetration_mult
+                        value > modifier:ship_shield_hardening_add
+                    }
+                }
+                reduce_shield = from.value:th_kappa_torpedo_hit_max_damage|perc|0.05|
+            } else = {
+                repair_armor_amount = from.value:th_kappa_torpedo_hit_max_damage|perc|0.05|factor|-1|
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "MEDIUM_th_kappa_torpedo_non_genso"
@@ -394,9 +850,35 @@ weapon_component_template = {
     missile_health = 300
     missile_retarget_range = 90
     inline_script = { script = ship_components/spth_component_all size = medium type = missile }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kappa type = medium }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = special tag = kappa type = medium }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = medium }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip = MEDIUM_th_kappa_torpedo_on_hit
+        hidden_effect = {
+            if = {
+                limit = { NOT = { has_ship_flag = th_kappa_torpedo_clear_flag } }
+                set_timed_ship_flag = { flag = th_kappa_torpedo_clear_flag days = 4 }
+                add_modifier = {
+                    modifier = th_kappa_torpedo_clear
+                    mult = value:th_kappa_torpedo_modifier_value|sub|0.25|
+                    days = 2
+                }
+            }
+            if = {
+                limit = {
+                    check_variable_arithmetic = {
+                        which = from.modifier:ship_shield_penetration_add add = 4.25
+                        multiply = from.modifier:ship_shield_penetration_mult
+                        value > modifier:ship_shield_hardening_add
+                    }
+                }
+                reduce_shield = from.value:th_kappa_torpedo_hit_common_damage|perc|0.05|
+            } else = {
+                repair_armor_amount = from.value:th_kappa_torpedo_hit_common_damage|perc|0.05|factor|-1|
+            }
+        }
+    }
 }
 weapon_component_template = {
     key = "SMALL_th_kappa_torpedo_non_genso"
@@ -420,9 +902,26 @@ weapon_component_template = {
     missile_health = 200
     missile_retarget_range = 100
     inline_script = { script = ship_components/spth_component_all size = small type = missile }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = kappa type = small }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = special tag = kappa type = small }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = small }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    on_hit = {
+        custom_tooltip = SMALL_th_kappa_torpedo_on_hit
+        hidden_effect = {
+            if = {
+                limit = {
+                    check_variable_arithmetic = {
+                        which = from.modifier:ship_shield_penetration_add add = 4.25
+                        multiply = from.modifier:ship_shield_penetration_mult
+                        value > modifier:ship_shield_hardening_add
+                    }
+                }
+                reduce_shield = from.value:th_kappa_torpedo_hit_min_damage|perc|0.0375|
+            } else = {
+                repair_armor_amount = from.value:th_kappa_torpedo_hit_min_damage|perc|0.0375|factor|-1|
+            }
+        }
+    }
 }
 # 护盾
 utility_component_template = {
@@ -558,7 +1057,7 @@ weapon_component_template = {
         show_only_custom_tooltip = no
     }
     inline_script = { script = ship_components/spth_component_all size = torpedo type = missile }
-    inline_script = { script = ship_components/spth_component_attributes name = non_genso tag = flan type = torpedo }
+    inline_script = { script = ship_components/spth_component_attributes_non_genso name = common tag = non_story type = torpedo }
     inline_script = { script = ship_components/spth_component_resources_non_genso class = common size = weapon type = torpedo }
     prerequisites = { tech_spth_weapon_laevatain_non_genso }
     component_set = "th_weapon_laevatain_non_genso"
@@ -572,6 +1071,7 @@ weapon_component_template = {
     }
     ai_tags = { weapon_role_anti_hull }
     inline_script = { script = ship_components/spth_basic_ai_weight_non_genso base = 114514 }
+    target_focus = spread
 }
 
 utility_component_template = {
@@ -579,7 +1079,7 @@ utility_component_template = {
     size = small
     icon = "GFX_th_engine_xijian"
     icon_frame = 1
-    power = 80
+    power = @power_L4
     resources = {
         category = ship_components
         cost = { alloys = 20 }
@@ -589,7 +1089,8 @@ utility_component_template = {
     ship_modifier = {
         ship_windup_mult = -0.2
         ship_ftl_jumpdrive_range_mult = 1.0
-        ship_jumpdrive_cooldown_mult = -0.5
+        ship_jumpdrive_cooldown_mult = -0.75
+        relay_bypass_ship_windup_mult = 0.50
     }
     ai_weight = { weight = 114514 }
     prerequisites = { "tech_th_non_genso_spellcard" }
@@ -707,4 +1208,243 @@ utility_component_template = {
     prerequisites = { tech_th_non_genso_spellcard }
     component_set = "spth_ship_part_outworld_protector_non_genso"
     ai_weight = { weight = 114514 }
+}
+
+# 太阳反应堆的标准舰级非灵力版本
+utility_component_template = {
+    key = "CORVETTE_TAIYANG_REACTOR_NON_GENSO"
+    size = small
+    icon = "GFX_th_ship_part_taiyang"
+    icon_frame = 1
+    power = 650
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 55
+            rare_crystals = 1
+        }
+        upkeep = {
+            energy = 0.37
+            alloys = 0.037
+        }
+    }
+    prerequisites = { "tech_th_non_genso_spellcard" }
+    component_set = "power_core"
+    potential = { ship_uses_CORVETTE_TAIYANG_REACTOR = yes }
+    scripted_action = {
+        touhou_ship_action
+        ag_mod_ship_action_menu
+    }
+    ship_modifier = { ship_has_touhou_action = 1 }
+    ai_weight = {
+        weight = 114514
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = rare_crystals value <= 0 }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "DESTROYER_TAIYANG_REACTOR_NON_GENSO"
+    size = small
+    icon = "GFX_th_ship_part_taiyang"
+    icon_frame = 1
+    power = 1300
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 111
+            rare_crystals = 2
+        }
+        upkeep = {
+            energy = 0.74
+            alloys = 0.074
+        }
+    }
+    prerequisites = { "tech_th_non_genso_spellcard" }
+    component_set = "power_core"
+    potential = { ship_uses_DESTROYER_TAIYANG_REACTOR = yes }
+    scripted_action = {
+        touhou_ship_action
+        ag_mod_ship_action_menu
+    }
+    ship_modifier = { ship_has_touhou_action = 1 }
+    ai_weight = {
+        weight = 114514
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = rare_crystals value <= 0 }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "CRUISER_TAIYANG_REACTOR_NON_GENSO"
+    size = small
+    icon = "GFX_th_ship_part_taiyang"
+    icon_frame = 1
+    power = 2600
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 222
+            rare_crystals = 3
+        }
+        upkeep = {
+            energy = 1.48
+            alloys = 0.148
+        }
+    }
+    prerequisites = { "tech_th_non_genso_spellcard" }
+    component_set = "power_core"
+    potential = { ship_uses_CRUISER_TAIYANG_REACTOR = yes }
+    scripted_action = {
+        touhou_ship_action
+        ag_mod_ship_action_menu
+    }
+    ship_modifier = { ship_has_touhou_action = 1 }
+    ai_weight = {
+        weight = 114514
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = rare_crystals value <= 0 }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "BATTLESHIP_TAIYANG_REACTOR_NON_GENSO"
+    size = small
+    icon = "GFX_th_ship_part_taiyang"
+    icon_frame = 1
+    power = 6400
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 344
+            rare_crystals = 4
+        }
+        upkeep = {
+            energy = 2.98
+            alloys = 0.298
+        }
+    }
+    prerequisites = { "tech_th_non_genso_spellcard" }
+    component_set = "power_core"
+    potential = { ship_uses_BATTLESHIP_TAIYANG_REACTOR = yes }
+    scripted_action = {
+        touhou_ship_action
+        ag_mod_ship_action_menu
+    }
+    ship_modifier = { ship_has_touhou_action = 1 }
+    ai_weight = {
+        weight = 114514
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = rare_crystals value <= 0 }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "TITAN_TAIYANG_REACTOR_NON_GENSO"
+    size = small
+    icon = "GFX_th_ship_part_taiyang"
+    icon_frame = 1
+    power = 12800
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 784
+            rare_crystals = 5
+        }
+        upkeep = {
+            energy = 5.93
+            alloys = 0.593
+        }
+    }
+    prerequisites = { "tech_th_non_genso_spellcard" }
+    component_set = "power_core"
+    potential = { ship_uses_TITAN_TAIYANG_REACTOR = yes }
+    scripted_action = {
+        touhou_ship_action
+        ag_mod_ship_action_menu
+    }
+    ship_modifier = { ship_has_touhou_action = 1 }
+    ai_weight = {
+        weight = 114514
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = rare_crystals value <= 0 }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "COLOSSUS_TAIYANG_REACTOR_NON_GENSO"
+    size = small
+    icon = "GFX_th_ship_part_taiyang"
+    icon_frame = 1
+    power = 25600
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 111
+            volatile_motes = 3
+            rare_crystals = 3
+        }
+    }
+    prerequisites = { "tech_th_non_genso_spellcard" }
+    component_set = "power_core"
+    potential = { ship_uses_COLOSSUS_TAIYANG_REACTOR = yes }
+    scripted_action = {
+        touhou_ship_action
+        ag_mod_ship_action_menu
+    }
+    ship_modifier = { ship_has_touhou_action = 1 }
+    ai_weight = {
+        weight = 114514
+        modifier = {
+            factor = 0.0
+            OR = {
+                has_monthly_income = { resource = volatile_motes value <= 0 }
+                has_monthly_income = { resource = rare_crystals value <= 0 }
+            }
+        }
+    }
+}
+
+utility_component_template = {
+    key = "PLATFORM_TAIYANG_REACTOR_NON_GENSO"
+    size = large
+    icon = "GFX_th_ship_part_taiyang"
+    icon_frame = 1
+    power = 1200
+    resources = {
+        category = ship_components
+        cost = {
+            alloys = 111
+            rare_crystals = 3
+        }
+        upkeep = {
+            energy = 0.74
+            alloys = 0.074
+        }
+    }
+    prerequisites = { "tech_th_non_genso_spellcard" }
+    component_set = "power_core"
+    potential = { ship_uses_PLATFORM_TAIYANG_REACTOR = yes }
+    scripted_action = {
+        touhou_ship_action
+        ag_mod_ship_action_menu
+    }
+    ship_modifier = { ship_has_touhou_action = 1 }
+    ai_weight = {
+        weight = 114514
+        modifier = {
+            factor = 0.0
+            has_monthly_income = { resource = rare_crystals value <= 0 }
+        }
+    }
 }
