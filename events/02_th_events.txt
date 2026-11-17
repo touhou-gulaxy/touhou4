@@ -5995,8 +5995,6 @@ country_event = {
     desc = {
         trigger = {
             NOR = {
-                has_modifier = "shroud_cooldown"
-                has_modifier = "shroud_precog_cooldown"
                 has_global_flag = spth_lunar_capital_psi_crisis_ended
                 has_global_flag = ag_zeta_crisis_ended
             }
@@ -16020,6 +16018,33 @@ country_event = {
                 remove_modifier = queenslayer
             }
             every_country = {
+                if = {
+                    limit = {
+                        OR = {
+                            has_country_flag = synth_queen_storm
+                            has_country_flag = synth_queen_ai_storm
+                        }
+                    }
+                    deactivate_fog_machine = yes
+                    remove_country_flag = synth_queen_storm
+                    remove_country_flag = synth_queen_ai_storm
+                }
+                if = {
+                    limit = { has_special_project = THE_SYNTH_QUEENS_STORM }
+                    abort_special_project = { type = THE_SYNTH_QUEENS_STORM }
+                }
+                if = {
+                    limit = { has_special_project = THE_SYNTH_QUEENS_STORM_2 }
+                    abort_special_project = { type = THE_SYNTH_QUEENS_STORM_2 }
+                }
+            }
+
+            every_system = {
+                remove_modifier = queen_small_scorn_storm
+                remove_modifier = queen_scorn_storm
+                remove_modifier = queen_big_scorn_storm
+            }
+            every_country = {
                 limit = {
                     NOT = { is_same_value = event_target:touhou_defeated_synth_queen }
                 }
@@ -16055,15 +16080,17 @@ event = {
     hide_window = yes
     is_triggered_only = yes
     trigger = {
-        NOT = { has_global_flag = toho_23031_fired }
+        # NOT = { has_global_flag = toho_23031_fired }
+        NOT = { has_global_flag = toho_23031_fired_20261117 }   # version 2026.11.17, cleanup more contents.
         has_global_flag = synth_queen_defeated
     }
     immediate = {
-        set_global_flag = toho_23031_fired
+        # set_global_flag = toho_23031_fired
+        set_global_flag = toho_23031_fired_20261117  # version 2026.11.17, cleanup more contents.
         touhou_stop_global_modifier_system = yes
         # Outposts: dismantled
         every_country = {
-            limit = { is_country_type = synth_queen_outposts }
+            limit = { is_synth_queen_country_type = yes }
             every_owned_fleet = {
                 delete_fleet = {
                     target = this
@@ -16073,6 +16100,10 @@ event = {
             }
             destroy_country = yes
         }
+        clear_global_event_target = synth_queen_country_global
+        clear_global_event_target = synth_queen_doomclock_situation
+        clear_global_event_target = synth_queen_country
+        clear_global_event_target = synth_queen_system
         # Convoys: go home
         every_country = {
             limit = { is_country_type = synth_queen_convoys }
@@ -16085,13 +16116,54 @@ event = {
             }
             destroy_country = yes
         }
-        # Destroy every situation
+        # Destroy every situation,
+        # Abort special projects,
+        # End event chains,
+        # Remove modifiers,
+        # Stop crisis sound.
         every_country = {
-            limit = { any_situation = { is_situation_type = situation_synth_queen_player_facing } }
             every_situation = {
-                limit = { is_situation_type = situation_synth_queen_player_facing }
+                limit = {
+                    OR = {
+                        is_situation_type = situation_synth_queen_doomclock
+                        is_situation_type = situation_synth_queen_player_facing
+                    }
+                }
                 destroy_situation = this
             }
+
+            if = {
+                limit = { has_special_project = THE_SYNTH_QUEENS_STORM }
+                abort_special_project = { type = THE_SYNTH_QUEENS_STORM }
+            }
+            if = {
+                limit = { has_special_project = THE_SYNTH_QUEENS_STORM_2 }
+                abort_special_project = { type = THE_SYNTH_QUEENS_STORM_2 }
+            }
+            if = {
+                limit = { has_special_project = THE_SYNTH_QUEENS_RESHAPING_RITUAL }
+                abort_special_project = { type = THE_SYNTH_QUEENS_RESHAPING_RITUAL }
+            }
+
+            if = {
+                limit = { has_event_chain = the_synth_queen_war_chain }
+                end_event_chain = "the_synth_queen_war_chain"
+            }
+            if = {
+                limit = { has_event_chain = the_synth_queen_history_chain }
+                end_event_chain = "the_synth_queen_history_chain"
+            }
+
+            remove_modifier = queenexecutioner
+            remove_modifier = queenslayer
+            remove_modifier = beset_by_cetana
+            remove_modifier = synth_queen_nanite_apprentice
+        }
+
+        every_system = {
+            remove_modifier = queen_small_scorn_storm
+            remove_modifier = queen_scorn_storm
+            remove_modifier = queen_big_scorn_storm
         }
         touhou_resume_global_modifier_system = yes
     }
