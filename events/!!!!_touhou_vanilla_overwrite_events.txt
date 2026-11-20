@@ -173,6 +173,263 @@ country_event = {
     }
 }
 
+# append extra trigger, check if the crisis ended.
+country_event = { # Expand Storm 1
+	id = crisis.8010
+	hide_window = yes
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+        NOT = { has_global_flag = synth_queen_defeated }
+	}
+
+	immediate = {
+		random_system = {
+			limit = {
+				has_modifier = queen_scorn_storm
+			}
+			every_neighbor_system = {
+				limit = {
+					synth_queen_can_steal_system = yes
+				}
+				synth_queen_wipe_system = yes
+			}
+		}
+		country_event = { id = crisis.8015 days = 360 }
+	}
+}
+
+# append extra trigger, check if the crisis ended.
+country_event = { # Expand Storm 2
+	id = crisis.8015
+	hide_window = yes
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+        NOT = { has_global_flag = synth_queen_defeated }
+	}
+
+	immediate = {
+		every_system = {
+			limit = {
+				has_modifier = queen_scorn_storm
+			}
+			every_neighbor_system = {
+				limit = {
+					synth_queen_can_steal_system = yes
+				}
+				synth_queen_wipe_system = yes
+			}
+		}
+		country_event = { id = crisis.8030 days = 360 }
+	}
+}
+
+# Creates More Bases/Final Pass on Her Territory
+# append extra trigger, check if the crisis ended.
+country_event = {
+	id = crisis.8030
+	hide_window = yes
+	fire_only_once = yes
+	is_triggered_only = yes
+
+	immediate = {
+		set_crisis_stage_2 = yes
+		every_system = {
+			limit = {
+				has_star_flag = synth_queen_system
+				NOT = {
+					any_ship_in_system = {
+						is_ship_class = shipclass_starbase
+					}
+				}
+			}
+			create_fleet = {
+				name = "NAME_Synth_Queen_Starbase"
+				effect = {
+					set_owner = event_target:synth_queen_country_global
+					create_ship = {
+						name = random
+						design = "NAME_Synth_Queen_Starbase"
+					}
+					set_location = {
+						target = prev
+					}
+					while = {
+						count = 2
+						create_synth_queen_platform = yes
+					}
+				}
+			}
+		}
+
+		every_country = {
+			limit = {
+				OR = {
+					is_country_type = default
+					is_country_type = fallen_empire
+					is_country_type = awakened_fallen_empire
+				}
+			}
+			country_event = { id = crisis.8039 days = 15 }
+			if = {
+				limit = {
+					NOT = { is_country_type = default }
+				}
+				add_modifier = {
+					modifier = beset_by_cetana
+					days = -1
+				}
+				country_event = { id = crisis.8042 days = 360 random = 50 } #Fallen Empire weakener
+			}
+		}
+		set_global_flag = synth_queen_revenge_done
+	}
+}
+
+# Notification - storm appeared
+# append extra trigger, check if the crisis ended.
+country_event = {
+	id = crisis.8035
+	title = "crisis.8035.name"
+	picture = GFX_evt_vortex
+	show_sound = event_alien_signal
+	location = event_target:synth_queen_system
+	desc = {
+		trigger = {
+			NOT = { has_country_flag = attempted_entry_in_queen_storm }
+		}
+		text = crisis.8035.desc
+	}
+	desc = {
+		trigger = {
+			has_country_flag = attempted_entry_in_queen_storm
+		}
+		text = crisis.8035.desc.b
+	}
+
+	is_triggered_only = yes
+	trigger = {
+        NOT = { has_global_flag = synth_queen_defeated }
+	}
+
+	immediate = {
+		random_system = {
+			limit = {
+				has_star_flag = synth_queen_capital
+			}
+			save_event_target_as = synth_queen_system
+		}
+		observer_event = { id = observer.100 }
+	}
+
+	option = {
+		name = crisis.8035.a
+	}
+}
+
+#Cheat and weaken Fallen Empires so the queen can kill 'em faster
+# append extra trigger, check if the crisis ended.
+country_event = {
+	id = crisis.8042
+	hide_window = yes
+	is_triggered_only = yes
+
+	trigger = {
+		OR = {
+			is_country_type = fallen_empire
+			is_country_type = awakened_fallen_empire
+		}
+        NOT = { has_global_flag = synth_queen_defeated }
+	}
+
+	immediate = {
+		event_target:synth_queen_country_global = {
+			country_event = { id = crisis.8050 }
+		}
+		if = { #step 1 - Fog them up
+			limit = {
+				NOT = { has_country_flag = synth_queen_storm }
+			}
+			activate_fog_machine = synth_queen_nanite
+			set_country_flag = synth_queen_storm
+			every_system_within_border = {
+				limit = {
+					is_capital_system = no
+				}
+				add_modifier = {
+					modifier = queen_scorn_storm
+					days = -1
+				}
+			}
+			country_event = { id = crisis.8042 days = 360 random = 100 }
+		}
+		else_if = { #step 2 - weaken fleets
+			limit = {
+				has_country_flag = synth_queen_storm
+				NOT = { has_country_flag = weaker_navy }
+			}
+			random_owned_fleet = {
+				limit = {
+					is_mobile = yes
+				}
+				every_owned_ship = {
+					random_list = {
+						20 = {}
+						80 = {
+							destroy_ship = this
+						}
+					}
+				}
+			}
+			set_country_flag = weaker_navy
+			country_event = { id = crisis.8042 days = 360 }
+		}
+		else = { #step 3+ - wipe colonies
+			random_owned_planet = {
+				if = {
+					limit = {
+						is_capital = no
+						is_colony = yes
+					}
+					remove_all_buildings = yes
+					destroy_colony = yes
+					if = {
+						limit = {
+							is_artificial = no
+						}
+						change_pc = pc_gray_goo
+						if = {
+							limit = {
+								NOT = {
+									has_modifier = terraforming_candidate
+								}
+							}
+							add_modifier = {
+								modifier = terraforming_candidate
+								days = -1
+							}
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						is_capital = yes
+					}
+					add_planet_devastation = 35
+					while = {
+						count = 20
+						random_owned_pop_group = {
+							kill_single_pop = yes
+						}
+					}
+				}
+			}
+			country_event = { id = crisis.8042 days = 180 }
+		}
+	}
+}
+
 namespace = shroud
 # Overwrite Vanilla contents.
 country_event = {
