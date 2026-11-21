@@ -3396,10 +3396,10 @@ touhou_randomize_variable_range = {
 	reroll_random = yes
 	set_variable_to_random_value = {
 		which = $which$
-		rounded = yes min = $min$ max = 1145141919
+		rounded = $rounded|yes$ min = $min$ max = $max$
 	}
-	modulo_variable = { which = $which$ value = $max$ }
-	[[rounded] round_variable = $which$ ]
+	# modulo_variable = { which = $which$ value = $max$ }
+	# [[rounded] round_variable = $which$ ]
 }
 
 touhou_instant_finish_tech_setup = {
@@ -3832,4 +3832,124 @@ touhou_hellsing_megastructure_deactivate = {
 	}
 	remove_megastructure_flag = touhou_scarlet_hellsing_working
 	remove_modifier = overclock_touhou_shipyard_hellsing_override
+}
+
+touhou_toyohime_puzzle_change_char_array_offset = {
+	optimize_memory
+	if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_change_char_array_offset_impl slot = 0 value = $value$ }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_change_char_array_offset_impl slot = 1 value = $value$ }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_change_char_array_offset_impl slot = 2 value = $value$ }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_change_char_array_offset_impl slot = 3 value = $value$ }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_change_char_array_offset_impl slot = 4 value = $value$ }
+	}
+}
+touhou_toyohime_puzzle_update_slot_chars = {
+	optimize_memory
+	if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 0 }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 1 }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 2 }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 3 }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 4 }
+	}
+}
+touhou_toyohime_puzzle_move_char_array = {
+	optimize_memory
+	[[up]
+	touhou_toyohime_puzzle_change_char_array_offset = { value = 1 }
+	]
+	[[down]
+	touhou_toyohime_puzzle_change_char_array_offset = { value = -1 }
+	]
+	# update every touhou_toyohime_puzzle_slot_[idx]_pos_[arr_pos] char
+	if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 0 limit = yes }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 1 limit = yes }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 2 limit = yes }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 3 limit = yes }
+	} else_if = {
+		inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 4 limit = yes }
+	}
+}
+touhou_toyohime_puzzle_update_all_slot_chars = {
+	optimize_memory
+	inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 0 limit = no }
+	inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 1 limit = no }
+	inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 2 limit = no }
+	inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 3 limit = no }
+	inline_script = { script = effect/touhou_toyohime_puzzle_update_slot_chars_impl slot = 4 limit = no }
+}
+touhou_toyohime_puzzle_roll_slot = {
+	optimize_memory
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_seq_$slot$ min = 1 max = 8 }
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_check_pos_$slot$ min = 0 max = 3 }
+
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_chars_$slot$_0 min = 1 max = 8 }
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_chars_$slot$_1 min = 1 max = 8 }
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_chars_$slot$_2 min = 1 max = 8 }
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_chars_$slot$_3 min = 1 max = 8 }
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_chars_$slot$_4 min = 1 max = 8 }
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_chars_$slot$_5 min = 1 max = 8 }
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_chars_$slot$_6 min = 1 max = 8 }
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_chars_$slot$_7 min = 1 max = 8 }
+
+	# setup at least one possible
+	touhou_randomize_variable_range = { which = touhou_toyohime_puzzle_roll_pos_$slot$ min = 0 max = 7 }
+	if = {
+		limit = { check_variable = { which = touhou_toyohime_puzzle_roll_pos_$slot$ value = 0 } }
+		set_variable = { which = touhou_toyohime_puzzle_chars_$slot$_0 value = touhou_toyohime_puzzle_seq_$slot$ }
+	} else_if = {
+		limit = { check_variable = { which = touhou_toyohime_puzzle_roll_pos_$slot$ value = 1 } }
+		set_variable = { which = touhou_toyohime_puzzle_chars_$slot$_1 value = touhou_toyohime_puzzle_seq_$slot$ }
+	} else_if = {
+		limit = { check_variable = { which = touhou_toyohime_puzzle_roll_pos_$slot$ value = 2 } }
+		set_variable = { which = touhou_toyohime_puzzle_chars_$slot$_2 value = touhou_toyohime_puzzle_seq_$slot$ }
+	} else_if = {
+		limit = { check_variable = { which = touhou_toyohime_puzzle_roll_pos_$slot$ value = 3 } }
+		set_variable = { which = touhou_toyohime_puzzle_chars_$slot$_3 value = touhou_toyohime_puzzle_seq_$slot$ }
+	} else_if = {
+		limit = { check_variable = { which = touhou_toyohime_puzzle_roll_pos_$slot$ value = 4 } }
+		set_variable = { which = touhou_toyohime_puzzle_chars_$slot$_4 value = touhou_toyohime_puzzle_seq_$slot$ }
+	} else_if = {
+		limit = { check_variable = { which = touhou_toyohime_puzzle_roll_pos_$slot$ value = 5 } }
+		set_variable = { which = touhou_toyohime_puzzle_chars_$slot$_5 value = touhou_toyohime_puzzle_seq_$slot$ }
+	} else_if = {
+		limit = { check_variable = { which = touhou_toyohime_puzzle_roll_pos_$slot$ value = 6 } }
+		set_variable = { which = touhou_toyohime_puzzle_chars_$slot$_6 value = touhou_toyohime_puzzle_seq_$slot$ }
+	} else_if = {
+		limit = { check_variable = { which = touhou_toyohime_puzzle_roll_pos_$slot$ value = 7 } }
+		set_variable = { which = touhou_toyohime_puzzle_chars_$slot$_7 value = touhou_toyohime_puzzle_seq_$slot$ }
+	}
+	clear_variable = touhou_toyohime_puzzle_roll_pos_$slot$
+	reroll_random = yes
+}
+touhou_toyohime_puzzle_roll_sequences = {
+	optimize_memory
+	touhou_toyohime_puzzle_roll_slot = { slot = 0 }
+	touhou_toyohime_puzzle_roll_slot = { slot = 1 }
+	touhou_toyohime_puzzle_roll_slot = { slot = 2 }
+	touhou_toyohime_puzzle_roll_slot = { slot = 3 }
+	touhou_toyohime_puzzle_roll_slot = { slot = 4 }
+	set_variable = {
+		which = touhou_toyohime_puzzle_sel_slot
+		value = 0
+	}
+	set_variable = {
+		which = touhou_toyohime_puzzle_sel_pos
+		value = 0
+	}
+	# update slot chars
+	touhou_toyohime_puzzle_update_all_slot_chars = yes
 }
