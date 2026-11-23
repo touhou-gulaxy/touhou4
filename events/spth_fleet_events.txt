@@ -2689,6 +2689,56 @@ country_event = {
                     add_modifier = { modifier = leader_trait_mystia_1_skill_2_alt days = 30 }
                 }
             }
+			# 科研船效果
+			if = {
+				limit = {
+					check_modifier_value = { modifier = ship_has_touhou_science_ship_into_barrier value > 0 }
+					NOT = { has_fleet_flag = touhou_science_ship_into_barrier_cooldown }
+				}
+				set_timed_fleet_flag = {
+					flag = touhou_science_ship_into_barrier_cooldown
+					days = 240
+				}
+				random_list = {
+					15 = {
+						controller = {
+							if = {
+								limit = {
+									any_system_within_border = {
+										NOT = { any_fleet_in_system = { controller? = { is_hostile = prevprevprev } } }
+									}
+								}
+								spth_create_jump_particle_effect = yes
+								random_system_within_border = {
+									limit = { NOT = { any_fleet_in_system = { controller? = { is_hostile = prevprevprev } } } }
+									prev = {
+										set_location = { target = prev.star distance = 100 angle = random }
+									}
+								}
+							}
+						}
+					}
+					85 = {
+						set_event_locked = yes
+						every_controlled_ship = {
+							add_modifier = {
+								modifier = touhou_science_ship_into_barrier days = -1
+							}
+							if = {
+								limit = {
+									is_disabled = no
+								}
+								set_disabled = yes
+							}
+						}
+						fleet_event = {
+							id = spth_fleet.2056
+							days = 90
+							random = 60
+						}
+					}
+				}
+			}
             if = {
                 limit = { exists = leader }
                 reroll_random = yes
@@ -6822,6 +6872,23 @@ country_event = {
 				}
 				clear_variable = touhou_adv_bombard_count
 			}
+		}
+	}
+}
+
+fleet_event = {
+	id = spth_fleet.2056
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = this }
+	immediate = {
+		set_event_locked = no
+		every_controlled_ship = {
+			if = {
+				limit = { is_disabled = yes }
+				set_disabled = no
+			}
+			remove_modifier = touhou_science_ship_into_barrier
 		}
 	}
 }

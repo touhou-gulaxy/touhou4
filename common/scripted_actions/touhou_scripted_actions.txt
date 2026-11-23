@@ -1280,3 +1280,74 @@ touhou_megastructure_hellsing_deactivate = {
 	wait = no
 	required_progress = 1
 }
+
+touhou_science_constructor_build_megastructure = {
+	user_scope = fleet
+	scope = self
+	button_visible = { hidden_trigger = { always = yes } }
+	button_clickable = { hidden_trigger = { always = yes } }
+	specific_behavior = scripted_build_megastructure_order
+	context_menu_name = touhou_science_constructor_build_megastructure
+	tooltip = touhou_science_constructor_build_megastructure_tooltip
+	slot = 0
+	important = yes
+}
+touhou_science_constructor_outpost_construction = {
+	user_scope = fleet
+	scope = planet
+	hide_from_context_menu = { hidden_trigger = { always = no } }
+	button_visible = { hidden_trigger = { always = yes } }
+	button_clickable = { hidden_trigger = { always = yes } }
+	possible = {
+		custom_tooltip = {
+			fail_text = "CAN_BUILD_STATION_STARBASE_NOT_STAR"
+			is_star = yes
+		}
+		custom_tooltip = {
+			fail_text = "CAN_BUILD_STATION_STARBASE_NOT_PRIMARY_STAR"
+			is_primary_star = yes
+		}
+		custom_tooltip = {
+			fail_text = "touhou_science_constructor_outpost_construction_failed.survey"
+			NOT = { solar_system = { any_system_planet = { is_surveyed = { who = root.from.controller status = no } } } }
+		}
+		custom_tooltip = {
+			fail_text = "touhou_science_constructor_outpost_construction_failed.starbase"
+			solar_system = { NOT = { exists = starbase } }
+		}
+		custom_tooltip = {
+			fail_text = "touhou_science_constructor_outpost_construction_failed.hostile"
+			NOT = { solar_system = { any_fleet_in_system = { exists = controller controller = { is_hostile = root.from.controller } } } }
+		}
+		from = { controller = { if = {
+			limit = { NOT = { has_country_flag = touhou_science_constructor_outpost_resource_checked_@prev } }
+			if = {
+				limit = { country_uses_bio_ships = yes }
+				resource_stockpile_compare = { resource = food value >= 1 mult = value:touhou_scripted_action_outpost_construction_food_cost }
+			}
+			resource_stockpile_compare = { resource = alloys value >= 1 mult = value:touhou_scripted_action_outpost_construction_alloys_cost }
+			resource_stockpile_compare = { resource = influence value >= 1 mult = root.solar_system.value:touhou_scripted_action_outpost_construction_influence_cost }
+		} } }
+	}
+	on_progress_start = on_touhou_science_constructor_outpost_construction_started
+	on_cancelled = on_touhou_science_constructor_outpost_construction_cancelled
+	on_completed = on_touhou_science_constructor_outpost_construction
+	icon = GFX_fleet_order_button_build_starbase_station
+	icon_selected = GFX_fleet_order_button_build_starbase_station_selected
+	context_menu_name = touhou_science_constructor_outpost_construction
+	tooltip = touhou_science_constructor_outpost_construction_tooltip
+	activity_key = touhou_science_constructor_outpost_construction_action
+	required_progress = from.controller.value:touhou_scripted_action_outpost_construction_days|touhou_index|science_constructor|
+	required_progress_key = touhou_science_constructor_outpost_construction_required_progress_tooltip
+	progress_activity_key = touhou_science_constructor_outpost_construction_progress_activity
+	cooldown = 0
+	slot = 0
+	# inline_script = {
+	# 	script = "scripted_actions/ag_automation_outpost_scripts"
+	# 	ag_max_jumps = 10
+	# 	ag_priority = 4
+	# 	ag_default_on = yes
+	# 	ag_suffix = ""
+	# 	ag_not_requires_intel = no
+	# }
+}

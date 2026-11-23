@@ -5,13 +5,26 @@ option = {
     trigger = { has_country_flag = th_$ID$_get NOT = { any_owned_leader = { has_trait = leader_trait_$ID$ } } }
     hidden_effect = {
 		# FEAT: currently stellaris inline script can be considered as a kind of SFINAE.
-		inline_script = { script = effect/touhou_leader_function_respawn_$ID$ }
+		# FUCK PARADOX, this feature is broken in 4.6!
+		# inline_script = { script = effect/touhou_leader_function_respawn_$ID$ }
 		if = {
-			limit = { has_country_flag = touhou_leader_function_respawn_selected_ruler_$ID$ }
-			remove_country_flag = touhou_leader_function_respawn_selected_ruler_$ID$
-		}
-		else = {
+			limit = {
+				spth_has_start_ruler_trait = yes
+				OR = {
+					has_country_flag = toho_select_ruler_$ID$
+					inline_script = { script = trigger/touhou_has_start_leader_$ID$ }
+				}
+			}
 			spth_effect_init_$ID$_effect = yes
+		} else = {
+			spth_effect_init_$ID$_effect_non_start = yes
 		}
+		# if = {
+		# 	limit = { has_country_flag = touhou_leader_function_respawn_selected_ruler_$ID$ }
+		# 	remove_country_flag = touhou_leader_function_respawn_selected_ruler_$ID$
+		# }
+		# else = {
+		# 	spth_effect_init_$ID$_effect = yes
+		# }
 	}
 }

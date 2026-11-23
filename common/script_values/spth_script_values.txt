@@ -1606,3 +1606,44 @@ touhou_megastructure_hellsing_built_sizes_max_value = {
 	mult = value:touhou_megastructure_hellsing_built_sizes_max_factor
 	min = 0
 }
+
+touhou_scripted_action_outpost_construction_days = {
+	base = 0
+	add = 1
+	add = modifier:shipclass_starbase_build_speed_mult
+	add = modifier:shipsize_starbase_outpost_build_speed_mult
+	mult = @touhou_$touhou_index$_outpost_buildtime
+	min = 1
+}
+touhou_scripted_action_outpost_construction_alloys_cost = {
+	base = 0
+	add = 100.0
+	modifier = { add = 50.0 is_machine_empire = yes }
+	modifier = { mult = 0.5 country_uses_bio_ships = yes }
+	mult = value:touhou_modifier_mult_multiplier|modifier|starbase_outpost_cost_mult|
+	min = 0
+}
+touhou_scripted_action_outpost_construction_food_cost = {
+	base = 0
+	modifier = { add = 175.0 country_uses_bio_ships = yes }
+	modifier = { add = 262.5 country_uses_bio_ships = yes is_machine_empire = yes }
+	mult = value:touhou_modifier_mult_multiplier|modifier|starbase_outpost_cost_mult|
+	min = 0
+}
+touhou_scripted_action_outpost_construction_influence_cost = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = distance_to_empire
+		trigger_scope = this
+		parameters = { who = from.controller type = hyperlane use_bypasses = yes }
+		mode = add
+	}
+	divide = 200.0
+	ceiling = yes
+	min = 1.0
+	mult = from.controller.value:touhou_modifier_mult_multiplier|modifier|country_starbase_influence_cost_distance_mult|
+	mult = 75.0
+	mult = from.controller.value:touhou_modifier_mult_multiplier|modifier|country_starbase_influence_cost_mult|
+	min = 0
+	max = 1000.0
+}
