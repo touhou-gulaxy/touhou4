@@ -13499,79 +13499,48 @@ country_event = {
                     fromfrom = root.from
                 }
             }
-            if = {
-                limit = { has_country_flag = touhou_system_warper_jump_random_distance }
+            root.fromfrom = {
                 if = {
-                    limit = { has_country_flag = touhou_system_warper_jump_random_angel }
-                    if = {
-                        limit = { has_country_flag = touhou_system_warper_jump_hyperlane }
-                        root.fromfrom = {
-                            move_system = {
-                                target = root.from
-                                min_distance = 0
-                                max_distance = 50
-                                min_orientation_angle = 0
-                                max_orientation_angle = 360
-                                hyperlane = yes
-                            }
-                        }
-                    }
-                    else = {
-                        root.fromfrom = {
-                            move_system = {
-                                target = root.from
-                                min_distance = 0
-                                max_distance = 50
-                                min_orientation_angle = 0
-                                max_orientation_angle = 360
-                                hyperlane = no
-                            }
-                        }
+                    limit = { root = { has_country_flag = touhou_system_warper_jump_random_distance } }
+                    set_variable = { which = local_touhou_system_warper_min_distance value = 0 }
+                    set_variable = { which = local_touhou_system_warper_max_distance value = 50 }
+                } else = {
+                    set_variable = { which = local_touhou_system_warper_min_distance value = root.touhou_system_warper_distance }
+                    set_variable = { which = local_touhou_system_warper_max_distance value = root.touhou_system_warper_distance }
+                }
+                if = {
+                    limit = { root = { has_country_flag = touhou_system_warper_jump_random_angel } }
+                    set_variable = { which = local_touhou_system_warper_min_angle value = 0 }
+                    set_variable = { which = local_touhou_system_warper_max_angle value = 360 }
+                } else = {
+                    set_variable = { which = local_touhou_system_warper_min_angle value = root.touhou_system_warper_angel }
+                    set_variable = { which = local_touhou_system_warper_max_angle value = root.touhou_system_warper_angel }
+                }
+                if = {
+                    limit = { root = { has_country_flag = touhou_system_warper_jump_hyperlane } }
+                    move_system = {
+                        target = root.from
+                        min_distance = local_touhou_system_warper_min_distance
+                        max_distance = local_touhou_system_warper_max_distance
+                        min_orientation_angle = local_touhou_system_warper_min_angle
+                        max_orientation_angle = local_touhou_system_warper_max_angle
+                        hyperlane = yes
                     }
                 } else = {
-                    if = {
-                        limit = { has_country_flag = touhou_system_warper_jump_hyperlane }
-                        inline_script = { script = effect/touhou_system_warper_move_system_angle_alt link = yes }
-                    }
-                    else = {
-                        inline_script = { script = effect/touhou_system_warper_move_system_angle_alt link = yes }
-                    }
-                }
-            } else_if = {
-                limit = { has_country_flag = touhou_system_warper_jump_random_angel }
-                if = {
-                    limit = { has_country_flag = touhou_system_warper_jump_hyperlane }
-                    root.fromfrom = {
-                        move_system = {
-                            target = root.from
-                            min_distance = 0
-                            max_distance = 50
-                            min_orientation_angle = 0
-                            max_orientation_angle = 360
-                            hyperlane = yes
-                        }
+                    move_system = {
+                        target = root.from
+                        min_distance = local_touhou_system_warper_min_distance
+                        max_distance = local_touhou_system_warper_max_distance
+                        min_orientation_angle = local_touhou_system_warper_min_angle
+                        max_orientation_angle = local_touhou_system_warper_max_angle
+                        hyperlane = no
                     }
                 }
-                else = {
-                    root.fromfrom = {
-                        move_system = {
-                            target = root.from
-                            min_distance = 0
-                            max_distance = 50
-                            min_orientation_angle = 0
-                            max_orientation_angle = 360
-                            hyperlane = no
-                        }
-                    }
-                }
+                clear_variable = local_touhou_system_warper_min_distance
+                clear_variable = local_touhou_system_warper_max_distance
+                clear_variable = local_touhou_system_warper_min_angle
+                clear_variable = local_touhou_system_warper_max_angle
             }
-        }
-        if = {
-            limit = { has_country_flag = touhou_system_warper_jump_hyperlane }
-            inline_script = { script = effect/touhou_system_warper_move_system_angle link = yes }
-        }
-        else = {
-            inline_script = { script = effect/touhou_system_warper_move_system_angle link = no }
         }
         if = {
             limit = {
