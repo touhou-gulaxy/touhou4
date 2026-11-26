@@ -1,0 +1,411 @@
+every_adopting_country = {
+	set_variable = {
+		which = momentum
+		value = trigger:ideological_momentum
+	}
+
+	# Abandon if needed
+	if = {
+		limit = {
+			has_country_flag = abandoning_ideology
+			check_variable = {
+				which = momentum
+				value <= 0
+			}
+			ideological_strength <= 0
+		}
+		abandon_ideology = yes
+
+		clear_variable = momentum
+		break = yes
+	}
+
+	# Apply positive / negative momentum modifiers
+	if = {
+		limit = {
+			check_variable = {
+				which = momentum
+				value >= @ideology_momentum_low
+			}
+		}
+		remove_modifier = ideological_disruption
+		remove_modifier = moderate_ideological_disruption
+		remove_modifier = severe_ideological_disruption
+		if = {
+			limit = { NOT = { has_modifier = ideological_momentum_positive } }
+			add_modifier = { modifier = ideological_momentum_positive }
+		}
+		every_owned_planet = {
+			remove_modifier = ideological_momentum_low_stability
+			remove_modifier = ideological_momentum_moderately_low_stability
+			remove_modifier = ideological_momentum_dangerously_low_stability
+			remove_modifier = ideological_momentum_low_gestalt
+			remove_modifier = ideological_momentum_moderately_low_gestalt
+			remove_modifier = ideological_momentum_dangerously_low_gestalt
+		}
+	}
+	else = {
+		remove_modifier = ideological_momentum_positive
+		if = {
+			limit = { has_country_flag = abandoning_ideology }
+			try_change_disruption_effect_multiplier = {
+				VALUE = 0.5
+			}
+		}
+		else = {
+			try_change_disruption_effect_multiplier = {
+				VALUE = 1
+			}
+		}
+
+		# Negative momentum tutorial event
+		country_event = { id = tutorial.2660 }
+
+		# Apply per-tier country modifier + matching non-capital stability penalty
+		if = {
+			# Dangerously low
+			limit = {
+				check_variable = {
+					which = momentum
+					value < @ideology_momentum_dangerously_low
+				}
+			}
+			remove_modifier = ideological_disruption
+			remove_modifier = moderate_ideological_disruption
+			if = {
+				limit = { NOT = { has_modifier = severe_ideological_disruption } }
+				add_modifier = {
+					modifier = severe_ideological_disruption
+					mult = disruption_effect_multiplier
+				}
+			}
+			if = {
+				limit = {
+					is_gestalt = yes
+				}
+				every_owned_planet = {
+					limit = { is_capital = no }
+					remove_modifier = ideological_momentum_low_gestalt
+					remove_modifier = ideological_momentum_moderately_low_gestalt
+					if = {
+						limit = { NOT = { has_modifier = ideological_momentum_dangerously_low_gestalt } }
+						add_modifier = {
+							modifier = ideological_momentum_dangerously_low_gestalt
+							mult = prev.disruption_effect_multiplier
+						}
+					}
+				}
+			}
+			else = {
+				every_owned_planet = {
+					limit = { is_capital = no }
+					remove_modifier = ideological_momentum_low_stability
+					remove_modifier = ideological_momentum_moderately_low_stability
+					if = {
+						limit = { NOT = { has_modifier = ideological_momentum_dangerously_low_stability } }
+						add_modifier = {
+							modifier = ideological_momentum_dangerously_low_stability
+							mult = prev.disruption_effect_multiplier
+						}
+					}
+				}
+			}
+		}
+		else_if = {
+			# Moderately low
+			limit = {
+				check_variable = {
+					which = momentum
+					value < @ideology_momentum_moderately_low
+				}
+			}
+			remove_modifier = ideological_disruption
+			remove_modifier = severe_ideological_disruption
+			if = {
+				limit = { NOT = { has_modifier = moderate_ideological_disruption } }
+				add_modifier = {
+					modifier = moderate_ideological_disruption
+					mult = disruption_effect_multiplier
+				}
+			}
+			if = {
+				limit = {
+					is_gestalt = yes
+				}
+				every_owned_planet = {
+					limit = { is_capital = no }
+					remove_modifier = ideological_momentum_low_gestalt
+					remove_modifier = ideological_momentum_dangerously_low_gestalt
+					if = {
+						limit = { NOT = { has_modifier = ideological_momentum_moderately_low_gestalt } }
+						add_modifier = {
+							modifier = ideological_momentum_moderately_low_gestalt
+							mult = prev.disruption_effect_multiplier
+						}
+					}
+				}
+			}
+			else = {
+				every_owned_planet = {
+					limit = { is_capital = no }
+					remove_modifier = ideological_momentum_low_stability
+					remove_modifier = ideological_momentum_dangerously_low_stability
+					if = {
+						limit = { NOT = { has_modifier = ideological_momentum_moderately_low_stability } }
+						add_modifier = {
+							modifier = ideological_momentum_moderately_low_stability
+							mult = prev.disruption_effect_multiplier
+						}
+					}
+				}
+			}
+		}
+		else = {
+			# Low
+			remove_modifier = moderate_ideological_disruption
+			remove_modifier = severe_ideological_disruption
+			if = {
+				limit = { NOT = { has_modifier = ideological_disruption } }
+				add_modifier = {
+					modifier = ideological_disruption
+					mult = disruption_effect_multiplier
+				}
+			}
+			if = {
+				limit = {
+					is_gestalt = yes
+				}
+				every_owned_planet = {
+					limit = { is_capital = no }
+					remove_modifier = ideological_momentum_moderately_low_gestalt
+					remove_modifier = ideological_momentum_dangerously_low_gestalt
+					if = {
+						limit = { NOT = { has_modifier = ideological_momentum_low_gestalt } }
+						add_modifier = {
+							modifier = ideological_momentum_low_gestalt
+							mult = prev.disruption_effect_multiplier
+						}
+					}
+				}
+			}
+			else = {
+				every_owned_planet = {
+					limit = { is_capital = no }
+					remove_modifier = ideological_momentum_moderately_low_stability
+					remove_modifier = ideological_momentum_dangerously_low_stability
+					if = {
+						limit = { NOT = { has_modifier = ideological_momentum_low_stability } }
+						add_modifier = {
+							modifier = ideological_momentum_low_stability
+							mult = prev.disruption_effect_multiplier
+						}
+					}
+				}
+			}
+		}
+	}
+
+	# Fire Momentum events
+	if = {
+		limit = {
+			NOR = {
+				has_country_flag = recently_adopted_ideology
+				has_country_flag = recently_triggered_momentum_event
+			}
+			pop_ideology_percentage = {
+				percentage >= 0.25
+				ideology = root
+			}
+		}
+
+		# Setup flags
+		if = {
+			limit = {
+				check_variable = {
+					which = momentum
+					value >= @ideology_momentum_surging
+				}
+			}
+			set_country_flag = ideology_momentum_surging
+		}
+		else_if = {
+			limit = {
+				check_variable = {
+					which = momentum
+					value >= @ideology_momentum_very_positive
+				}
+			}
+			set_country_flag = ideology_momentum_very_positive
+		}
+		else_if = {
+			limit = {
+				check_variable = {
+					which = momentum
+					value >= @ideology_momentum_low #0
+				}
+			}
+			set_country_flag = ideology_momentum_positive
+		}
+		else_if = {
+			limit = {
+				check_variable = {
+					which = momentum
+					value >= @ideology_momentum_moderately_low
+				}
+			}
+			set_country_flag = ideology_momentum_low
+		}
+		else_if = {
+			limit = {
+				check_variable = {
+					which = momentum
+					value >= @ideology_momentum_dangerously_low
+				}
+			}
+			set_country_flag = ideology_momentum_moderately_low
+		}
+		else = {
+			set_country_flag = ideology_momentum_dangerously_low
+		}
+
+		random_list = {
+			# Positive events
+			10 = {
+				modifier = {
+					factor = 0
+					NOT = { has_country_flag = ideology_momentum_surging }
+				}
+				country_event = {
+					id = forceofwill.1500
+					scopes = { from = root }
+				}
+			}
+			5 = {
+				modifier = {
+					factor = 0
+					NOT = { has_country_flag = ideology_momentum_very_positive }
+				}
+				country_event = {
+					id = forceofwill.1505
+					scopes = { from = root }
+				}
+			}
+			1 = {
+				modifier = {
+					factor = 0
+					NOT = { has_country_flag = ideology_momentum_positive }
+				}
+				country_event = {
+					id = forceofwill.1510
+					scopes = { from = root }
+				}
+			}
+			# Negative events
+			10 = {
+				modifier = {
+					factor = 0
+					NOT = { has_country_flag = ideology_momentum_dangerously_low }
+				}
+				country_event = {
+					id = forceofwill.1520
+					scopes = { from = root }
+				}
+			}
+			5 = {
+				modifier = {
+					factor = 0
+					NOT = { has_country_flag = ideology_momentum_moderately_low }
+				}
+				country_event = {
+					id = forceofwill.1525
+					scopes = { from = root }
+				}
+			}
+			1 = {
+				modifier = {
+					factor = 0
+					NOT = { has_country_flag = ideology_momentum_low }
+				}
+				country_event = {
+					id = forceofwill.1530
+					scopes = { from = root }
+				}
+			}
+			# Nothing happens
+			100 = {
+				modifier = {
+					subtract = 10
+					OR = {
+						has_country_flag = ideology_momentum_surging
+						has_country_flag = ideology_momentum_dangerously_low
+					}
+				}
+				modifier = {
+					subtract = 5
+					OR = {
+						has_country_flag = ideology_momentum_very_positive
+						has_country_flag = ideology_momentum_moderately_low
+					}
+				}
+				modifier = {
+					subtract = 1
+					OR = {
+						has_country_flag = ideology_momentum_positive
+						has_country_flag = ideology_momentum_low
+					}
+				}
+			}
+		}
+
+		# Remove flags
+		remove_country_flag = ideology_momentum_positive
+		remove_country_flag = ideology_momentum_very_positive
+		remove_country_flag = ideology_momentum_surging
+		remove_country_flag = ideology_momentum_low
+		remove_country_flag = ideology_momentum_moderately_low
+		remove_country_flag = ideology_momentum_dangerously_low
+	}
+
+	clear_variable = momentum
+
+	# Ideological Leverage: spend the Strength once it is maxed out
+	country_event = { id = forceofwill.2050 }
+	country_event = { id = forceofwill.2055 }
+	country_event = { id = forceofwill.2060 }
+}
+
+# Cache pops under reach
+every_affected_country = {
+	set_variable = {
+		which = pops_under_reach_of_@root
+		value = 0
+	}
+}
+every_system_within_reach = {
+	every_system_planet_colony = {
+		limit = {
+			owner? = {
+				is_affected_by_ideology = root
+			}
+		}
+		owner = {
+			change_variable = {
+				which = pops_under_reach_of_@root
+				value = prev.value:touhou_ideological_reach_colony_pops
+			}
+		}
+	}
+	every_system_ship_colony = {
+		limit = {
+			owner? = {
+				is_affected_by_ideology = root
+			}
+		}
+		owner = {
+			change_variable = {
+				which = pops_under_reach_of_@root
+				value = prev.value:touhou_ideological_reach_colony_pops
+			}
+		}
+	}
+}

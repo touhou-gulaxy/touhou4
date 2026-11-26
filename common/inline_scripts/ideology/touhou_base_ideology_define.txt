@@ -1,0 +1,641 @@
+can_rename = yes
+reach = $reach$
+ethic = ethic_fanatic_$ethic$
+faction = $faction$
+
+weight = {
+	base = 0
+	modifier = {
+		add = @touhou_ideology_base_weight
+		spth_check_gensokyo_auth = yes
+	}
+}
+
+# This = Pop faction
+# From = Ideology
+# The faction without an ideology and with the highest weight is picked
+faction_weight = {
+	base = 0
+	modifier = {
+		is_$ethic$ = yes
+		add = 1
+	}
+	modifier = {
+		is_$ethic$ = yes
+		add = trigger:support
+	}
+	modifier = {
+		is_pop_faction_type = $faction$
+		spth_check_gensokyo_auth = yes
+		add = @touhou_ideology_faction_weight
+	}
+	modifier = {
+		is_pop_faction_type = $faction$_non_gensokyo
+		spth_check_gensokyo_auth = no
+		owner? = { has_country_flag = has_encountered_touhou_country }
+		add = @touhou_ideology_faction_non_gensokyo_weight
+	}
+	modifier = {
+		factor = 0
+		is_faction_fanatic = no
+	}
+	# YOU SHOULD NO REFUSE GENSOKYO
+	# modifier = {
+	# 	factor = 0
+	# 	is_undecided_cyber_creed_faction = yes
+	# }
+	modifier = { # A foreign ideology creates its own faction
+		factor = 0
+		owner = {
+			NOT = { ideology? = { is_same_value = root.from } }
+		}
+	}
+}
+
+triggered_country_modifier = {
+	pop_ethic_$ethic$_attraction_mult = 2
+	mult = value:touhou_adopted_ideology_ethic_attraction
+}
+
+resources = {
+	category = adopted_ideology
+	upkeep = {
+		influence = 1
+		mult = value:calc_ideology_influence_upkeep|IDEOLOGY|from|
+	}
+}
+
+strength_level = {
+	end = @touhou_ideological_strength_stage_1_value
+}
+strength_level = {
+	end = @touhou_ideological_strength_stage_2_value
+}
+strength_level = {
+	end = @touhou_ideological_strength_stage_3_value
+}
+strength_level = {
+	end = @touhou_ideological_strength_maximum_value
+}
+
+
+# Scope: country
+# From: tested ideology
+monthly_increase = {
+	base = 0
+
+	# Galactic Strength
+	category = {
+		desc = STRENGTH_CATEGORY_GALACTIC_STRENGTH
+		modifier = {
+			add = value:touhou_galactic_strength_bonus
+			desc = STRENGTH_FROM_GALACTIC_STRENGTH
+			max_decimals = 2
+		}
+		modifier = {
+			add = value:touhou_ideology_population_share_bonus
+			desc = STRENGTH_FROM_POPULATION_SHARE
+			max_decimals = 2
+		}
+		modifier = {
+			mult = value:touhou_get_ideological_strength_bonus_mult
+			desc = STRENGTH_FROM_STRENGTH_MODIFIERS
+			max_decimals = 0
+		}
+	}
+
+	# Bonuses, scaled by faction approval
+	category = {
+		desc = STRENGTH_CATEGORY_STRENGTHENING
+		modifier = {
+			add = value:touhou_clashing_ideologies_bonus
+			desc = STRENGTH_FROM_CLASHES
+			max_decimals = 2
+		}
+		modifier = {
+			add = value:touhou_clashing_rival_ideologies_bonus
+			desc = STRENGTH_FROM_RIVAL_CLASHES
+		}
+		modifier = {
+			add = value:touhou_ideological_buildings_bonus
+			desc = STRENGTH_FROM_IDEOLOGICAL_BUILDINGS
+		}
+		modifier = {
+			add = value:touhou_galactic_hall_bonus
+			desc = STRENGTH_FROM_GALACTIC_HALLS
+		}
+		modifier = {
+			is_gestalt = no
+			add = value:touhou_advocate_bonus
+			desc = STRENGTH_FROM_ADVOCATE
+			max_decimals = 2
+		}
+		modifier = {
+			has_modifier = cultural_envoy_martyr
+			add = value:touhou_martyr_ideological_strength_mult
+			desc = STRENGTH_FROM_ENVOY_MARTYR
+			max_decimals = 2
+		}
+		modifier = {
+			any_owned_leader = {
+				has_trait = leader_trait_tranquil_steward
+				is_councilor = yes
+			}
+			add = value:touhou_tranquil_steward_strength_bonus
+			desc = STRENGTH_FROM_TRANQUIL_STEWARD
+		}
+		modifier = {
+			is_social_concord_empire = yes
+			are_galcom_members_at_peace = yes
+			add = value:social_concord_strength_bonus
+			desc = STRENGTH_FROM_SOCIAL_CONCORD
+		}
+		modifier = {
+			is_homicidal = yes
+			is_variable_set = purged_pop_count
+			add = value:fanatic_purifiers_purged_pop_ideological_strength
+			desc = STRENGTH_FROM_PURGED_POPS
+			max_decimals = -1
+		}
+		modifier = {
+			is_open_stars_sovereignty_empire = yes
+			add = value:open_stars_sovereignty_strength_bonus
+			desc = STRENGTH_FROM_OPEN_STARS_SOVEREIGNTY
+			max_decimals = 3
+		}
+		modifier = {
+			OR = {
+				has_modifier = resolution_ideology_act_modifier
+				has_modifier = resolution_ideology_act_modifier_gestalt
+			}
+			add = value:ideology_act_bonus
+			desc = STRENGTH_FROM_IDEOLOGY_ACT
+			max_decimals = 2
+		}
+		modifier = {
+			any_owned_colony = { has_modifier = celebrate_ideology }
+			add = value:celebrate_ideology_strength_bonus
+			desc = STRENGTH_FROM_CELEBRATION
+			max_decimals = -1
+		}
+		modifier = {
+			has_edict = grand_fleet
+			from = { is_militarist = yes }
+			add = 0.25
+			desc = STRENGTH_FROM_GRAND_FLEET
+			max_decimals = 2
+		}
+		modifier = {
+			OR = {
+				has_edict = scientific_revolution
+				has_edict = scientific_revolution_wilderness
+			}
+			from = { is_materialist = yes }
+			add = 0.25
+			desc = STRENGTH_FROM_SCIENTIFIC_REVOLUTION
+			max_decimals = 2
+		}
+		modifier = {
+			has_edict = hearts_and_minds
+			from = { is_materialist = no }
+			add = 0.25
+			desc = STRENGTH_FROM_HEARTS_AND_MINDS
+			max_decimals = 2
+		}
+		modifier = {
+			has_edict = sacrifice_dutiful_1
+			add = @tenet_sacrifism_ideological_strength_1
+			desc = STRENGTH_FROM_DUTIFUL
+		}
+		modifier = {
+			has_edict = sacrifice_dutiful_2
+			add = @tenet_sacrifism_ideological_strength_2
+			desc = STRENGTH_FROM_DUTIFUL
+		}
+		modifier = {
+			has_edict = sacrifice_dutiful_3
+			add = @tenet_sacrifism_ideological_strength_3
+			desc = STRENGTH_FROM_DUTIFUL
+		}
+		modifier = {
+			check_modifier_value = {
+				modifier = sacrifice_ideological_strength_add
+				value > 0
+			}
+			add = modifier:sacrifice_ideological_strength_add
+			desc = STRENGTH_FROM_SACRIFICE_EDICT
+			max_decimals = -1
+		}
+		modifier = {
+			is_variable_set = ideological_strength_mult
+			is_gestalt = yes
+			check_variable = {
+				which = ideological_strength_mult
+				value > 0
+			}
+			add = ideological_strength_mult
+			desc = STRENGTH_FROM_DEVIANCY
+			max_decimals = 2
+		}
+		modifier = {
+			is_gestalt = no
+			mult = value:fanatic_faction_approval_mult
+			desc = STRENGTH_FROM_FANATIC_FACTION_APPROVAL
+			max_decimals = 0
+		}
+		modifier = {
+			mult = value:get_ideological_strength_bonus_mult
+			desc = STRENGTH_FROM_STRENGTH_MODIFIERS
+			max_decimals = 0
+		}
+	}
+
+	# Maluses
+	category = {
+		desc = STRENGTH_CATEGORY_FRICTION
+		modifier = {
+			subtract = value:touhou_ideology_level_malus
+			desc = STRENGTH_LOSS_FROM_LEVEL
+			max_decimals = 2
+		}
+		modifier = {
+			is_gestalt = no
+			subtract = value:touhou_strength_empire_size_malus
+			desc = STRENGTH_LOSS_FROM_EMPIRE_SIZE
+			max_decimals = 2
+		}
+		modifier = {
+			is_gestalt = no
+			subtract = value:touhou_following_concurrent_pop_malus
+			desc = STRENGTH_LOSS_FROM_LOW_POP
+			max_decimals = 2
+		}
+		modifier = {
+			is_gestalt = no
+			subtract = value:touhou_low_fanatic_faction_malus
+			desc = STRENGTH_LOSS_FROM_FANATIC_FACTION
+		}
+		modifier = {
+			has_modifier = resolution_adopted_ideology_denounced
+			subtract = value:touhou_denounced_ideology_malus
+			desc = STRENGTH_LOSS_FROM_DENOUNCEMENT
+		}
+		modifier = {
+			is_variable_set = ideological_strength_mult
+			is_gestalt = yes
+			check_variable = {
+				which = ideological_strength_mult
+				value < 0
+			}
+			add = ideological_strength_mult # Already negative, do not subtract
+			desc = STRENGTH_FROM_DEVIANCY
+			max_decimals = 2
+		}
+		modifier = {
+			mult = value:touhou_get_ideological_strength_malus_mult
+			desc = STRENGTH_FROM_FRICTION_MODIFIERS
+			max_decimals = 0
+			polarity = negative
+		}
+	}
+
+	modifier = {
+		has_country_flag = abandoning_ideology
+		set = @ideology_strength_malus_abandoning
+		desc = STRENGTH_FROM_ABANDONING_IDEOLOGY
+		max_decimals = 0
+	}
+
+	modifier = {
+		mult = @touhou_ideological_strength_increase_factor
+		desc = TOUHOU_IDEOLOGY_INCREASE_SCALE
+		always = yes
+	}
+}
+
+# This: country
+# From: ideology
+intel = {
+	base = 0
+	modifier = {
+		# Ideology discovered
+		add = 10
+		any_revealed_ideology = {
+			is_same_value = root.from
+		}
+	}
+	modifier = {
+		# Ideology is currently inside our borders
+		add = 50
+		any_system_within_border = {
+			ideology? = {
+				is_same_value = root.from
+			}
+		}
+	}
+	modifier = {
+		add = value:touhou_ideology_intel_from_galcom
+	}
+	modifier = {
+		add = value:touhou_ideology_intel_from_country_intel
+	}
+	modifier = {
+		min = @touhou_max_ideology_intel
+		ideology? = {
+			is_same_value = root.from
+		}
+	}
+	modifier = {
+		add = ideology_intel_cheat_@from
+		is_variable_set = ideology_intel_cheat_@from
+	}
+	max = @touhou_max_ideology_intel
+}
+
+# This: country
+# From: ideology
+ideology_affinity = {
+	base = 10
+	modifier = {
+		# Already have an ideology
+		add = -25
+		ideology? = {
+			NOT = { is_same_value = root.from }
+		}
+	}
+	modifier = {
+		# Pops follow ideology
+		add = value:ai_ideology_affinity_from_pops_adoption
+	}
+	modifier = {
+		# Population under the reach
+		add = value:ai_ideology_affinity_from_reach_coverage
+		is_gestalt = yes
+	}
+	modifier = {
+		# Matching ethic (non-gestalt)
+		add = value:ai_ideology_affinity_from_matching_ethic
+		is_gestalt = no
+		has_same_ethic_as_ideology = from
+	}
+	modifier = {
+		# Matching ethic (gestalt)
+		add = 5
+		is_gestalt = yes
+		ideology? = {
+			has_same_ethic_as_ideology = root.from
+		}
+	}
+	modifier = {
+		# Opposite ethic (non-gestalt)
+		add = value:ai_ideology_affinity_from_opposing_ethic
+		is_gestalt = no
+		has_opposite_ethic_as_ideology = from
+	}
+	modifier = {
+		# Opposite ethic (gestalt)
+		add = -5
+		is_gestalt = yes
+		ideology? = {
+			has_opposite_ethic_as_ideology = root.from
+		}
+	}
+	modifier = {
+		# Ethic does not match (non-gestalt)
+		add = value:ai_ideology_affinity_from_non_matching_ethic
+		is_gestalt = no
+		NOR = {
+			has_same_ethic_as_ideology = from
+			has_opposite_ethic_as_ideology = from
+		}
+	}
+	modifier = {
+		# Ethic does not match (gestalt)
+		add = -2
+		is_gestalt = yes
+		ideology? = {
+			NOR = {
+				has_same_ethic_as_ideology = root.from
+				has_opposite_ethic_as_ideology = root.from
+			}
+		}
+	}
+	modifier = {
+		# Wars with custodian and followers, penalties decay yearly after each war
+		add = value:ai_ideology_affinity_from_wars|IDEOLOGY|from|
+	}
+	modifier = {
+		# Gestalt base
+		add = -5
+		is_gestalt = yes
+	}
+}
+
+triggered_country_modifier = {
+	potential = { adopted_ideology_level = 0 }
+	trigger_true_key_override = INSIDE_REACH
+	country_ideology_claim_influence_cost_mult = -0.2
+	country_ideology_hostile_claim_influence_cost_mult = 0.1
+	country_ideology_starbase_influence_cost_mult = -0.2
+}
+triggered_country_modifier = {
+	potential = { adopted_ideology_level = 1 }
+	trigger_true_key_override = INSIDE_REACH
+	country_ideology_claim_influence_cost_mult = -0.4
+	country_ideology_hostile_claim_influence_cost_mult = 0.2
+	country_ideology_starbase_influence_cost_mult = -0.4
+}
+triggered_country_modifier = {
+	potential = { adopted_ideology_level = 2 }
+	trigger_true_key_override = INSIDE_REACH
+	country_ideology_claim_influence_cost_mult = -0.5
+	country_ideology_hostile_claim_influence_cost_mult = 0.25
+	country_ideology_starbase_influence_cost_mult = -0.5
+}
+triggered_country_modifier = {
+	potential = { adopted_ideology_level = 3 }
+	trigger_true_key_override = INSIDE_REACH
+	country_ideology_claim_influence_cost_mult = -0.6
+	country_ideology_hostile_claim_influence_cost_mult = 0.3
+	country_ideology_starbase_influence_cost_mult = -0.6
+	starbases_upkeep_mult = -0.15
+}
+
+triggered_country_modifier = {
+	potential = {
+		from = {
+			count_ideology_rivalries > 0
+		}
+	}
+	adopted_ideology_upkeep_mult = -0.2
+}
+
+triggered_country_modifier = {
+	potential = {
+		from.owner? = {
+			has_country_flag = force_of_will_unification_unlock
+		}
+	}
+	damage_vs_country_type_fallen_empire_mult = 1
+	damage_vs_country_type_awakened_fallen_empire_mult = 1
+	mult = from.trigger:galactic_strength
+}
+
+triggered_system_modifier = {
+	potential = {
+		exists = owner
+		from = {
+			any_adopting_country = {
+				OR = {
+					is_same_value = root.owner
+					has_communications = root.owner
+				}
+			}
+		}
+	}
+	pop_ethics_shift_speed_mult = 2
+}
+
+triggered_system_modifier = {
+	potential = {
+		owner? = {
+			ideology? = { is_same_value = root.from }
+			has_tradition = tr_prosperity_interstellar_franchising
+		}
+	}
+	trigger_true_key_override = INSIDE_OWNED_SYSTEMS
+	system_empire_size_mult = @prosperity_interstellar_franchising_ideological_empire_size
+}
+
+triggered_system_modifier = {
+	potential = {
+		owner? = {
+			ideology? = { is_same_value = root.from }
+			adopted_ideology_level = 1
+		}
+	}
+	trigger_true_key_override = INSIDE_OWNED_SYSTEMS
+	system_empire_size_mult = -0.05
+}
+triggered_system_modifier = {
+	potential = {
+		owner? = {
+			ideology? = { is_same_value = root.from }
+			adopted_ideology_level = 2
+		}
+	}
+	trigger_true_key_override = INSIDE_OWNED_SYSTEMS
+	system_empire_size_mult = -0.1
+}
+triggered_system_modifier = {
+	potential = {
+		owner? = {
+			ideology? = { is_same_value = root.from }
+			adopted_ideology_level = 3
+		}
+	}
+	trigger_true_key_override = INSIDE_OWNED_SYSTEMS
+	system_empire_size_mult = -0.15
+}
+
+triggered_pop_group_modifier = {
+	potential = {
+		owner? = { has_modifier = ideological_disruption }
+	}
+	planet_pops_unity_upkeep_add = @ideological_disruption_unity_upkeep
+	mult = owner.disruption_effect_multiplier
+	trigger_true_key_override = ideological_disruption_trigger
+}
+triggered_pop_group_modifier = {
+	potential = {
+		owner? = { has_modifier = moderate_ideological_disruption }
+	}
+	mult = owner.disruption_effect_multiplier
+	planet_pops_unity_upkeep_add = @ideological_disruption_unity_upkeep
+	trigger_true_key_override = moderate_ideological_disruption_trigger
+}
+triggered_pop_group_modifier = {
+	potential = {
+		owner? = { has_modifier = severe_ideological_disruption }
+	}
+	mult = owner.disruption_effect_multiplier
+	planet_pops_unity_upkeep_add = @ideological_disruption_unity_upkeep
+	trigger_true_key_override = severe_ideological_disruption_trigger
+}
+triggered_pop_group_modifier = {
+	potential = {
+		owner? = {
+			ideology? = {
+				is_egalitarian = yes
+			}
+		}
+		planet? = {
+			leader? = {
+				has_trait = leader_trait_citizen_advocate
+			}
+		}
+	}
+	pop_bonus_workforce_mult = 0.10
+	planet_pops_upkeep_mult = -0.10
+	pop_ethic_egalitarian_attraction_mult = 0.10
+}
+triggered_pop_group_modifier = {
+	potential = {
+		owner? = {
+			ideology? = {
+				is_egalitarian = yes
+			}
+		}
+		planet? = {
+			is_sector_capital = no
+			NOT = { exists = leader }
+		}
+		sector? = {
+			sector_capital? = {
+				leader? = {
+					has_trait = leader_trait_citizen_advocate
+				}
+			}
+		}
+	}
+	pop_bonus_workforce_mult = 0.05
+	planet_pops_upkeep_mult = -0.05
+	pop_ethic_egalitarian_attraction_mult = 0.05
+}
+triggered_pop_group_modifier = {
+	potential = {
+		owner? = { is_gestalt = no }
+		owner_has_matching_broadcasting_edict = yes
+	}
+	pop_happiness = @edict_broadcasting_pop_happiness
+}
+
+on_gain_level = {
+	if = {
+		limit = {
+			adopted_ideology_level = 1
+			NOT = { has_technology = tech_galactic_halls }
+		}
+		country_event = { id = forceofwill.4010 }
+	}
+	if = {
+		limit = { adopted_ideology_level = 2 }
+		set_country_flag = unlock_tech_ideology_projection
+	}
+}
+on_lose_level = {}
+
+on_destroy = {
+	every_federation = {
+		limit = {
+			ideology? = { is_same_value = root }
+			has_federation_law = succession_type_ideology
+		}
+		set_federation_law = succession_type_none
+	}
+	# Not just the affected ones, since a country keeps the variable after falling out of the Reach
+	every_playable_country = {
+		clear_variable = pops_under_reach_of_@root
+	}
+}
+
