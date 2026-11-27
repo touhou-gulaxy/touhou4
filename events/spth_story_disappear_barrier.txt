@@ -1052,6 +1052,10 @@ fleet_event = {
     title = disappear_barrier.1021.name
     desc = disappear_barrier.1021.desc
     is_triggered_only = yes
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = spth_ghost_ship_room }
     trigger = {
         owner = { NOT = { has_country_flag = disappear_barrier_1021_fired } }
         from = {
@@ -1164,13 +1168,119 @@ country_event = {
     title = disappear_barrier.1030.name
     desc = disappear_barrier.1030.desc
     is_triggered_only = yes
+    trigger = {
+		has_global_flag = spth_lunar_capital_psi_crisis_begin
+		has_global_flag = spth_lunar_capital_psi_crisis_ended
+		NOT = { has_global_flag = disappear_barrier_1030_fired }
+        exists = event_target:spth_story_lunar_capital_area_toyohime
+        event_target:spth_story_lunar_capital_area_toyohime = {
+			any_system_planet = {
+				NOT = { has_carrier_flag = lunar_toyohime_event_rw }
+				is_ringworld = yes
+				is_colony = no
+				is_planet_class = pc_ringworld_seam_damaged
+			}
+        }
+    }
+	immediate = {
+		set_global_flag = disappear_barrier_1030_fired
+		event_target:spth_story_lunar_capital_area_toyohime = {
+			random_system_planet = {
+				limit = {
+					NOT = { has_carrier_flag = lunar_toyohime_event_rw }
+					is_ringworld = yes
+					is_colony = no
+					is_planet_class = pc_ringworld_seam_damaged
+				}
+				set_planet_size = 10
+				change_pc = pc_ringworld_th
+				set_planet_flag = has_toyohime_silent_auditorium
+				add_modifier = {
+					modifier = touhou_broken_ringworld
+					days = -1
+				}
+				add_modifier = {
+					modifier = touhou_bad_env_ringworld
+					days = -1
+				}
+				while = { count = 7 add_deposit = d_touhou_mysterious_spire }
+				# 0.4*7+0.8*4+1*2=8
+				while = { count = 7 add_deposit = d_touhou_broken_ringworld }
+				while = { count = 4 add_deposit = d_touhou_broken_ringworld_1 }
+				while = { count = 2 add_deposit = d_touhou_broken_ringworld_2 }
+				add_deposit = d_touhou_psionic_region
+				set_planet_entity = {
+					entity = ringworld_seam_damaged_entity_01_entity
+				}
+			}
+		}
+	}
     diplomatic = yes
     custom_gui = spth_event_large_window
     custom_gui_option = spth_event_large_ui_option
-    picture_event_data = { room = spth_star_chart_room }
+    picture_event_data = { room = touhou_shattered_world_room }
     option = {
         name = disappear_barrier.1030.a
         default_hide_option = yes
     }
 }
 
+planet_event = {
+    id = disappear_barrier.1031
+    title = disappear_barrier.1031.name
+    desc = disappear_barrier.1031.desc
+    is_triggered_only = yes
+	trigger = {
+		is_ringworld = yes
+		is_planet_class = pc_ringworld_th
+		has_planet_flag = has_toyohime_silent_auditorium
+		NOT = { has_planet_flag = disappear_barrier_1031_fired }
+	}
+    diplomatic = yes
+    custom_gui = spth_event_large_window
+    custom_gui_option = spth_event_large_ui_option
+    picture_event_data = { room = touhou_ringworld_repairing_room }
+    immediate = {
+		set_planet_flag = disappear_barrier_1031_fired
+		planet_event = {
+			id = disappear_barrier.1032
+			days = 180 random = 180
+		}
+    }
+}
+planet_event = {
+	id = disappear_barrier.1032
+	title = disappear_barrier.1032.name
+	desc = disappear_barrier.1032.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = touhou_blue_tower_room }
+	immediate = {
+	}
+}
+
+country_event = {
+	id = disappear_barrier.1040
+	title = disappear_barrier.1040.name
+	desc = disappear_barrier.1040.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = touhou_toyohime_puzzle_window
+	custom_gui_option = touhou_toyohime_puzzle_button
+	picture_event_data = { room = touhou_ringworld_weather_control_room }
+	immediate = {
+		touhou_toyohime_puzzle_roll_sequences = yes
+	}
+	option = {
+		allow = { check_variable_arithmetic = {
+			which = value:touhou_toyohime_puzzle_verify_result
+			value != 0
+		} }
+		name = disappear_barrier.1040.a
+	}
+	option = {
+		name = TH_EXIT
+	}
+}

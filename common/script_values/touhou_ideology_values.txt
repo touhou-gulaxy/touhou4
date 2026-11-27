@@ -1,0 +1,414 @@
+touhou_adopted_ideology_ethic_attraction = {
+	base = 0.25
+	modifier = {
+		add = @touhou_adopted_ideology_ethic_attraction
+		NOT = { has_country_flag = abandoning_ideology }
+	}
+	add = trigger:ideological_strength_percent
+}
+
+touhou_galactic_strength_percentage = {
+	base = 200
+	mult = trigger:galactic_strength
+}
+
+touhou_galactic_strength_bonus = {
+	base = @touhou_ideology_strength_per_galactic_strength_share
+	modifier = {
+		set = @touhou_ideology_strength_per_galactic_strength_share_gestalt
+		is_gestalt = yes
+	}
+	modifier = {
+		mult = 0.6
+		galaxy_size = tiny
+	}
+	modifier = {
+		mult = 0.8
+		galaxy_size = small
+	}
+	modifier = {
+		mult = 1
+		galaxy_size = medium
+	}
+	modifier = {
+		mult = 1.2
+		galaxy_size = large
+	}
+	modifier = {
+		mult = 1.3
+		galaxy_size = huge
+	}
+	mult = from.value:touhou_galactic_strength_percentage
+}
+
+touhou_ideology_total_followers = {
+	base = 0
+	add = root.from.trigger:followers_amount
+}
+
+touhou_ideology_total_followers_floored = {
+	base = 0
+	add = value:touhou_ideology_total_followers
+	min = 2
+}
+
+touhou_ideology_population_share = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = ideology_followers_amount
+		parameters = {
+			ideology = root.from
+		}
+		mode = add
+	}
+	divide = value:touhou_ideology_total_followers_floored
+	min = 0
+	max = 1.25
+}
+
+touhou_ideology_population_share_bonus = {
+	base = 0
+	add = value:touhou_galactic_strength_bonus
+	mult = @touhou_ideology_strength_population_share_mult
+	mult = value:touhou_ideology_population_share
+}
+
+touhou_ideological_strength_difficulty_bonus = {
+	modifier = {
+		add = 1.0
+		touhou_check_diffiulty_lteq = { value = 2 }
+		is_ai = no
+	}
+	modifier = {
+		add = 0.5
+		touhou_check_diffiulty_gteq = { value = 3 }
+		touhou_check_diffiulty_lteq = { value = 6 }
+		is_ai = no
+	}
+	modifier = {
+		add = 0.25
+		touhou_check_diffiulty_gteq = { value = 7 }
+		is_ai = no
+	}
+}
+
+touhou_get_ideological_strength_bonus_mult = {
+	add = root.owner.value:touhou_modifier_mult_multiplier|modifier|ideological_strength_bonus_mult|min|0|
+	add = root.owner.value:touhou_ideological_strength_difficulty_bonus
+}
+
+touhou_clashing_ideologies_count = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = count_clashing_ideologies
+		trigger_scope = from
+		parameters = {
+			is_ideology_rival = no
+		}
+		mode = add
+	}
+}
+
+touhou_clashing_rival_ideologies_count = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = count_clashing_ideologies
+		trigger_scope = from
+		parameters = {
+			is_ideology_rival = yes
+		}
+		mode = add
+	}
+	mult = root.owner.value:touhou_modifier_mult_multiplier|modifier|ideological_strength_from_clashes_mult|min|0|
+	mult = value:touhou_get_ideological_strength_bonus_mult
+}
+
+touhou_clashing_ideologies_bonus = {
+	base = 0
+	add = value:touhou_clashing_ideologies_count
+	mult = @touhou_ideology_strength_per_clash
+}
+
+touhou_clashing_rival_ideologies_bonus = {
+	base = 0
+	add = value:touhou_clashing_rival_ideologies_count
+	mult = @touhou_ideology_strength_per_rival_clash
+}
+
+touhou_ideological_buildings_bonus = {
+	modifier = {
+		add = value:ideological_default_buildings_bonus
+		is_gestalt = no
+		ideology = { is_spiritualist = no }
+	}
+	modifier = {
+		add = value:ideological_spiritualist_buildings_bonus
+		is_gestalt = no
+		ideology = { is_spiritualist = yes }
+	}
+	modifier = {
+		add = value:ideological_hive_buildings_bonus
+		is_hive_empire = yes
+	}
+	modifier = {
+		add = value:ideological_machine_buildings_bonus
+		is_machine_empire = yes
+	}
+	add = value:touhou_modifier_mult_multiplier|modifier|country_ideology_strength_from_building|min|0|
+}
+
+touhou_galactic_hall_bonus = {
+	base = 0
+	modifier = {
+		add = @touhou_ideology_strength_per_galactic_hall
+		any_owned_megastructure = {
+			is_megastructure_galactic_halls = yes
+			exists = colony
+		}
+	}
+}
+
+touhou_advocate_total_skill = {
+	base = 0
+	modifier = {
+		exists = advocate
+		add = advocate.trigger:has_total_skill
+	}
+}
+touhou_advocate_bonus = {
+	base = 1
+	add = modifier:advocate_matching_ideological_strength_mult
+	add = modifier:advocate_ideological_strength_mult
+	min = 0.1
+	mult = @touhou_ideology_strength_advocate_per_skill
+	mult = value:touhou_advocate_total_skill
+}
+touhou_martyr_ideological_strength_mult = {
+	base = @martyr_ideological_strength_mult
+	mult = cultural_envoys_martyred
+}
+touhou_tranquil_steward_strength_bonus = {
+	base = 0
+	add = @leader_trait_tranquil_steward_strength
+}
+touhou_social_concord_strength_bonus = {
+	base = @social_concord_ideological_strength
+}
+touhou_fanatic_purifiers_purged_pop_ideological_strength = {
+	add = purged_pop_count
+	mult = @touhou_fanatic_purifiers_ideological_strength_per_pop_purged
+	max = 2
+}
+touhou_open_stars_sovereignty_strength_bonus = {
+	base = @building_ideological_strength
+	complex_trigger_modifier = {
+		trigger = count_starbase_buildings
+		parameters = {
+			type = immigration_bureau
+			limit = {
+				NOT = { has_starbase_flag = immigration_bureau_invalid }
+			}
+		}
+		mode = mult
+	}
+}
+touhou_ideology_act_bonus = {
+	base = 0
+	modifier = {
+		add = @touhou_resolution_ideology_act_strength_authority
+		ideology? = { is_ideology_custodian = root }
+	}
+	modifier = {
+		add = @touhou_resolution_ideology_act_strength
+		NOT = {
+			ideology? = { is_ideology_custodian = root }
+		}
+	}
+	min = 0
+}
+touhou_celebrate_ideology_strength_bonus = {
+	complex_trigger_modifier = {
+		trigger = count_owned_pop_amount
+		parameters = {
+			limit = {
+				planet = {
+					has_modifier = celebrate_ideology
+				}
+			}
+		}
+		mode = add
+		mult = @touhou_ideology_strength_per_100_celebrating_pops
+	}
+	divide = 100
+}
+touhou_fanatic_faction_approval_bonus = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = faction_approval_above_threshold
+		parameters = {
+			limit = {
+				is_faction_fanatic = yes
+				ideology? = { is_same_value = root.from }
+			}
+			threshold = $THRESHOLD|0$
+		}
+		mode = add
+		mult = 100
+	}
+	round = yes
+	mult = $WEIGHT|1$
+}
+touhou_fanatic_faction_approval_mult = {
+	base = 1
+	add = value:touhou_fanatic_faction_approval_bonus|THRESHOLD|0.5|WEIGHT|@touhou_ideology_strength_per_fanatic_faction_approval|
+	min = 1
+	max = @touhou_ideology_strength_max_fanatic_faction_approval_mult
+}
+touhou_get_ideological_strength_bonus_mult = {
+	add = root.owner.value:touhou_modifier_mult_multiplier|modifier|ideological_strength_bonus_mult|min|0|
+	add = root.owner.value:touhou_ideological_strength_difficulty_bonus
+}
+
+touhou_pop_other_ideology_percentage_value = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = pop_ideology_percentage
+		parameters = {
+			ideology = any
+		}
+		mode = add
+	}
+	complex_trigger_modifier = {
+		trigger = pop_ideology_percentage
+		parameters = {
+			ideology = $IDEOLOGY$
+		}
+		mode = subtract
+	}
+	min = 0
+}
+touhou_species_on_council = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = count_species_on_council
+		mode = add
+	}
+}
+touhou_ideology_level_malus = {
+	base = 0
+	add = trigger:ideological_strength
+	min = 0
+	mult = @ideology_strength_malus_level_rate
+}
+touhou_strength_empire_size_malus = {
+	add = trigger:empire_size
+	subtract = 100
+	round = yes
+	min = 0
+	mult = @ideology_strength_malus_per_size
+}
+touhou_following_concurrent_pop_malus = {
+	set = value:touhou_pop_other_ideology_percentage_value|IDEOLOGY|root.from|
+	mult = 100
+	mult = @ideology_strength_malus_per_foreign_pop_percent
+}
+touhou_low_fanatic_faction_malus = {
+	base = 0
+	modifier = {
+		add = @ideology_strength_malus_low_fanatic_faction
+		any_pop_faction = {
+			is_faction_fanatic = yes
+			ideology? = { is_same_value = root.from }
+			faction_approval < 0.25
+		}
+	}
+}
+touhou_denounced_ideology_malus = {
+	base = 0
+	add = @denounced_ideology_malus_value
+	min = 0
+}
+touhou_get_ideological_strength_malus_mult = {
+	add = root.owner.value:touhou_modifier_mult_multiplier|modifier|ideological_strength_malus_mult|min|0|
+}
+
+####################################
+#### IDEOLOGY INTEL GRANT BEGIN ####
+####################################
+touhou_ideology_intel_from_galcom_total = {
+	base = 4
+	complex_trigger_modifier = {
+		trigger = count_galcom_member
+		parameters = {
+			limit = {
+				ideology? = {
+					is_same_value = root.from
+				}
+			}
+		}
+		mode = mult
+	}
+}
+touhou_ideology_intel_from_galcom = {
+	base = 0
+	modifier = {
+		add = value:touhou_ideology_intel_from_galcom_total
+		is_galactic_community_member = yes
+	}
+}
+# Root = Country
+# From = Ideology
+touhou_ideology_intel_from_country_intel = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger_scope = from
+		trigger = total_intel_towards_adopting_countries
+		parameters = {
+			who = prev
+		}
+		mode = add
+	}
+	divide = 10
+	mult = 4
+}
+####################################
+#### IDEOLOGY INTEL GRANT ENDED ####
+####################################
+
+touhou_ideological_reach_colony_pops = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = count_owned_pop_amount
+		mode = add
+	}
+}
+
+touhou_ai_ideology_affinity_from_matching_ethic = {
+	base = 10
+	complex_trigger_modifier = {
+		trigger = ideology_ethic_fanatic_level
+		parameters = {
+			ideology = from
+		}
+		mode = mult
+	}
+}
+touhou_ai_ideology_affinity_from_opposing_ethic = {
+	# -10 per fanatic level, offset +5: normal -5, fanatic -25
+	base = -10
+	complex_trigger_modifier = {
+		trigger = ideology_ethic_fanatic_level
+		parameters = {
+			ideology = from
+		}
+		mode = mult
+	}
+	add = 5
+}
+touhou_ai_ideology_affinity_from_non_matching_ethic = {
+	base = -1
+	modifier = {
+		subtract = 1
+		is_fanatic = yes
+	}
+}

@@ -81,6 +81,18 @@ Examples:
 
 Generated outputs should be reviewed before committing.
 
+### Steam Workshop
+
+The mod can be uploaded without starting Stellaris or the Paradox Launcher:
+
+```bash
+./utils/steam/workshop-publish.sh --dry-run --print-vdf
+STEAM_USERNAME=your_steam_login ./utils/steam/workshop-publish.sh --notes "Update notes"
+```
+
+See [`utils/steam/README.md`](utils/steam/README.md) for prerequisites, cover
+updates, and staged-content publishing.
+
 ## Performance analysis
 
 Useful local references outside this repository:
@@ -96,4 +108,3 @@ Stellaris script profiling is useful for event, trigger, and script-value
 hotspots, but it is not a complete C++ profiler. In particular, weapon
 `on_hit` execution, scope construction/deep copies, and allocator activity
 must be verified with `pdxperf`, `perf`, or controlled A/B tests.
-

@@ -325,6 +325,19 @@ has_any_touhou_ruler_patron = {
     always = no
 }
 
+is_touhou_shipyard_megastructure = {
+	optimize_memory
+	OR = {
+		is_megastructure_type = th_shrine_mega
+		is_megastructure_type = th_shrine_mega_shipyard
+		is_megastructure_type = touhou_kamikakushi_super_shipyard
+	}
+}
+
+is_touhou_hellsing_megastructure_active = {
+	optimize_memory
+	is_variable_set = overclock_touhou_shipyard_hellsing_override
+}
 
 # planet scope
 spth_trigger_planet_barrier_capacity_can_hold = {
@@ -368,6 +381,7 @@ spth_fleet_has_special_leader = {
                     check_modifier_value = { modifier = ship_has_touhou_missile_craft_protector value > 0 }
 					check_modifier_value = { modifier = ship_has_spth_negative_force_disparity value > 0 }
 					check_modifier_value = { modifier = spth_kamikakushi_cruiser_arua value > 0 }
+					check_modifier_value = { modifier = ship_has_touhou_science_ship_into_barrier value > 0 }
                 }
             }
             AND = {
@@ -960,6 +974,13 @@ spth_is_touhou_deposit = {
 		is_deposit_type = d_ruins_of_eternal_space
 		is_deposit_type = d_buildings_eternal_space_relic
 		is_deposit_type = d_buildings_eternal_space
+		is_deposit_type = d_touhou_mysterious_spire
+		is_deposit_type = d_touhou_mysterious_spire_unlocked
+		is_deposit_type = d_touhou_mysterious_spire_command
+		is_deposit_type = d_touhou_broken_ringworld
+		is_deposit_type = d_touhou_broken_ringworld_1
+		is_deposit_type = d_touhou_broken_ringworld_2
+		is_deposit_type = d_touhou_psionic_region
     }
 }
 spth_is_no_remove_deposit = {
@@ -1193,6 +1214,23 @@ use_touhou_starting_district = {
         has_carrier_flag = has_shell_world_touhou_gensokyo_city
     }
 }
+use_touhou_gensokyo_city_district = {
+	optimize_memory
+	OR = {
+		is_planet_class = pc_gensokyo_city
+		is_planet_class = pc_ringworld_th
+		is_planet_class = pc_space_shrine
+		is_planet_class = pc_gensokyo_ringworld_arkship
+		has_carrier_flag = has_shell_world_touhou_gensokyo_city
+	}
+}
+use_touhou_gensokyo_planet_district = {
+	optimize_memory
+	OR = {
+		is_planet_class = pc_gensokyo_planet
+		has_carrier_flag = use_touhou_gensokyo_planet_district
+	}
+}
 use_touhou_izakaya_district = {
 	optimize_memory
 	OR = {
@@ -1243,6 +1281,19 @@ spth_check_gensokyo_auth = {
             has_country_flag = $flag$
         ]
     }
+}
+touhou_check_not_gensokyo_auth = {
+	optimize_memory
+	exists = owner
+	owner = {
+		spth_is_regular_empire = yes
+		NOT = {
+			OR = {
+				has_authority = auth_gensokyo
+				has_country_flag = touhou_mod_country
+			}
+		}
+	}
 }
 
 spth_cannot_trigger_disappear_barrier_origin = {
@@ -1678,7 +1729,61 @@ touhou_sky_controll_stratagem_check_direction = {
     check_variable = {
         which = touhou_sky_controll_stratagem_res_seq_$idx$
         value = @touhou_sky_controll_stratagem_$dir$
-    }
+	}
+}
+
+touhou_toyohime_puzzle_check_slot_is_red = {
+	optimize_memory
+	is_variable_set = touhou_toyohime_puzzle_sel_slot
+	check_variable = {
+		which = touhou_toyohime_puzzle_sel_slot
+		value = $slot$
+	}
+}
+touhou_toyohime_puzzle_check_slot_is_white = {
+	optimize_memory
+	OR = {
+        NOT = { is_variable_set = touhou_toyohime_puzzle_sel_slot }
+        check_variable = {
+            which = touhou_toyohime_puzzle_sel_slot
+            value != $slot$
+        }
+	}
+}
+touhou_toyohime_puzzle_check_slot_selected = {
+	optimize_memory
+	is_variable_set = touhou_toyohime_puzzle_sel_slot
+	check_variable = {
+		which = touhou_toyohime_puzzle_sel_slot
+		value = $slot$
+	}
+}
+# touhou_toyohime_puzzle_slot_[idx]_pos_[arr_pos] is updated after every up/down
+touhou_toyohime_puzzle_check_pos_char = {
+	optimize_memory
+	is_variable_set = touhou_toyohime_puzzle_slot_$slot$_$pos$
+	check_variable = {
+		which = touhou_toyohime_puzzle_slot_$slot$_$pos$
+		value = $char$
+	}
+}
+# controls which are not grey: pos == touhou_toyohime_puzzle_check_pos_$idx$
+touhou_toyohime_puzzle_check_is_check_item = {
+	optimize_memory
+	is_variable_set = touhou_toyohime_puzzle_check_pos_$slot$
+	check_variable = {
+		which = touhou_toyohime_puzzle_check_pos_$slot$
+		value = $pos$
+	}
+}
+# touhou_toyohime_puzzle_seq_[idx] indicated is the char item
+touhou_toyohime_puzzle_check_char_at_check = {
+	optimize_memory
+	is_variable_set = touhou_toyohime_puzzle_seq_$slot$
+	check_variable = {
+		which = touhou_toyohime_puzzle_seq_$slot$
+		value = $char$
+	}
 }
 
 touhou_seija_boss_title_check = {
@@ -2107,4 +2212,20 @@ touhou_is_capital_system = {
         any_system_planet_colony = { is_capital = yes exists = owner owner = { is_same_value = $owner$ } }
 		any_system_ship_colony = { is_capital = yes exists = owner owner = { is_same_value = $owner$ } }
 	}
+}
+
+can_use_touhou_arkship_module = {
+	optimize_memory
+	OR = {
+		is_arkship_starbase = yes
+		has_starbase_size = izakaya_arkship_1
+		has_starbase_size = spth_space_shrine_station
+		has_starbase_size = touhou_synaptic_lathe_arkship
+		has_starbase_size = gensokyo_ringworld_arkship
+	}
+}
+
+is_touhou_insane_mode_activated = {
+	optimize_memory
+	has_global_flag = touhou_insane_mode_activated
 }

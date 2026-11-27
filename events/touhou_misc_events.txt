@@ -1,0 +1,1904 @@
+namespace = touhou
+
+# unknown spiritual power civilization ancient ship: touhou.1
+# common country encountered gensokyo: touhou.100
+# yearly check, if has comms with any touhou country: touhou.101
+# non gensokyo events gatekeeper: touhou.1000
+# non gensokyo event chain introduce: touhou.1001
+
+country_event = {
+	id = touhou.1
+	title = touhou_misc.1.name
+	desc = touhou_misc.1.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = touhou_translocation_portal_room }
+	option = {
+		name = touhou_misc.1.a
+		enable_special_project = {
+			name = TOUHOU_MISC_RESEARCH_GRAVITY_ANOMALY
+			owner = root
+			location = from
+		}
+	}
+	option = {
+		name = touhou_misc.1.b
+	}
+}
+country_event = {
+	id = touhou.2
+	title = touhou_misc.2.name
+	desc = touhou_misc.2.desc
+	is_triggered_only = yes
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	picture_event_data = { room = touhou_silent_auditorium_halls_room }
+	option = {
+		name = touhou_misc.2.a
+		from = {
+			create_archaeological_site = touhou_misc_jusskari_underground_city
+		}
+	}
+}
+
+# Triggered when two empires discover each other
+# This = Empire 1
+# From = Empire 2
+# Fromfromfrom = System where contact occurred
+country_event = {
+	id = touhou.100
+	title = touhou_misc.100.name
+	desc = touhou_misc.100.desc
+	diplomatic = yes
+	custom_gui = spth_event_large_window
+	custom_gui_option = spth_event_large_ui_option
+	is_triggered_only = yes
+	picture_event_data = { room = spth_unknown_ships_room }
+	trigger = {
+		NOT = { has_country_flag = has_encountered_touhou_country }
+		from = { spth_check_gensokyo_auth = yes }
+		spth_check_gensokyo_auth = no
+	}
+	immediate = {
+		set_country_flag = has_encountered_touhou_country
+	}
+	option = {
+		name = touhou.100.common
+	}
+	option = {
+		name = "touhou.100.spi"
+		trigger = { is_spiritualist = yes }
+	}
+	option = {
+		name = "touhou.100.mat"
+		trigger = { is_materialist = yes }
+	}
+	option = {
+		name = "touhou.100.phile"
+		trigger = { is_xenophile = yes }
+	}
+}
+country_event = {
+	id = touhou.101
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = { has_country_flag = has_encountered_touhou_country }
+		spth_check_gensokyo_auth = no
+		any_relation = {
+			spth_check_gensokyo_auth = yes
+		}
+	}
+	immediate = {
+		set_country_flag = has_encountered_touhou_country
+	}
+}
+
+# gatekeeper
+country_event = {
+	id = touhou.1000
+	hide_window = yes
+	mean_time_to_happen = { years = 6 }
+	trigger = {
+		is_ai = no
+		touhou_check_not_gensokyo_auth = yes
+		OR = {
+			years_passed >= 50
+			mid_game_years_passed >= 5
+		}
+	}
+	immediate = {
+		
+	}
+}
+
+# 新的非东方国家，灵力相关事件链引入
+# 要求场上没有非AI东方国家
+# 不寻常的星球->特殊项目研究->殖民->挖坟->开启失落的过往事件链
+# 
+country_event = {
+	id = touhou.1001
+	is_triggered_only = yes
+	immediate = {
+		
+	}
+}
+
+##########################################################################
+# Touhou ideology momentum
+# Mirrors the numeric IDs of forceofwill.1500-1800, but uses the touhou.*
+# namespace and rewards centered on Gensokyo's shrines, villages and youkai.
+##########################################################################
+
+# Surging events trigger
+country_event = {
+	id = touhou.1500
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = { has_force_of_will_dlc = yes }
+
+	immediate = {
+		if = {
+			limit = { is_gestalt = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_positive_gestalt
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = {
+				can_trigger_touhou_ideology_momentum_surging_events = yes
+				has_any_touhou_ideology_momentum_very_positive_events_fired = yes
+			}
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_surging
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = {
+				can_trigger_touhou_ideology_momentum_very_positive_events = yes
+				has_any_touhou_ideology_momentum_positive_events_fired = yes
+			}
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_very_positive
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = { can_trigger_touhou_ideology_momentum_positive_events = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_positive
+				scopes = { from = from }
+			}
+		}
+	}
+}
+
+# Very positive events trigger
+country_event = {
+	id = touhou.1505
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = { has_force_of_will_dlc = yes }
+
+	immediate = {
+		if = {
+			limit = { is_gestalt = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_positive_gestalt
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = {
+				can_trigger_touhou_ideology_momentum_very_positive_events = yes
+				has_any_touhou_ideology_momentum_positive_events_fired = yes
+			}
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_very_positive
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = { can_trigger_touhou_ideology_momentum_positive_events = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_positive
+				scopes = { from = from }
+			}
+		}
+	}
+}
+
+# Positive events trigger
+country_event = {
+	id = touhou.1510
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = { has_force_of_will_dlc = yes }
+
+	immediate = {
+		if = {
+			limit = { is_gestalt = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_positive_gestalt
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = { can_trigger_touhou_ideology_momentum_positive_events = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_positive
+				scopes = { from = from }
+			}
+		}
+	}
+}
+
+# Dangerously low events trigger
+country_event = {
+	id = touhou.1520
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = { has_force_of_will_dlc = yes }
+
+	immediate = {
+		if = {
+			limit = { is_gestalt = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_negative_gestalt
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = {
+				can_trigger_touhou_ideology_momentum_dangerously_low_events = yes
+				has_any_touhou_ideology_momentum_moderately_low_events_fired = yes
+			}
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_dangerously_low
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = {
+				can_trigger_touhou_ideology_momentum_moderately_low_events = yes
+				has_any_touhou_ideology_momentum_low_events_fired = yes
+			}
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_moderately_low
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = { can_trigger_touhou_ideology_momentum_low_events = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_low
+				scopes = { from = from }
+			}
+		}
+	}
+}
+
+# Moderately low events trigger
+country_event = {
+	id = touhou.1525
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = { has_force_of_will_dlc = yes }
+
+	immediate = {
+		if = {
+			limit = { is_gestalt = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_negative_gestalt
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = {
+				can_trigger_touhou_ideology_momentum_moderately_low_events = yes
+				has_any_touhou_ideology_momentum_low_events_fired = yes
+			}
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_moderately_low
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = { can_trigger_touhou_ideology_momentum_low_events = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_low
+				scopes = { from = from }
+			}
+		}
+	}
+}
+
+# Low events trigger
+country_event = {
+	id = touhou.1530
+	is_triggered_only = yes
+	hide_window = yes
+
+	trigger = { has_force_of_will_dlc = yes }
+
+	immediate = {
+		if = {
+			limit = { is_gestalt = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_negative_gestalt
+				scopes = { from = from }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = { can_trigger_touhou_ideology_momentum_low_events = yes }
+			fire_on_action = {
+				on_action = on_touhou_ideology_momentum_low
+				scopes = { from = from }
+			}
+		}
+	}
+}
+
+# Positive Tier 1: Shrine festival
+country_event = {
+	id = touhou.1550
+	title = touhou.1550.name
+	desc = touhou.1550.desc
+	picture = GFX_evt_hakurei_shrine_in_night
+	show_sound = event_celebration
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1550_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1550_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1550.a
+		add_monthly_resource_mult = {
+			resource = unity
+			value = @tier2unityreward
+			min = @tier2unitymin
+			max = @tier2unitymax
+		}
+	}
+
+	option = {
+		name = touhou.1550.b
+		add_modifier = {
+			modifier = touhou_ideology_shrine_resonance
+			years = 10
+		}
+	}
+}
+
+# Positive Tier 1: Sage lectures
+country_event = {
+	id = touhou.1560
+	title = touhou.1560.name
+	desc = touhou.1560.desc
+	picture = GFX_evt_touhou_eientei
+	show_sound = event_conversation
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1560_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1560_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	after = {
+		add_random_research_option = {
+			add_progress = 0.1
+			area = society
+			ignore_rare = no
+			only_rare = yes
+			fail_effects = {
+				add_random_research_option = {
+					add_progress = 0.1
+					area = society
+				}
+			}
+		}
+	}
+
+	option = {
+		name = touhou.1560.a
+		add_monthly_resource_mult = {
+			resource = society_research
+			value = @tier2researchreward
+			min = @tier2researchmin
+			max = @tier2researchmax
+		}
+	}
+
+	option = {
+		name = touhou.1560.b
+		add_modifier = {
+			modifier = touhou_ideology_sage_teachings
+			years = 10
+		}
+	}
+}
+
+# Positive Tier 1: Human Village monument
+country_event = {
+	id = touhou.1570
+	title = touhou.1570.name
+	desc = touhou.1570.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_construction
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1570_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1570_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+		ordered_owned_colony = {
+			limit = {
+				free_building_slots > 0
+				has_memorial = no
+			}
+			position = 0
+			order_by = trigger:pop_amount
+			save_event_target_as = selected_planet
+			add_memorial_1 = yes
+		}
+	}
+
+	after = {
+		if = {
+			limit = { is_memorialist_empire = yes }
+			custom_tooltip = building_galactic_memorial_tt
+		}
+		else_if = {
+			limit = { is_megacorp = yes }
+			custom_tooltip = building_corporate_monument_tt
+		}
+		else = {
+			custom_tooltip = building_autochthon_monument_tt
+		}
+		if = {
+			limit = {
+				NOT = { has_technology = tech_cultural_heritage }
+				can_research_technology = tech_cultural_heritage
+			}
+			give_technology = {
+				tech = tech_cultural_heritage
+				message = no
+			}
+		}
+	}
+
+	option = {
+		name = touhou.1570.a
+		allow = {
+			resource_stockpile_compare = {
+				resource = energy
+				value >= 500
+			}
+		}
+		add_resource = { energy = -500 }
+		add_modifier = {
+			modifier = touhou_ideology_human_village_recognition
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1570.b
+		default_hide_option = yes
+	}
+}
+
+# Positive Tier 2: Gensokyo festival
+country_event = {
+	id = touhou.1580
+	title = touhou.1580.name
+	desc = touhou.1580.desc
+	picture = GFX_evt_hakuri_shrine_sun
+	show_sound = event_celebration
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1580_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1580_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1580.a
+		add_modifier = {
+			modifier = touhou_ideology_festival
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1580.b
+		add_modifier = {
+			modifier = touhou_ideology_shrine_propaganda
+			years = 10
+		}
+	}
+}
+
+# Positive Tier 2: Incident resolvers
+country_event = {
+	id = touhou.1590
+	title = touhou.1590.name
+	desc = touhou.1590.desc
+	picture = GFX_evt_touhou_makai_bg
+	show_sound = event_default
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1590_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1590_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1590.a
+		add_modifier = {
+			modifier = touhou_ideology_hero_recruitment
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1590.b
+		add_modifier = {
+			modifier = touhou_ideology_doctrinal_heroes
+			years = 10
+		}
+	}
+}
+
+# Positive Tier 2: Corruption declines
+country_event = {
+	id = touhou.1600
+	title = touhou.1600.name
+	desc = touhou.1600.desc
+	picture = GFX_evt_scarlet_devil_mansion
+	show_sound = event_default
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1600_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1600_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1600.a
+		add_modifier = {
+			modifier = touhou_ideology_human_village_administration
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1600.b
+		allow = {
+			resource_stockpile_compare = {
+				resource = consumer_goods
+				value >= 1000
+			}
+		}
+		add_resource = { consumer_goods = -1000 }
+		add_modifier = {
+			modifier = touhou_ideology_offering_loyalty
+			years = 10
+		}
+	}
+}
+
+# Positive Tier 3: Golden age of Gensokyo
+country_event = {
+	id = touhou.1610
+	title = touhou.1610.name
+	desc = touhou.1610.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_ideology_events_speech_applause
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1610_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1610_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1610.a
+		add_modifier = {
+			modifier = touhou_ideology_golden_age_society
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1610.b
+		add_modifier = {
+			modifier = touhou_ideology_golden_age_economy
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1610.c
+		add_modifier = {
+			modifier = touhou_ideology_golden_age_politics
+			years = 10
+		}
+	}
+}
+
+# Positive Tier 3: Offering surge
+country_event = {
+	id = touhou.1620
+	title = touhou.1620.name
+	desc = touhou.1620.desc
+	picture = GFX_evt_hakurei_shrine_in_night
+	show_sound = event_nem_asset_acquired_positive
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1620_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1620_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1620.a
+		add_monthly_resource_mult = {
+			resource = consumer_goods
+			value = @tier3materialreward
+			min = @tier3materialmin
+			max = @tier3materialmax
+		}
+	}
+
+	option = {
+		name = touhou.1620.b
+		add_monthly_resource_mult = {
+			resource = unity
+			value = @tier3unityreward
+			min = @tier3unitymin
+			max = @tier3unitymax
+		}
+	}
+}
+
+# Positive Tier 3: Outside-world trade
+country_event = {
+	id = touhou.1630
+	title = touhou.1630.name
+	desc = touhou.1630.desc
+	picture = GFX_evt_touhou_outpost
+	show_sound = event_celebration
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1630_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1630_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	after = {
+		remove_modifier = touhou_ideology_economic_stagnation
+	}
+
+	option = {
+		name = touhou.1630.a
+		add_monthly_resource_mult = {
+			resource = trade
+			value = @tier3materialreward
+			min = @tier3materialmin
+			max = @tier3materialmax
+		}
+	}
+
+	option = {
+		name = touhou.1630.b
+		add_monthly_resource_mult = {
+			resource = minerals
+			value = @tier3materialreward
+			min = @tier3materialmin
+			max = @tier3materialmax
+		}
+	}
+
+	option = {
+		name = touhou.1630.c
+		add_monthly_resource_mult = {
+			resource = food
+			value = @tier3materialreward
+			min = @tier3materialmin
+			max = @tier3materialmax
+		}
+	}
+}
+
+# Negative Tier 1: Common sense conflict
+country_event = {
+	id = touhou.1640
+	title = touhou.1640.name
+	desc = touhou.1640.desc
+	picture = GFX_evt_touhou_makai_bg
+	show_sound = event_whispering
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1640_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1640_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1640.a
+		add_modifier = {
+			modifier = touhou_ideology_radical_nonconformity
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1640.b
+		trigger = { is_fanatic_egalitarian = no }
+		add_modifier = {
+			modifier = touhou_ideology_suppressed_radicalism
+			years = 10
+		}
+	}
+}
+
+# Negative Tier 1: Human Village protests
+country_event = {
+	id = touhou.1650
+	title = touhou.1650.name
+	desc = touhou.1650.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_ideology_events_crowd_chanting
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1650_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1650_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1650.a
+		trigger = { is_fanatic_egalitarian = no }
+		capital_scope = {
+			add_modifier = {
+				modifier = touhou_ideology_human_village_protests
+				years = 10
+			}
+		}
+	}
+
+	option = {
+		name = touhou.1650.b
+		trigger = { is_fanatic_authoritarian = no }
+		capital_scope = {
+			add_modifier = {
+				modifier = touhou_ideology_anti_elite_protests
+				years = 10
+			}
+		}
+	}
+}
+
+# Negative Tier 1: Gensokyo economic downturn
+country_event = {
+	id = touhou.1660
+	title = touhou.1660.name
+	desc = touhou.1660.desc
+	picture = GFX_evt_touhou_outpost
+	show_sound = event_bad_omen
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1660_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1660_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1660.a
+		add_modifier = {
+			modifier = touhou_ideology_economic_stagnation
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1660.b
+		allow = {
+			resource_stockpile_compare = {
+				resource = trade
+				value >= 3000
+			}
+		}
+		add_resource = { trade = -3000 }
+	}
+
+	option = {
+		name = touhou.1660.c
+		allow = { ideological_strength >= 100 }
+		add_ideological_strength = -100
+	}
+}
+
+# Negative Tier 2: Youkai assassin
+country_event = {
+	id = touhou.1670
+	title = touhou.1670.name
+	desc = touhou.1670.desc
+	picture = GFX_evt_scarlet_devil_mansion
+	show_sound = event_ideology_events_terror_attack
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1670_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1670_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+		random_owned_leader = {
+			limit = {
+				is_ruler = no
+				OR = {
+					exists = colony
+					leader_class = official
+				}
+				NOT = { has_trait = leader_trait_maimed }
+			}
+			save_event_target_as = touhou_ideology_maimed_leader
+		}
+	}
+
+	after = {
+		event_target:touhou_ideology_maimed_leader = {
+			add_trait = leader_trait_maimed
+		}
+	}
+
+	option = {
+		name = touhou.1670.a
+		add_modifier = {
+			modifier = touhou_ideology_terror_activity
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1670.b
+		allow = {
+			resource_stockpile_compare = {
+				resource = unity
+				value >= 1000
+			}
+		}
+		add_resource = { unity = -1000 }
+	}
+}
+
+# Negative Tier 2: Human Village corruption
+country_event = {
+	id = touhou.1680
+	title = touhou.1680.name
+	desc = touhou.1680.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_ideology_events_angry_speech
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1680_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1680_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1680.a
+		add_modifier = {
+			modifier = touhou_ideology_government_corruption
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1680.b
+		add_resource = { unity = -1000 }
+		allow = {
+			resource_stockpile_compare = {
+				resource = unity
+				value >= 1000
+			}
+			custom_tooltip = {
+				fail_text = touhou.1680.b.tt.fail
+				OR = {
+					any_owned_colony = {
+						num_assigned_jobs = {
+							job = politician
+							value >= 100
+						}
+					}
+					any_owned_colony = {
+						num_assigned_jobs = {
+							job = bureaucrat
+							value >= 100
+						}
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				any_owned_colony = {
+					num_assigned_jobs = {
+						job = politician
+						value >= 100
+					}
+				}
+			}
+			hidden_effect = {
+				kill_pop_job_ordered_colony = {
+					JOB = politician
+					CALC_TYPE = amount
+					AMOUNT = 100
+				}
+			}
+			custom_tooltip = touhou.1680.b.tt.politicians
+		}
+		else = {
+			limit = {
+				any_owned_colony = {
+					num_assigned_jobs = {
+						job = bureaucrat
+						value >= 100
+					}
+				}
+			}
+			hidden_effect = {
+				kill_pop_job_ordered_colony = {
+					JOB = bureaucrat
+					CALC_TYPE = amount
+					AMOUNT = 100
+				}
+			}
+			custom_tooltip = touhou.1680.b.tt.bureaucrats
+		}
+	}
+}
+
+# Negative Tier 2: Dissident preacher
+country_event = {
+	id = touhou.1690
+	title = touhou.1690.name
+	desc = touhou.1690.desc
+	picture = GFX_evt_hakurei_shrine_in_night
+	show_sound = event_ideology_events_angry_speech
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1690_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1690_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+		random_owned_leader = {
+			limit = {
+				is_ruler = no
+				OR = {
+					exists = colony
+					is_councilor = yes
+				}
+				NOT = { has_trait = leader_trait_dissident }
+			}
+			save_event_target_as = touhou_ideology_dissident_leader
+		}
+	}
+
+	option = {
+		name = touhou.1690.a
+		event_target:touhou_ideology_dissident_leader = {
+			add_trait = leader_trait_dissident
+		}
+	}
+
+	option = {
+		name = touhou.1690.b
+		event_target:touhou_ideology_dissident_leader = {
+			kill_leader = {
+				show_notification = no
+				fire = yes
+			}
+		}
+	}
+}
+
+# Negative Tier 3: Incident out of control
+country_event = {
+	id = touhou.1700
+	title = touhou.1700.name
+	desc = touhou.1700.desc
+	picture = GFX_evt_touhou_makai_bg
+	show_sound = event_ideology_events_terror_attack
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1700_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1700_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+		random_owned_colony = {
+			limit = {
+				num_buildings = { type = any value > 1 }
+				any_owned_pop_group = {
+					pop_group_size >= 500
+				}
+			}
+			save_event_target_as = touhou_ideology_attacked_colony
+		}
+		event_target:touhou_ideology_attacked_colony = {
+			add_planet_devastation = 10
+			random_owned_pop_group = {
+				limit = { pop_group_size >= 500 }
+				kill_pop_group = {
+					pop_group = this
+					amount = 500
+				}
+			}
+			hidden_effect = {
+				ruin_building = random_no_capital
+			}
+		}
+	}
+
+	option = {
+		name = touhou.1700.a
+		custom_tooltip = touhou.1700.tt
+	}
+
+	option = {
+		name = touhou.1700.b
+		custom_tooltip = touhou.1700.tt
+		allow = {
+			event_target:touhou_ideology_attacked_colony = {
+				num_assigned_jobs = {
+					job = enforcer
+					value > 0
+				}
+			}
+		}
+		event_target:touhou_ideology_attacked_colony = {
+			add_modifier = {
+				modifier = touhou_ideology_law_enforcement
+				years = 10
+			}
+		}
+	}
+
+	option = {
+		name = touhou.1700.c
+		custom_tooltip = touhou.1700.tt
+		allow = { ideological_strength >= 100 }
+		add_ideological_strength = -100
+	}
+}
+
+# Negative Tier 3: Sage assassinated
+country_event = {
+	id = touhou.1710
+	title = touhou.1710.name
+	desc = touhou.1710.desc
+	picture = GFX_evt_touhou_eientei
+	show_sound = event_bad_omen
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1710_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1710_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+		random_owned_leader = {
+			limit = {
+				is_ruler = no
+				OR = {
+					exists = colony
+					leader_class = official
+				}
+			}
+			save_event_target_as = assassinated_leader
+			if = {
+				limit = { exists = colony }
+				colony = {
+					save_event_target_as = assassinated_colony
+				}
+			}
+			exile_leader_as = assassinated_leader
+		}
+		hidden_effect = {
+			create_forceofwill_1710_leader = yes
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			event_target:replacement_leader = {
+				kill_leader = {
+					show_notification = no
+				}
+			}
+		}
+	}
+
+	option = {
+		name = touhou.1710.a
+		event_target:assassinated_leader = {
+			kill_leader = { show_notification = no }
+		}
+		add_monthly_resource_mult = {
+			resource = unity
+			value = @tier1unityreward
+			min = @tier1unitymin
+			max = @tier1unitymax
+		}
+	}
+
+	option = {
+		name = touhou.1710.b
+		custom_tooltip = touhou.1710.b.tt
+		hidden_effect = {
+			clone_leader = {
+				target = event_target:replacement_leader
+				hide_leader = no
+				effect = {
+					save_event_target_as = touhou_replacement_leader_clone
+					if = {
+						limit = { exists = event_target:assassinated_colony }
+						event_target:assassinated_colony = {
+							assign_leader = prev
+						}
+					}
+				}
+			}
+		}
+		create_message = {
+			type = MESSAGE_RECRUITED_INTERNAL_LEADER
+			localization = MESSAGE_RECRUITED_INTERNAL_LEADER_DESC
+			days = @toast_message_days
+			target = event_target:touhou_replacement_leader_clone
+			variable = {
+				type = name
+				localization = LEADER
+				scope = event_target:touhou_replacement_leader_clone
+			}
+			variable = {
+				key = "border"
+				value = "GFX_border_veteran"
+			}
+		}
+		event_target:assassinated_leader = {
+			kill_leader = { show_notification = no }
+		}
+	}
+}
+
+# Negative Tier 3: Fleet swallowed by a gap
+country_event = {
+	id = touhou.1720
+	title = touhou.1720.name
+	desc = touhou.1720.desc
+	picture = GFX_evt_touhou_makai_bg
+	show_sound = event_announcement
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		can_trigger_touhou_ideology_1720_event = yes
+	}
+
+	immediate = {
+		set_country_flag = touhou.1720_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+		random_owned_fleet = {
+			limit = {
+				exists = leader
+				is_ship_class = shipclass_military
+			}
+			save_event_target_as = touhou_ideology_defecting_fleet
+		}
+	}
+
+	option = {
+		name = touhou.1720.a
+		custom_tooltip = touhou.1720.a.tt
+		hidden_effect = {
+			event_target:touhou_ideology_defecting_fleet = {
+				kill_leader = { show_notification = no }
+				delete_fleet = this
+			}
+		}
+	}
+
+	option = {
+		name = touhou.1720.b
+		allow = {
+			resource_stockpile_compare = {
+				resource = unity
+				value >= 1000
+			}
+		}
+		add_resource = { unity = -1000 }
+		add_modifier = {
+			modifier = touhou_ideology_increased_investment
+			years = 10
+		}
+	}
+}
+
+# Gestalt positive: Network clarity
+country_event = {
+	id = touhou.1730
+	title = touhou.1730.name
+	desc = touhou.1730.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_ideology_events_hive_mind_chant
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		is_gestalt = yes
+		NOT = { has_country_flag = touhou.1730_fired }
+	}
+
+	immediate = {
+		set_country_flag = touhou.1730_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1730.a
+		add_modifier = {
+			modifier = touhou_ideology_network_clarity
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1730.b
+		add_modifier = {
+			modifier = touhou_ideology_network_productivity
+			years = 10
+		}
+	}
+}
+
+# Gestalt positive: Cognitive harmony
+country_event = {
+	id = touhou.1740
+	title = touhou.1740.name
+	desc = touhou.1740.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_ideology_events_machine_bleeps
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		is_gestalt = yes
+		NOT = { has_country_flag = touhou.1740_fired }
+	}
+
+	immediate = {
+		set_country_flag = touhou.1740_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1740.a
+		add_modifier = {
+			modifier = touhou_ideology_cognitive_harmony
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1740.b
+		add_modifier = {
+			modifier = touhou_ideology_researcher_attunement
+			years = 10
+		}
+	}
+}
+
+# Gestalt positive: Regulatory harmony
+country_event = {
+	id = touhou.1750
+	title = touhou.1750.name
+	desc = touhou.1750.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_ideology_events_machine_bleeps
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		is_gestalt = yes
+		NOT = { has_country_flag = touhou.1750_fired }
+	}
+
+	immediate = {
+		set_country_flag = touhou.1750_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1750.a
+		add_modifier = {
+			modifier = touhou_ideology_regulatory_harmony
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1750.b
+		add_modifier = {
+			modifier = touhou_ideology_sustainable_doctrine
+			years = 10
+		}
+	}
+}
+
+# Gestalt positive: Nonstandard thought
+country_event = {
+	id = touhou.1760
+	title = touhou.1760.name
+	desc = touhou.1760.desc
+	picture = GFX_evt_touhou_makai_bg
+	show_sound = event_ideology_events_hive_mind_chant
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		is_gestalt = yes
+		NOT = { has_country_flag = touhou.1760_fired }
+		any_owned_leader = {
+			can_leader_get_normal_trait_trigger = yes
+		}
+	}
+
+	immediate = {
+		set_country_flag = touhou.1760_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+		random_owned_leader = {
+			limit = { can_leader_get_normal_trait_trigger = yes }
+			save_event_target_as = touhou_ideology_gifted_leader
+		}
+	}
+
+	option = {
+		name = touhou.1760.a
+		add_modifier = {
+			modifier = touhou_ideology_nonstandard_thought
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1760.b
+		add_modifier = {
+			modifier = touhou_ideology_suppressed_thought
+			years = 10
+		}
+	}
+
+	after = {
+		event_target:touhou_ideology_gifted_leader = {
+			if = {
+				limit = { NOT = { has_trait = leader_trait_gifted } }
+				add_trait = leader_trait_gifted
+			}
+			else = {
+				add_experience = value:leader_level_half_experience|LEADER|this|
+			}
+		}
+	}
+}
+
+# Gestalt negative: Network outage
+country_event = {
+	id = touhou.1770
+	title = touhou.1770.name
+	desc = touhou.1770.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_power_down
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		is_machine_empire = yes
+		NOT = { has_country_flag = touhou.1770_fired }
+	}
+
+	immediate = {
+		set_country_flag = touhou.1770_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1770.a
+		add_modifier = {
+			modifier = touhou_ideology_network_outage
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1770.b
+		add_modifier = {
+			modifier = touhou_ideology_error_mitigation
+			years = 10
+		}
+	}
+}
+
+# Gestalt negative: Neural pain
+country_event = {
+	id = touhou.1780
+	title = touhou.1780.name
+	desc = touhou.1780.desc
+	picture = GFX_evt_touhou_makai_bg
+	show_sound = event_bad_omen
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		is_hive_empire = yes
+		NOT = { has_country_flag = touhou.1780_fired }
+	}
+
+	immediate = {
+		set_country_flag = touhou.1780_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1780.a
+		add_modifier = {
+			modifier = touhou_ideology_medical_support
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1780.b
+		add_modifier = {
+			modifier = touhou_ideology_extended_rest
+			years = 10
+		}
+	}
+}
+
+# Gestalt negative: Catatonic nodes
+country_event = {
+	id = touhou.1790
+	title = touhou.1790.name
+	desc = touhou.1790.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_bad_omen
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		is_gestalt = yes
+		NOT = { has_country_flag = touhou.1790_fired }
+	}
+
+	immediate = {
+		set_country_flag = touhou.1790_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1790.a
+		add_modifier = {
+			modifier = touhou_ideology_catatonic_nodes
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1790.b
+		random_owned_pop_job = {
+			limit = { has_job_type = maintenance_drone }
+			kill_assigned_pop_amount = {
+				amount = 350
+				random = 150
+			}
+		}
+	}
+}
+
+# Gestalt negative: Nodal overload
+country_event = {
+	id = touhou.1800
+	title = touhou.1800.name
+	desc = touhou.1800.desc
+	picture = GFX_evt_touhou_makai_bg
+	show_sound = event_ideology_events_machine_bleeps
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		is_gestalt = yes
+		NOT = { has_country_flag = touhou.1800_fired }
+	}
+
+	immediate = {
+		set_country_flag = touhou.1800_fired
+		set_timed_country_flag = {
+			flag = recently_triggered_momentum_event
+			days = 3600
+		}
+	}
+
+	option = {
+		name = touhou.1800.a
+		add_modifier = {
+			modifier = touhou_ideology_overloaded_nodes
+			years = 10
+		}
+	}
+
+	option = {
+		name = touhou.1800.b
+		add_modifier = {
+			modifier = touhou_ideology_monitoring
+			years = 10
+		}
+	}
+}
+
+##########################################################################
+# Touhou ideological leverage
+##########################################################################
+
+# Spend maximum strength on colonial resonance
+country_event = {
+	id = touhou.2050
+	hide_window = yes
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		exists = ideology
+		ideological_strength >= @touhou_ideological_strength_maximum_value
+		OR = {
+			has_policy_flag = ideological_leverage_resonation
+			AND = {
+				has_policy_flag = ideological_leverage_triumph
+				any_owned_colony = {
+					pop_ideology_percentage = {
+						percentage > @touhou_ideological_leverage_follower_share
+						ideology = owner.ideology
+					}
+				}
+			}
+		}
+	}
+
+	immediate = {
+		add_ideological_strength = @touhou_ideological_leverage_strength_spent
+		ideology = { save_event_target_as = touhou_leverage_ideology }
+
+		if = {
+			limit = { has_policy_flag = ideological_leverage_resonation }
+			every_owned_colony = {
+				add_modifier = {
+					modifier = touhou_ideology_resonation_of_ideals
+					years = @touhou_ideological_leverage_duration
+				}
+			}
+			create_message = {
+				type = MESSAGE_RESONATION_OF_IDEALS
+				localization = MESSAGE_RESONATION_OF_IDEALS_DESC
+				custom_message_text = event_ideals_custom_instructions
+				days = 30
+				onclick = edicts_and_policies
+				variable = {
+					type = name
+					localization = IDEOLOGY_NAME
+					scope = event_target:touhou_leverage_ideology
+				}
+			}
+		}
+		else = {
+			every_owned_colony = {
+				limit = {
+					pop_ideology_percentage = {
+						percentage > @touhou_ideological_leverage_follower_share
+						ideology = owner.ideology
+					}
+				}
+				add_modifier = {
+					modifier = touhou_ideology_parade_of_ideals
+					years = @touhou_ideological_leverage_duration
+				}
+			}
+			create_message = {
+				type = MESSAGE_PARADE_OF_IDEALS
+				localization = MESSAGE_PARADE_OF_IDEALS_DESC
+				custom_message_text = event_ideals_custom_instructions
+				days = 30
+				onclick = edicts_and_policies
+				variable = {
+					type = name
+					localization = IDEOLOGY_NAME
+					scope = event_target:touhou_leverage_ideology
+				}
+			}
+		}
+	}
+}
+
+# Spend maximum strength to collect favors
+country_event = {
+	id = touhou.2055
+	hide_window = yes
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		ideological_strength >= @touhou_ideological_strength_maximum_value
+		has_policy_flag = ideological_leverage_obligations
+		ideology? = {
+			any_adopting_country = {
+				NOT = { is_same_value = root }
+				root = {
+					num_favors = {
+						target = prev
+						value < 10
+					}
+				}
+			}
+		}
+	}
+
+	immediate = {
+		add_ideological_strength = @touhou_ideological_leverage_strength_spent
+		ideology = {
+			save_event_target_as = touhou_leverage_ideology
+			every_adopting_country = {
+				limit = {
+					NOT = { is_same_value = root }
+					root = {
+						num_favors = {
+							target = prev
+							value < 10
+						}
+					}
+				}
+				root = {
+					add_favors = {
+						target = prev
+						value = @touhou_ideological_leverage_favors
+					}
+				}
+			}
+		}
+		create_message = {
+			type = MESSAGE_COLLECTED_OBLIGATIONS
+			localization = MESSAGE_COLLECTED_OBLIGATIONS_DESC
+			custom_message_text = event_ideals_custom_instructions
+			days = 30
+			onclick = edicts_and_policies
+			variable = {
+				type = name
+				localization = IDEOLOGY_NAME
+				scope = event_target:touhou_leverage_ideology
+			}
+		}
+	}
+}
+
+# Gestalt first-time leverage unlock
+country_event = {
+	id = touhou.2060
+	title = touhou.2060.name
+	desc = touhou.2060.desc
+	picture = GFX_evt_spth_gensokyo_city
+	show_sound = event_ideology_events_hive_mind_chant
+	is_triggered_only = yes
+
+	trigger = {
+		has_force_of_will_dlc = yes
+		NOT = { has_country_flag = ideological_leverage_unlocked }
+		is_gestalt = yes
+		exists = ideology
+		ideological_strength >= @touhou_ideological_strength_maximum_value
+	}
+
+	immediate = {
+		set_country_flag = ideological_leverage_unlocked
+	}
+
+	option = {
+		name = touhou.2060.a
+		custom_tooltip = ideological_leverage_unlocked_tt
+	}
+}

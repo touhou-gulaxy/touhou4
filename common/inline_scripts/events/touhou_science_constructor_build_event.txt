@@ -1,0 +1,73 @@
+# This: Planet
+# From: Selector Fleet
+planet_event = {
+	id = $touhou_namespace$.$touhou_outpost_event_1$
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		from = {
+			controller = {
+				if = {
+					limit = { has_country_flag = touhou_science_constructor_outpost_resource_checked_@prev }
+					remove_country_flag = touhou_science_constructor_outpost_resource_checked_@prev
+				}
+			}
+		}
+		solar_system = { if = {
+			limit = { NOT = { exists = starbase } }
+			create_starbase = {
+				size = starbase_outpost
+				owner = root.from.controller
+				effect = { fleet = { random_owned_ship = {
+					fire_on_action = { on_action = on_building_starbase_outpost scopes = { from = root.from.controller } }
+				} } }
+			}
+		} }
+	}
+}
+planet_event = {
+	id = $touhou_namespace$.$touhou_outpost_event_2$
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = { from = { controller = {
+		if = {
+			limit = {
+				root = {
+					is_primary_star = yes
+					NOT = { solar_system = { any_system_planet = { is_surveyed = { who = root.from.controller status = no } } } }
+					solar_system = { NOT = { exists = starbase } }
+				}
+				if = {
+					limit = { country_uses_bio_ships = yes }
+					resource_stockpile_compare = { resource = food value >= 1 mult = value:touhou_scripted_action_outpost_construction_food_cost }
+				}
+				resource_stockpile_compare = { resource = alloys value >= 1 mult = value:touhou_scripted_action_outpost_construction_alloys_cost }
+				resource_stockpile_compare = { resource = influence value >= 1 mult = root.solar_system.value:touhou_scripted_action_outpost_construction_influence_cost }
+			}
+			set_country_flag = touhou_science_constructor_outpost_resource_checked_@prev
+			add_resource = { food = -1 mult = value:touhou_scripted_action_outpost_construction_food_cost }
+			add_resource = { alloys = -1 mult = value:touhou_scripted_action_outpost_construction_alloys_cost }
+			add_resource = { influence = -1 mult = root.solar_system.value:touhou_scripted_action_outpost_construction_influence_cost }
+		}
+		else = { from = { create_message = {
+			type = "message_touhou_science_constructor_construction_failed"
+			localization = "touhou_science_constructor_outpost_construction_cancel"
+			days = 5
+			target = root
+			variable = { type = name localization = "touhou_fleet" scope = root.from }
+			variable = { type = name localization = "touhou_planet" scope = root }
+		} } }
+	} } }
+}
+planet_event = {
+	id = $touhou_namespace$.$touhou_outpost_event_3$
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = { from = { controller = { if = {
+		limit = { has_country_flag = touhou_science_constructor_outpost_resource_checked_@prev }
+		add_resource = { food = 1 mult = value:touhou_scripted_action_outpost_construction_food_cost }
+		add_resource = { alloys = 1 mult = value:touhou_scripted_action_outpost_construction_alloys_cost }
+		add_resource = { influence = 1 mult = root.solar_system.value:touhou_scripted_action_outpost_construction_influence_cost }
+		remove_country_flag = touhou_science_constructor_outpost_resource_checked_@prev
+	} } } }
+}
