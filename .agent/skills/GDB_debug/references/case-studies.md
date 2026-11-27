@@ -96,65 +96,6 @@ must be answered by combining register/memory inspection, decompiled object
 layouts, and observable script logs. Avoid claiming DWARF-level local-variable
 recovery when the binary is stripped.
 
-## 4.6 Save-Load SIGSEGV: Missing Brace Corrupted an Effect Tree
-
-The repeated `SIGSEGV` at `stellaris+0x289dd67` was initially associated with
-57 unknown dynamically generated leader trigger scripts. Removing those errors
-did not change the stack or prevent the crash.
-
-Native-core inspection showed:
-
-```text
-rdi = 0
-mov 0x110(%rdi),%rdi
-=> mov (%rdi),%rax
-```
-
-The original argument had been a `CScriptedEffect`. Its field at `+0x110`, which
-should have referenced a `CEffect`, was zero. The caller was iterating a four
-element effect vector; the broken object was the fourth element. Its embedded
-source string identified:
-
-```text
-common/scripted_effects/<overwrite>_effects.txt:635
-@ scripted effect finish_first_contact_effect
-at events/!!!!_touhou_vanilla_overwrite_events.txt line: 86
-```
-
-Commit bisection used the same 4.6.0 binary, playset, recent save, and
-`--continuelastsave` flow:
-
-- `2766c38a fix: sync vanilla overwrite for 4.6.0` crashed at the same offset
-  after about 14 seconds.
-- Parent `cd2e102a` remained active for more than 50 seconds and did not create a
-  crash; GDB was then interrupted intentionally while the game was in normal GLX
-  buffer-swap code.
-- The relevant child diff added this malformed one-line enclave switch case:
-
-```txt
-champions_forge_enclave_country = { country_event = { id = nomads.155 scopes = { from = root.owner } }
-```
-
-It has three opening braces and only two closing braces. The following
-`default` case was therefore parsed under the wrong effect, corrupting the
-`finish_first_contact_effect` tree. The correct line is:
-
-```txt
-champions_forge_enclave_country = { country_event = { id = nomads.155 scopes = { from = root.owner } } }
-```
-
-Lessons:
-
-- A duplicate-definition warning is not proof of the CTD cause.
-- Parse-time errors and execution-time crashes can be unrelated.
-- A member-dispatch fault may have a valid wrapper object with one null linked
-  object; do not report only the final `rdi = 0`.
-- Commit-level parent/child testing is the fastest way to distinguish an old
-  bug from a regression and identify the exact introducing diff.
-- Core generation can consume all tmpfs space. Preserve the registers and
-  backtrace first, keep one complete core, and remove only incomplete temporary
-  cores created by the current run.
-
 ## Reusable Evidence
 
 Crash snapshots used for these cases are under:
