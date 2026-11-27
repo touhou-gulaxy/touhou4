@@ -135,7 +135,6 @@ touhou_clashing_rival_ideologies_bonus = {
 	mult = @touhou_ideology_strength_per_rival_clash
 }
 
-# TODO: change this
 touhou_ideological_buildings_bonus = {
 	modifier = {
 		add = value:ideological_default_buildings_bonus
@@ -155,6 +154,7 @@ touhou_ideological_buildings_bonus = {
 		add = value:ideological_machine_buildings_bonus
 		is_machine_empire = yes
 	}
+	add = value:touhou_modifier_mult_multiplier|modifier|country_ideology_strength_from_building|min|0|
 }
 
 touhou_galactic_hall_bonus = {
@@ -186,6 +186,87 @@ touhou_advocate_bonus = {
 touhou_martyr_ideological_strength_mult = {
 	base = @martyr_ideological_strength_mult
 	mult = cultural_envoys_martyred
+}
+touhou_tranquil_steward_strength_bonus = {
+	base = 0
+	add = @leader_trait_tranquil_steward_strength
+}
+touhou_social_concord_strength_bonus = {
+	base = @social_concord_ideological_strength
+}
+touhou_fanatic_purifiers_purged_pop_ideological_strength = {
+	add = purged_pop_count
+	mult = @touhou_fanatic_purifiers_ideological_strength_per_pop_purged
+	max = 2
+}
+touhou_open_stars_sovereignty_strength_bonus = {
+	base = @building_ideological_strength
+	complex_trigger_modifier = {
+		trigger = count_starbase_buildings
+		parameters = {
+			type = immigration_bureau
+			limit = {
+				NOT = { has_starbase_flag = immigration_bureau_invalid }
+			}
+		}
+		mode = mult
+	}
+}
+touhou_ideology_act_bonus = {
+	base = 0
+	modifier = {
+		add = @touhou_resolution_ideology_act_strength_authority
+		ideology? = { is_ideology_custodian = root }
+	}
+	modifier = {
+		add = @touhou_resolution_ideology_act_strength
+		NOT = {
+			ideology? = { is_ideology_custodian = root }
+		}
+	}
+	min = 0
+}
+touhou_celebrate_ideology_strength_bonus = {
+	complex_trigger_modifier = {
+		trigger = count_owned_pop_amount
+		parameters = {
+			limit = {
+				planet = {
+					has_modifier = celebrate_ideology
+				}
+			}
+		}
+		mode = add
+		mult = @touhou_ideology_strength_per_100_celebrating_pops
+	}
+	divide = 100
+}
+touhou_fanatic_faction_approval_bonus = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = faction_approval_above_threshold
+		parameters = {
+			limit = {
+				is_faction_fanatic = yes
+				ideology? = { is_same_value = root.from }
+			}
+			threshold = $THRESHOLD|0$
+		}
+		mode = add
+		mult = 100
+	}
+	round = yes
+	mult = $WEIGHT|1$
+}
+touhou_fanatic_faction_approval_mult = {
+	base = 1
+	add = value:touhou_fanatic_faction_approval_bonus|THRESHOLD|0.5|WEIGHT|@touhou_ideology_strength_per_fanatic_faction_approval|
+	min = 1
+	max = @touhou_ideology_strength_max_fanatic_faction_approval_mult
+}
+touhou_get_ideological_strength_bonus_mult = {
+	add = root.owner.value:touhou_modifier_mult_multiplier|modifier|ideological_strength_bonus_mult|min|0|
+	add = root.owner.value:touhou_ideological_strength_difficulty_bonus
 }
 
 touhou_pop_other_ideology_percentage_value = {
@@ -247,7 +328,7 @@ touhou_denounced_ideology_malus = {
 	add = @denounced_ideology_malus_value
 	min = 0
 }
-get_ideological_strength_malus_mult = {
+touhou_get_ideological_strength_malus_mult = {
 	add = root.owner.value:touhou_modifier_mult_multiplier|modifier|ideological_strength_malus_mult|min|0|
 }
 
@@ -299,5 +380,35 @@ touhou_ideological_reach_colony_pops = {
 	complex_trigger_modifier = {
 		trigger = count_owned_pop_amount
 		mode = add
+	}
+}
+
+touhou_ai_ideology_affinity_from_matching_ethic = {
+	base = 10
+	complex_trigger_modifier = {
+		trigger = ideology_ethic_fanatic_level
+		parameters = {
+			ideology = from
+		}
+		mode = mult
+	}
+}
+touhou_ai_ideology_affinity_from_opposing_ethic = {
+	# -10 per fanatic level, offset +5: normal -5, fanatic -25
+	base = -10
+	complex_trigger_modifier = {
+		trigger = ideology_ethic_fanatic_level
+		parameters = {
+			ideology = from
+		}
+		mode = mult
+	}
+	add = 5
+}
+touhou_ai_ideology_affinity_from_non_matching_ethic = {
+	base = -1
+	modifier = {
+		subtract = 1
+		is_fanatic = yes
 	}
 }

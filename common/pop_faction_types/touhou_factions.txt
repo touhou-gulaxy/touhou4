@@ -107,18 +107,6 @@
 
 touhou_faction = {
 	election_header = "GFX_faction_header_purple"
-	# guiding_ethic = ethic_spiritualist                    # Decides which ethic pops need to join the faction
-	# pop_ethics_filter = {
-	# 	inline_script = { script = pop_faction_types/touhou_pop_ethics_filter ethic = spiritualist }
-	# 	inline_script = { script = pop_faction_types/touhou_pop_ethics_filter ethic = spiritualist }
-	# 	inline_script = { script = pop_faction_types/touhou_pop_ethics_filter ethic = materialist }
-	# 	inline_script = { script = pop_faction_types/touhou_pop_ethics_filter ethic = pacifist }
-	# 	inline_script = { script = pop_faction_types/touhou_pop_ethics_filter ethic = militarist }
-	# 	inline_script = { script = pop_faction_types/touhou_pop_ethics_filter ethic = xenophile }
-	# 	inline_script = { script = pop_faction_types/touhou_pop_ethics_filter ethic = xenophobe }
-	# 	inline_script = { script = pop_faction_types/touhou_pop_ethics_filter ethic = egalitarian }
-	# 	inline_script = { script = pop_faction_types/touhou_pop_ethics_filter ethic = authoritarian }
-	# }
 	use_guiding_ethic_as_pop_filter = no
 	use_guiding_ethic_as_growth_factor = no
 	visual_ethic = "traditionalist_visual_ethic"           # This shows what ethic icons to display in the faction view
@@ -155,10 +143,106 @@ touhou_faction = {
 
 	is_potential = {
 		is_faction_allowed = yes
+		spth_check_gensokyo_auth = yes
+	}
+	can_join_pre_triggers = { is_being_purged = no }
+	can_join_faction = {
+		is_shackled_robot = no
+		can_think = yes
 		OR = {
+			has_touhou_base_trait = yes
 			spth_check_gensokyo_auth = yes
 			owner? = { has_country_flag = has_encountered_touhou_country }
 		}
+	}
+
+	attraction = {
+		base = @touhou_faction_attraction_base
+		modifier = {
+			factor = 0.5
+			has_citizenship_rights = no
+		}
+	}
+	leader = {
+		base = 400
+
+		modifier = {
+			factor = 0.0
+			is_event_leader = yes
+		}
+	}
+
+	demand = {
+		title = "touhou_faction_demand_1"
+		unfulfilled_title = "touhou_faction_demand_1_unfulfilled"
+		desc = "touhou_faction_demand_1_desc"
+		unfulfilled_effect = 0.01
+		fulfilled_effect = 10
+		potential = {
+			always = yes
+		}
+		trigger = {
+			always = no
+		}
+	}
+
+	actions = {
+		suppress_faction = {
+			title = "SUPPRESS_FACTION"
+			description = "SUPPRESS_FACTION_DESC"
+			potential = { exists = owner parameter:empire = { NOT = { has_country_flag = touhou_suppress_generic_faction } } }
+			effect = { parameter:empire = { set_country_flag = touhou_suppress_generic_faction } }
+			ai_weight = { base = 0 }
+		}
+		cancel_suppress_faction = {
+			title = "PROMOTE_FACTION"
+			description = "PROMOTE_FACTION_DESC"
+			potential = { exists = owner parameter:empire = { has_country_flag = touhou_suppress_generic_faction } }
+			effect = { parameter:empire = { remove_country_flag = touhou_suppress_generic_faction } }
+			ai_weight = { base = 1000 }
+		}
+	}
+}
+touhou_faction_non_genso = {
+	election_header = "GFX_faction_header_purple"
+	use_guiding_ethic_as_pop_filter = no
+	use_guiding_ethic_as_growth_factor = no
+	visual_ethic = "traditionalist_visual_ethic"           # This shows what ethic icons to display in the faction view
+
+	support_multiplier = 1								# Multiplier to a pop's political power
+	support_weight_exponent = 1							# Applied to final pops political power
+	persistent_faction = yes                       # default = no; Persistent factions ignore the potential members thresholds and survive with no members
+	can_rename = yes                              # default = yes; Stops factions from being renamable
+	skip_creation_cooldown = yes                   # default = no; Creates the faction right away, ignoring POP_FACTION_CREATION_COOLDOWN
+	unique = yes
+	parameters = { empire = { type = country valid_objects = { is_same_value = root } } }
+
+	resources = {
+		category = pop_factions
+		inline_script = pop_faction_types/shared_unity_production
+	}
+	extortion_resource = {
+		category = pop_factions
+		produces = {
+			trigger = {
+				owner = {
+					NOR = {
+						has_valid_civic = civic_crowdsourcing
+						has_valid_civic = civic_corporate_crowdsourcing
+					}
+				}
+			}
+			physics_research = @faction_base_output
+			society_research = @faction_major_output
+			engineering_research = @faction_minor_output
+			mult = @faction_extortion_research_ratio
+		}
+	}
+
+	is_potential = {
+		is_faction_allowed = yes
+		spth_check_gensokyo_auth = no
+		owner? = { has_country_flag = has_encountered_touhou_country }
 	}
 	can_join_pre_triggers = { is_being_purged = no }
 	can_join_faction = {
